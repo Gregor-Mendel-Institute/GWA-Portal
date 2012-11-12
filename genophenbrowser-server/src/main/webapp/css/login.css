@@ -1,0 +1,39 @@
+@CHARSET "UTF-8";
+
+a {
+	color: #0077CC;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a:hover {
+	 text-decoration: underline;
+}
+
+.header {
+	 border-bottom: 1px solid #666666;
+    clear: both;
+    height: 34px;
+    margin-bottom: 15px;
+}
+
+.header h1 {
+    font-size: 100%;
+    line-height: 34px;
+    margin-bottom: 0;
+}
+
+.form_login {
+	margin-bottom:30px;
+}
+
+.form_login_info {
+	 padding-bottom: 5px;
+	 font-size:90%;
+}
+
+.form_link {
+	font-size:120%;
+	margin-left:30px;
+	font-weight:bold;
+}

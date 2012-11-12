@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.zeroturnaround.com" xsi:schemaLocation="http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd">
+
+	<classpath>
+		<dir name="/net/gmi.oeaw.ac.at/nordborg/user/uemit.seren/eclipse_workspaces/default/genophenbrowser/target/genophenbrowser-0.0.1-SNAPSHOT/WEB-INF/classes">
+		</dir>
+	</classpath>
+
+	<web>
+		<link target="/">
+			<dir name="/net/gmi.oeaw.ac.at/nordborg/user/uemit.seren/eclipse_workspaces/default/genophenbrowser/target/m2e-wtp/web-resources">
+			</dir>
+		</link>
+		<link target="/">
+			<dir name="/net/gmi.oeaw.ac.at/nordborg/user/uemit.seren/eclipse_workspaces/default/genophenbrowser/src/main/webapp">
+			</dir>
+		</link>
+	</web>
+
+</application>
