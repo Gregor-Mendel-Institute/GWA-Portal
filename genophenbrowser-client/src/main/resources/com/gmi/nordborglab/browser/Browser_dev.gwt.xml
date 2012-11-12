@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to="Browser">
+  <inherits name="com.gmi.nordborglab.browser.Browser" />
+  
+  <set-configuration-property name="devModeRedirectEnabled" value="true"/>
+
+  <set-property name="user.agent" value="safari" />
+</module>

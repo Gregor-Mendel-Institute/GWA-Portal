@@ -1,0 +1,12 @@
+@CHARSET "UTF-8";
+
+.dataGridCell {
+	padding: 0 !important;
+}
+
+.dataGridFirstColumnHeader {
+	padding: 0 0 0 2px !important;
+}
+.dataGridFirstColumnFooter {
+	padding: 0 0 0 2px !important;
+}

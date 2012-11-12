@@ -1,0 +1,74 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:data field="errorIconImg" src="../resources/images/error.png"></ui:data>
+	
+	<ui:style type="com.gmi.nordborglab.browser.client.ui.ValidationDecorator.MyStyle">
+	
+	    @url errorIconUrl errorIconImg;
+	
+		.errorIcon {
+			background: errorIconUrl no-repeat right center;
+			padding-right:25px;
+		}
+		
+		
+	
+		.label {
+			font-size: 15px;
+			font-weight: normal;
+			line-height: 1.2em;
+			margin-bottom: 0;
+			text-align: right;
+			vertical-align: top;
+			width: 90px;
+			display: inline-block;
+		}
+		
+		.contents {
+			float:left;
+		}
+		
+		.container {
+			display: inline-block;
+			padding: 0 0 0 13px;
+		}
+		
+		.errorLabel {
+			display: none;
+			color: #943547;
+			font-style: italic;
+			margin-left:5px;
+		}
+		
+		.errorBox {
+			border: 2px solid #AC3B2A;
+		}
+		
+		.warnIcon {
+			display: none;
+		}
+		
+		
+		.helpLabel {
+			display: none;
+			font-style:italic;
+		}
+		.formContainer {
+	
+
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<div class="{style.warnIcon}" ui:field="warnIcon" />
+		<label ui:field="label" class="{style.label}" />
+		<div class="{style.container}">
+			<div class="{style.formContainer}">
+				<g:SimplePanel ui:field="contents" stylePrimaryName="{style.contents}" />
+				<!-- <div class="{style.errorIcon}" ui:field="errorIcon" />-->	
+			</div>
+			<div class="{style.helpLabel}" ui:field="helpLabel" />
+			<div class="{style.errorLabel}" ui:field="errorLabel" />
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder> 

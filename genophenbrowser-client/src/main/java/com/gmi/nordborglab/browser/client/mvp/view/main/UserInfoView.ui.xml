@@ -1,0 +1,30 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'
+	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+	ui:generateLocales='default'>
+	
+	<ui:style>
+		.signoutContainer {
+			float:left;
+			margin-left:10px;
+		}
+		.container {
+			float:left;
+		}
+	
+	</ui:style>
+
+	<g:FlowPanel>
+		<g:HTMLPanel ui:field="userInfo" visible="false" addStyleNames="{style.container}">
+			<g:Label  ui:field="username"></g:Label>
+		</g:HTMLPanel>
+		<g:FlowPanel addStyleNames="{style.signoutContainer}">
+			<g:Anchor href="login" ui:field="signinLink" visible="true" text="Sign in" />
+			<g:Anchor  href="logout" ui:field="signoutLink" visible="false" text="Sign out" />
+		</g:FlowPanel>		
+		
+	</g:FlowPanel>
+</ui:UiBinder>

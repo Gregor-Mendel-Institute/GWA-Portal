@@ -1,0 +1,94 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.container {
+			float: left;
+			max-width: 800px;
+			min-width: 191px;
+			white-space: normal;
+			width: 100%;
+			word-wrap: break-word;
+		}
+		.row {
+			margin: 0;
+			padding: 10px 0;
+			text-align: left;
+		}
+		.label {
+			font-size: 15px;
+			font-weight: normal;
+			line-height: 1.2em;
+			margin-bottom: 0;
+			text-align: right;
+			vertical-align: top;
+			width: 180px;
+			display:inline-block;
+		}
+
+		
+		.value {
+			padding: 0 0 0 13px;
+			width: 441px;
+			vertical-align: top;
+			line-height: 1.39em;
+			display:inline-block;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<div class="{style.container}">
+			<div class="{style.row}">
+				<div class="{style.label}">Name</div>
+				<g:Label ui:field="name" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Stock</div>
+				<g:LongBox  enabled="false" readOnly="true" ui:field="stock" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Locality</div>
+				<g:Label ui:field="locality" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">
+				<div class="{style.label}">Coord-X</div>
+				<g:IntegerBox enabled="false" readOnly="true" ui:field="coordX" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">
+				<div class="{style.label}">Coord-Y</div>
+				<g:IntegerBox enabled="false" readOnly="true" ui:field="coordY" addStyleNames="{style.value}"/>		
+			</div>
+			<div class="{style.row}">
+				<div class="{style.label}">Rep</div>
+				<g:Label ui:field="rep" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Block:</div>
+				<g:Label ui:field="block" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Plot:</div>
+				<g:Label ui:field="plot" addStyleNames="{style.value}"/>
+			</div>
+						<div class="{style.row}">	
+				<div class="{style.label}">Season:</div>
+				<g:Label ui:field="season" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Plant:</div>
+				<g:Label ui:field="plant" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Planting Date:</div>
+				<g:DateLabel ui:field="plantingDate" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Harvest Date:</div>
+				<g:DateLabel ui:field="harvestDate" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Comments:</div>
+				<g:Label ui:field="comments" addStyleNames="{style.value}"/>
+			</div>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder> 

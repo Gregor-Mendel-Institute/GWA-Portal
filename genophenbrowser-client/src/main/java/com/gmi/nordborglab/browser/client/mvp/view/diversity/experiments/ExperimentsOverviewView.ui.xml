@@ -1,0 +1,18 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'
+	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+	ui:generateLocales='default'>
+
+	<g:LayoutPanel>
+		<g:layer top="3em" bottom="30em" left="0" width="90%" >
+			<c:CellTable ui:field="table" />
+		</g:layer>
+		<g:layer top="3em" bottom="30em" right="0" width="10%">
+			<g:HTMLPanel>Chart</g:HTMLPanel>
+		</g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder>

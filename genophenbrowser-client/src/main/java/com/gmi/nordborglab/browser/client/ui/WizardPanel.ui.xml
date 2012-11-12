@@ -1,0 +1,132 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:with field="mainRes" type="com.gmi.nordborglab.browser.client.resources.MainResources" />
+	
+	<ui:style type="com.gmi.nordborglab.browser.client.ui.WizardPanel.MyStyle">
+		.stepContainer {
+			background-color: #F1F1F1;
+			border-right: 1px solid #D7D7D7;
+			color: #A7A7A7;
+		}
+		
+		.stepContainer_item,.stepContainer_item_active {
+			background-color: #F1F1F1;
+			height: 68px;
+			margin: 0 14px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			position: relative;
+			z-index: 23;
+			padding: 30px 0 6px 0;
+		}
+		
+		.stepContainer_item_active {
+			
+		}
+		
+		.step_number {
+			-webkit-border-radius: 999px;
+			-moz-border-radius: 999px;
+			border-radius: 999px;
+			width: 24px;
+			height: 24px;
+			padding: 8px;
+			background: #C7CED4;
+			text-align: center;
+			color: white;
+			font-size: 24px;
+			margin: 0 auto;
+			transition: all 1s;
+			-moz-transition: all 1s; /* Firefox 4 */
+			-webkit-transition: all 1s; /* Safari and Chrome */
+			-o-transition: all 1s; /* Opera */
+		}
+		
+		.step_title {
+			margin-top: 3px;
+			overflow: hidden;
+			text-align: center;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		
+		}
+		.stepContainer_item_active .step_number {
+			background:#4D90FE;
+		}
+		
+		.stepContainer_item_active .step_title {
+			color: #333;
+		}
+		
+		.arrow_container {
+			position: relative;
+			transition: all 1s;
+			-moz-transition: all 1s; /* Firefox 4 */
+			-webkit-transition: all 1s; /* Safari and Chrome */
+			-o-transition: all 1s; /* Opera */
+			top: 40px;
+		}
+		
+		.arrow_border {
+			width: 0;
+			height: 0;
+			border-top: 11px solid transparent;
+			border-bottom: 11px solid transparent;
+			border-right: 11px solid #D7D7D7;
+			right: -1px;
+			position: absolute;
+			top: -1px;
+		}
+		
+		.arrow {
+			width: 0;
+			height: 0;
+			border-top: 10px solid transparent;
+			border-bottom: 10px solid transparent;
+			border-right: 10px solid white;
+			position: absolute;
+			right: -1px;
+			z-index: 10;
+		}
+		.nextButton,.previousButton {
+		
+		}
+		
+		.buttonGroup {
+			float:right;
+		}
+		
+		.cancelButton {
+			float:left;
+			margin-left:20px;
+		}
+		
+	</ui:style>
+	
+	
+	<g:LayoutPanel>
+		<g:layer top="0" bottom="0" left="0" width="7.692em">
+			<g:FlowPanel ui:field="stepContainer" addStyleNames="{style.stepContainer}">
+				<g:HTMLPanel addStyleNames="{style.arrow_container}"
+					ui:field="indicator">
+					<div class="{style.arrow}" />
+					<div class="{style.arrow_border}" />
+				</g:HTMLPanel>
+			</g:FlowPanel>
+		</g:layer>
+		<g:layer top="0" bottom="3em" left="7.692em" right="0">
+			<g:DeckLayoutPanel ui:field="pageContainer" />
+		</g:layer>
+		<g:layer bottom="0" left="7.692em" right="0" height="3em">
+			<g:FlowPanel>
+				<g:Button ui:field="cancelBtn" text="Cancel" addStyleNames="{mainRes.style.button_grey} {style.cancelButton}"/>
+				<g:HTMLPanel addStyleNames="{style.buttonGroup}">
+					<g:Button ui:field="previousBtn" text="Previous" visible="false"  addStyleNames="{mainRes.style.button_grey} {style.previousButton}"/>
+					<g:Button ui:field="nextBtn" text="Next" addStyleNames="{mainRes.style.button_blue} {style.nextButton}"/>
+				</g:HTMLPanel>
+			</g:FlowPanel>
+		</g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder>

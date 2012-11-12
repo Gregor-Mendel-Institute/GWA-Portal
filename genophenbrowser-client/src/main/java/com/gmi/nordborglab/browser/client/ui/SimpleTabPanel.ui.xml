@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.tabLayoutPanel {
+		}
+		.tabLayoutPanelTabs {
+			border-bottom: 1px solid #CCC;
+		}
+	</ui:style>
+	<g:LayoutPanel addStyleNames="{style.tabLayoutPanel}">
+		<g:layer top="0" height="35px" left="0" right="0">
+			<g:FlowPanel ui:field="tabPanel" addStyleNames="{style.tabLayoutPanelTabs}"/>
+		</g:layer>
+		<g:layer bottom="0" top="35px" left="0" right="0">
+			<g:SimpleLayoutPanel ui:field="tabContentPanel"></g:SimpleLayoutPanel>
+		</g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder> 

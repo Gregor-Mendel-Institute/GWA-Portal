@@ -1,0 +1,211 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+	xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui" xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+	xmlns:chzn="urn:import:com.watopi.chosen.client.gwt" xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+	ui:generateLocales='default'>
+
+	<ui:with field="mainRes"
+		type="com.gmi.nordborglab.browser.client.resources.MainResources" />
+
+	<ui:style>
+		.container {
+			padding: 19px 19px;
+		}
+		
+		.actionRow {
+			color: #005C9C;
+			font-size: 15px;
+			text-align: center;
+			float:right;
+		}
+		
+		@external gwt-TabLayoutPanelTab;
+		.gwt-TabLayoutPanelTab {
+			color: #06C !important;
+			background: white !important;
+		}
+		
+		.gwt-TabLayoutPanelTab:hover {
+			color: #ffffff !important;
+			background-color: #0088cc !important;
+		}
+		
+		.gwt-TabLayoutPanelTab-selected {
+			color: #555 !important;
+			background-color: white;
+			font-weight: normal !important;
+		}
+		
+		@external .gwt-TabLayoutPanelTabs;
+		.gwt-TabLayoutPanelTabs {
+			background: white !important;
+			border-bottom: 1px solid #DDD !important;
+		}
+		
+		@external .gwt-TabLayoutPanelTab-selected;
+		.gwt-TabLayoutPanelTab-selected {
+			margin-bottom: -1px;
+			color: #555 !important;
+			background-color: white;
+			border: 1px solid #DDD;
+			border-bottom-color: transparent;
+		}
+		
+		.titleRow {
+			background: whiteSmoke;
+			border-bottom: 0;
+			border-left: none;
+			border-right: none;
+			border-top: 1px solid #E5E5E5;
+			height: 26px;
+			line-height: 26px;
+			padding: 4px 10px;
+			text-align: center;
+		}
+		
+		.stats_container {
+			padding: 10px 0px;
+			border-bottom: 1px solid #DDD;
+			text-align: center;
+		}
+		
+		.stats_title {
+			color: #444;
+			font: normal 13px Arial;
+		}
+		
+		.stats_value {
+			color: black;
+			font-size: 130%;
+			font-weight: bold;
+			margin-top: 10px;
+		}
+		}
+	</ui:style>
+
+	<g:LayoutPanel>
+		<g:layer top="5px" left="0" right="0" height="50%">
+			<g:LayoutPanel>
+				<g:layer top="0" left="0" width="40em" bottom="0">
+					<g:LayoutPanel>
+						<g:layer top="0px" height="35px" left="0" right="0">
+							<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+								<div class="{style.actionRow}">
+									<g:ToggleButton ui:field="edit"
+										addStyleNames="{mainRes.style.button_blue}" visible="false">Edit</g:ToggleButton>
+									<g:ToggleButton ui:field="save"
+										addStyleNames="{mainRes.style.button_grey}" visible="false">Save</g:ToggleButton>
+									<g:Anchor ui:field="cancel" visible="false"
+										addStyleNames="{mainRes.style.cursor}">Cancel</g:Anchor>
+								</div>
+							</g:HTMLPanel>
+						</g:layer>
+						<g:layer top="47px" bottom="0" left="0" right="0">
+							<g:FlowPanel>
+								<ed:PassportDisplayEditor ui:field="passportDisplayEditor"
+									visible="true" />
+								<!-- <ed:TaxonomyEditEditor ui:field="taxonomyEditEditor" visible="false" 
+									/> -->
+							</g:FlowPanel>
+						</g:layer>
+					</g:LayoutPanel>
+				</g:layer>
+				<g:layer left="40.500em" width="10.714em" top="0" bottom="0">
+					<g:HTMLPanel>
+						<div class="{style.titleRow}">
+							Stats
+						</div>
+						<div>
+							<div class="{style.stats_container}">
+								<div class="{style.stats_title}">Stocks</div>
+								<g:Label addStyleNames="{style.stats_value}" ui:field="stockStatsLabel"/>
+							</div>
+							<div class="{style.stats_container}">
+								<div class="{style.stats_title}">Phenotypes</div>
+								<g:Label addStyleNames="{style.stats_value}" ui:field="phenotypeStatsLabel"/>
+							</div>
+							<div class="{style.stats_container}">
+								<div class="{style.stats_title}">Studies</div>
+								<g:Label addStyleNames="{style.stats_value}" ui:field="studyStatsLabel"/>
+							</div>
+							<div class="{style.stats_container}">
+								<div class="{style.stats_title}">Genotypes</div>
+								<g:Label addStyleNames="{style.stats_value}" ui:field="genotypeStatsLabel"/>
+							</div>
+						</div>
+					</g:HTMLPanel>
+				</g:layer>
+				<g:layer left="51.214em" right="0" top="0" bottom="0">
+					<g:TabLayoutPanel barUnit="PX" barHeight="38"
+						animationDuration="500">
+						<g:tab>
+							<g:header>Stocks</g:header>
+							<g:LayoutPanel>
+								<g:layer top="0" left="0" right="0" bottom="30px">
+									<c:DataGrid ui:field="stockDataGrid" />
+								</g:layer>
+								<g:layer bottom="0" left="0" right="0" height="30px">
+									<gui:CustomPager ui:field="stockPager" />
+								</g:layer>
+							</g:LayoutPanel>
+						</g:tab>
+						<g:tab>
+							<g:header>Phenotypes</g:header>
+							<g:LayoutPanel>
+								<g:layer top="0" left="0" right="0" bottom="30px">
+									<c:DataGrid ui:field="phenotypeDataGrid" />
+								</g:layer>
+								<g:layer bottom="0" left="0" right="0" height="30px">
+									<gui:CustomPager ui:field="phenotypePager" />
+								</g:layer>
+							</g:LayoutPanel>
+						</g:tab>
+						<g:tab>
+							<g:header>Studies</g:header>
+							<g:LayoutPanel>
+								<g:layer top="0" left="0" right="0" bottom="30px">
+									<c:DataGrid ui:field="studyDataGrid" />
+								</g:layer>
+								<g:layer bottom="0" left="0" right="0" height="30px">
+									<gui:CustomPager ui:field="studyPager" />
+								</g:layer>
+							</g:LayoutPanel>
+						</g:tab>
+
+					</g:TabLayoutPanel>
+				</g:layer>
+			</g:LayoutPanel>
+		</g:layer>
+		<g:layer bottom="0" left="0" right="0" height="50%">
+			<g:LayoutPanel>
+				<g:layer top="0" bottom="0" left="0" width="51.214em">
+					<g:LayoutPanel>
+						<g:layer top="0" height="40px" left="0" right="0">
+							<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+								<div class="{style.actionRow}">
+									<b:ButtonGroup toggle="radio">
+										<b:Button toggle="true" addStyleNames="active" ui:field="traitOBtn">Trait-O</b:Button>
+										<b:Button toggle="true" ui:field="envOBtn" >Env-O</b:Button>
+								 		<b:Button toggle="true" ui:field="statisticTypeBtn">Statistic-Type</b:Button>
+								 		<b:Button toggle="true" ui:field="unitOfMeasureBtn">Unit-Type</b:Button>
+								 	</b:ButtonGroup>
+								</div>
+							</g:HTMLPanel>
+						</g:layer>
+						<g:layer top="40px" bottom="0" left="0" right="0">
+							<g:SimpleLayoutPanel ui:field="statsChartContainer" />
+						</g:layer>
+					</g:LayoutPanel>
+				</g:layer>
+				<g:layer top="0" bottom="0" left="51.214em" right="0">
+				<g:SimpleLayoutPanel ui:field="mapContainer" />
+					
+				</g:layer>
+			</g:LayoutPanel>
+		</g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder>

@@ -1,0 +1,46 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style type="com.gmi.nordborglab.browser.client.ui.VerticalNavSplitLayoutPanel.MyStyle">
+	    .container {
+			background-color:#F9F9F9;
+
+		}
+		.splitter,.splitter_min {
+			background: whiteSmoke;
+			border-right: 1px solid #DDD;
+			border-left: 1px solid #C8C8C8;
+			-webkit-box-shadow: -1px 0 3px rgba(0,0,0,.2);
+			-moz-box-shadow: -1px 0 3px rgba(0,0,0,.2);
+			box-shadow: -1px 0 3px rgba(0,0,0,.2);
+			cursor: w-resize;
+			height: 100%;
+			-moz-transition: all 130ms ease-in-out;
+			-webkit-transition: all 130ms ease-in-out;
+			transition: all 130ms ease-in-out;
+			width:5px;
+			min-width:5px;
+			float:right;
+		}
+		.splitter_min {
+			cursor: e-resize;
+			width:8px;
+			min-width:8px;
+		}
+		.splitter:hover {
+			background-color:#777;
+			-moz-transition:background-color .20s linear;
+			-webkit-transition:background-color .20s linear;
+			transition:background-color .20s linear}
+		}
+		.focusPanel {
+    		outline: none;
+		}
+
+		
+	</ui:style>
+	<g:LayoutPanel ui:field="container" addStyleNames="{style.container}">
+		<g:layer top="0" bottom="0" left="0" right="8px"><g:SimpleLayoutPanel ui:field="content"></g:SimpleLayoutPanel></g:layer>
+		<g:layer top="0" bottom="0" right="0" width="8px"><g:FocusPanel ui:field="splitter_container" addStyleNames="{style.focusPanel}"><g:HTMLPanel ui:field="splitter" addStyleNames="{style.splitter}"></g:HTMLPanel></g:FocusPanel></g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder> 

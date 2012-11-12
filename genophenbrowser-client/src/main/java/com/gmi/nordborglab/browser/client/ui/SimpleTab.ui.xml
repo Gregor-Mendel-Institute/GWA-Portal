@@ -1,0 +1,40 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style type='com.gmi.nordborglab.browser.client.ui.BaseTab.Style'>
+		.active {
+			border-color:#CCC #CCC white !important;
+
+		}
+		.inactive {
+			border-color:#CCC #CCC #CCC;
+		}
+		
+		.tab_container {
+			margin: 0;
+			padding: 6px 0 0 3px;
+			float:left;
+		}
+		
+		.tab  {
+			background: literal("-webkit-linear-gradient(top,#F3F3F3,white)");
+			background: literal("-moz-linear-gradient(top,#F3F3F3,white)");
+			cursor: pointer;
+			display: inline-block;
+			font: bold 13px Arial;
+			padding: 6px 8px;
+			border-radius: 2px 2px 0 0;
+			border-width: 1px;
+			border-style: solid;
+			margin-bottom: -1px;
+			border-color:#CCC #CCC #CCC;
+		}
+		.active a,.active a:visited,.active a:hover {
+                text-decoration: none;
+                color: #222;
+		}
+	</ui:style>
+	<g:HTMLPanel addStyleNames="{style.tab_container}">
+		<g:Hyperlink ui:field="hyperlink" addStyleNames="{style.tab}">test</g:Hyperlink>
+	</g:HTMLPanel>
+</ui:UiBinder> 

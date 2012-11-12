@@ -1,0 +1,28 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'
+	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+	xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+	ui:generateLocales='default'>
+	
+	<ui:with field="mainRes" type="com.gmi.nordborglab.browser.client.resources.MainResources" />
+
+	<g:LayoutPanel>
+	<g:layer top="0" left="0" right="0" height="10em">
+		<g:FlowPanel>
+		 	<g:SuggestBox ui:field="searchBox"></g:SuggestBox>
+		</g:FlowPanel>
+	</g:layer>
+	<g:layer top="10em" left="0" right="0" bottom="10em">
+		<ed:PermissionEditor ui:field="permissionEditor"></ed:PermissionEditor>
+	</g:layer>
+	<g:layer bottom="0" height="10em" left="0" right="0">
+		<g:FlowPanel>
+			<g:Button ui:field="save" addStyleNames="{mainRes.style.button_blue}" visible="true">Save</g:Button>
+		</g:FlowPanel>	
+	</g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder>

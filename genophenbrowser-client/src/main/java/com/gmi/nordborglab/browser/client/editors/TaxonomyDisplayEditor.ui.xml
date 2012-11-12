@@ -1,0 +1,74 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.container {
+			float: left;
+			max-width: 800px;
+			min-width: 191px;
+			white-space: normal;
+			width: 100%;
+			word-wrap: break-word;
+		}
+		.row {
+			margin: 0;
+			padding: 10px 0;
+			text-align: left;
+		}
+		.label {
+			font-size: 15px;
+			font-weight: normal;
+			line-height: 1.2em;
+			margin-bottom: 0;
+			text-align: right;
+			vertical-align: top;
+			width: 115px;
+			display:inline-block;
+		}
+
+		
+		.value {
+			padding: 0 0 0 13px;
+			vertical-align: top;
+			line-height: 1.39em;
+			display:inline-block;
+			width:280px;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<div class="{style.container}">
+			<div class="{style.row}">
+				<div class="{style.label}">Genus</div>
+				<g:Label ui:field="genus" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">
+				<div class="{style.label}">Species</div>
+				<g:Label ui:field="species" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">
+				<div class="{style.label}">Sub-species</div>
+				<g:Label ui:field="subspecies" addStyleNames="{style.value}" />		
+			</div>
+			<div class="{style.row}">
+				<div class="{style.label}">Sub-taxa</div>
+				<g:Label ui:field="subtaxa" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Race:</div>
+				<g:Label ui:field="race" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Population:</div>
+				<g:Label ui:field="population" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Common name:</div>
+				<g:Label ui:field="commonName" addStyleNames="{style.value}"/>
+			</div>
+			<div class="{style.row}">	
+				<div class="{style.label}">Term-accession:</div>
+				<g:Label ui:field="termAccession" addStyleNames="{style.value}"/>
+			</div>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder> 

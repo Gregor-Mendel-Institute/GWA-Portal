@@ -1,0 +1,120 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+	xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+	ui:generateLocales='default'>
+
+	<ui:with field="mainRes"
+		type="com.gmi.nordborglab.browser.client.resources.MainResources" />
+
+	<ui:style>
+		.container {
+			padding: 19px 19px;
+		}
+		
+		.actionRow {
+			color: #005C9C;
+			font-size: 15px;
+			text-align:center;
+		}
+	</ui:style>
+
+	<g:LayoutPanel>
+		<g:layer top="0" left="0" height="50%" right="0">
+			<g:LayoutPanel>
+				<g:layer top="0" left="0" width="40em" bottom="0">
+					<g:LayoutPanel>
+						<g:layer top="5px" height="40px" left="0" right="0">
+							<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+								<div class="{style.actionRow}">
+									<g:ToggleButton ui:field="edit"
+										addStyleNames="{mainRes.style.button_blue}" visible="false">Edit</g:ToggleButton>
+									<g:ToggleButton ui:field="save"
+										addStyleNames="{mainRes.style.button_grey}" visible="false">Save</g:ToggleButton>
+									<g:Anchor ui:field="cancel" visible="false"
+										addStyleNames="{mainRes.style.cursor}">Cancel</g:Anchor>
+								</div>
+							</g:HTMLPanel>
+						</g:layer>
+						<g:layer top="47px" bottom="0" left="0" right="0">
+							<g:FlowPanel>
+								<ed:TaxonomyDisplayEditor ui:field="taxonomyDisplayEditor"
+									visible="true" />
+								<ed:TaxonomyEditEditor ui:field="taxonomyEditEditor"
+									visible="false" />
+							</g:FlowPanel>
+						</g:layer>
+					</g:LayoutPanel>
+				</g:layer>
+				<g:layer top="0" left="41em" right="0" bottom="0">
+					<g:LayoutPanel>
+						<g:layer top="0" left="0" width="50%" bottom="0">
+							<g:LayoutPanel>
+								<g:layer top="5px" height="40px" left="0" right="0">
+									<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+										<div class="{style.actionRow}">
+											Genotypes
+										</div>
+									</g:HTMLPanel>
+								</g:layer>
+								<g:layer top="40px" bottom="0" left="0" right="0">
+									<g:SimpleLayoutPanel ui:field="upperLeftChartContainer" />
+								</g:layer>
+							</g:LayoutPanel>
+						</g:layer>
+						<g:layer top="0" left="51%" right="0" bottom="0">
+							<g:LayoutPanel>
+								<g:layer top="5px" height="40px" left="0" right="0">
+									<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+										<div class="{style.actionRow}">
+											Accession types
+										</div>
+									</g:HTMLPanel>
+								</g:layer>
+								<g:layer top="40px" bottom="0" left="0" right="0">
+									<g:SimpleLayoutPanel ui:field="upperRightChartContainer" />
+								</g:layer>
+							</g:LayoutPanel>
+						</g:layer>
+					</g:LayoutPanel>
+				</g:layer>
+			</g:LayoutPanel>
+		</g:layer>
+		<g:layer top="50%" left="0" right="0" bottom="0">
+			<g:LayoutPanel>
+				<g:layer top="0" left="0" width="40em" bottom="0">
+					<g:LayoutPanel>
+						<g:layer top="0" height="40px" left="0" right="0">
+							<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+								<div class="{style.actionRow}">
+									Stock generation type
+								</div>
+							</g:HTMLPanel>
+						</g:layer>
+						<g:layer top="40px" bottom="0" left="0" right="0">
+							<g:SimpleLayoutPanel ui:field="lowerLeftChartContainer" />
+						</g:layer>
+					</g:LayoutPanel>
+				</g:layer>
+				<g:layer top="0" left="41em" bottom="0" right="0">
+					<g:LayoutPanel>
+						<g:layer top="0" height="40px" left="0" right="0">
+							<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+								<div class="{style.actionRow}">
+								Geographic distribution of accessions
+								</div>
+							</g:HTMLPanel>
+						</g:layer>
+						<g:layer top="40px" bottom="0" left="0" right="0">
+							<g:SimpleLayoutPanel ui:field="lowerChartContainer" />
+						</g:layer>
+					</g:LayoutPanel>
+				</g:layer>
+			</g:LayoutPanel>
+		</g:layer>
+	</g:LayoutPanel>
+
+</ui:UiBinder>

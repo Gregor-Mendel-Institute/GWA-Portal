@@ -1,0 +1,18 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+	>
+	
+	<ui:style>
+		
+	</ui:style>
+	<g:LayoutPanel>
+		<g:layer top="0" bottom="10em" left="0" right="0">
+			<c:DataGrid ui:field="dataGrid" />
+		</g:layer>
+		<g:layer bottom="0" height="10em" left="0" right="0">
+			<g:CheckBox ui:field="isEntriesInheriting" text="Inherit permissions from higher levels"/>
+		</g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder> 

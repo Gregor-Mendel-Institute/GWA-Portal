@@ -1,0 +1,68 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:e="urn:import:com.google.gwt.editor.ui.client"
+	xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui">
+	<ui:style>
+	    .container {
+			margin-left:10px;
+		}
+		.row {
+			margin: 0;
+			padding: 10px 0;
+			text-align: left;
+		}
+		.label {
+			font-size: 15px;
+			font-weight: normal;
+			line-height: 1.2em;
+			margin-bottom: 0;
+			text-align: right;
+			vertical-align: top;
+			width: 90px;
+			display:inline-block;
+		}
+
+		
+		.value {
+			padding: 0 0 0 13px;
+			width: 441px;
+			vertical-align: top;
+			line-height: 1.39em;
+			display:inline-block;
+		}
+		.title {
+			font-size: 11px;
+			font-weight: bold;
+			color: #333;
+			border-bottom: 1px solid #DDD;
+			padding-bottom: 3px;
+			margin-bottom: 16px;
+		}
+	</ui:style>
+	<g:HTMLPanel addStyleNames="{style.container}">
+		<div >
+			<div class="{style.title}">STUDY INFO</div>
+			<div class="{style.row}">
+				<gui:ValidationValueBoxEditorDecorator ui:field="name" label="Name">
+					<gui:valuebox>
+						<g:TextBox visibleLength="20"/>
+					</gui:valuebox>
+				</gui:ValidationValueBoxEditorDecorator>
+			</div>
+			<div class="{style.row}">
+				<gui:ValidationValueBoxEditorDecorator ui:field="producer" label="Producer" helpLabel="Optional">
+				   <gui:valuebox>
+						<g:TextBox visibleLength="60"/>
+					</gui:valuebox>
+				</gui:ValidationValueBoxEditorDecorator>
+			</div>
+			<div class="{style.row}">
+				<gui:ValidationValueListEditorDecorator ui:field="protocol" label="Protocol" />
+			</div>
+			<div class="{style.row}">
+				<gui:ValidationValueListEditorDecorator ui:field="genotype" label="Genotype" />
+			</div>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder> 
