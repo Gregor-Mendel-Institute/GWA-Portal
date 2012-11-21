@@ -14,4 +14,5 @@ public interface CustomRequestFactory extends RequestFactory{
 	TaxonomyRequest taxonomyRequest();
 	PassportRequest passportRequest();
 	StockRequest stockRequest();
+	SearchRequest searchRequest();
 }

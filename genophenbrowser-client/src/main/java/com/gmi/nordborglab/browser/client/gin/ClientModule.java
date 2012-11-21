@@ -43,6 +43,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.taxonomy.Taxon
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.HomePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.dashboard.DashboardPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.main.SearchPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.UserInfoPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.PermissionDetailView;
@@ -90,6 +91,7 @@ import com.gmi.nordborglab.browser.client.mvp.view.germplasm.taxonomy.TaxonomyDe
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportListView;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.stock.StockDetailView;
+import com.gmi.nordborglab.browser.client.mvp.view.main.SearchView;
 
 public class ClientModule extends AbstractPresenterModule {
 
@@ -231,6 +233,9 @@ public class ClientModule extends AbstractPresenterModule {
 		bindPresenter(StockDetailPresenter.class,
 				StockDetailPresenter.MyView.class, StockDetailView.class,
 				StockDetailPresenter.MyProxy.class);
+
+		bindPresenterWidget(SearchPresenter.class,
+				SearchPresenter.MyView.class, SearchView.class);
 	}
 
 	@Provides

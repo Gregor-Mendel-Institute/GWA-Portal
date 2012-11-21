@@ -1,49 +1,205 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-	xmlns:g='urn:import:com.google.gwt.user.client.ui'
-	xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
+	xmlns:b="urn:import:com.github.gwtbootstrap.client.ui" xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
 	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
 	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
 	ui:generateLocales='default'>
-	
-	<ui:with type="com.gmi.nordborglab.browser.client.NameTokens" field="nameTokens"></ui:with>
-	<ui:style>
-	.titleHeader {
-		background-color: #f9fff4;
-		border-bottom: 1px solid #E5E5E5;
-		padding:10px;
-	}
-	.titleLabel {
-		font-weight: bold;
-		font-size: 150%;
-	}
-	.breadcrumbs {
-		padding-top:5px;
 
-	}
-	</ui:style>
-	<g:DockLayoutPanel  unit="EM" >
-	<g:west size="17.923">
-		<gui:VerticalNavSplitLayoutPanel>
-			<g:HTMLPanel>
-				<g:InlineHyperlink targetHistoryToken="{nameTokens.getExperiments}">Experiments</g:InlineHyperlink>
-			</g:HTMLPanel>
-		</gui:VerticalNavSplitLayoutPanel>
-	</g:west>
-	<g:center>
-		<g:DockLayoutPanel unit="EM">
-			<g:north size="4.6">
-				<g:FlowPanel addStyleNames="{style.titleHeader}">
-					<g:Label ui:field="titleLabel" addStyleNames="{style.titleLabel}" />
-					<g:FlowPanel ui:field="breadcrumbs" addStyleNames="{style.breadcrumbs}"></g:FlowPanel>
-				</g:FlowPanel>
-			</g:north>
-			<g:center>
-				<g:SimpleLayoutPanel ui:field="container" />
-			</g:center>
-		</g:DockLayoutPanel>
-		
-	</g:center>
+	<ui:with type="com.gmi.nordborglab.browser.client.NameTokens"
+		field="nameTokens"></ui:with>
+	<ui:style
+		type="com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView.MyStyle">
+			.titleHeader {
+				background-color: #f9fff4;
+				border-bottom: 1px solid #E5E5E5;
+				padding: 10px;
+			}
+			
+			.titleLabel {
+				font-weight: bold;
+				font-size: 150%;
+			}
+			
+			.breadcrumbs {
+				padding-top: 5px;
+			}
+			
+			.header_section {
+				width: 100%;
+				line-height: 24px;
+				height: 24px;
+				background-color: #F9F9F9;
+				display: inline-block;
+				padding: 10px 0;
+				cursor: pointer;
+				outline: 0;
+				zoom: 1;
+				font-size: 13px;
+				color: #444;
+				-moz-transition: all 130ms ease-in-out;
+				-webkit-transition: all 130ms ease-in-out;
+				transition: all 130ms ease-in-out;
+				text-decoration: none;
+			}
+			
+			.header_section:hover {
+				background-color: #EFEFEF;
+				color: #444;
+				text-decoration: none;
+			}
+			
+			.header_section_active {
+				border-left: 4px solid #35AA47 !important;
+			}
+			
+			.icon_header {
+				font-family: EntypoRegular;
+				font-size: 38px;
+				float: left;
+				margin-right: 10px;
+				margin-left: 6px;
+			}
+			
+			.accordion_group_top {
+				border-top: 1px solid #CCC !important;
+			}
+			
+			@external .accordion-group;
+			.accordion-group {
+				border: 1px solid #CCC;
+				border-top: 0;
+				-webkit-border-radius: 0px;
+				border-radius: 0px;
+				border-right: 0px;
+				border-left: 0px;
+				margin-bottom: 0px !important;
+			}
+			
+			@external .accordion-toggle;
+			.accordion-toggle {
+				padding: 0 !important;
+			}
+			
+			@external .accordion-inner;
+			.accordion-inner {
+				padding: 0 !important;
+				border-top: 1px solid #ccc !important;
+			}
+			
+			@external .accordion-heading;
+			.accordion-heading {
+				border-left: 4px solid transparent;
+			}
+			
+			.submenu_container {
+				padding: 0 8px 2px 40px;
+				margin: 0;
+			}
+			
+			.submenu_item {
+				list-style: none;
+				margin-top: 4px;
+				font-size: 13px;
+				padding: 6px 0 6px 8px;
+			}
+			
+			.submenu_item a {
+				cursor: pointer;
+				color: #444 !important;
+			}
+			
+			.subitem_active {
+				font-weight: bold;
+			}
+		</ui:style>
+	<g:DockLayoutPanel unit="EM">
+		<g:west size="17.923">
+			<gui:VerticalNavSplitLayoutPanel>
+				<g:LayoutPanel>
+					<g:layer top="0" left="0" height="70px" right="0">
+						<g:SimpleLayoutPanel ui:field="searchContainer" />
+					</g:layer>
+					<g:layer top="70px" left="0" right="0" bottom="0">
+						<b:Accordion>
+							<b:AccordionGroup addStyleNames="{style.accordion_group_top}"
+								ui:field="experimentAccGroup">
+								<b:customTrigger>
+									<g:HTMLPanel addStyleNames="{style.header_section}">
+										<div class="{style.icon_header}">&#128255;</div>
+										<span>Experiments</span>
+									</g:HTMLPanel>
+								</b:customTrigger>
+								<base:UnorderedList addStyleNames="{style.submenu_container}">
+									<base:ListItem addStyleNames="{style.submenu_item}">
+										<g:InlineHyperlink text="Overview" 
+											targetHistoryToken="{nameTokens.getExperiments}"></g:InlineHyperlink>
+									</base:ListItem>
+								</base:UnorderedList>
+
+							</b:AccordionGroup>
+							<b:AccordionGroup ui:field="phenotypeAccGroup">
+								<b:customTrigger>
+									<g:HTMLPanel addStyleNames="{style.header_section}">
+										<div class="{style.icon_header}">&#10002;</div>
+										<span>Phenotypes</span>
+									</g:HTMLPanel>
+								</b:customTrigger>
+								<base:UnorderedList addStyleNames="{style.submenu_container}">
+									<base:ListItem addStyleNames="{style.submenu_item}">
+										<g:InlineHyperlink text="Overview" 
+											targetHistoryToken="{nameTokens.getExperiments}"></g:InlineHyperlink>
+									</base:ListItem>
+								</base:UnorderedList>
+							</b:AccordionGroup>
+							<b:AccordionGroup ui:field="studyAccGroup">
+								<b:customTrigger>
+									<g:HTMLPanel addStyleNames="{style.header_section}">
+										<div class="{style.icon_header}">&#128214;</div>
+										<span>Studies</span>
+									</g:HTMLPanel>
+								</b:customTrigger>
+								<base:UnorderedList addStyleNames="{style.submenu_container}">
+									<base:ListItem addStyleNames="{style.submenu_item}">
+										<g:InlineHyperlink text="Overview" 
+											targetHistoryToken="{nameTokens.getExperiments}"></g:InlineHyperlink>
+									</base:ListItem>
+								</base:UnorderedList>
+							</b:AccordionGroup>
+							<b:AccordionGroup ui:field="ontologiesAccGroup">
+								<b:customTrigger>
+									<g:HTMLPanel addStyleNames="{style.header_section}">
+										<div class="{style.icon_header}">&#128362;</div>
+										<span>Ontologies</span>
+									</g:HTMLPanel>
+								</b:customTrigger>
+								<base:UnorderedList addStyleNames="{style.submenu_container}">
+									<base:ListItem addStyleNames="{style.submenu_item}">
+										<g:InlineHyperlink text="Overview" 
+											targetHistoryToken="{nameTokens.getExperiments}"></g:InlineHyperlink>
+									</base:ListItem>
+								</base:UnorderedList>
+							</b:AccordionGroup>
+						</b:Accordion>
+					</g:layer>
+				</g:LayoutPanel>
+
+			</gui:VerticalNavSplitLayoutPanel>
+		</g:west>
+		<g:center>
+			<g:DockLayoutPanel unit="EM">
+				<g:north size="4.6">
+					<g:FlowPanel addStyleNames="{style.titleHeader}">
+						<g:Label ui:field="titleLabel" addStyleNames="{style.titleLabel}" />
+						<g:FlowPanel ui:field="breadcrumbs" addStyleNames="{style.breadcrumbs}"></g:FlowPanel>
+					</g:FlowPanel>
+				</g:north>
+				<g:center>
+					<g:SimpleLayoutPanel ui:field="container" />
+				</g:center>
+			</g:DockLayoutPanel>
+
+		</g:center>
 	</g:DockLayoutPanel>
 </ui:UiBinder>

@@ -25,5 +25,8 @@
 	<!-- Imports datasource configuration -->
 	<import resource="spring-data.xml"/> 
 	
+	<!-- Imports datasource configuration -->
+	<import resource="spring-elasticsearch.xml"/>
+	
 </beans>
 	

@@ -79,6 +79,8 @@
             <source>1.6</source>
             <target>1.6</target>
           </configuration>
+	<dependencies>
+    </dependencies>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

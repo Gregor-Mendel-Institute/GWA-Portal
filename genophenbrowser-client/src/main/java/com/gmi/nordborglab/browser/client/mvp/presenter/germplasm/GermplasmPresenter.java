@@ -8,8 +8,10 @@ import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.HelperManager;
 import com.gmi.nordborglab.browser.client.manager.TaxonomyManager;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.main.SearchPresenter;
 import com.gmi.nordborglab.browser.shared.proxy.BreadcrumbItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
 import com.google.common.collect.ImmutableList;
 import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.inject.Inject;
@@ -46,6 +48,7 @@ public class GermplasmPresenter extends
 	
 	@ContentSlot
 	public static final Type<RevealContentHandler<?>> TYPE_SetMainContent = new Type<RevealContentHandler<?>>();
+	public static final Object TYPE_SearchPresenterContent = new Object();
 	
 	private final PlaceManager placeManager;
 	private final HelperManager helperManager;
@@ -55,13 +58,16 @@ public class GermplasmPresenter extends
 	protected Long titleId = null;
 	private Long selectedTaxonomyId = null;
 	private Long alleleAssayId = null;
-	
+	private final SearchPresenter searchPresenter;
 
 	@Inject
 	public GermplasmPresenter(final EventBus eventBus, final MyView view,
 			final MyProxy proxy,final PlaceManager placeManager, 
-			final HelperManager helperManager, final TaxonomyManager taxonomyManager) {
+			final HelperManager helperManager, final TaxonomyManager taxonomyManager, final SearchPresenter searchPresenter) {
 		super(eventBus, view, proxy);
+		this.searchPresenter = searchPresenter;
+		searchPresenter.setCategory(CATEGORY.GERMPLASM);
+		searchPresenter.setMinCharSize(1);
 		this.placeManager = placeManager;
 		this.helperManager = helperManager;
 		this.taxonomyManager = taxonomyManager;
@@ -75,6 +81,12 @@ public class GermplasmPresenter extends
 	@Override
 	protected void onBind() {
 		super.onBind();
+		setInSlot(TYPE_SearchPresenterContent, searchPresenter);
+	}
+	@Override 
+	protected void onUnbind() {
+		super.onUnbind();
+		clearSlot(TYPE_SearchPresenterContent);
 	}
 
 	@Override

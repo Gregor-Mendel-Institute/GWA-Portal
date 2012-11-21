@@ -1,19 +1,21 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity;
 
 import java.util.List;
-
+import com.gwtplatform.mvp.client.View;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.manager.HelperManager;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.main.SearchPresenter;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView.MENU_ITEM;
 import com.gmi.nordborglab.browser.shared.proxy.BreadcrumbItemProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
 import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
 import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.gwtplatform.mvp.client.Presenter;
-import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
@@ -31,6 +33,7 @@ public class DiversityPresenter extends
 		void clearBreadcrumbs(int size);
 		void setBreadcrumbs(int index, String title,String historyToken);
 		void setTitle(String title);
+		void setActiveMenuItem(MENU_ITEM menuItem, PlaceRequest request);
 	}
 	
 
@@ -40,17 +43,22 @@ public class DiversityPresenter extends
 	
 	@ContentSlot
 	public static final Type<RevealContentHandler<?>> TYPE_SetMainContent = new Type<RevealContentHandler<?>>();
+	public static final Object TYPE_SearchPresenterContent = new Object();
 
 	private final PlaceManager placeManager;
 	private final HelperManager helperManager;
 	protected String titleType = null;
 	protected Long titleId = null;
 	protected List<TaxonomyProxy> taxonomies = null;
+	private final SearchPresenter searchPresenter;
 
 	@Inject
 	public DiversityPresenter(final EventBus eventBus, final MyView view,
-			final MyProxy proxy, final PlaceManager placeManager, final HelperManager helperManager) {
+			final MyProxy proxy, final PlaceManager placeManager, 
+			final HelperManager helperManager, final SearchPresenter searchPresenter) {
 		super(eventBus, view, proxy);
+		this.searchPresenter = searchPresenter;
+		searchPresenter.setCategory(CATEGORY.DIVERSITY);
 		this.placeManager = placeManager;
 		this.helperManager = helperManager;
 	}
@@ -63,6 +71,13 @@ public class DiversityPresenter extends
 	@Override
 	protected void onBind() {
 		super.onBind();
+		setInSlot(TYPE_SearchPresenterContent, searchPresenter);
+	}
+	
+	@Override 
+	protected void onUnbind() {
+		super.onUnbind();
+		clearSlot(TYPE_SearchPresenterContent);
 	}
 	
 	@Override
@@ -78,22 +93,33 @@ public class DiversityPresenter extends
 		PlaceRequest request = placeManager.getCurrentPlaceRequest();
 		String type = null;
 		String title ="Experiments";
-		if (request.matchesNameToken(NameTokens.experiments)) 
+		String subItem = null;
+		if (request.matchesNameToken(NameTokens.experiments)) {
 			getView().clearBreadcrumbs(0);
+			getView().setActiveMenuItem(MENU_ITEM.EXPERIMENT, request);
+		}
 		if (request.matchesNameToken(NameTokens.experiment) || request.matchesNameToken(NameTokens.phenotypes) ) {
 			type = "experiment";
+			subItem = null;
+			getView().setActiveMenuItem(MENU_ITEM.EXPERIMENT, request);
 		}
 		else if (request.matchesNameToken(NameTokens.phenotype) || request.matchesNameToken(NameTokens.obsunit) || request.matchesNameToken(NameTokens.studylist)) {
 			title = "Phenotype";
 			type = "phenotype";
+			subItem = null;
+			getView().setActiveMenuItem(MENU_ITEM.PHENOTYPE, request);
 		}
 		else if(request.matchesNameToken(NameTokens.study)) {
 			title = "Study";
 			type ="study";
+			subItem = null;
+			getView().setActiveMenuItem(MENU_ITEM.STUDY, request);
 		}
 		else if ( request.matchesNameToken(NameTokens.studywizard)) {
 			title = "Study";
 			type = "studywizard";
+			subItem = null;
+			getView().setActiveMenuItem(MENU_ITEM.STUDY, request);
 		}
 		getView().setTitle(title);
 		Long id = null;

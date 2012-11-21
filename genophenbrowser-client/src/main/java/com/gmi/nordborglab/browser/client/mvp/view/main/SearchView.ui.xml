@@ -1,0 +1,128 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+	ui:generateLocales='default'>
+	<ui:style>
+		@external .hlt1;
+		.hlt1 {
+			font-weight: bold;
+			font-style: normal;
+		}
+		
+		.search_container {
+			margin: 20px 11px 18px 5px;
+		}
+		
+		.search_box {
+			width: 84%;
+		}
+		
+		@external .searchBoxPopup;
+		@external .alt;
+		.searchBoxPopup {
+			z-index: 999999 !important;
+			width: 400px;
+			border: 1px solid #BBB;
+			border-color: #BBB #6F6F6F #6F6F6F #BBB;
+			border-top: 0;
+			-moz-box-shadow: 3px 3px 8px #444;
+			-webkit-box-shadow: 3px 3px 8px #444;
+			-moz-border-radius-topright: 5px;
+			-moz-border-radius-bottomright: 5px;
+			-moz-border-radius-bottomleft: 5px;
+			-webkit-border-top-right-radius: 5px;
+			-webkit-border-bottom-right-radius: 5px;
+			-webkit-border-bottom-left-radius: 5px;
+			background: white;
+		}
+		
+		.searchBoxPopup th {
+			width: 100px;
+			border: 0;
+			border-right: 1px solid #DDD;
+			text-align: right;
+			vertical-align: top;
+			margin: 0;
+			padding:0;
+		}
+		
+		.searchBoxPopup h3 {
+			padding: 2px 4px 0 4px;
+			font-size: 11px;
+			font-weight: normal;
+			color: #888;
+			margin: 0;
+			line-height: 11px;
+		}
+		
+		.searchBoxPopup td {
+			vertical-align: top;
+			border-top: 1px solid #DDD;
+			width: 299px;
+			margin: 0;
+			padding: 0;
+		}
+		
+		.searchBoxPopup tr.alt td {
+			background: #F4F4F4;
+		}
+		
+		.searchBoxPopup ul {
+			margin: 0;
+			padding: 0;
+		}
+		
+		.searchBoxPopup li {
+			list-style: none;
+			margin: 0;
+			padding: 0 10px;
+			vertical-align: top;
+			cursor: pointer;
+		}
+		
+		@external .searchBoxPopup_term;
+		.searchBoxPopup_term {
+			float: right;
+			display: block;
+			padding-right: 4px;
+			font-size:11px;
+			color: #0187C5;
+		}
+		.searchBoxPopup_term i{
+			font-size:13px;
+			padding-right:5px;
+			padding-left:5px;
+		}
+		
+		@external .searchBoxPopup_nohits;
+		.searchBoxPopup_nohits {
+			margin-left: 100px;
+			border-left: 1px solid #DDD;
+			background: #FBFBFB;
+			border-bottom: 0;
+			padding-bottom: 0;
+			color: #888;
+			text-align:right;
+			margin-bottom:0;	
+			padding-right:7px;
+			font-size:12px;
+		}
+		
+		.searchBoxPopup li:hover {
+			background-color: #5297FF;
+			color: white;
+			text-decoration: none;
+		}
+	</ui:style>
+	<g:FlowPanel addStyleNames="{style.search_container}">
+		<b:InputAddOn prependIcon="SEARCH">
+			<g:SuggestBox ui:field="suggestBox" addStyleNames="{style.search_box}">
+				<!-- <b:TextBox placeholder="type to search..." addStyleNames="{style.search_box}" 
+					/> -->
+			</g:SuggestBox>
+		</b:InputAddOn>
+	</g:FlowPanel>
+</ui:UiBinder>
