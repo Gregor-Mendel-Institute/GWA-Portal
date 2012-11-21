@@ -91,6 +91,7 @@ public class PhenotypeDetailPresenter
 	protected final CurrentUser currentUser;
 	protected final Receiver<PhenotypeProxy> receiver;
 	private ImmutableSortedMap<Double, Integer> histogramData;
+	private Set<StatisticTypeProxy> statisticTypes;
 	protected HashMap<StatisticTypeProxy, List<TraitProxy>> cache = new HashMap<StatisticTypeProxy, List<TraitProxy>>();
 			
 	private Multiset<String> geochartData;
@@ -156,7 +157,7 @@ public class PhenotypeDetailPresenter
 		getView().setState(State.DISPLAYING,currentUser.getPermissionMask(phenotype.getUserPermission()));
 		getProxy().getTab().setTargetHistoryToken(placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest()));
 		LoadingIndicatorEvent.fire(this, false);
-		getView().setPhenotypePieChartData(phenotype.getStatisticTypes());
+		getView().setPhenotypePieChartData(statisticTypes);
 		getView().setGeoChartData(null);
 		getView().setHistogramChartData(null);
 		getView().setPhenotypExplorerData(null);
@@ -172,12 +173,14 @@ public class PhenotypeDetailPresenter
 			@Override
 			public void onSuccess(PhenotypeProxy phen) {
 				phenotype = phen;
+				statisticTypes = phen.getStatisticTypes();
 				fireLoadEvent = true;
 				getProxy().manualReveal(PhenotypeDetailPresenter.this);
 			}
 
 			@Override
 			public void onFailure(ServerFailure error) {
+				statisticTypes = null;
 				fireEvent(new LoadingIndicatorEvent(false));
 				getProxy().manualRevealFailed();
 				placeManager.revealPlace(new PlaceRequest(NameTokens.experiments));
@@ -187,6 +190,7 @@ public class PhenotypeDetailPresenter
 			Long phenotypeId = Long.valueOf(placeRequest.getParameter("id",
 					null));
 			if (phenotype == null || !phenotype.getId().equals(phenotypeId)) {
+				statisticTypes = null;
 				cache.clear();
 				phenotypeManager.findOne(receiver, phenotypeId);
 			} else {
@@ -204,7 +208,7 @@ public class PhenotypeDetailPresenter
 		getView().setState(State.EDITING,getPermission());
 		PhenotypeRequest ctx = phenotypeManager.getContext();
 		getView().getEditDriver().edit(phenotype, ctx);
-		List<String> paths = ImmutableList.<String>builder().addAll(Arrays.asList(getView().getEditDriver().getPaths())).add("userPermission").build();
+		List<String> paths = ImmutableList.<String>builder().addAll(Arrays.asList(getView().getEditDriver().getPaths())).add("userPermission").add("statisticTypes").build();
 		ctx.save(phenotype).with(paths.toArray(new String[0])).to(receiver);
 	}
 
@@ -236,6 +240,7 @@ public class PhenotypeDetailPresenter
 	public void onLoadPhenotype(LoadPhenotypeEvent event) {
 		if (phenotype != event.getPhenotype()) {
 			cache.clear();
+			statisticTypes = phenotype.getStatisticTypes();
 		}
 		phenotype = event.getPhenotype();
 		PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id",phenotype.getId().toString());
@@ -305,7 +310,7 @@ public class PhenotypeDetailPresenter
 			getView().drawCharts();
 		}
 		else {
-			final StatisticTypeProxy type = Iterables.get(phenotype.getStatisticTypes(),index);
+			final StatisticTypeProxy type = Iterables.get(statisticTypes,index);
 			List<TraitProxy> cachedTraits = cache.get(type);
 			if (cachedTraits != null) 
 			{
