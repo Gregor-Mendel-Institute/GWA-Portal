@@ -40,4 +40,6 @@ public interface StudyProxy extends EntityProxy {
 	public void setTraits(Set<TraitProxy> traits);
 	public Set<TraitProxy> getTraits();
 	
+	public PhenotypeProxy getPhenotype();
+	
 }
