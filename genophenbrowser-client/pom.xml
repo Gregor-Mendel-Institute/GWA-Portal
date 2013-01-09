@@ -25,6 +25,16 @@
 		<runTarget>http://localhost:8080/</runTarget>
 		<hibernate-validator.version>4.1.0.Final</hibernate-validator.version>
 		<jsr305.version>2.0.1</jsr305.version>
+		<gwtp.version>0.7</gwtp.version>
+		<gin.version>2.0.0</gin.version>
+		<gwtquery.version>1.2.0</gwtquery.version>
+		<jukito.version>1.1</jukito.version>
+		<gwtchosen.version>1.1.0</gwtchosen.version>
+		<gwtbootstrap.version>2.1.1.0-SNAPSHOT</gwtbootstrap.version>
+		<gwasgeneviewer.version>0.4.12-SNAPSHOT</gwasgeneviewer.version>
+		<gwtmaps.version>3.8.0-beta2</gwtmaps.version>
+		<geochart.version>0.1.4-SNAPSHOT</geochart.version>
+		<javax.validation.version>1.0.0.GA</javax.validation.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -61,117 +71,204 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava-gwt</artifactId>
-			<version>${guava.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jukito</groupId>
 			<artifactId>jukito</artifactId>
-			<version>1.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.gwtquery</groupId>
 			<artifactId>gwtquery</artifactId>
-			<version>1.2.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.watopi</groupId>
 			<artifactId>gwtchosen</artifactId>
-			<version>1.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.gwtplatform</groupId>
 			<artifactId>gwtp-mvp-client</artifactId>
-			<version>${gwtp.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Dispatch component -->
 		<dependency>
 			<groupId>com.gwtplatform</groupId>
 			<artifactId>gwtp-dispatch-client</artifactId>
-			<version>${gwtp.version}</version>
 			<scope>provided</scope> <!-- Remove for GWTP 0.5.1 and earlier -->
 		</dependency>
 		<!-- Tester component -->
 		<dependency>
 			<groupId>com.gwtplatform</groupId>
 			<artifactId>gwtp-tester</artifactId>
-			<version>${gwtp.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt.inject</groupId>
 			<artifactId>gin</artifactId>
-			<version>${gin.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.gwtbootstrap</groupId>
 			<artifactId>gwt-bootstrap</artifactId>
-			<version>2.1.1.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>at.gmi.nordborglab.widgets</groupId>
 			<artifactId>gwasgeneviewer</artifactId>
-			<version>0.4.12-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt.maps</groupId>
 			<artifactId>gwt-maps-api-v3</artifactId>
-			<version>3.8.0-beta2</version>
 		</dependency>
 		<dependency>
 			<groupId>at.gmi.nordborglab.widgets</groupId>
 			<artifactId>geochart</artifactId>
-			<version>0.1.4-SNAPSHOT</version>
+
 		</dependency>
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
-			<version>1.0.0.GA</version>
 			<classifier>sources</classifier>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
-			<version>1.0.0.GA</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>${hibernate-validator.version}</version>
 			<classifier>sources</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>${hibernate-validator.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
-			<version>${jsr305.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>${logback.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.2</version>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
 		</dependency>
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava-gwt</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jukito</groupId>
+				<artifactId>jukito</artifactId>
+				<version>${jukito.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.googlecode.gwtquery</groupId>
+				<artifactId>gwtquery</artifactId>
+				<version>${gwtquery.version}</version>
+				<scope>provided</scope>
+
+			</dependency>
+			<dependency>
+				<groupId>com.watopi</groupId>
+				<artifactId>gwtchosen</artifactId>
+				<version>${gwtchosen.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.gwtplatform</groupId>
+				<artifactId>gwtp-mvp-client</artifactId>
+				<version>${gwtp.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.gwtplatform</groupId>
+				<artifactId>gwtp-dispatch-client</artifactId>
+				<version>${gwtp.version}</version>
+				<scope>provided</scope> <!-- Remove for GWTP 0.5.1 and earlier -->
+			</dependency>
+			<dependency>
+				<groupId>com.gwtplatform</groupId>
+				<artifactId>gwtp-tester</artifactId>
+				<version>${gwtp.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.google.gwt.inject</groupId>
+				<artifactId>gin</artifactId>
+				<version>${gin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.gwtbootstrap</groupId>
+				<artifactId>gwt-bootstrap</artifactId>
+				<version>${gwtbootstrap.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>at.gmi.nordborglab.widgets</groupId>
+				<artifactId>gwasgeneviewer</artifactId>
+				<version>${gwasgeneviewer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.gwt.maps</groupId>
+				<artifactId>gwt-maps-api-v3</artifactId>
+				<version>${gwtmaps.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>at.gmi.nordborglab.widgets</groupId>
+				<artifactId>geochart</artifactId>
+				<version>${geochart.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>${javax.validation.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>${javax.validation.version}</version>
+				<classifier>sources</classifier>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>${hibernate-validator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>${hibernate-validator.version}</version>
+				<classifier>sources</classifier>
+			</dependency>
+			<dependency>
+				<groupId>com.google.code.findbugs</groupId>
+				<artifactId>jsr305</artifactId>
+				<version>${jsr305.version}</version>
+			</dependency>
+		</dependencies>
+
+	</dependencyManagement>
 
 	<build>
 		<plugins>
@@ -201,6 +298,7 @@
 				<plugin>
 					<groupId>org.apache.tomcat.maven</groupId>
 					<artifactId>tomcat6-maven-plugin</artifactId>
+					<version>${maven.tomcat6.plugin}</version>
 					<configuration>
 						<skip>true</skip>
 					</configuration>
@@ -208,6 +306,7 @@
 				<plugin>
 					<groupId>org.apache.tomcat.maven</groupId>
 					<artifactId>tomcat7-maven-plugin</artifactId>
+					<version>${maven.tomcat7.plugin}</version>
 					<configuration>
 						<skip>true</skip>
 					</configuration>
