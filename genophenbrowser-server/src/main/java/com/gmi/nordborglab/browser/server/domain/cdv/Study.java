@@ -1,10 +1,8 @@
 package com.gmi.nordborglab.browser.server.domain.cdv;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.AttributeOverride;
@@ -23,7 +21,9 @@ import javax.validation.constraints.NotNull;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
+import com.google.common.collect.Iterables;
 
 @Entity
 @Table(name = "cdv_g2p_study", schema = "cdv")
@@ -49,6 +49,10 @@ public class Study extends BaseEntity {
 	private Boolean isdone=false;
 	
 	@Transient
+	private TraitUom phenotype;
+	
+	
+	@Transient
 	private CustomAccessControlEntry userPermission = new CustomAccessControlEntry(0L, 0, true);
 	
 	@Transient 
@@ -60,7 +64,13 @@ public class Study extends BaseEntity {
 		return Collections.unmodifiableSet(traits);
 	}
 	
-
+	public TraitUom getPhenotype() {
+		if (phenotype == null) {
+			if (getTraits().size() > 0)
+				phenotype = Iterables.get(getTraits(),0).getTraitUom();
+		}
+		return phenotype;
+	}
 
 	public String getName() {
 		return name;
