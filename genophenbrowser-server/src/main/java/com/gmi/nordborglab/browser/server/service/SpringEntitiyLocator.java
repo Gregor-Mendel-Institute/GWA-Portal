@@ -1,15 +1,14 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
+import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
+import com.google.web.bindery.requestfactory.shared.Locator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
-import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
-import com.google.web.bindery.requestfactory.shared.Locator;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 
 public class SpringEntitiyLocator extends Locator<BaseEntity,Long>{
@@ -70,8 +69,7 @@ public class SpringEntitiyLocator extends Locator<BaseEntity,Long>{
 
 	@Override
 	public boolean isLive(BaseEntity domainObject) {
-		// TODO Auto-generated method stub
-		return super.isLive(domainObject);
+		return true;
 	}
 	
 }
