@@ -1,14 +1,13 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import com.gmi.nordborglab.browser.client.ui.HyperlinkCell;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.google.gwt.cell.client.DateCell;
-import com.google.gwt.cell.client.SelectionCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 
@@ -91,6 +90,26 @@ public static class NameColumn extends Column<StudyProxy,String[]> {
 			return object.getProtocol().getAnalysisMethod();
 		}
 		
+	}
+	
+	public static class PhenotypeColumn extends TextColumn<StudyProxy> {
+		@Override
+		public String getValue(StudyProxy object) {
+			String phenotype = null;
+			if (object.getPhenotype() != null)
+				phenotype = object.getPhenotype().getLocalTraitName();
+			return phenotype;
+		}
+	}
+	
+	public static class ExperimentColumn extends TextColumn<StudyProxy> {
+		@Override
+		public String getValue(StudyProxy object) {
+			String experiment = null;
+			if (object.getPhenotype().getExperiment() != null)
+				experiment  = object.getPhenotype().getExperiment().getName();
+			return experiment;
+		}
 	}
 
 
