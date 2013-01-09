@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.shared.proxy;
 
 import java.util.Set;
 
+import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.web.bindery.requestfactory.shared.EntityProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
 
@@ -29,6 +30,8 @@ public interface PhenotypeProxy extends EntityProxy{
 	String getToAccession();
 	void setToAccession(String toAccession);
 	
+	TermProxy getTraitOntologyTerm();
+	
 	String getEoAccession();
 	void setEoAccession(String eoAccession);
 
@@ -39,5 +42,7 @@ public interface PhenotypeProxy extends EntityProxy{
 	Long getNumberOfObsUnits();
 
 	Long getNumberOfStudies();
+
+	ExperimentProxy getExperiment();
 	
 }

@@ -16,7 +16,10 @@ import javax.persistence.Transient;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.acl.AclTraitUomIdentity;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
+import com.gmi.nordborglab.jpaontology.model.Term;
+import com.google.common.collect.Iterables;
 
 @Entity
 @Table(name="div_trait_uom",schema="phenotype")
@@ -39,11 +42,17 @@ public class TraitUom extends BaseEntity {
 	private String to_accession;
 	private String eo_accession;
 	
+	@Transient 
+	private Experiment experiment;
+	
 	@Transient
 	private Long numberOfObsUnits;
 	
 	@Transient
 	private Long numberOfStudies;
+	
+	@Transient 
+	private Term traitOntologyTerm;
 	
 	@Transient
 	private CustomAccessControlEntry userPermission = null;
@@ -57,6 +66,15 @@ public class TraitUom extends BaseEntity {
 	
 	public AclTraitUomIdentity getAcl() {
 		return acl;
+	}
+	
+	public Experiment getExperiment() {
+		///TODO change database schema for more efficient access
+		if (experiment == null) {
+			Trait trait = Iterables.get(traits, 0);
+			experiment = trait.getObsUnit().getExperiment();
+		}
+		return experiment;
 	}
 	
 	public Set<Trait> getTraits() {
@@ -131,5 +149,13 @@ public class TraitUom extends BaseEntity {
 
 	public void setNumberOfStudies(Long numberOfStudies) {
 		this.numberOfStudies = numberOfStudies;
+	}
+
+	public Term getTraitOntologyTerm() {
+		return traitOntologyTerm;
+	}
+
+	public void setTraitOntologyTerm(Term traitOntologyTerm) {
+		this.traitOntologyTerm = traitOntologyTerm;
 	}
 }

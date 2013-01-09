@@ -8,9 +8,29 @@
 		<filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
 		<filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter
 		</filter-class>
+		<init-param>
+            <param-name>entityManagerFactoryBeanName</param-name>
+            <param-value>entityManagerFactory</param-value>
+      </init-param>
+	</filter>
+	
+	
+	<filter>
+		<filter-name>Spring OpenEntityManagerInViewFilter Ontology</filter-name>
+		<filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter
+		</filter-class>
+		<init-param>
+            <param-name>entityManagerFactoryBeanName</param-name>
+            <param-value>entityManagerFactoryOntology</param-value>
+      </init-param>
 	</filter>
 	<filter-mapping>
 		<filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>Spring OpenEntityManagerInViewFilter Ontology</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 

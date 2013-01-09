@@ -11,6 +11,8 @@ import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 
 public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
+	
+	public static String[] PATHS = {"statisticTypes","unitOfMeasure","userPermission","traitOntologyTerm"};
 
 	@Inject
 	public PhenotypeManager(CustomRequestFactory rf) {
@@ -18,7 +20,11 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
 	}
 	
 	public void findAll(Receiver<PhenotypePageProxy> receiver,Long id,int start,int size) {
-		rf.phenotypeRequest().findPhenotypesByExperiment(id, start, size).fire(receiver);
+		rf.phenotypeRequest().findPhenotypesByExperiment(id, start, size).with("content.traitOntologyTerm").fire(receiver);
+	}
+	
+	public void findAll(Receiver<PhenotypePageProxy> receiver,String name,String experiment,String ontology,String protocol,int start,int size) {
+		rf.phenotypeRequest().findAll(name,experiment,ontology,protocol, start, size).with("content.traitOntologyTerm","content.experiment").fire(receiver);
 	}
 
 	@Override
@@ -27,7 +33,7 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
 	}
 
 	public void findOne(Receiver<PhenotypeProxy> receiver, Long id) {
-		rf.phenotypeRequest().findPhenotype(id).with("statisticTypes","unitOfMeasure","userPermission").fire(receiver);
+		rf.phenotypeRequest().findPhenotype(id).with(PATHS).fire(receiver);
 	}
 	
 	public void findAllTraitValues(Receiver<List<TraitProxy>> receiver,Long phenotypeId,Long alleleAssayId ,Long statisticTypeId) {
@@ -38,5 +44,7 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
 			Receiver<List<TraitProxy>> receiver) {
 		rf.traitRequest().findAllTraitValuesByStatisticType(phenotypeId,statisticTypeId).with("obsUnit.stock.passport.collection.locality").fire(receiver);
 	}
+	
+	
 
 }

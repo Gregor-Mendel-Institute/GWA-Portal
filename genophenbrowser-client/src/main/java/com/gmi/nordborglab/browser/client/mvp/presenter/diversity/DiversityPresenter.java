@@ -103,11 +103,35 @@ public class DiversityPresenter extends
 			subItem = null;
 			getView().setActiveMenuItem(MENU_ITEM.EXPERIMENT, request);
 		}
-		else if (request.matchesNameToken(NameTokens.phenotype) || request.matchesNameToken(NameTokens.obsunit) || request.matchesNameToken(NameTokens.studylist)) {
+		else if (request.matchesNameToken(NameTokens.phenotype) 
+				|| request.matchesNameToken(NameTokens.obsunit) 
+				|| request.matchesNameToken(NameTokens.studylist)
+				)  {
 			title = "Phenotype";
 			type = "phenotype";
 			subItem = null;
 			getView().setActiveMenuItem(MENU_ITEM.PHENOTYPE, request);
+		}
+		else if (request.matchesNameToken(NameTokens.phenotypeoverview)) {
+			getView().clearBreadcrumbs(0);
+			type="phenotype";
+			title="Phenotypes";
+			subItem = null;
+			getView().setActiveMenuItem(MENU_ITEM.PHENOTYPE, request);
+		}
+		else if (request.matchesNameToken(NameTokens.studyoverview)) {
+			getView().clearBreadcrumbs(0);
+			type="study";
+			title="Studies";
+			subItem = null;
+			getView().setActiveMenuItem(MENU_ITEM.STUDY, request);
+		}
+		else if (request.matchesNameToken(NameTokens.ontologyoverview)) {
+			getView().clearBreadcrumbs(0);
+			type="ontology";
+			title="Ontologies";
+			subItem = null;
+			getView().setActiveMenuItem(MENU_ITEM.ONTOLOGY, request);
 		}
 		else if(request.matchesNameToken(NameTokens.study)) {
 			title = "Study";

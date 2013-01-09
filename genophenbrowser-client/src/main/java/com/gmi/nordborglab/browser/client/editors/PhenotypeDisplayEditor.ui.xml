@@ -47,7 +47,8 @@
 			</div>
 			<div class="{style.row}">
 				<div class="{style.label}">Trait Ontology</div>
-				<g:Label ui:field="toAccession" addStyleNames="{style.value}" />		
+				<g:ValueLabel addStyleNames="{style.value}" ui:field="traitOntologyTerm"></g:ValueLabel>
+				<!-- <g:Label ui:field="toAccession" addStyleNames="{style.value}" /> -->		
 			</div>
 			<div class="{style.row}">
 				<div class="{style.label}">Environment Ontology</div>

@@ -17,5 +17,7 @@ public interface PhenotypeRequest extends RequestContext{
 	Request<PhenotypeProxy> save(PhenotypeProxy phenotype);
 	
 	Request<List<PhenotypeProxy>> findPhenotypesByPassportId(Long passportId);
+	
+	Request<PhenotypePageProxy> findAll(String name,String experiment,String ontology,String protocol,int start,int size);
 
 }

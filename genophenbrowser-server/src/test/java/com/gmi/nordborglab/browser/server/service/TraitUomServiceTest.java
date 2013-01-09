@@ -58,6 +58,9 @@ public class TraitUomServiceTest extends BaseTest {
 		assertEquals(107L, page.getTotalElements());
 		assertEquals(page.getNumberOfElements(), 50);
 		assertEquals(50, page.getContent().size());
+		assertNotNull(page.getContent().get(0).getTraitOntologyTerm());
+		assertEquals("TO:0000344", page.getContent().get(0).getTraitOntologyTerm().getAcc());
+		assertNotNull(page.getContent().get(0).getTraitOntologyTerm().getChilds());
 	}
 	
 	@Test
@@ -137,11 +140,36 @@ public class TraitUomServiceTest extends BaseTest {
 		service.save(phenotype);
 	}
 	
+	@Test()
+	public void testSave() {
+		createTestUser("ROLE_ADMIN");
+		TraitUom phenotype = repository.findOne(1L);
+		phenotype.setLocalTraitName("test");
+		phenotype.setToAccession("TO:0006046");
+		TraitUom saved = service.save(phenotype);
+		assertNotNull(saved);
+		assertEquals("test",saved.getLocalTraitName());
+		assertEquals("TO:0006046",saved.getToAccession());
+		assertNotNull(saved.getTraitOntologyTerm());
+		assertEquals("TO:0006046",saved.getTraitOntologyTerm().getAcc());
+		
+		
+	}
+	
 	@Test
 	public void testFindPhenotypesByPassportId() {
 		SecurityUtils.setAnonymousUser();
 		List<TraitUom> traits = service.findPhenotypesByPassportId(1L);
 		assertEquals(254, traits.size());
+	}
+	
+	@Test
+	public void testFindAllPhenotypes() {
+		SecurityUtils.setAnonymousUser();
+		TraitUomPage traitPage = service.findAll(null,null,null,null,0,50);
+		assertEquals(50,traitPage.getNumberOfElements());
+		assertEquals(0,traitPage.getNumber());
+		assertEquals(600, traitPage.getTotalElements());
 	}
 	
 	

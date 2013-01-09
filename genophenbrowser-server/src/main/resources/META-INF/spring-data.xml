@@ -6,6 +6,7 @@
 	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="
       http://www.springframework.org/schema/beans 
       http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
@@ -18,7 +19,8 @@
       http://www.springframework.org/schema/aop 
       http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
 
-	<jpa:repositories base-package="com.gmi.nordborglab.browser.server.repository" />
+	<jpa:repositories base-package="com.gmi.nordborglab.browser.server.repository" entity-manager-factory-ref="entityManagerFactory" />
+	<jpa:repositories base-package="com.gmi.nordborglab.jpaontology.repository" entity-manager-factory-ref="entityManagerFactoryOntology" />
 	<tx:annotation-driven/>
 
 	<bean class="org.springframework.orm.jpa.JpaTransactionManager"
@@ -27,10 +29,13 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
-	<!-- <bean class="com.gmi.nordborglab.browser.server.transaction.manager.JpaTransactionManagerLookup" id ="transactionManagerLookup">
-		<property name="transactionManager" ref="transactionManager"/>	
+	<bean class="org.springframework.orm.jpa.JpaTransactionManager"
+		id="transactionManagerOntology">
+		<property name="entityManagerFactory" ref="entityManagerFactoryOntology" />
+		<property name="dataSource" ref="dataSourceOntology" />
 	</bean>
- 	-->
+	 	 
+	 
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
 		p:packagesToScan="com.gmi.nordborglab.browser.server.domain"
@@ -38,16 +43,48 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-				<property name="generateDdl" value="true" />
+				<property name="generateDdl" value="false" />
 				<property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" />
 			</bean>
 		</property>
 	</bean>
 	
-	<bean id="entityManager" class="org.springframework.orm.jpa.support.SharedEntityManagerBean">            
+	<bean id="entityManagerFactoryOntology"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+		p:packagesToScan="com.gmi.nordborglab.jpaontology"
+		p:jpaPropertyMap-ref="jpaPropertyMap">
+		<property name="dataSource" ref="dataSourceOntology" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="generateDdl" value="false" />
+				<property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="persistenceUnitManager"
+    	class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
+    	<property name="defaultDataSource" ref="dataSource" /> <!-- problem -->
+    	<property name="dataSources">
+    		<map>
+    			<entry key="gdpdm" value-ref="dataSource" />
+    			<entry key="ontology" value-ref="dataSourceOntology" />
+    		</map>
+    	</property>
+    </bean>
+	
+
+	
+	<bean id="entityManager" class="org.springframework.orm.jpa.support.SharedEntityManagerBean" >            
     	<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
 	
+	<!-- <bean id="entityManagerOntology" class="org.springframework.orm.jpa.support.SharedEntityManagerBean">            
+    	<property name="entityManagerFactory" ref="entityManagerFactoryOntology" />
+	</bean>
+	 -->
+	 
+	 
 	<util:map id="jpaPropertyMap">
     	<entry key="hibernate.hbm2ddl.auto" value="auto"/>
     	<entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
@@ -57,6 +94,14 @@
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.postgresql.Driver" />
 		<property name="url" value="${database.url}" />
+		<property name="username" value="${database.username}" />
+		<property name="password" value="${database.password}" />
+	</bean>
+	
+	<bean id="dataSourceOntology"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="${database.ontology.url}" />
 		<property name="username" value="${database.username}" />
 		<property name="password" value="${database.password}" />
 	</bean>

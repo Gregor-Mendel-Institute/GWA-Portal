@@ -19,4 +19,6 @@ public interface TraitUomService {
 	TraitUom save(TraitUom trait);
 	
 	List<TraitUom> findPhenotypesByPassportId(Long passportId);
+	
+	TraitUomPage findAll(String name,String experiment,String ontology,String protocol,int start,int size);
 }

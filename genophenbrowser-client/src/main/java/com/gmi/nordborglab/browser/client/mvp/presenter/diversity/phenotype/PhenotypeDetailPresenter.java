@@ -208,7 +208,9 @@ public class PhenotypeDetailPresenter
 		getView().setState(State.EDITING,getPermission());
 		PhenotypeRequest ctx = phenotypeManager.getContext();
 		getView().getEditDriver().edit(phenotype, ctx);
-		List<String> paths = ImmutableList.<String>builder().addAll(Arrays.asList(getView().getEditDriver().getPaths())).add("userPermission").add("statisticTypes").build();
+		
+		///TODO Fix this better. 
+		List<String> paths = ImmutableList.<String>builder().addAll(Arrays.asList(getView().getEditDriver().getPaths())).add("userPermission").add("statisticTypes").add("traitOntologyTerm").build();
 		ctx.save(phenotype).with(paths.toArray(new String[0])).to(receiver);
 	}
 
