@@ -54,7 +54,7 @@
 				border-right: 1px solid #bae045;
 			}
 			
-			.navigation li:hover>a {
+			.navigation li:hover {
 				color: white;
 				background: #51850d;
 				text-shadow: 0 0 10px #336699;
@@ -217,8 +217,8 @@
 		<g:north size="3.423">
 			<g:HTMLPanel addStyleNames="{style.navigation}">
 				<ul>
-					<li>
-						<g:InlineHyperlink addStyleNames="{style.current_page_item}"
+					<li class="{style.current_page_item}">
+						<g:InlineHyperlink 
 							ui:field="homeLink" targetHistoryToken="{nameTokens.getHome}">Home</g:InlineHyperlink>
 					</li>
 					<li>

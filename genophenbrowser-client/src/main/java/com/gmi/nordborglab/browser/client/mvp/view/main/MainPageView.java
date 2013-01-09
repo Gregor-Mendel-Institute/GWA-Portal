@@ -120,10 +120,14 @@ public class MainPageView extends ViewImpl implements MainPagePresenter.MyView {
 	@Override
 	public void setActiveNavigationItem(MENU menu) {
 		String currentPageItemStyleName = style.current_page_item();
-		homeLink.removeStyleName(currentPageItemStyleName);
+		homeLink.getElement().getParentElement().setClassName("");
+		diversityLink.getElement().getParentElement().setClassName("");
+		germplasmLink.getElement().getParentElement().setClassName("");
+		genotypeLink.getElement().getParentElement().setClassName("");
+		/*homeLink.removeStyleName(currentPageItemStyleName);
 		diversityLink.removeStyleName(style.current_page_item());
 		germplasmLink.removeStyleName(style.current_page_item());
-		genotypeLink.removeStyleName(style.current_page_item());
+		genotypeLink.removeStyleName(style.current_page_item());*/
 		InlineHyperlink currentLink = null;
 		switch (menu) {
 			case DIVERSITY:
@@ -141,7 +145,7 @@ public class MainPageView extends ViewImpl implements MainPagePresenter.MyView {
 				currentLink = homeLink;
 		}
 		if (currentLink != null)
-			currentLink.addStyleName(currentPageItemStyleName);
+			currentLink.getElement().getParentElement().addClassName(currentPageItemStyleName);
 	}
 
 	@Override
