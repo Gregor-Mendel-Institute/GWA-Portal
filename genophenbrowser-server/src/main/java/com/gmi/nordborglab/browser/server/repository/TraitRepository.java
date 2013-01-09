@@ -1,12 +1,11 @@
 package com.gmi.nordborglab.browser.server.repository;
 
-import java.util.List;
-
+import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import java.util.List;
 
 public interface TraitRepository extends JpaRepository<Trait, Long> {
 	
@@ -14,5 +13,7 @@ public interface TraitRepository extends JpaRepository<Trait, Long> {
 	List<Trait> findAllTraitValues(@Param("phenotypeId") Long phenotypeId,@Param("alleleAssayId") Long alleleAssayId,@Param("statisticTypeId") Long statisticTypeId);
 
 	List<Trait> findByTraitUomIdAndStatisticTypeId(Long phenotypeId,Long statiticTypeId);
+	
+	List<Trait> findAllByStudiesId(Long studyId);
 
 }
