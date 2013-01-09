@@ -18,6 +18,9 @@ public class NameTokens {
 	public static final String passports = "!taxonomy/{id}/passports";
 	public static final String passport = "!passport/{id}/overview";
 	public static final String stock = "!stock/{id}/overview";
+	public static final String phenotypeoverview = "!phenotypes";
+	public static final String studyoverview = "!studyoverview";
+	public static final String ontologyoverview = "!ontologyoverview";
 
 	public static String getHome() {
 		return home;
@@ -81,6 +84,18 @@ public class NameTokens {
 
 	public static String getStock() {
 		return stock;
+	}
+
+	public static String getPhenotypeoverview() {
+		return phenotypeoverview;
+	}
+
+	public static String getStudyoverview() {
+		return studyoverview;
+	}
+
+	public static String getOntologyoverview() {
+		return ontologyoverview;
 	}
 	
 	

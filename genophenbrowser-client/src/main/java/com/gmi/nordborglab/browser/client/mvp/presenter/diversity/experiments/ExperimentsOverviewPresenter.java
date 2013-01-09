@@ -68,11 +68,11 @@ public class ExperimentsOverviewPresenter
 	}
 
 	protected void requestExperiments() {
-		LoadingIndicatorEvent.fire(this, true);
+		fireEvent(new LoadingIndicatorEvent(true));
 		Receiver<ExperimentPageProxy> receiver = new Receiver<ExperimentPageProxy>() {
 			@Override
 			public void onSuccess(ExperimentPageProxy experiments) {
-				LoadingIndicatorEvent.fire(ExperimentsOverviewPresenter.this, false);
+				fireEvent(new LoadingIndicatorEvent(false));
 				dataProvider.updateRowCount((int)experiments.getTotalElements(), true);
 				dataProvider.updateRowData(0, experiments.getContent());
 			}

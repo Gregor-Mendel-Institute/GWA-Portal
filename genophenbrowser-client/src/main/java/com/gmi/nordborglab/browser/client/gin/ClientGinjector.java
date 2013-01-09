@@ -8,12 +8,14 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.Ex
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.PhenotypeListPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.OntologyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.ObsUnitPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.StudyListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyGWASPlotPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.GermplasmPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportListPresenter;
@@ -36,6 +38,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.Ex
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.gmi.nordborglab.browser.shared.service.HelperFactory;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyWizardPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeOverviewPresenter;
 
 
 @GinModules({ClientDispatchModule.class,ClientModule.class})
@@ -72,4 +75,7 @@ public interface ClientGinjector extends Ginjector{
 	AsyncProvider<PassportListPresenter> getPasportListPresenter();
 	AsyncProvider<PassportDetailPresenter> getPassportDetailPresenter();
 	AsyncProvider<StockDetailPresenter> getStockDetailPresenter();
+	AsyncProvider<PhenotypeOverviewPresenter> getPhenotypeOverviewPresenter();
+	AsyncProvider<StudyOverviewPresenter> getStudyOverviewPresenter();
+	AsyncProvider<OntologyOverviewPresenter> getOntologyOverviewPresenter();
 }

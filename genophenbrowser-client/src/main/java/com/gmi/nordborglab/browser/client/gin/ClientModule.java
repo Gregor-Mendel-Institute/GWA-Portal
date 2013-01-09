@@ -26,12 +26,14 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.Ex
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.PhenotypeListPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.OntologyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.ObsUnitPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.StudyListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyGWASPlotPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyWizardPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.GermplasmPresenter;
@@ -56,6 +58,7 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.Phenoty
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.ObsUnitView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeDetailTabView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeDetailView;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeOverviewView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.StudyListView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyGWASPlotView;
@@ -92,6 +95,9 @@ import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportLi
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.stock.StockDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.main.SearchView;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeOverviewPresenter;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyOverviewView;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.ontology.OntologyOverviewView;
 
 public class ClientModule extends AbstractPresenterModule {
 
@@ -236,6 +242,20 @@ public class ClientModule extends AbstractPresenterModule {
 
 		bindPresenterWidget(SearchPresenter.class,
 				SearchPresenter.MyView.class, SearchView.class);
+
+		bindPresenter(PhenotypeOverviewPresenter.class,
+				PhenotypeOverviewPresenter.MyView.class,
+				PhenotypeOverviewView.class,
+				PhenotypeOverviewPresenter.MyProxy.class);
+
+		bindPresenter(StudyOverviewPresenter.class,
+				StudyOverviewPresenter.MyView.class, StudyOverviewView.class,
+				StudyOverviewPresenter.MyProxy.class);
+
+		bindPresenter(OntologyOverviewPresenter.class,
+				OntologyOverviewPresenter.MyView.class,
+				OntologyOverviewView.class,
+				OntologyOverviewPresenter.MyProxy.class);
 	}
 
 	@Provides

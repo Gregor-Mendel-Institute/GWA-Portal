@@ -93,7 +93,10 @@ public class MainPagePresenter extends
 			request.matchesNameToken(NameTokens.obsunit) ||
 			request.matchesNameToken(NameTokens.studylist) ||
 			request.matchesNameToken(NameTokens.study) ||
-			request.matchesNameToken(NameTokens.studygwas)
+			request.matchesNameToken(NameTokens.studygwas) ||
+			request.matchesNameToken(NameTokens.studyoverview) ||
+			request.matchesNameToken(NameTokens.phenotypeoverview) ||
+			request.matchesNameToken(NameTokens.ontologyoverview)
 			)
 			menu = MENU.DIVERSITY;
 		else if (request.matchesNameToken(NameTokens.taxonomies) ||

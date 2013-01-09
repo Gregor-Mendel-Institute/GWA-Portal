@@ -149,7 +149,7 @@
 								<base:UnorderedList addStyleNames="{style.submenu_container}">
 									<base:ListItem addStyleNames="{style.submenu_item}">
 										<g:InlineHyperlink text="Overview" 
-											targetHistoryToken="{nameTokens.getExperiments}"></g:InlineHyperlink>
+											targetHistoryToken="{nameTokens.getPhenotypeoverview}"></g:InlineHyperlink>
 									</base:ListItem>
 								</base:UnorderedList>
 							</b:AccordionGroup>
@@ -163,7 +163,7 @@
 								<base:UnorderedList addStyleNames="{style.submenu_container}">
 									<base:ListItem addStyleNames="{style.submenu_item}">
 										<g:InlineHyperlink text="Overview" 
-											targetHistoryToken="{nameTokens.getExperiments}"></g:InlineHyperlink>
+											targetHistoryToken="{nameTokens.getStudyoverview}"></g:InlineHyperlink>
 									</base:ListItem>
 								</base:UnorderedList>
 							</b:AccordionGroup>
@@ -177,7 +177,7 @@
 								<base:UnorderedList addStyleNames="{style.submenu_container}">
 									<base:ListItem addStyleNames="{style.submenu_item}">
 										<g:InlineHyperlink text="Overview" 
-											targetHistoryToken="{nameTokens.getExperiments}"></g:InlineHyperlink>
+											targetHistoryToken="{nameTokens.getOntologyoverview}"></g:InlineHyperlink>
 									</base:ListItem>
 								</base:UnorderedList>
 							</b:AccordionGroup>
