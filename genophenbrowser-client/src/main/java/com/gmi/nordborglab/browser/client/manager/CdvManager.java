@@ -27,6 +27,10 @@ public class CdvManager extends RequestFactoryManager<CdvRequest> {
 		getContext().findStudy(id).with("traits.obsUnit.stock.passport.collection.locality","alleleAssay","protocol","userPermission").fire(receiver);
 		
 	}
+	
+	public void findAll(Receiver<StudyPageProxy> receiver,String name,String phenotype,String experiment,Long alleleAssayId,Long studyProtocolId,int start,int size) {
+		getContext().findAll(name,phenotype,experiment,alleleAssayId, studyProtocolId,start,size).with("content.alleleAssay","content.protocol","content.phenotype.experiment").fire(receiver);
+	}
 
 
 }
