@@ -8,7 +8,7 @@ import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.gmi.nordborglab.browser.client.editors.StudyCreateEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyWizardUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyWizardPresenter;
-import com.gmi.nordborglab.browser.client.resources.DataGridResources;
+import com.gmi.nordborglab.browser.client.resources.DataGridStudyResources;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.ui.FlagCell;
 import com.gmi.nordborglab.browser.client.ui.HighlightCell;
@@ -158,7 +158,7 @@ public class StudyWizardView extends ViewWithUiHandlers<StudyWizardUiHandlers>
 	@Inject
 	public StudyWizardView(final Binder binder,
 			final StudyCreateDriver studyCreateDriver, final FlagMap flagMap,
-			final DataGridResources dataGridResources) {
+			final DataGridStudyResources dataGridResources) {
 		this.studyCreateDriver = studyCreateDriver;
 
 		SimplePager.Resources pagerResources = GWT

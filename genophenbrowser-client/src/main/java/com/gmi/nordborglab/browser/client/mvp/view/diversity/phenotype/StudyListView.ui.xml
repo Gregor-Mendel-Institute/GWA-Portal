@@ -3,6 +3,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
 	xmlns:g='urn:import:com.google.gwt.user.client.ui'
 	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+	xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
 	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
 	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
 	ui:generateLocales='default'>
@@ -27,7 +28,7 @@
 		<c:DataGrid ui:field="dataGrid" />
 	</g:layer>
 	<g:layer bottom="0" height="2.8em">
-		<c:SimplePager ui:field="pager" />
+		<gui:CustomPager ui:field="pager" />
 	</g:layer>
 	</g:LayoutPanel>
 </ui:UiBinder>

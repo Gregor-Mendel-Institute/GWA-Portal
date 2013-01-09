@@ -1,0 +1,39 @@
+@CHARSET "UTF-8";
+
+.dataGridHeader {
+	border-bottom: 1px solid gray;
+	padding: 3px 5px;
+	text-align: left;
+	color: black;
+	overflow: hidden;
+	white-space: nowrap;
+	font-size: 14px;
+	text-shadow: none;
+}
+
+.dataGridCell {
+	border-bottom: 1px solid #CBCBCB;
+	border-left: 0;
+	border-right: 0;
+	border-top: 0;
+	padding: 2px 5px;
+}
+
+.dataGridOddRow {
+	background: #F8F8F8;
+}
+
+.dataGridHoveredRow {
+	background: #EEE;
+}
+
+.dataGridKeyboardSelectedRow {
+	background: #FFC;
+}
+
+.dataGridSelectedRow {
+	background: #628CD5;
+	color: white;
+	height: auto;
+	overflow: auto;
+}

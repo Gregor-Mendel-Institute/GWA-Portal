@@ -6,6 +6,7 @@ import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentsOverviewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewPresenter;
+import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -33,8 +34,10 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
 	@UiField CustomPager pager;
 
 	@Inject
-	public ExperimentsOverviewView(final Binder binder,final PlaceManager placeManager) {
+	public ExperimentsOverviewView(final Binder binder,
+			final PlaceManager placeManager, final CustomDataGridResources dataGridResources) {
 		this.placeManager = placeManager;
+		table = new DataGrid<ExperimentProxy>(15,dataGridResources,new EntityProxyKeyProvider<ExperimentProxy>());
 		initCellTable();
 		widget = binder.createAndBindUi(this);
 		pager.setDisplay(table);
@@ -48,7 +51,7 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
 
 	
 	private void initCellTable() {
-		table = new DataGrid<ExperimentProxy>(15,new EntityProxyKeyProvider<ExperimentProxy>());
+		
 		table.addColumn(new ExperimentListDataGridColumns.NameColumn(placeManager,new ParameterizedPlaceRequest(NameTokens.experiment)),"Name");
 		table.addColumn(new ExperimentListDataGridColumns.DesignColumn(),"Design");
 		table.addColumn(new ExperimentListDataGridColumns.OriginatorColumn(),"Originator");

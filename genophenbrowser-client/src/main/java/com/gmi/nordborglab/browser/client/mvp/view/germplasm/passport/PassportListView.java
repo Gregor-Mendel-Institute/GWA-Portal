@@ -4,8 +4,6 @@ package com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport;
 import java.util.List;
 import java.util.Set;
 
-import com.github.gwtbootstrap.client.ui.DataGrid;
-import com.github.gwtbootstrap.client.ui.DataGrid.SelectableResources;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
@@ -21,6 +19,7 @@ import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDa
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.IdColumn;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.SourceColumn;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.TypeColumn;
+import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
@@ -46,6 +45,7 @@ import com.google.gwt.maps.client.overlays.Marker;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -108,14 +108,13 @@ public class PassportListView extends ViewWithUiHandlers<PassportListViewUiHandl
 
 	@Inject
 	public PassportListView(final Binder binder, final FlagMap flagMap, 
-			final SelectableResources dataGridResources, final PlaceManager placeManager ) {
+			final CustomDataGridResources dataGridResources, final PlaceManager placeManager ) {
 		this.flagMap = flagMap;
 		this.placeManager = placeManager;
 		dataGridResources.dataGridStyle().ensureInjected();
 		passportDataGrid = new DataGrid<PassportProxy>(10,dataGridResources,KEY_PROVIDER);
 		passportDataGrid.setSelectionModel(selectionModel);
 		passportDataGrid.setWidth("100%");
-		passportDataGrid.setStriped(true);
 		filterSampStat = new ChosenListBox(false);
 		filterAlleleAssay = new ChosenListBox(true);
 		widget = binder.createAndBindUi(this);

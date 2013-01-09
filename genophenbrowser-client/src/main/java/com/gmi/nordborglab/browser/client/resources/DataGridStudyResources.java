@@ -3,10 +3,10 @@ package com.gmi.nordborglab.browser.client.resources;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.DataGrid.Style;
 
-public interface DataGridResources extends DataGrid.Resources {
+public interface DataGridStudyResources extends DataGrid.Resources {
 	
 	
-	interface CustomDataGridStyle extends DataGrid.Style {
+	interface DataGridStudyStyle extends DataGrid.Style {
 		
 		@Override
 		public String dataGridCell();
@@ -19,6 +19,6 @@ public interface DataGridResources extends DataGrid.Resources {
 	}
 	
 	@Override
-	@Source({Style.DEFAULT_CSS,"dataGridStyle.css"})
-	public CustomDataGridStyle dataGridStyle();
+	@Source({Style.DEFAULT_CSS,"studyGridStyle.css"})
+	public DataGridStudyStyle dataGridStyle();
 }

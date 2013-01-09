@@ -4,12 +4,12 @@ package com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport;
 
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.editors.PassportDisplayEditor;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter.State;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportDetailPresenter;
+import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.util.CustomDataTable;
@@ -39,6 +39,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasText;
@@ -113,21 +114,19 @@ public class PassportDetailView extends ViewImpl implements
 
 	@Inject
 	public PassportDetailView(final Binder binder, final PassportDisplayDriver displayDriver, 
-			 final PlaceManager placeManager) {
+			 final PlaceManager placeManager, final CustomDataGridResources dataGridResources) {
 		this.placeManager = placeManager;
 	
 		
-		phenotypeDataGrid = new DataGrid<PhenotypeProxy>(10,new EntityProxyKeyProvider<PhenotypeProxy>());
+		phenotypeDataGrid = new DataGrid<PhenotypeProxy>(10,dataGridResources,new EntityProxyKeyProvider<PhenotypeProxy>());
 		phenotypeDataGrid.setWidth("100%");
-		phenotypeDataGrid.setStriped(false);
 		
-		studyDataGrid = new DataGrid<StudyProxy>(10,new EntityProxyKeyProvider<StudyProxy>());
+		studyDataGrid = new DataGrid<StudyProxy>(10,dataGridResources,new EntityProxyKeyProvider<StudyProxy>());
 		studyDataGrid.setWidth("100%");
 		
 		
-		stockDataGrid = new DataGrid<StockProxy>(10,new EntityProxyKeyProvider<StockProxy>());
+		stockDataGrid = new DataGrid<StockProxy>(10,dataGridResources,new EntityProxyKeyProvider<StockProxy>());
 		stockDataGrid.setWidth("100%");
-		stockDataGrid.setStriped(true);
 		widget = binder.createAndBindUi(this);
 		stockPager.setDisplay(stockDataGrid);
 		phenotypePager.setDisplay(phenotypeDataGrid);

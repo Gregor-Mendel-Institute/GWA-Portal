@@ -1,26 +1,20 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
-import java.util.ArrayList;
-
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.PhenotypeListPresenter;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.PhenotypeListDataGridColumns.NameColumn;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.PhenotypeListDataGridColumns.ProtocolColumn;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.PhenotypeListDataGridColumns.TraitOntologyColumn;
+import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
+import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ProvidesKey;
 import com.google.inject.Inject;
+import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
@@ -33,25 +27,18 @@ public class PhenotypeListView extends ViewImpl implements
 	public interface Binder extends UiBinder<Widget, PhenotypeListView> {
 	}
 	
-	public static ProvidesKey<PhenotypeProxy> KEY_PROVIDER = new ProvidesKey<PhenotypeProxy>() {
-		@Override
-		public Object getKey(PhenotypeProxy item) {
-			if (item != null && item.getId() != null) {
-				return item.getId();
-			}
-			return null;
-		}
-	};
 	
 	@UiField(provided=true) DataGrid<PhenotypeProxy> dataGrid;
-	@UiField(provided=true) SimplePager pager;
+	@UiField CustomPager pager;
 	protected final PlaceManager placeManger;
 
 	@Inject
-	public PhenotypeListView(final Binder binder, final PlaceManager placeManger) {
+	public PhenotypeListView(final Binder binder, final PlaceManager placeManger, final CustomDataGridResources dataGridResources) {
 		this.placeManger = placeManger;
+		dataGrid = new DataGrid<PhenotypeProxy>(20,dataGridResources,new EntityProxyKeyProvider<PhenotypeProxy>());
 		initCellTable();
 		widget = binder.createAndBindUi(this);
+		pager.setDisplay(dataGrid);
 	}
 
 	@Override
@@ -60,16 +47,17 @@ public class PhenotypeListView extends ViewImpl implements
 	}
 	
 	private void initCellTable() {
-		SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
 		PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.phenotype);
-		dataGrid = new DataGrid<PhenotypeProxy>(20,KEY_PROVIDER);
+		
+		dataGrid.setWidth("100%");
 		dataGrid.setEmptyTableWidget(new Label("No Records found"));
+		
 		dataGrid.addColumn(new PhenotypeListDataGridColumns.NameColumn(placeManger,request),"Name");
+		dataGrid.addColumn(new PhenotypeListDataGridColumns.TraitOntologyColumn(),"Trait-Ontology");
 		dataGrid.addColumn(new PhenotypeListDataGridColumns.ProtocolColumn(),"Protocol");
-		dataGrid.addColumn(new PhenotypeListDataGridColumns.TraitOntologyColumn(new ArrayList<String>()),"Trait-Ontology");
-	    pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
-	    pager.setDisplay(dataGrid);
-
+		dataGrid.setColumnWidth(0, 15,Unit.PCT);
+		dataGrid.setColumnWidth(1, 15,Unit.PCT);
+		dataGrid.setColumnWidth(2, 70,Unit.PCT);
 	}
 
 	@Override
