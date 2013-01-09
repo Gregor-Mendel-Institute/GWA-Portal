@@ -1,12 +1,10 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
-import java.util.List;
-
 import com.gmi.nordborglab.browser.client.ui.HyperlinkCell;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
-import com.google.gwt.cell.client.SelectionCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 
@@ -49,16 +47,30 @@ public interface PhenotypeListDataGridColumns {
 	
 	public static class TraitOntologyColumn extends Column<PhenotypeProxy,String> {
 
-		public TraitOntologyColumn(List<String> options) {
-			super(new SelectionCell(options));
+		public TraitOntologyColumn() {
+			super(new TextCell());
 		}
 
 		@Override
 		public String getValue(PhenotypeProxy object) {
-			//return object.getTraitOntology();
-			return "";
+			String to = "";
+			if (object.getTraitOntologyTerm() != null) {
+				to =  object.getTraitOntologyTerm().getName() + " (" + object.getTraitOntologyTerm().getAcc()+")";
+			}
+			return to;
 		}
-		
+	}
+	
+	public static class ExperimentColumn extends TextColumn<PhenotypeProxy> {
+
+		@Override
+		public String getValue(PhenotypeProxy object) {
+			String experiment = "";
+			if (object.getExperiment() != null) {
+				experiment = object.getExperiment().getName();
+			}
+			return experiment;
+		}
 	}
 
 }
