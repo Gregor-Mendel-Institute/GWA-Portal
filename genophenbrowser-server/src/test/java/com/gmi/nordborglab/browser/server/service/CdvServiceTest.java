@@ -1,18 +1,14 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
+import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import com.gmi.nordborglab.browser.server.repository.StudyRepository;
+import com.gmi.nordborglab.browser.server.repository.TraitRepository;
+import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
+import com.google.common.collect.ImmutableList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,15 +23,10 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.gmi.nordborglab.browser.server.domain.cdv.Study;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
-import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
-import com.gmi.nordborglab.browser.server.repository.StudyRepository;
-import com.gmi.nordborglab.browser.server.repository.TraitRepository;
-import com.gmi.nordborglab.browser.server.testutils.BaseTest;
-import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
-import com.google.common.collect.ImmutableList;
+import javax.annotation.Resource;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 public class CdvServiceTest extends BaseTest {
 
@@ -53,6 +44,7 @@ public class CdvServiceTest extends BaseTest {
 
 	@Before
 	public void setUp() {
+		SecurityUtils.setAnonymousUser();
 	}
 
 	@After
@@ -117,25 +109,7 @@ public class CdvServiceTest extends BaseTest {
 		study = service.saveStudy(study);
 	}
 
-	@Test(expected=AccessDeniedException.class)
-	public void testFindStudiesByPhenotypeIdAccessedDenied() {
-		Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
-	    SecurityUtils.makeActiveUser("TEST", "TEST",adminAuthorities);
-		ObjectIdentity oid = new ObjectIdentityImpl(Experiment.class,1L);
-		List<Sid> authorities = Collections.singletonList((Sid)new GrantedAuthoritySid("ROLE_ANONYMOUS"));
-		MutableAcl acl = (MutableAcl)aclService.readAclById(oid, authorities);
-		
-		for (int i=0;i<acl.getEntries().size();i++) {
-			if (acl.getEntries().get(i).getSid().equals(authorities.get(0)))
-			{
-				acl.deleteAce(i);
-				break;
-			}
-		}
-		aclService.updateAcl(acl);
-		SecurityUtils.setAnonymousUser();
-		service.findStudiesByPhenotypeId(1L, 0, 50);
-	}
+	
 	
 	@Test(expected=AccessDeniedException.class)
 	public void testSaveStudyAccessDenied() {
@@ -154,5 +128,39 @@ public class CdvServiceTest extends BaseTest {
 		assertEquals("wrong number of studies",2,studies.size());
 		assertEquals("wrong study",850,studies.get(0).getId().longValue());
 		assertEquals("wrong study",1,studies.get(1).getId().longValue());
+	}
+	
+	@Test
+	public void testFindAll() {
+		SecurityUtils.setAnonymousUser();
+		StudyPage page = service.findAll(null, null, null, null, null, 0, 50);
+		assertEquals(2, page.getTotalElements());
+	}
+	
+	@Test
+	public void testFindTraitValues() {
+		List<Trait> traits = service.findTraitValues(1L);
+		assertNotNull(traits);
+		assertEquals(334, traits.size());
+	}
+	
+	@Test(expected=AccessDeniedException.class)
+	public void testFindStudiesByPhenotypeIdAccessedDenied() {
+		Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
+	    SecurityUtils.makeActiveUser("TEST", "TEST",adminAuthorities);
+		ObjectIdentity oid = new ObjectIdentityImpl(Experiment.class,1L);
+		List<Sid> authorities = Collections.singletonList((Sid)new GrantedAuthoritySid("ROLE_ANONYMOUS"));
+		MutableAcl acl = (MutableAcl)aclService.readAclById(oid, authorities);
+		
+		for (int i=0;i<acl.getEntries().size();i++) {
+			if (acl.getEntries().get(i).getSid().equals(authorities.get(0)))
+			{
+				acl.deleteAce(i);
+				break;
+			}
+		}
+		aclService.updateAcl(acl);
+		SecurityUtils.setAnonymousUser();
+		service.findStudiesByPhenotypeId(1L, 0, 50);
 	}
 }

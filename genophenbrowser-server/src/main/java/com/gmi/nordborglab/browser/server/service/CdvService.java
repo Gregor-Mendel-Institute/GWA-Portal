@@ -1,9 +1,10 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import java.util.List;
-
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
+import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+
+import java.util.List;
 
 public interface CdvService {
 	
@@ -14,5 +15,9 @@ public interface CdvService {
 	public Study saveStudy(Study study);
 	
 	public List<Study> findStudiesByPassportId(Long passportId);
+	
+	public StudyPage findAll(String name,String phenotype,String experiment,Long alleleAssayId, Long stduyProtocolId,int start,int size);
+	
+	public List<Trait> findTraitValues(Long studyId);
 	
 }

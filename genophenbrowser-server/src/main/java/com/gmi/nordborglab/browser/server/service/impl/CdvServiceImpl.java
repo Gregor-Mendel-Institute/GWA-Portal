@@ -1,11 +1,18 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-import javax.annotation.Resource;
-
+import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
+import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.repository.StudyRepository;
+import com.gmi.nordborglab.browser.server.repository.TraitRepository;
+import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
+import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
+import com.gmi.nordborglab.browser.server.security.SecurityUtil;
+import com.gmi.nordborglab.browser.server.service.CdvService;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,36 +20,14 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.model.AccessControlEntry;
-import org.springframework.security.acls.model.Acl;
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.NotFoundException;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
+import org.springframework.security.acls.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gmi.nordborglab.browser.server.domain.cdv.Study;
-import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
-import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
-import com.gmi.nordborglab.browser.server.repository.StudyRepository;
-import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
-import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
-import com.gmi.nordborglab.browser.server.security.SecurityUtil;
-import com.gmi.nordborglab.browser.server.service.CdvService;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
+import javax.annotation.Nullable;
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -53,6 +38,9 @@ public class CdvServiceImpl implements CdvService {
 	
 	@Resource
 	protected TraitUomRepository traitUomRepository;
+	
+	@Resource
+	protected TraitRepository traitRepository;
 
 	@Resource
 	protected RoleHierarchy roleHierarchy;
@@ -75,13 +63,12 @@ public class CdvServiceImpl implements CdvService {
 		catch (NotFoundException e) {
 			throw new AccessDeniedException("not allowed");
 		}
-		StudyPage page = null;
 		if (start > 0)
 			start = start/size;
 		PageRequest pageRequest = new PageRequest(start, size);
 		Page<Study> studyPage = studyRepository.findByPhenotypeId(id,
 				pageRequest);
-		page = new StudyPage(studyPage.getContent(), pageRequest,
+        StudyPage page = new StudyPage(studyPage.getContent(), pageRequest,
 				studyPage.getTotalElements());
 		return page;
 	}
@@ -90,36 +77,7 @@ public class CdvServiceImpl implements CdvService {
 	@Override
 	public Study findStudy(Long id) {
 		Study study = studyRepository.findOne(id);
-		///TODO add ACL to Study derived from Trait 
-		TraitUom trait = Iterables.get(study.getTraits(), 0).getTraitUom();
-		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-		final ImmutableList<Permission> permissions = ImmutableList
-				.of(BasePermission.READ);
-		ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,trait.getId());
-		Acl acl = aclService.readAclById(oid, authorities);
-		try {
-			if (!acl.isGranted(permissions, authorities, false)) 
-				throw new AccessDeniedException("not allowed");
-		}
-		catch (NotFoundException e) {
-			throw new AccessDeniedException("not allowed");
-		}
-		boolean isOwner = false;
-		for (Sid sid : authorities) {
-			if (sid.equals(acl.getOwner())) {
-				isOwner = true;
-				break;
-			}
-		}
-		AccessControlEntry ace = null;
-		if (acl.getEntries().size() > 0)
-			 ace = acl.getEntries().get(0);
-		else if (acl.getParentAcl().getEntries().size() > 0)
-			ace = acl.getParentAcl().getEntries().get(0);
-			
-		study.setIsOwner(isOwner);
-		if (ace != null)
-			study.setUserPermission(new CustomAccessControlEntry((Long)ace.getId(),ace.getPermission().getMask(),ace.isGranting()));
+		study = checkStudyPermissions(study,BasePermission.READ);
 		return study;
 	}
 
@@ -127,38 +85,8 @@ public class CdvServiceImpl implements CdvService {
 	@Override
 	@Transactional(readOnly = false)
 	public Study saveStudy(Study study) {
-		if (study.getTraits().size() == 0)
-			throw new RuntimeException("Study must have phenotypes assigned");
-		TraitUom trait = Iterables.get(study.getTraits(), 0).getTraitUom();
-		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-		final ImmutableList<Permission> permissions = ImmutableList
-				.of(BasePermission.WRITE);
-		ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,trait.getId());
-		Acl acl = aclService.readAclById(oid, authorities);
-		try {
-			if (!acl.isGranted(permissions, authorities, false)) 
-				throw new AccessDeniedException("not allowed");
-		}
-		catch (NotFoundException e) {
-			throw new AccessDeniedException("not allowed");
-		}
-		boolean isOwner = false;
-		for (Sid sid : authorities) {
-			if (sid.equals(acl.getOwner())) {
-				isOwner = true;
-				break;
-			}
-		}
-		AccessControlEntry ace = null;
-		if (acl.getEntries().size() > 0)
-			 ace = acl.getEntries().get(0);
-		else if (acl.getParentAcl().getEntries().size() > 0)
-			ace = acl.getParentAcl().getEntries().get(0);
-			
-		study.setIsOwner(isOwner);
-		if (ace != null)
-			study.setUserPermission(new CustomAccessControlEntry((Long)ace.getId(),ace.getPermission().getMask(),ace.isGranting()));
 		study = studyRepository.save(study);
+		study = checkStudyPermissions(study, BasePermission.WRITE);
 		return study;
 	}
 
@@ -220,6 +148,73 @@ public class CdvServiceImpl implements CdvService {
 		}
 		
 		return studies;
+	}
+
+
+	@Override
+	public StudyPage findAll(String name, String phenotype, String experiment,
+			Long alleleAssayId, Long studyProtocolId, int start, int size) {
+		StudyPage page;
+		int pageStart = 0;
+		if (start > 0)
+			pageStart = start/size;
+		PageRequest pageRequest = new PageRequest(start, size);
+		Sort sort = new Sort("id");
+		ImmutableList<Study> studies = filterStudiesByAcl(studyRepository.findAll(sort)).toImmutableList();
+		List<Study> partitionedStudies = Iterables.get(Iterables.partition(studies, size),pageStart);
+		int	totalElements = partitionedStudies.size();
+		if (totalElements > 0) {
+			page = new StudyPage(partitionedStudies, pageRequest,
+				totalElements);
+		}
+		else {
+			page = new StudyPage(partitionedStudies, pageRequest, 0);
+		}
+		return page;
+	}
+
+
+	@Override
+	public List<Trait> findTraitValues(Long studyId) {
+		Study study = studyRepository.findOne(studyId);
+		study = checkStudyPermissions(study,BasePermission.READ);
+		List<Trait> traits = traitRepository.findAllByStudiesId(studyId);
+		return traits;
+	}
+	
+	private Study checkStudyPermissions(Study study,Permission permission) {
+		if (study.getTraits().size() == 0)
+			throw new RuntimeException("Study must have phenotypes assigned");
+		TraitUom trait = Iterables.get(study.getTraits(), 0).getTraitUom();
+		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
+		final ImmutableList<Permission> permissions = ImmutableList
+				.of(permission);
+		ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,trait.getId());
+		Acl acl = aclService.readAclById(oid, authorities);
+		try {
+			if (!acl.isGranted(permissions, authorities, false)) 
+				throw new AccessDeniedException("not allowed");
+		}
+		catch (NotFoundException e) {
+			throw new AccessDeniedException("not allowed");
+		}
+		boolean isOwner = false;
+		for (Sid sid : authorities) {
+			if (sid.equals(acl.getOwner())) {
+				isOwner = true;
+				break;
+			}
+		}
+		AccessControlEntry ace = null;
+		if (acl.getEntries().size() > 0)
+			 ace = acl.getEntries().get(0);
+		else if (acl.getParentAcl().getEntries().size() > 0)
+			ace = acl.getParentAcl().getEntries().get(0);
+			
+		study.setIsOwner(isOwner);
+		if (ace != null)
+			study.setUserPermission(new CustomAccessControlEntry((Long)ace.getId(),ace.getPermission().getMask(),ace.isGranting()));
+		return study;
 	}
 
 }
