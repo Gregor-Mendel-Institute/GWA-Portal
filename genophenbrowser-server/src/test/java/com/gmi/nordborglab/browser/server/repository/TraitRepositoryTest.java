@@ -1,20 +1,15 @@
 package com.gmi.nordborglab.browser.server.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
-import org.junit.Test;
-
 import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import org.junit.Test;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 
 public class TraitRepositoryTest extends BaseTest{
@@ -82,6 +77,13 @@ public class TraitRepositoryTest extends BaseTest{
 		statisticType.setStatType("test");
 		created.setStatisticType(statisticType);
 		return created;
+	}
+	
+	@Test
+	public void testFindAllByStudyId() {
+		List<Trait> traits = repository.findAllByStudiesId(1L);
+		assertNotNull(traits);
+		assertEquals(334, traits.size());
 	}
 	
 	public static void assertTrait(Trait actual) {
