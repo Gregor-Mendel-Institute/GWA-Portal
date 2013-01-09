@@ -152,7 +152,7 @@ public class DiversityView extends ViewImpl implements
 			for (int i = 0;i<ul.getWidgetCount();i++) {
 				ListItem li = (ListItem)ul.getWidget(0);
 				InlineHyperlink link = (InlineHyperlink)li.getWidget(0);
-				if (request.matchesNameToken(link.getTargetHistoryToken())) {
+				if (request != null && request.matchesNameToken(link.getTargetHistoryToken())) {
 					link.addStyleName(style.subitem_active());
 				}
 				else {
