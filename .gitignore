@@ -1,3 +1,8 @@
 .settings/
 .project
 .springBeans
+# Intellij project files
+*.iml
+*.ipr
+*.iws
+.idea/
