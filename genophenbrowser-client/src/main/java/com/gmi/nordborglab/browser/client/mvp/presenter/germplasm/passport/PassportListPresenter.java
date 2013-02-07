@@ -9,7 +9,7 @@ import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PassportListViewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.GermplasmPresenter;
-import com.gmi.nordborglab.browser.client.ui.HighlightCell.SearchTerm;
+import com.gmi.nordborglab.browser.client.util.SearchTerm;
 import com.gmi.nordborglab.browser.client.util.PassportProxyPredicates;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;

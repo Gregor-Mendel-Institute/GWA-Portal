@@ -7,6 +7,8 @@ import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 
+import java.util.List;
+
 public class ExperimentManager extends RequestFactoryManager<ExperimentRequest>{
 	
 
@@ -15,21 +17,24 @@ public class ExperimentManager extends RequestFactoryManager<ExperimentRequest>{
 		super(rf);
 	}
 
+    @Override
+    public ExperimentRequest getContext() {
+        return rf.experimentRequest();
+    }
+
+    public CustomRequestFactory getRequestFactory() {
+        return rf;
+    }
+
 	public void findAll(Receiver<ExperimentPageProxy> receiver,int start,int size) {
 		rf.experimentRequest().findByAcl(start,size).with("content.acl").fire(receiver);
 	}
-	
+
 	public void findOne(Receiver<ExperimentProxy> receiver,Long id) {
 		rf.experimentRequest().findExperiment(id).with("userPermission").fire(receiver);
 	}
-	
-	public CustomRequestFactory getRequestFactory() {
-		return rf;
-	}
-	
-	@Override
-	public ExperimentRequest getContext() {
-		return rf.experimentRequest();
-	}
 
+    public void findAllWithAccess(Receiver<List<ExperimentProxy>> receiver, Integer permission) {
+        rf.experimentRequest().findAllByAcl(permission).fire(receiver);
+    }
 }

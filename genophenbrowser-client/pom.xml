@@ -68,6 +68,10 @@
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-elemental</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava-gwt</artifactId>
@@ -187,7 +191,6 @@
 				<artifactId>gwtquery</artifactId>
 				<version>${gwtquery.version}</version>
 				<scope>provided</scope>
-
 			</dependency>
 			<dependency>
 				<groupId>com.watopi</groupId>

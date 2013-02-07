@@ -21,4 +21,6 @@ public interface TraitUomService {
 	List<TraitUom> findPhenotypesByPassportId(Long passportId);
 	
 	TraitUomPage findAll(String name,String experiment,String ontology,String protocol,int start,int size);
+
+    List<TraitUom> findPhenotypesByExperimentAndAcl(Long id,int permission);
 }

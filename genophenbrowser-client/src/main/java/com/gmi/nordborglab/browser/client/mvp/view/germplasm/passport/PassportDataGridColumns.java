@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.ui.FlagCell;
-import com.gmi.nordborglab.browser.client.ui.HighlightCell.SearchTerm;
+import com.gmi.nordborglab.browser.client.util.SearchTerm;
 import com.gmi.nordborglab.browser.client.ui.HighlightColumn;
 import com.gmi.nordborglab.browser.client.ui.HyperlinkCell;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;

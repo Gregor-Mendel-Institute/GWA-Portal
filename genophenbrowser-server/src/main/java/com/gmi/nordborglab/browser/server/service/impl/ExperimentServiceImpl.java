@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.server.service.impl;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,8 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
@@ -30,8 +33,10 @@ import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.ExperimentService;
 import com.gmi.nordborglab.browser.server.service.TraitUomService;
+import sun.nio.cs.Surrogate;
 
 @Service
+@Validated
 @Transactional(readOnly = true)
 public class ExperimentServiceImpl extends WebApplicationObjectSupport
 		implements ExperimentService {
@@ -50,11 +55,17 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
 	@Transactional(readOnly = false)
 	@Override
-	public Experiment save(Experiment experiment) {
+
+	public Experiment save(@Valid Experiment experiment) {
+        boolean isNewRecord = experiment.getId() == null;
 		experiment = experimentRepository.save(experiment);
-		if (experiment.getId() == null) {
+		if (isNewRecord) {
 			CumulativePermission permission = new CumulativePermission();
 			permission.set(BasePermission.ADMINISTRATION);
+            permission.set(BasePermission.WRITE);
+            permission.set(BasePermission.READ);
+            permission.set(BasePermission.DELETE);
+            permission.set(BasePermission.CREATE);
 			addPermission(experiment, new PrincipalSid(SecurityUtil.getUsername()),
 				permission);
 		}
@@ -90,7 +101,15 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 				page.getTotalElements());
 	}
 
-	@Override
+    @Override
+    public List<Experiment> findAllByAcl(Integer permission) {
+        List<String> authorities = SecurityUtil.getAuthorities(roleHierarchy);
+        List<Experiment> experiments = experimentRepository.findAllByAcl(authorities,
+                permission);
+        return experiments;
+    }
+
+    @Override
 	public Experiment findExperiment(Long id) {
 		Experiment experiment = experimentRepository.findOne(id);
 		experiment = setPermissionAndOwner(experiment);

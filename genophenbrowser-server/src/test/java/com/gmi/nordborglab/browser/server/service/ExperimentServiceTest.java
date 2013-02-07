@@ -148,6 +148,14 @@ public class ExperimentServiceTest extends BaseTest {
 		assertFalse((experiment.getUserPermission().getMask() & BasePermission.WRITE.getMask()) == BasePermission.WRITE.getMask()); 
 		assertFalse((experiment.getUserPermission().getMask() & BasePermission.DELETE.getMask()) == BasePermission.DELETE.getMask());
 	}
+
+    @Test
+    public void testFindAllByAcl() {
+        createTestUser("ROLE_ADMIN");
+        long count = repository.count();
+        long foundCount= service.findAllByAcl(BasePermission.WRITE.getMask()).size();
+        assertEquals(count,foundCount);
+    }
 	
 	
 	

@@ -79,6 +79,12 @@ public interface MainResources extends ClientBundle{
 	
 	@Source("images/plant3.png")
 	ImageResource plant3();
+
+    @Source("images/photo.png")
+    ImageResource photo();
+
+    @Source("images/file_add.png")
+    ImageResource file_add();
 	
 	@Source("style.css")
 	MainStyle style();

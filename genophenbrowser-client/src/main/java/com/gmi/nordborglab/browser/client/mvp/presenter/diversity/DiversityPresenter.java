@@ -27,7 +27,7 @@ import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 public class DiversityPresenter extends
 	Presenter<DiversityPresenter.MyView, DiversityPresenter.MyProxy> {
 
-	
+
 
 	public interface MyView extends View {
 		void clearBreadcrumbs(int size);

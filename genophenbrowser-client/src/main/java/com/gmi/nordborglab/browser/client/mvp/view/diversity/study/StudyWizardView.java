@@ -12,7 +12,7 @@ import com.gmi.nordborglab.browser.client.resources.DataGridStudyResources;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.ui.FlagCell;
 import com.gmi.nordborglab.browser.client.ui.HighlightCell;
-import com.gmi.nordborglab.browser.client.ui.HighlightCell.SearchTerm;
+import com.gmi.nordborglab.browser.client.util.SearchTerm;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.WizardPanel;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
@@ -143,7 +143,7 @@ public class StudyWizardView extends ViewWithUiHandlers<StudyWizardUiHandlers>
 	@UiField(provided = true)
 	SimplePager phenotypeDataGridPager;
 
-	private SearchTerm searchNameTerm = new SearchTerm(); 
+	private SearchTerm searchNameTerm = new SearchTerm();
 	private PieChart dataAccessionPiechart;
 	private final StudyCreateDriver studyCreateDriver;
 	private HTMLPanel emptyDataGridWidget = new HTMLPanel(

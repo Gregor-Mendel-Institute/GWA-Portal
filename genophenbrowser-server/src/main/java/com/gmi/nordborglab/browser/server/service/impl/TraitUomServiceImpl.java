@@ -261,5 +261,39 @@ public class TraitUomServiceImpl implements TraitUomService {
 		}
 		return page;
 	}
+
+    @Override
+    public List<TraitUom> findPhenotypesByExperimentAndAcl(Long id, int permission) {
+        final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
+        //TODO either change signature to always use WRITE permission or retrieve correct permission from int
+        final ImmutableList<Permission> permissions = ImmutableList.of(BasePermission.WRITE);
+        FluentIterable<TraitUom> traits = FluentIterable.from(traitUomRepository.findByExperimentId(id));
+        if (traits.size() > 0) {
+            final ImmutableBiMap<TraitUom,ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(traits.toImmutableList()).inverse();
+            final ImmutableMap<ObjectIdentity,Acl> acls = ImmutableMap.copyOf(aclService.readAclsById(identities.values().asList(), authorities));
+
+            Predicate<TraitUom> predicate = new Predicate<TraitUom>() {
+
+                @Override
+                public boolean apply(TraitUom trait) {
+                    boolean flag = false;
+                    ObjectIdentity identity = identities.get(trait);
+                    if (acls.containsKey(identity)) {
+                        Acl acl = acls.get(identity);
+                        try {
+                            if (acl.isGranted(permissions, authorities, false))
+                                flag = true;
+                        }catch (NotFoundException e) {
+
+                        }
+                    }
+                    return flag;
+                }
+            };
+            traits = traits.filter(predicate);
+
+        }
+        return traits.toImmutableList();
+    }
 }
 

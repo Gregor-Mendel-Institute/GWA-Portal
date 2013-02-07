@@ -31,7 +31,9 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
 	public PhenotypeRequest getContext() {
 		return rf.phenotypeRequest();
 	}
-
+    public void findAllByAcl(Receiver<List<PhenotypeProxy>> receiver, Long experimentId, int permission) {
+        rf.phenotypeRequest().findPhenotypesByExperimentAndAcl(experimentId,permission).with("traitOntologyTerm").fire(receiver);
+    }
 	public void findOne(Receiver<PhenotypeProxy> receiver, Long id) {
 		rf.phenotypeRequest().findPhenotype(id).with(PATHS).fire(receiver);
 	}
@@ -44,7 +46,7 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
 			Receiver<List<TraitProxy>> receiver) {
 		rf.traitRequest().findAllTraitValuesByStatisticType(phenotypeId,statisticTypeId).with("obsUnit.stock.passport.collection.locality").fire(receiver);
 	}
-	
-	
+
+
 
 }

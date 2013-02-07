@@ -1,0 +1,86 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+            >
+    <ui:style>
+        .filedroppanel {
+            border: 2px dashed #00848e;
+            background-color: #ebf5f7;
+            text-align: center;
+            color: #b8b8b8;
+            font-size: 2em;
+            font-family: Arial, sans-serif;
+            height: 250px;
+        }
+
+        .filedroppanel h1 {
+            line-height: 220px;
+        }
+
+        .fileinput {
+            visibility: hidden;
+        }
+
+        .phenotypeUploadButtonRow {
+            margin-top: 20px;
+        }
+
+        .fileSelectTable {
+            width:100%;
+        }
+    </ui:style>
+    <g:LayoutPanel ui:field="uploadPhenotypePanel">
+        <g:layer top="0" bottom="0">
+            <b:FluidContainer>
+                <b:FluidRow >
+                    <b:Column size="12">
+                        <g:HTMLPanel>
+                            <h4>Upload</h4>
+                            <p>Use on of the methods below to upload a phenotype to your experiment</p>
+                        </g:HTMLPanel>
+                    </b:Column>
+                </b:FluidRow>
+                <b:FluidRow>
+                    <b:Column size="12">
+                        <g:HTML ui:field="phenotypeFileDropPanel">
+                            <div class="{style.filedroppanel}">
+                                <h1>Drag and drop phenotype files from your computer here</h1>
+                            </div>
+                        </g:HTML>
+                    </b:Column>
+                </b:FluidRow>
+                <b:FluidRow addStyleNames="{style.phenotypeUploadButtonRow}">
+                    <b:Column size="3">
+                        <b:Controls>
+                            <b:Form ui:field="phenotypeUploadForm">
+                                <b:Button type="SUCCESS" icon="PLUS" ui:field="phenotypeFileBrowseBtn">Browse files...</b:Button>
+                                <b:FileUpload ui:field="phenotypeFileUploadBtn" addStyleNames="{style.fileinput}"></b:FileUpload>
+                            </b:Form>
+                        </b:Controls>
+                    </b:Column>
+                    <b:Column size="9">
+                        <g:HTMLPanel ui:field="fileSelectPanel" addStyleNames="fade">
+                            <table class="{style.fileSelectTable} table table-striped">
+                                <tbody>
+                                    <tr>
+                                        <td><span ui:field="phenotypeFileName"></span></td>
+                                        <td><span ui:field="phenotypeFileSize"></span></td>
+                                        <td><span ui:field="phenotypeFileExtCheck" /><span ui:field="phenotypeFileExt"></span></td>
+                                        <td>
+                                            <b:Button type="WARNING" icon="BAN_CIRCLE" ui:field="phenotypeFileUploadCancelBtn" visible="false">Cancel</b:Button>
+                                            <b:Button addStyleNames="pull-right" icon="UPLOAD" type="PRIMARY"  ui:field="phenotypeFileUploadStartBtn" visible="false">Upload</b:Button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </g:HTMLPanel>
+                    </b:Column>
+                </b:FluidRow>
+            </b:FluidContainer>
+        </g:layer>
+        <!--<g:layer top="0" bottom="0">
+            <g:HTMLPanel>Show uploaded values</g:HTMLPanel>
+
+        </g:layer>-->
+    </g:LayoutPanel>
+</ui:UiBinder>

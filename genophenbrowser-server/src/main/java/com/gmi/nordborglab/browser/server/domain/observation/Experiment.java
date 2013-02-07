@@ -11,6 +11,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.acl.AclExperimentIdentity;
@@ -22,9 +24,17 @@ import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 @SequenceGenerator(name="idSequence", sequenceName="observation.div_experiment_div_experiment_id_seq")
 public class Experiment extends BaseEntity {
 
+    @NotNull
+    @Size(min=2)
 	private String name;
+
+    @NotNull
+    @Size(min=2)
+    private String originator;
+
 	private String design;
-	private String originator;
+
+
 	private String comments;
 	
 	@OneToOne(mappedBy="experiment",cascade={CascadeType.PERSIST,CascadeType.MERGE})

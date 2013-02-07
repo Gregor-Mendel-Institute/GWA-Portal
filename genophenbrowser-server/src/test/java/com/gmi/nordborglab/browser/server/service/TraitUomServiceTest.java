@@ -62,6 +62,20 @@ public class TraitUomServiceTest extends BaseTest {
 		assertEquals("TO:0000344", page.getContent().get(0).getTraitOntologyTerm().getAcc());
 		assertNotNull(page.getContent().get(0).getTraitOntologyTerm().getChilds());
 	}
+
+    @Test
+    public void testFindPhenotypesByExperimentAndAclWithNoPermission() {
+        SecurityUtils.setAnonymousUser();
+        List<TraitUom> traits = service.findPhenotypesByExperimentAndAcl(1L,BasePermission.WRITE.getMask());
+        assertEquals(0L, traits.size());
+    }
+
+    @Test
+    public void testFindPhenotypesByExperimentAndAcl() {
+        createTestUser("ROLE_ADMIN");
+        List<TraitUom> traits = service.findPhenotypesByExperimentAndAcl(1L,BasePermission.WRITE.getMask());
+        assertEquals(107L, traits.size());
+    }
 	
 	@Test
 	public void testCountPhenotypesByExperiment() {

@@ -27,7 +27,7 @@ import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyWizardUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyWizardView.StudyCreateDriver;
-import com.gmi.nordborglab.browser.client.ui.HighlightCell.SearchTerm;
+import com.gmi.nordborglab.browser.client.util.SearchTerm;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ObsUnitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
@@ -283,11 +283,11 @@ public class StudyWizardPresenter extends
 				});
 	}
 
-	@Override
-	protected void revealInParent() {
-		RevealContentEvent.fire(this,
-				PhenotypeDetailTabPresenter.TYPE_SetTabContent, this);
-	}
+    @Override
+    protected void revealInParent() {
+        RevealContentEvent.fire(this,
+                PhenotypeDetailTabPresenter.TYPE_SetTabContent, this);
+    }
 
 	@Override
 	protected void onReset() {

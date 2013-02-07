@@ -20,4 +20,5 @@ public interface PhenotypeRequest extends RequestContext{
 	
 	Request<PhenotypePageProxy> findAll(String name,String experiment,String ontology,String protocol,int start,int size);
 
+    Request<List<PhenotypeProxy>> findPhenotypesByExperimentAndAcl(Long experimentId, int permission);
 }

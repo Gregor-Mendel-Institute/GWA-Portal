@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -47,6 +48,14 @@ public class ExperimentRepositoryTest extends BaseTest{
 		assertNotNull("couldn't generate id",actual.getId());
 		assertEquals("Common name is correct", "test",actual.getName());
 	}
+
+    @Test(expected = ConstraintViolationException.class)
+    public void testCreateConstraintViolation() {
+        Experiment created = new Experiment();
+        created.setName("");
+        Experiment actual = repository.save(created);
+        String test="test";
+    }
 	
 	@Test
 	public void findByAdministrator() {
@@ -98,4 +107,16 @@ public class ExperimentRepositoryTest extends BaseTest{
 		assertNotNull(experiment);
 		assertEquals(new Long(1L),experiment.getId());
 	}
+
+    @Test
+    public void findAllByAcl() {
+        List<String> permissions = new ArrayList<String>();
+        permissions.add("ROLE_ADMIN");
+        permissions.add("ROLE_USER");
+        permissions.add("ROLE_ANONYMOUS");
+        long count = repository.findAll().size();
+        long foundCount = repository.findAllByAcl(permissions,BasePermission.WRITE.getMask()).size();
+        assertEquals(count,foundCount);
+    }
+
 }

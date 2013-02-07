@@ -1,0 +1,143 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+             xmlns:c='urn:import:com.google.gwt.user.cellview.client'
+             xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
+             xmlns:incubator="urn:import:com.github.gwtbootstrap.client.ui.incubator">
+    <ui:with field="bootstrap" type="com.github.gwtbootstrap.client.ui.constants.Constants" />
+
+    <ui:style >
+        .experimentContainer {
+            margin-left: 20px;
+            margin-top: 20px;
+            overflow: auto;
+        }
+
+        .wizard {
+
+        }
+
+        .selectExperimentContainer {
+            margin-left: 20px;
+        }
+
+    </ui:style>
+
+    <gui:WizardPanel ui:field="wizard" addStyleNames="{style.wizard}">
+    <gui:page title="Experiment">
+        <g:FlowPanel addStyleNames="{style.experimentContainer}">
+            <g:HTMLPanel>
+                <div class="alert alert-info">
+                    Select an experiment or <b:Button icon="PLUS"  ui:field="createExperimentBtn" type="SUCCESS">Create new experiment</b:Button>
+                </div>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="selectExperimentPanel">
+                <div>
+                    <h4>Available experiments:</h4>
+                </div>
+                <div class="{style.selectExperimentContainer}">
+                   <g:FlowPanel ui:field="experimentsContainer" />
+                </div>
+            </g:HTMLPanel>
+            <b:Modal ui:field="createExperimentPanel" title="Create new experiment" backdrop="STATIC" keyboard="true" animation="true">
+                        <b:WellForm>
+                            <b:ControlLabel>Name</b:ControlLabel>
+                            <b:Tooltip text='Name of the experiment' trigger="FOCUS" placement="RIGHT"><b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="experimentNameTb"></b:TextBox></b:Tooltip>
+                            <b:ControlLabel>Originator</b:ControlLabel>
+                            <b:Tooltip text='Originator of the experiment' trigger="FOCUS" placement="RIGHT"><b:TextBox placeholder="Originator" alternateSize="XLARGE"  ui:field="experimentOriginatorTb"></b:TextBox></b:Tooltip>
+                            <b:ControlLabel>Design</b:ControlLabel>
+                            <b:Tooltip text='Design of the experiment' trigger="FOCUS" placement="RIGHT"><b:TextArea placeholder="Design" visibleLines="8" alternateSize="XLARGE" ui:field="experimentDesignTb"></b:TextArea></b:Tooltip>
+                        </b:WellForm>
+                <b:ModalFooter>
+                    <b:Button icon="FILE" type="PRIMARY" ui:field="saveExperimentBtn">Save</b:Button>
+                </b:ModalFooter>
+            </b:Modal>
+        </g:FlowPanel>
+    </gui:page>
+        <gui:page title="Phenotype">
+            <g:LayoutPanel ui:field="phenotypeContainterPanel">
+                <g:layer top="20px" height="70px" left="20px" right="0">
+                    <g:HTMLPanel>
+                        <div class="alert alert-info">
+                            Do you want to <b:Button type="LINK" ui:field="selectPhenotypeBtn">Select a phenotype</b:Button> or <b:Button ui:field="uploadPhenotypeBtn" type="PRIMARY">Upload phenotype</b:Button>
+                        </div>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="90px" bottom="0" left="20px" right="0">
+                    <g:LayoutPanel ui:field="selectPhenotypePanel">
+                        <g:layer left="0" width="290px">
+                            <g:LayoutPanel >
+                                <g:layer top="0" height="50px">
+                                    <b:InputAddOn appendIcon="SEARCH">
+                                        <b:TextBox placeholder="Filter phenotypes" ui:field="phenotypeSearchBox"></b:TextBox>
+                                    </b:InputAddOn>
+                                </g:layer>
+                                <g:layer top="50px" bottom="40px">
+                                    <g:ScrollPanel>
+                                        <c:CellList ui:field="phenotypeList" />
+                                    </g:ScrollPanel>
+                                </g:layer>
+                                <g:layer bottom="0" height="40px">
+                                    <g:HTMLPanel>
+                                        <g:InlineLabel ui:field="phenotypeCount" />
+                                    </g:HTMLPanel>
+                                </g:layer>
+                            </g:LayoutPanel>
+                        </g:layer>
+                        <g:layer left="295px" right="0">
+                            <g:HTMLPanel>Detailed information</g:HTMLPanel>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+                <g:layer top="90px" bottom="0" left="20px" right="0">
+                    <g:SimpleLayoutPanel ui:field="phenotypeUploadPanel" />
+                </g:layer>
+            </g:LayoutPanel>
+        </gui:page>
+        <gui:page title="Genotype">
+            <g:LayoutPanel >
+            <g:layer top="20px" height="70px" left="20px" right="0">
+                <g:HTMLPanel>
+                    <div class="alert alert-info">
+                       Select a genotype
+                    </div>
+                </g:HTMLPanel>
+            </g:layer>
+            <g:layer top="90px" bottom="0" left="20px" right="0">
+                <g:LayoutPanel >
+                    <g:layer left="0" width="290px">
+                        <g:LayoutPanel >
+                            <g:layer top="0px" bottom="0px">
+                                <g:ScrollPanel>
+                                    <c:CellList ui:field="genotypeList" />
+                                </g:ScrollPanel>
+                            </g:layer>
+                        </g:LayoutPanel>
+                    </g:layer>
+                    <g:layer left="295px" right="0">
+                        <g:HTMLPanel>Detailed information</g:HTMLPanel>
+                    </g:layer>
+                </g:LayoutPanel>
+            </g:layer>
+            </g:LayoutPanel>
+        </gui:page>
+        <gui:page title="Transformation">
+            <g:HTMLPanel>
+                Transformation
+            </g:HTMLPanel>
+        </gui:page>
+            <gui:page title="Method">
+                <g:HTMLPanel>
+                    Method
+                </g:HTMLPanel>
+            </gui:page>
+        <gui:page title="Summary">
+            <g:HTMLPanel>
+                Summary
+            </g:HTMLPanel>
+        </gui:page>
+
+    </gui:WizardPanel>
+</ui:UiBinder>
