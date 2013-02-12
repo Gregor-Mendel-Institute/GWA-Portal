@@ -13,5 +13,5 @@ public interface HelperService {
 	List<BreadcrumbItem> getBreadcrumbs(Long id,String object);
 	AppData getAppData();
 
-    PhenotypeUploadData getPhenotypeUploadData(InputStream inputStream) throws IOException;
+    PhenotypeUploadData getPhenotypeUploadData(byte[] inputStream) throws IOException;
 }

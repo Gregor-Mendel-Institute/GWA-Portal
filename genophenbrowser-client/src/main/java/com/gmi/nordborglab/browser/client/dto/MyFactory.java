@@ -5,4 +5,5 @@ import com.google.web.bindery.autobean.shared.AutoBeanFactory;
 
 public interface MyFactory extends AutoBeanFactory {
 	AutoBean<UserInfo> userInfo();
+    AutoBean<PhenotypeUploadData> phenotypeUploadData();
 }

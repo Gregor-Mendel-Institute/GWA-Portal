@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.server.rest;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,7 +16,7 @@ public class PhenotypeValue {
     private Long stockId;
     private Long passportId;
     private String accessionName;
-    private Map<String,Object> values;
+    private List<String> values;
     private boolean hasParseError = false;
     private boolean isIdKnown = false;
 
@@ -47,7 +48,7 @@ public class PhenotypeValue {
         return accessionName;
     }
 
-    public Map<String, Object> getValues() {
+    public List<String> getValues() {
         return values;
     }
 
@@ -67,7 +68,7 @@ public class PhenotypeValue {
         this.accessionName = accessionName;
     }
 
-    public void setValues(Map<String, Object> values) {
+    public void setValues(List<String> values) {
         this.values = values;
     }
 

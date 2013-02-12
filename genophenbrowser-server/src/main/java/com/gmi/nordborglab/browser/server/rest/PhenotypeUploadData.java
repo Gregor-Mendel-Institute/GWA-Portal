@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.server.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,39 +12,23 @@ import java.util.List;
  */
 public class PhenotypeUploadData {
 
-    private boolean hasError=false;
     private String name;
     private String unitOfMeasure;
     private String protocol;
     private String traitOntology;
     private String environmentOntology;
-
-    private List<PhenotypeValue> phenotypeValues;
+    private List<PhenotypeValue> phenotypeValues = new ArrayList<PhenotypeValue>();
+    private String errorMessage;
+    private List<String> valueHeader;
+    private int errorValueCount = 0;
 
 
     public PhenotypeUploadData() {
     }
 
-    public PhenotypeUploadData(boolean hasError, String name, String unitOfMeasure, String protocol, String traitOntology, String environmentOntology, List<PhenotypeValue> phenotypeValues) {
-        this.hasError = hasError;
-        this.name = name;
-        this.unitOfMeasure = unitOfMeasure;
-        this.protocol = protocol;
-        this.traitOntology = traitOntology;
-        this.environmentOntology = environmentOntology;
-        this.phenotypeValues = phenotypeValues;
-    }
-
-    public boolean isHasError() {
-        return hasError;
-    }
 
     public List<PhenotypeValue> getPhenotypeValues() {
         return phenotypeValues;
-    }
-
-    public void setHasError(boolean hasError) {
-        this.hasError = hasError;
     }
 
     public void setName(String name) {
@@ -88,6 +73,32 @@ public class PhenotypeUploadData {
 
     public String getEnvironmentOntology() {
         return environmentOntology;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setValueHeader(List<String> valueHeader) {
+        this.valueHeader = valueHeader;
+    }
+
+    public List<String> getValueHeader() {
+        return valueHeader;
+    }
+
+    public void addPhenotypeValue(PhenotypeValue phenotypeValue) {
+        if (phenotypeValue.isHasParseError() || phenotypeValue.isIdKnown())
+            errorValueCount++;
+        phenotypeValues.add(phenotypeValue);
+    }
+
+    public int getErrorValueCount() {
+        return errorValueCount;
     }
 }
 

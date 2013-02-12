@@ -9,6 +9,8 @@ import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.StudyGWASData;
 import com.gmi.nordborglab.browser.server.service.HelperService;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,9 +87,12 @@ public class RestProviderController {
     PhenotypeUploadData uploadPhenotype(@RequestParam("file")CommonsMultipartFile file) {
         PhenotypeUploadData data = null;
         try {
-            data = helperService.getPhenotypeUploadData(file.getInputStream());
+            byte[] csvData = IOUtils.toByteArray(file.getInputStream());
+            data = helperService.getPhenotypeUploadData(csvData);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        finally {
         }
         return data;
     }

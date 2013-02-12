@@ -1,17 +1,13 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 import javax.annotation.Resource;
 
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeValue;
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -235,31 +231,45 @@ public class HelperServiceImpl implements HelperService {
 	}
 
     @Override
-    public PhenotypeUploadData getPhenotypeUploadData(InputStream inputStream) throws IOException {
+    public PhenotypeUploadData getPhenotypeUploadData(byte[] csvData) throws IOException {
         PhenotypeUploadData data = new PhenotypeUploadData();
         ICsvListReader metaInformationReader = null;
         ICsvListReader valueHeaderReader = null;
-        ICsvMapReader  valueReader = null;
+        ICsvListReader  valueReader = null;
         try {
-            metaInformationReader = new CsvListReader(new InputStreamReader(inputStream), CsvPreference.STANDARD_PREFERENCE);
+
+            metaInformationReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
+
             final String[] metaHeader = metaInformationReader.getHeader(true);
             final Map<String, String> metaInfo = getMetaInformationFromHeader(metaHeader);
             updatePhenotypeUploadDataWithMetaInformation(data, metaInfo);
+
+
             final String[] valueHeader = metaInformationReader.getHeader(false);
             final int columnCount = valueHeader.length;
-            CellProcessor[] valueHeaderCellProccessors = createValueCellProcessors(columnCount);
+            data.setValueHeader(Arrays.asList(valueHeader).subList(1,valueHeader.length));
+
+            CellProcessor[] valueHeaderCellProccessors = createValueHeaderCellProcessors(columnCount);
             CellProcessor[] valueCellProcessors = createValueCellProcessors(columnCount);
-            valueHeaderReader = new CsvListReader(new InputStreamReader(inputStream), CsvPreference.STANDARD_PREFERENCE);
+
+            valueHeaderReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
             valueHeaderReader.getHeader(true);
             valueHeaderReader.read(valueHeaderCellProccessors);
 
-            valueReader = new CsvMapReader(new InputStreamReader(inputStream), CsvPreference.STANDARD_PREFERENCE);
+            valueReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
             valueReader.getHeader(true);
             valueReader.getHeader(false);
-            Map<String,Object> phenotypeValues = null;
-            while ((phenotypeValues= valueReader.read(valueHeader,valueCellProcessors))!=null) {
-                data.getPhenotypeValues().add(parseAndCheckPhenotypeValue(valueHeader[0],phenotypeValues));
+
+            List<String> phenotypeValues = null;
+            while ((phenotypeValues= valueReader.read())!=null) {
+                data.addPhenotypeValue(parseAndCheckPhenotypeValue(phenotypeValues));
             }
+        }
+        catch (SuperCsvCellProcessorException e) {
+            data.setErrorMessage(String.format("Error parsing header. '%s'",e.getMessage()));
+        }
+        catch (Exception e) {
+            data.setErrorMessage("General error reading csv file");
         }
         finally {
             if (metaInformationReader != null)
@@ -269,27 +279,35 @@ public class HelperServiceImpl implements HelperService {
         return data;
     }
 
-    private PhenotypeValue parseAndCheckPhenotypeValue(String passportIdHeader, Map<String,Object> phenotypeValues) {
+    private PhenotypeValue parseAndCheckPhenotypeValue(List<String> phenotypeValues) {
         boolean hasError = false;
         boolean isIdKnown = false;
         PhenotypeValue parsedValue = new PhenotypeValue() ;
         try {
-            String sourceId = phenotypeValues.get(passportIdHeader).toString();
-            phenotypeValues.remove(passportIdHeader);
-            parsedValue.setValues(phenotypeValues);
+            String sourceId = phenotypeValues.get(0);
+            parsedValue.setValues(phenotypeValues.subList(1,phenotypeValues.size()));
             parsedValue.setSourceId(sourceId);
             Long id = Long.parseLong(sourceId);
-
+            Long passportId = null;
+            Long stockId = null;
+            String accessionName = null;
             if (passportRepository.exists(id)) {
-                parsedValue.setPassportId(id);
+                Passport passport = passportRepository.findOne(id);
+                passportId = id;
                 isIdKnown = true;
+                accessionName = passport.getAccename();
+
             }
             else if (stockRepository.exists(id)) {
                 Stock stock = stockRepository.findOne(id);
-                parsedValue.setStockId(id);
+                stockId = id;
                 isIdKnown = true;
-                parsedValue.setPassportId(stock.getPassport().getId());
+                passportId = stock.getPassport().getId();
+                accessionName = stock.getPassport().getAccename();
             }
+            parsedValue.setAccessionName(accessionName);
+            parsedValue.setStockId(stockId);
+            parsedValue.setPassportId(passportId);
         }
         catch (Exception e) {
             hasError = true;
@@ -315,7 +333,7 @@ public class HelperServiceImpl implements HelperService {
     private static Map<String,String> getMetaInformationFromHeader(String[] header) {
         Map<String,String> metaInfo = new HashMap<String,String>();
         for (int i = 0;i<header.length;i++) {
-            String[] metaSplit = header[0].split("=");
+            String[] metaSplit = header[i].split("=");
             metaInfo.put(metaSplit[0].toLowerCase(),metaSplit[1]);
         }
         return metaInfo;
@@ -335,7 +353,7 @@ public class HelperServiceImpl implements HelperService {
         StringCellProcessor valueCell = new NotNull(new ParseDouble());
         CellProcessor[] processors = new CellProcessor[valueColumns];
         processors[0] = new NotNull(new ParseLong());
-        for (int i=1;i<=valueColumns;i++) {
+        for (int i=1;i<valueColumns;i++) {
             processors[i] = valueCell;
         }
         //TODO properly implement parse issues on the backend.
