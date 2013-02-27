@@ -17,6 +17,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDet
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyGWASPlotPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyTabPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASViewerPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.GermplasmPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportDetailPresenter;
@@ -80,4 +81,5 @@ public interface ClientGinjector extends Ginjector{
 	AsyncProvider<StudyOverviewPresenter> getStudyOverviewPresenter();
 	AsyncProvider<OntologyOverviewPresenter> getOntologyOverviewPresenter();
     AsyncProvider<BasicStudyWizardPresenter> getBasicStudyWizardPresenter();
+    AsyncProvider<GWASViewerPresenter> getGWASViewerPresenter();
 }

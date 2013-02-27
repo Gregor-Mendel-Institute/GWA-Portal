@@ -6,8 +6,10 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.StudyGWASData;
+import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.service.HelperService;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -34,6 +36,9 @@ public class RestProviderController {
 
     @Resource
     private HelperService helperService;
+
+    @Resource
+    private GWASDataService gwasService;
 	
 	@RequestMapping(method=RequestMethod.GET,value="/study/{id}/phenotypedata")
 	public @ResponseBody String getPhenotypeData(@PathVariable("id") Long id) {
@@ -96,6 +101,15 @@ public class RestProviderController {
         }
         return data;
     }
+
+    @RequestMapping(method = RequestMethod.POST,value="/gwas/upload")
+    public @ResponseBody Long uploadGWASResult(@RequestParam("file") CommonsMultipartFile file) throws IOException {
+       Long gwasResultId = null;
+       GWASResult gwasResult = gwasService.uploadGWASResult(file);
+       gwasResultId = gwasResult.getId();
+       return gwasResultId;
+    }
+
 
 
 }

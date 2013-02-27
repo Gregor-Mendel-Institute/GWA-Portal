@@ -21,7 +21,7 @@ public class NameTokens {
 	public static final String phenotypeoverview = "!phenotypes";
 	public static final String studyoverview = "!studyoverview";
 	public static final String ontologyoverview = "!ontologyoverview";
-
+    public static final String gwasViewer="!gwasViewer";
     public static final String basicstudywizard ="!studywizard";
 
     public static String getHome() {
@@ -104,5 +104,9 @@ public class NameTokens {
         return basicstudywizard;
     }
 
-	
+
+    public static String getGWASViewer() {
+        return gwasViewer;
+    }
+
 }

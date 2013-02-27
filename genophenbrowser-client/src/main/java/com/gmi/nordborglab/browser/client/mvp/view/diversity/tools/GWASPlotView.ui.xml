@@ -1,0 +1,17 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
+            >
+    <ui:style>
+        .gwas_container {
+            user-select:none;
+            -webkit-user-select:none;
+            -moz-user-select:none;
+
+        }
+    </ui:style>
+
+    <g:ScrollPanel>
+        <gui:ResizeableFlowPanel ui:field="container" addStyleNames="{style.gwas_container}" />
+    </g:ScrollPanel>
+</ui:UiBinder>

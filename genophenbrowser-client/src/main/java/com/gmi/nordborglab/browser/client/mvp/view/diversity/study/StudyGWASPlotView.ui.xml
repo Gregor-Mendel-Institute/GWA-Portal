@@ -7,16 +7,8 @@
 	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
 	ui:generateLocales='default'>
 	<ui:style>
-	.gwas_container {
-			user-select:none;
-			-webkit-user-select:none;
-			-moz-user-select:none;
 
-		}
 	</ui:style>
 
-	<g:ScrollPanel>
-		<gui:ResizeableFlowPanel ui:field="container"
-			addStyleNames="{style.gwas_container}" />
-	</g:ScrollPanel>
+	<g:SimpleLayoutPanel ui:field="gwasPlotContainer"></g:SimpleLayoutPanel>
 </ui:UiBinder>

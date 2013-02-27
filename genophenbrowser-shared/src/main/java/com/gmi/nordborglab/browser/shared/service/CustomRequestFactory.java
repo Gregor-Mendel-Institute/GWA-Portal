@@ -15,4 +15,5 @@ public interface CustomRequestFactory extends RequestFactory{
 	PassportRequest passportRequest();
 	StockRequest stockRequest();
 	SearchRequest searchRequest();
+    GWASDataRequest gwasDataRequest();
 }

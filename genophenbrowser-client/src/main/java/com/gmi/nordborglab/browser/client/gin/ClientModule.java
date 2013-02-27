@@ -33,6 +33,9 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyGWA
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyWizardPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASPlotPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASUploadWizardPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASViewerPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.GermplasmPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportDetailPresenter;
@@ -58,6 +61,9 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyDetailVi
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyGWASPlotView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyTabView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyWizardView;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASPlotView;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASUploadWizardView;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASViewerView;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.GermplasmView;
 import com.gmi.nordborglab.browser.client.mvp.view.home.BasicStudyWizardView;
 import com.gmi.nordborglab.browser.client.mvp.view.home.HomeView;
@@ -256,7 +262,11 @@ public class ClientModule extends AbstractPresenterModule {
 				OntologyOverviewView.class,
 				OntologyOverviewPresenter.MyProxy.class);
 
+        bindPresenter(GWASViewerPresenter.class,GWASViewerPresenter.MyView.class, GWASViewerView.class,GWASViewerPresenter.MyProxy.class);
+        bindPresenterWidget(GWASPlotPresenterWidget.class,GWASPlotPresenterWidget.MyView.class,GWASPlotView.class);
+
         bindSingletonPresenterWidget(PhenotypeUploadWizardPresenterWidget.class, PhenotypeUploadWizardPresenterWidget.MyView.class,PhenotypeUploadWizardView.class);
+        bindSingletonPresenterWidget(GWASUploadWizardPresenterWidget.class,GWASUploadWizardPresenterWidget.MyView.class,GWASUploadWizardView.class);
 	}
 
 	@Provides

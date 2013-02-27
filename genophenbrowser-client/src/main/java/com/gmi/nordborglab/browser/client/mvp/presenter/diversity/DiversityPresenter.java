@@ -145,6 +145,11 @@ public class DiversityPresenter extends
 			subItem = null;
 			getView().setActiveMenuItem(MENU_ITEM.STUDY, request);
 		}
+        else if (request.matchesNameToken(NameTokens.gwasViewer)) {
+            title="GWAS Viewer";
+            getView().setActiveMenuItem(MENU_ITEM.TOOLS,request);
+            getView().clearBreadcrumbs(0);
+        }
 		getView().setTitle(title);
 		Long id = null;
 		try {

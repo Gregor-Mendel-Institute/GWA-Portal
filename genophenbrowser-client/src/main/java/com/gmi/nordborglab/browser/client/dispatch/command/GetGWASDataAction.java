@@ -8,17 +8,22 @@ import com.google.gwt.http.client.Response;
 
 public class GetGWASDataAction extends RequestBuilderActionImpl<GetGWASDataActionResult> {
 
-	private final Long studyId;
+
+    public static enum TYPE {STUDY,GWASVIEWER}
+
+    private final TYPE type;
+	private final Long id;
 	
 	
-	public GetGWASDataAction(final Long studyId) {
-		this.studyId = studyId;
+	public GetGWASDataAction(final Long id,final TYPE type) {
+		this.type = type;
+        this.id = id;
 	}
 	
 
 	@Override
 	public String getUrl() {
-		return getUrl(studyId);
+		return getUrl(id,type);
 	}
 
 	@Override
@@ -28,7 +33,7 @@ public class GetGWASDataAction extends RequestBuilderActionImpl<GetGWASDataActio
 		return new GetGWASDataActionResult(gwasDataDTO);
 	}
 	
-	public static String getUrl(Long studyId)  {
-		return BaseURL + "?studyId="+studyId;
+	public static String getUrl(Long id,TYPE type)  {
+		return BaseURL + "?id="+id+"&type="+type.toString().toLowerCase();
 	}
 }

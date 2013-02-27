@@ -33,9 +33,8 @@ public class HDF5GWASDataServlet implements HttpRequestHandler {
 			DataSourceHelper.executeDataSourceServletFlow(request, response, gwasDataTableGenerator,false);
 		}
 		else {
-			Long studyId = Long.parseLong(request.getParameter("studyId"));
 			try {
-				GWASDataForClient data = gwasDataTableGenerator.getGWASDataForClient(studyId);
+				GWASDataForClient data = gwasDataTableGenerator.getGWASDataForClient(request);
 				String json = new Gson().toJson(data);
 			    response.setContentType("application/json");
 			    response.setCharacterEncoding("UTF-8");

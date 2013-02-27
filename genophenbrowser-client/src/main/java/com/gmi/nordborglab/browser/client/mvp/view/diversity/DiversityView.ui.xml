@@ -181,6 +181,20 @@
 									</base:ListItem>
 								</base:UnorderedList>
 							</b:AccordionGroup>
+                            <b:AccordionGroup ui:field="toolsAccGroup">
+                                <b:customTrigger>
+                                    <g:HTMLPanel addStyleNames="{style.header_section}">
+                                        <div class="{style.icon_header}">&#9874;</div>
+                                        <span>Tools</span>
+                                    </g:HTMLPanel>
+                                </b:customTrigger>
+                                <base:UnorderedList addStyleNames="{style.submenu_container}">
+                                    <base:ListItem addStyleNames="{style.submenu_item}">
+                                        <g:InlineHyperlink text="GWAS Viewer"
+                                                           targetHistoryToken="{nameTokens.getGWASViewer}"></g:InlineHyperlink>
+                                    </base:ListItem>
+                                </base:UnorderedList>
+                            </b:AccordionGroup>
 						</b:Accordion>
 					</g:layer>
 				</g:LayoutPanel>

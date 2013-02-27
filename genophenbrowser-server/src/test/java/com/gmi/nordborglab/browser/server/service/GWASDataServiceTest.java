@@ -1,15 +1,15 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.server.repository.GWASResultRepository;
+import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,16 +25,20 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.domain.pages.ObsUnitPage;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import static org.junit.Assert.*;
+
 public class GWASDataServiceTest extends BaseTest {
 
 	@Resource
 	private GWASDataService gwasDataService;
+
+    @Resource
+    private GWASResultRepository gwasResultRepository;
 
 
 	@Resource
@@ -50,9 +54,9 @@ public class GWASDataServiceTest extends BaseTest {
 	}
 
 	@Test
-	public void testGetGWASData() {
+	public void testGetGWASDataByStudyId() {
 		SecurityUtils.setAnonymousUser();
-		ImmutableMap<String,GWASData> map = gwasDataService.getGWASData(1L);
+		ImmutableMap<String,GWASData> map = gwasDataService.getGWASDataByStudyId(1L);
 		assertNotNull("nothing returned",map);
 		assertTrue("chromosome found",map.containsKey("chr1"));
 		GWASData data = map.get("chr1");
@@ -61,9 +65,26 @@ public class GWASDataServiceTest extends BaseTest {
 		assertEquals("Chr is incorred","chr1", data.getChr());
 		assertEquals("Size of positions is not equal to size of pvalues",data.getPositions().length,data.getPvalues().length);
 	}
+
+    @Test
+    public void testDeleteGWASResult() {
+        Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
+        SecurityUtils.makeActiveUser("TEST", "TEST",adminAuthorities);
+        GWASResult gwasResult = gwasResultRepository.findOne(855L);
+        List<GWASResult> list = gwasDataService.delete(gwasResult);
+        assertEquals(0,list.size());
+        assertNull(gwasResultRepository.findOne(855L));
+    }
+
+    @Test(expected=AccessDeniedException.class)
+    public void testDeleteGWASResultAccessedDenied() {
+        SecurityUtils.setAnonymousUser();
+        GWASResult gwasResult = gwasResultRepository.findOne(855L);
+        List<GWASResult> list = gwasDataService.delete(gwasResult);
+    }
 	
 	@Test(expected=AccessDeniedException.class)
-	public void testGetGWASDataAccessDenied() {
+	public void testGetGWASDataByStudyIdAccessDenied() {
 		Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
 	    SecurityUtils.makeActiveUser("TEST", "TEST",adminAuthorities);
 		ObjectIdentity oid = new ObjectIdentityImpl(Experiment.class,1L);
@@ -79,6 +100,36 @@ public class GWASDataServiceTest extends BaseTest {
 		}
 		aclService.updateAcl(acl);
 		SecurityUtils.setAnonymousUser();
-		gwasDataService.getGWASData(1L);
+		gwasDataService.getGWASDataByStudyId(1L);
 	}
+
+
+    @Test
+    public void testGetGWASDataByViewerId() {
+        Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
+        SecurityUtils.makeActiveUser("TEST","TEST", adminAuthorities);
+        ImmutableMap<String,GWASData> map = gwasDataService.getGWASDataByViewerId(750L);
+        assertNotNull("nothing returned",map);
+        assertTrue("chromosome found",map.containsKey("chr1"));
+        GWASData data = map.get("chr1");
+        assertNotNull("Positions are null",data.getPositions());
+        assertNotNull("pvalues are null",data.getPvalues());
+        assertEquals("Chr is incorred","chr1", data.getChr());
+        assertEquals("Size of positions is not equal to size of pvalues",data.getPositions().length,data.getPvalues().length);
+    }
+
+    @Test(expected=AccessDeniedException.class)
+    public void testGetGWASDataByViewerIdAccessDenied() {
+        SecurityUtils.setAnonymousUser();
+        gwasDataService.getGWASDataByViewerId(750L);
+    }
+
+    @Test(expected=AccessDeniedException.class)
+    public void testGWASUploadDataAccessionDeniedForAnonymousUser() {
+        SecurityUtils.setAnonymousUser();
+        try {
+            gwasDataService.uploadGWASResult(null);
+        }
+        catch (IOException e) {}
+    }
 }
