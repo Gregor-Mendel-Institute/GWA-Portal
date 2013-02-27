@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -17,6 +18,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Acl;
@@ -115,7 +117,9 @@ public class ExperimentServiceTest extends BaseTest {
 		List<Permission> permissions = new ArrayList<Permission>();
 		permissions.add(BasePermission.ADMINISTRATION);
 		assertTrue(acl.isGranted(permissions, sids, false));
-		
+        List<Sid> adminSids = Arrays.asList((Sid)new GrantedAuthoritySid("ROLE_ADMIN"));
+        acl = aclService.readAclById(oid, adminSids);
+        assertTrue(acl.isGranted(permissions,adminSids,false));
 		savedExperiment.setName("modified");
 		Experiment modifiedExperiment = service.save(savedExperiment);
 		assertNotNull(savedExperiment);
