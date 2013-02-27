@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.service;
 
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
@@ -98,6 +99,8 @@ public class CdvServiceTest extends BaseTest {
 		assertEquals("test", study.getName());
 		assertNotNull(study.getTraits());
 		assertEquals(1L, study.getTraits().size());
+        assertNotNull(study.getStudyDate());
+        assertEquals("TEST",study.getProducer());
 	}
 	
 	@Test(expected=RuntimeException.class)
@@ -143,6 +146,17 @@ public class CdvServiceTest extends BaseTest {
 		assertNotNull(traits);
 		assertEquals(334, traits.size());
 	}
+
+    @Test
+    public void tesFindAlleleAssayWithStats() {
+        List<AlleleAssay> alleleAssays = service.findAlleleAssaysWithStats(1L, 2L);
+        assertNotNull(alleleAssays);
+        assertEquals(2,alleleAssays.size());
+        assertEquals(167,alleleAssays.get(0).getAvailableAllelesCount());
+        assertEquals(167,alleleAssays.get(0).getTraitValuesCount());
+        assertEquals(0,alleleAssays.get(1).getAvailableAllelesCount());
+        assertEquals(167,alleleAssays.get(1).getTraitValuesCount());
+    }
 	
 	@Test(expected=AccessDeniedException.class)
 	public void testFindStudiesByPhenotypeIdAccessedDenied() {
@@ -163,4 +177,6 @@ public class CdvServiceTest extends BaseTest {
 		SecurityUtils.setAnonymousUser();
 		service.findStudiesByPhenotypeId(1L, 0, 50);
 	}
+
+
 }
