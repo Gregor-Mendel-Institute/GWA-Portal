@@ -12,4 +12,13 @@ public interface StudyProtocolProxy extends EntityProxy {
 	
 	public String getAnalysisMethod();
 	public void setAnalysisMethod(String analysisMethod);
+
+    public String getType();
+    public void setType(String type);
+
+    public String getFullname();
+    public void setFullname(String fullname);
+    public String getDescription();
+    public void setDescription(String description);
+
 }

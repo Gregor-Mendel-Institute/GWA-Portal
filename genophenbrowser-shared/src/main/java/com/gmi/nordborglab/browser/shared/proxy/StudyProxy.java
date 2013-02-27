@@ -41,5 +41,8 @@ public interface StudyProxy extends EntityProxy {
 	public Set<TraitProxy> getTraits();
 	
 	public PhenotypeProxy getPhenotype();
+
+    public void setTransformation(TransformationProxy transformation);
+    public TransformationProxy getTransformation();
 	
 }
