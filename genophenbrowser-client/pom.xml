@@ -30,7 +30,7 @@
 		<gwtquery.version>1.2.0</gwtquery.version>
 		<jukito.version>1.1</jukito.version>
 		<gwtchosen.version>1.1.0</gwtchosen.version>
-		<gwtbootstrap.version>2.1.1.0-SNAPSHOT</gwtbootstrap.version>
+		<gwtbootstrap.version>2.2.1.0-SNAPSHOT</gwtbootstrap.version>
 		<gwasgeneviewer.version>0.4.12-SNAPSHOT</gwasgeneviewer.version>
 		<gwtmaps.version>3.8.0-beta2</gwtmaps.version>
 		<geochart.version>0.1.4-SNAPSHOT</geochart.version>
@@ -43,11 +43,12 @@
 			<url>http://gwtquery-plugins.googlecode.com/svn/mavenrepo</url>
 		</repository>
 		<!-- for gwt-bootstrap-snapshots -->
-		<repository>
-			<id>sonatype-snapshot</id>
-			<name>Sonatype-snapshots</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		</repository>
+        <repository>
+            <id>sonatype</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
+        </repository>
 	</repositories>
 
 	<dependencies>
@@ -287,6 +288,23 @@
 					<noserver>true</noserver>
 					<runTarget>${runTarget}</runTarget>
 				</configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-user</artifactId>
+                        <version>${gwt.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-dev</artifactId>
+                        <version>${gwt.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-codeserver</artifactId>
+                        <version>${gwt.version}</version>
+                    </dependency>
+                </dependencies>
 			</plugin>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
