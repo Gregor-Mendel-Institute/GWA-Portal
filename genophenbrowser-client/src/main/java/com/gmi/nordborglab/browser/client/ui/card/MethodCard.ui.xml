@@ -1,0 +1,109 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
+    <ui:style type="com.gmi.nordborglab.browser.client.ui.card.MethodCard.MyStyle">
+        .card {
+            background: white;
+            float: left;
+            padding: 10px 15px 10px;
+            margin-top: 30px;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            -webkit-transition: box-shadow 0.2s linear, color 0.2s linear;
+            -moz-transition: box-shadow 0.2s linear, color 0.2s linear;
+            -o-transition: box-shadow 0.2s linear, color 0.2s linear;
+            -ms-transition: box-shadow 0.2s linear, color 0.2s linear;
+            transition: box-shadow 0.2s linear, color 0.2s linear;
+            width: 100%;
+            margin: 0 auto;
+            -webkit-box-shadow: 0 2px 10px 2px #CDCECF;
+            -moz-box-shadow: 0 2px 10px 2px #cdcecf;
+            box-shadow: 0 2px 10px 2px #CDCECF;
+            min-width: 260px;
+            cursor: pointer;
+            box-sizing:border-box;
+            width:260px;
+        }
+
+        .card_selected {
+            -webkit-box-shadow: 0px 0px 5px 0px green !important;
+            -moz-box-shadow: 0px 0px 5px 0px green !important;
+            box-shadow: 0px 0px 5px 0px green !important;
+            cursor: text !important;
+        }
+
+        .card li {
+            display: inline-block;
+            padding-right: 25px;
+            font-size: 120%;
+        }
+
+        .title {
+            margin-bottom: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .ok {
+            color: green;
+            font-weight: bold;
+            font-size: 200%;
+        }
+
+        .empty_ok {
+            color: #EEE;
+            font-weight: bold;
+            font-size: 200%;
+            cursor: pointer;
+        }
+
+        .stats_icon {
+            font-family: EntypoRegular;
+            font-size: 38px;
+            margin-right: 10px;
+            margin-left: 6px;
+        }
+
+        .sub_title {
+            font-size: 80%;
+            color: #666;
+            margin-left: 5px;
+            height:20px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card_container {
+            margin-right:30px;
+            margin-bottom:20px;
+            float:left;
+        }
+        .card_container:focus {
+            -webkit-box-shadow: 0px 0px 5px 0px green !important;
+            -moz-box-shadow: 0px 0px 5px 0px green !important;
+            box-shadow: 0px 0px 5px 0px green !important;
+            outline:none;
+        }
+    </ui:style>
+
+    <g:FocusPanel addStyleNames="{style.card_container}" ui:field="focusPanel">
+        <g:HTMLPanel>
+            <div class="{style.card}" ui:field="card">
+                <h4 class="{style.title}" ui:field="title"></h4>
+                <p class="{style.sub_title}" ui:field="subtitle"></p>
+                <ul class="unstyled">
+                    <li>
+                        <span class="{style.stats_icon} ">&#128214;</span><span ui:field="runTimeDuration"></span>
+                    </li>
+                </ul>
+                <p>
+                    <span clasS="label label-success" ui:field="typeLabel">MIXED</span>
+                    <b:Icon type="OK" addStyleNames="pull-right {style.empty_ok}" ui:field="selectIcon"/>
+                </p>
+            </div>
+        </g:HTMLPanel>
+    </g:FocusPanel>
+</ui:UiBinder>

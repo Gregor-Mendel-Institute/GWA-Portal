@@ -1,4 +1,4 @@
-package com.gmi.nordborglab.browser.client.ui;
+package com.gmi.nordborglab.browser.client.ui.card;
 
 import com.gmi.nordborglab.browser.client.util.SearchTerm;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
@@ -24,7 +24,7 @@ import com.google.inject.Inject;
  * Time: 2:47 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PhenotypeCard extends AbstractCell<PhenotypeProxy>{
+public class PhenotypeCardRenderer {
 
     public interface MyStyle extends CssResource {
 
@@ -37,17 +37,16 @@ public class PhenotypeCard extends AbstractCell<PhenotypeProxy>{
 
     private static final String replaceString = "<span style='color:red;font-weight:bold;'>$1</span>";
     private final Renderer uiRenderer;
-    private final SearchTerm searchTerm;
+
 
     @Inject
-    public PhenotypeCard(final Renderer uiRenderer, final SearchTerm searchTerm) {
+    public PhenotypeCardRenderer(final Renderer uiRenderer) {
         super();
         this.uiRenderer = uiRenderer;
-        this.searchTerm = searchTerm;
     }
 
-    @Override
-    public void render(Context context, PhenotypeProxy phenotype, SafeHtmlBuilder sb) {
+
+    public void render(SearchTerm searchTerm,PhenotypeProxy phenotype,SafeHtmlBuilder sb) {
         SafeHtmlBuilder builder = new SafeHtmlBuilder();
         if (searchTerm != null) {
             RegExp searchRegExp = searchTerm.getSearchRegExp();
@@ -75,7 +74,5 @@ public class PhenotypeCard extends AbstractCell<PhenotypeProxy>{
         uiRenderer.render(sb,name,traitOntology,unitType,numberOfStudies,numberOfObsUnits);
     }
 
-    public SearchTerm getSearchTerm() {
-        return searchTerm;
-    }
+
 }

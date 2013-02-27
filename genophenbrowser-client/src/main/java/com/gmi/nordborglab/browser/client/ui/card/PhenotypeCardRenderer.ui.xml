@@ -1,0 +1,132 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+
+    <ui:with field="name" type='com.google.gwt.safehtml.shared.SafeHtml' />
+    <ui:with field="traitOntology" type='java.lang.String' />
+    <ui:with field="unitType" type='java.lang.String' />
+    <ui:with field="numberOfStudies" type='java.lang.String' />
+    <ui:with field="traitValuesCount" type='java.lang.String' />
+
+
+
+    <ui:style type="com.gmi.nordborglab.browser.client.ui.card.PhenotypeCardRenderer.MyStyle">
+        .card {
+            background: white;
+            padding: 10px 15px 10px;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            -webkit-transition: box-shadow 0.2s linear, color 0.2s linear;
+            -moz-transition: box-shadow 0.2s linear, color 0.2s linear;
+            -o-transition: box-shadow 0.2s linear, color 0.2s linear;
+            -ms-transition: box-shadow 0.2s linear, color 0.2s linear;
+            transition: box-shadow 0.2s linear, color 0.2s linear;
+            margin: 0 auto;
+            -webkit-box-shadow: 0 2px 10px 2px #CDCECF;
+            -moz-box-shadow: 0 2px 10px 2px #cdcecf;
+            box-shadow: 0 2px 10px 2px #CDCECF;
+            cursor: pointer;
+            box-sizing: border-box;
+            width: 260px;
+        }
+
+        .card_selected {
+            -webkit-box-shadow: 0px 0px 5px 0px green !important;
+            -moz-box-shadow: 0px 0px 5px 0px green !important;
+            box-shadow: 0px 0px 5px 0px green !important;
+            cursor: text !important;
+        }
+
+        .card li {
+            display: inline-block;
+            padding-right: 15px;
+            font-size: 120%;
+        }
+
+        .title {
+            margin-bottom: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .ok {
+            color: green;
+            font-weight: bold;
+            font-size: 200%;
+        }
+
+        .empty_ok {
+            color: #EEE;
+            font-weight: bold;
+            font-size: 200%;
+            cursor: pointer;
+        }
+
+        .stats_icon {
+            font-family: EntypoRegular;
+            font-size: 38px;
+            margin-right: 5px;
+            margin-left: 6px;
+        }
+
+        .sub_title {
+            font-size: 80%;
+            color: #666;
+            margin-left: 5px;
+            height: 20px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card_container {
+            margin-right: 30px;
+            margin-bottom: 20px;
+        }
+
+        .card_container:focus {
+            -webkit-box-shadow: 0px 0px 5px 0px green !important;
+            -moz-box-shadow: 0px 0px 5px 0px green !important;
+            box-shadow: 0px 0px 5px 0px green !important;
+            outline: none;
+        }
+
+    </ui:style>
+
+    <div class="{style.card_container}">
+            <div class="{style.card}">
+                <h4 class="{style.title}" >
+                    <ui:safehtml from="{name}" />
+                 </h4>
+                <p class="{style.sub_title}">
+                    <ui:text from="{traitOntology}" />
+                </p>
+                <ul class="unstyled">
+                    <li>
+                        <span class="{style.stats_icon}">&#59148;</span>
+                        <span>
+                            <ui:text from="{unitType}"/>
+                        </span>
+                    </li>
+                    <li> <span class="{style.stats_icon}">&#128214;</span>
+                        <span>
+                            <ui:text from="{numberOfStudies}"/>
+                        </span>
+                    </li>
+                    <li> <span class="{style.stats_icon}">&#128362;</span>
+                        <span>
+                            <ui:text from="{traitValuesCount}"/>
+                        </span>
+                    </li>
+                </ul>
+                <p>
+                    <span class="label label-success">
+                        <!--<ui:text from="{permission}" />-->
+                        PUBLIC
+                    </span>
+                    <i class="pull-right {style.empty_ok} icon-ok-circle" />
+
+                </p>
+            </div>
+    </div>
+</ui:UiBinder>

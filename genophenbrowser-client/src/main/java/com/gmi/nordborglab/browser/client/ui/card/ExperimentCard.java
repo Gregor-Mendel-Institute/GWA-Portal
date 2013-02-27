@@ -1,4 +1,4 @@
-package com.gmi.nordborglab.browser.client.ui;
+package com.gmi.nordborglab.browser.client.ui.card;
 
 import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
@@ -13,7 +13,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
 
 /**
  * Created with IntelliJ IDEA.

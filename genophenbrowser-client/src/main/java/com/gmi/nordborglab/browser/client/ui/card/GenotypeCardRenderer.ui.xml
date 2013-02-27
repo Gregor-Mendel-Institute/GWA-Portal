@@ -7,7 +7,7 @@
     <ui:with field="overlap" type='java.lang.String' />
     <ui:with field="overlapLabelStyle" type='java.lang.String' />
 
-    <ui:style type="com.gmi.nordborglab.browser.client.ui.PhenotypeCard.MyStyle">
+    <ui:style type="com.gmi.nordborglab.browser.client.ui.card.PhenotypeCardRenderer.MyStyle">
         .card {
             background: white;
             padding: 10px 15px 10px;
@@ -80,10 +80,8 @@
         }
 
         .card_container {
-            margin-right:20px;
+            margin-right:30px;
             margin-bottom:20px;
-            margin-top:10px;
-            margin-left:10px;
         }
         .card_container:focus {
             -webkit-box-shadow: 0px 0px 5px 0px green !important;

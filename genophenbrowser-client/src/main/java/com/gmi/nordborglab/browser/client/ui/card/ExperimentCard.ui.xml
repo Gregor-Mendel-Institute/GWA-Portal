@@ -1,17 +1,13 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
 
-    <ui:with field="name" type='com.google.gwt.safehtml.shared.SafeHtml' />
-    <ui:with field="traitOntology" type='java.lang.String' />
-    <ui:with field="unitType" type='java.lang.String' />
-    <ui:with field="numberOfStudies" type='java.lang.String' />
-    <ui:with field="numberOfObsUnits" type='java.lang.String' />
-
-
-
-    <ui:style type="com.gmi.nordborglab.browser.client.ui.PhenotypeCard.MyStyle">
+    <ui:style type="com.gmi.nordborglab.browser.client.ui.card.ExperimentCard.MyStyle">
         .card {
             background: white;
+            float: left;
             padding: 10px 15px 10px;
+            margin-top: 30px;
             -webkit-border-radius: 6px;
             -moz-border-radius: 6px;
             border-radius: 6px;
@@ -20,13 +16,15 @@
             -o-transition: box-shadow 0.2s linear, color 0.2s linear;
             -ms-transition: box-shadow 0.2s linear, color 0.2s linear;
             transition: box-shadow 0.2s linear, color 0.2s linear;
+            width: 100%;
             margin: 0 auto;
             -webkit-box-shadow: 0 2px 10px 2px #CDCECF;
             -moz-box-shadow: 0 2px 10px 2px #cdcecf;
             box-shadow: 0 2px 10px 2px #CDCECF;
+            min-width: 260px;
             cursor: pointer;
             box-sizing:border-box;
-            width:250px;
+            width:260px;
         }
 
         .card_selected {
@@ -38,7 +36,7 @@
 
         .card li {
             display: inline-block;
-            padding-right: 15px;
+            padding-right: 25px;
             font-size: 120%;
         }
 
@@ -65,7 +63,7 @@
         .stats_icon {
             font-family: EntypoRegular;
             font-size: 38px;
-            margin-right: 5px;
+            margin-right: 10px;
             margin-left: 6px;
         }
 
@@ -80,10 +78,9 @@
         }
 
         .card_container {
-            margin-right:20px;
+            margin-right:30px;
             margin-bottom:20px;
-            margin-top:10px;
-            margin-left:10px;
+            float:left;
         }
         .card_container:focus {
             -webkit-box-shadow: 0px 0px 5px 0px green !important;
@@ -93,40 +90,25 @@
         }
     </ui:style>
 
-    <div class="{style.card_container}">
-            <div class="{style.card}">
-                <h4 class="{style.title}" >
-                    <ui:safehtml from="{name}" />
-                 </h4>
-                <p class="{style.sub_title}">
-                    <ui:text from="{traitOntology}" />
-                </p>
-                <ul class="unstyled">
-                    <li>
-                        <span class="{style.stats_icon}">&#59148;</span>
-                        <span>
-                            <ui:text from="{unitType}"/>
-                        </span>
-                    </li>
-                    <li> <span class="{style.stats_icon}">&#128214;</span>
-                        <span>
-                            <ui:text from="{numberOfStudies}"/>
-                        </span>
-                    </li>
-                    <li> <span class="{style.stats_icon}">&#128362;</span>
-                        <span>
-                            <ui:text from="{numberOfObsUnits}"/>
-                        </span>
-                    </li>
-                </ul>
-                <p>
-                    <span class="label label-success">
-                        <!--<ui:text from="{permission}" />-->
-                        PUBLIC
-                    </span>
-                    <i class="pull-right {style.empty_ok} icon-ok-circle" />
+    <g:FocusPanel addStyleNames="{style.card_container}">
+        <g:HTMLPanel>
+        <div class="{style.card}" ui:field="card">
+            <h4 class="{style.title}" ui:field="title"></h4>
+            <p class="{style.sub_title}" ui:field="subtitle"></p>
+            <ul class="unstyled">
+                <li>
+                    <span class="{style.stats_icon} ">&#10002;</span><span ui:field="phenotypeCountLabel"></span>
+                </li>
 
-                </p>
-            </div>
-    </div>
+                <li>
+                    <span class="{style.stats_icon} ">&#128214;</span><span ui:field="studyCountLabel"></span>
+                </li>
+            </ul>
+            <p>
+                <span clasS="label label-success" ui:field="permissionLabel">PUBLIC</span>
+                <b:Icon type="OK" addStyleNames="pull-right {style.empty_ok}" ui:field="selectIcon"/>
+            </p>
+        </div>
+        </g:HTMLPanel>
+    </g:FocusPanel>
 </ui:UiBinder>
