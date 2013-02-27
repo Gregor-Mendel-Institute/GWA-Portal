@@ -1,6 +1,7 @@
-package com.gmi.nordborglab.browser.client.dto;
+package com.gmi.nordborglab.browser.shared.proxy;
 
-import com.google.gwt.query.client.js.JsMap;
+import com.google.web.bindery.requestfactory.shared.ProxyForName;
+import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
 import java.util.List;
 
@@ -11,7 +12,10 @@ import java.util.List;
  * Time: 10:44 AM
  * To change this template use File | Settings | File Templates.
  */
-public interface PhenotypeValue {
+
+@ProxyForName(value="com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue")
+public interface PhenotypeUploadValueProxy extends ValueProxy {
+
     String getSourceId();
 
     Long getStockId();
@@ -25,4 +29,5 @@ public interface PhenotypeValue {
     boolean hasParseError();
 
     boolean isIdKnown();
+
 }
