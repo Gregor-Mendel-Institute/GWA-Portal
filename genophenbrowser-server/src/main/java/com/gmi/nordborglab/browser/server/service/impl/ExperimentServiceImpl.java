@@ -8,10 +8,7 @@ import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.domain.CumulativePermission;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.domain.*;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.acls.model.Acl;
 import org.springframework.security.acls.model.MutableAcl;
@@ -55,7 +52,6 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
 	@Transactional(readOnly = false)
 	@Override
-
 	public Experiment save(@Valid Experiment experiment) {
         boolean isNewRecord = experiment.getId() == null;
 		experiment = experimentRepository.save(experiment);
@@ -68,6 +64,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
             permission.set(BasePermission.CREATE);
 			addPermission(experiment, new PrincipalSid(SecurityUtil.getUsername()),
 				permission);
+            addPermission(experiment,new GrantedAuthoritySid("ROLE_ADMIN"),permission);
 		}
 		experiment = setPermissionAndOwner(experiment);
 		return experiment;
