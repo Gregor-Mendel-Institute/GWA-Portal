@@ -85,6 +85,12 @@ public class TraitRepositoryTest extends BaseTest{
 		assertNotNull(traits);
 		assertEquals(334, traits.size());
 	}
+
+    @Test
+    public void testNumberOfObsUnits() {
+        Long count = repository.countNumberOfTraitValues(1L,2L);
+        assertEquals(167,count.longValue());
+    }
 	
 	public static void assertTrait(Trait actual) {
 		assertNotNull("create did not work",actual);

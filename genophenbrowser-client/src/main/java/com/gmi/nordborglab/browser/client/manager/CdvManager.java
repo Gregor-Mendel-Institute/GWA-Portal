@@ -1,11 +1,14 @@
 package com.gmi.nordborglab.browser.client.manager;
 
+import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.service.CdvRequest;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.shared.Receiver;
+
+import java.util.List;
 
 public class CdvManager extends RequestFactoryManager<CdvRequest> {
 
@@ -32,5 +35,10 @@ public class CdvManager extends RequestFactoryManager<CdvRequest> {
 		getContext().findAll(name,phenotype,experiment,alleleAssayId, studyProtocolId,start,size).with("content.alleleAssay","content.protocol","content.phenotype.experiment").fire(receiver);
 	}
 
+
+    public void findAlleleAssaysWithStats(Receiver<List<AlleleAssayProxy>> receiver, Long phenotypeId, Long statisticTypeId) {
+        getContext().findAlleleAssaysWithStats(phenotypeId,statisticTypeId).with("polyType","scoringTechType").fire(receiver);
+
+    }
 
 }

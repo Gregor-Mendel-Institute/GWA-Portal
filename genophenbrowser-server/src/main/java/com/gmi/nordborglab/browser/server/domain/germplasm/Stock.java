@@ -1,9 +1,6 @@
 package com.gmi.nordborglab.browser.server.domain.germplasm;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -109,9 +106,6 @@ public class Stock extends BaseEntity{
 		return obsUnits;
 	}
 
-	public void setObsUnits(List<ObsUnit> obsUnits) {
-		this.obsUnits = obsUnits;
-	}
 
 	public String getPedigreeData() {
 		return pedigreeData;

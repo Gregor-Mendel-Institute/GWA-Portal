@@ -21,6 +21,9 @@ import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 public class StudyProtocol extends BaseEntity {
 	
 	private String analysis_method;
+    private String type;
+    private String fullname;
+    private String description;
 	
 	@OneToMany(mappedBy="protocol",cascade={CascadeType.PERSIST,CascadeType.MERGE})
 	private List<Study> studies = new ArrayList<Study>();
@@ -41,4 +44,28 @@ public class StudyProtocol extends BaseEntity {
 		return Collections.unmodifiableList(studies);
 	}
 
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

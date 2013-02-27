@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypePageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServiceName;
@@ -21,4 +22,6 @@ public interface PhenotypeRequest extends RequestContext{
 	Request<PhenotypePageProxy> findAll(String name,String experiment,String ontology,String protocol,int start,int size);
 
     Request<List<PhenotypeProxy>> findPhenotypesByExperimentAndAcl(Long experimentId, int permission);
+
+    Request<Long> savePhenotypeUploadData(Long experimentId,PhenotypeUploadDataProxy data);
 }

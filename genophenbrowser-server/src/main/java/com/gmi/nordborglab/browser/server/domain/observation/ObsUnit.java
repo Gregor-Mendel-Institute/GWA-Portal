@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.observation;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.AttributeOverride;
@@ -34,7 +35,7 @@ public class ObsUnit extends BaseEntity {
 	private Stock stock;
 	
 	@OneToMany(mappedBy="obsUnit",cascade={CascadeType.PERSIST,CascadeType.MERGE})
-	private Set<Trait> traits;
+	private Set<Trait> traits = new HashSet<Trait>();
 	
 	@ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
 	@JoinColumn(name="div_locality_id")
@@ -62,12 +63,14 @@ public class ObsUnit extends BaseEntity {
 	}
 	public void setExperiment(Experiment experiment) {
 		this.experiment = experiment;
+        experiment.getObsUnits().add(this);
 	}
 	public Stock getStock() {
 		return stock;
 	}
 	public void setStock(Stock stock) {
 		this.stock = stock;
+        stock.getObsUnits().add(this);
 	}
 	public Locality getLocality() {
 		return locality;

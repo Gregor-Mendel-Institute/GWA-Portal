@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.server.service;
 
 import java.util.List;
 
+import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -23,4 +24,7 @@ public interface TraitUomService {
 	TraitUomPage findAll(String name,String experiment,String ontology,String protocol,int start,int size);
 
     List<TraitUom> findPhenotypesByExperimentAndAcl(Long id,int permission);
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    Long savePhenotypeUploadData(Long experimentId,PhenotypeUploadData data);
 }

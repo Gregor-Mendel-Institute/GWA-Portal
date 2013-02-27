@@ -16,4 +16,7 @@ public interface TraitRepository extends JpaRepository<Trait, Long> {
 	
 	List<Trait> findAllByStudiesId(Long studyId);
 
+    @Query("SELECT COUNT(t) from Trait t WHERE t.traitUom.id = :phenotypeId AND t.statisticType.id = :statisticTypeId")
+    Long countNumberOfTraitValues(@Param("phenotypeId") Long phenotypeId,@Param("statisticTypeId") Long statisticTypeId);
+
 }

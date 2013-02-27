@@ -1,33 +1,32 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
-import static com.gmi.nordborglab.browser.server.domain.specifications.TraitUomPredicates.localTraitNameContains;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Resource;
 
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import com.gmi.nordborglab.browser.server.domain.AppData;
+import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
+import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import com.gmi.nordborglab.browser.server.repository.PassportRepository;
+import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
+import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
+import com.gmi.nordborglab.browser.server.service.HelperService;
+import com.google.common.collect.*;
 import org.elasticsearch.client.Client;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.model.AccessControlEntry;
-import org.springframework.security.acls.model.Acl;
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.NotFoundException;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
+import org.springframework.security.acls.domain.*;
+import org.springframework.security.acls.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
-import com.gmi.nordborglab.browser.server.domain.pages.PassportPage;
 import com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
@@ -38,20 +37,20 @@ import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.TraitUomService;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.mysema.query.BooleanBuilder;
+import org.springframework.web.context.support.WebApplicationObjectSupport;
 
 @Service
 @Transactional(readOnly = true)
-public class TraitUomServiceImpl implements TraitUomService {
+public class TraitUomServiceImpl extends WebApplicationObjectSupport implements TraitUomService  {
 	
 	@Resource
 	protected Client client;
-	
+
+    @Resource
+    private HelperService helperService;
+
+    @Resource
+    private PassportRepository passportRepository;
 	
 	@Resource
 	private TraitUomRepository traitUomRepository;
@@ -101,7 +100,7 @@ public class TraitUomServiceImpl implements TraitUomService {
 		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
 		final ImmutableList<Permission> permissions = ImmutableList.of(BasePermission.READ);
 		FluentIterable<TraitUom> traits = FluentIterable.from(traitsToFilter);
-		if (traits.size() > 0) {
+		if (traits .size() > 0) {
 			final ImmutableBiMap<TraitUom,ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(traits.toImmutableList()).inverse();
 			final ImmutableMap<ObjectIdentity,Acl> acls = ImmutableMap.copyOf(aclService.readAclsById(identities.values().asList(), authorities));
 			
@@ -292,8 +291,122 @@ public class TraitUomServiceImpl implements TraitUomService {
             };
             traits = traits.filter(predicate);
 
+            for (TraitUom traitUom:traits) {
+                Set<StatisticType> statisticTypeToReturn = new HashSet<StatisticType>();
+                List<Object[]> statisticTypes = traitUomRepository.countTraitsForStatisticType(traitUom.getId());
+                for (Object[] statisticTypeWithCount:  statisticTypes) {
+                    StatisticType type = (StatisticType) statisticTypeWithCount[0];
+                    type.setNumberOfTraits((Long)statisticTypeWithCount[1]);
+                    statisticTypeToReturn.add(type);
+                }
+                traitUom.setStatisticTypes(statisticTypeToReturn);
+                traitUom = setPermissionAndOwner(traitUom);
+                if (traitUom.getToAccession() != null) {
+                    traitUom.setTraitOntologyTerm(termRepository.findByAcc(traitUom.getToAccession()));
+                }
+            }
         }
         return traits.toImmutableList();
+    }
+
+    @Transactional(readOnly = false)
+    @Override
+    public Long savePhenotypeUploadData(Long experimentId, PhenotypeUploadData data) {
+        checkNotNull(data.getValueHeader());
+        checkNotNull(data.getPhenotypeUploadValues());
+        Experiment experiment =  experimentRepository.findOne(experimentId);
+        checkNotNull(experiment);
+        List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
+        final ImmutableList<Permission> permissions = ImmutableList.of(BasePermission.WRITE);
+        ObjectIdentity oid = new ObjectIdentityImpl(Experiment.class,
+                experimentId);
+        Acl acl = aclService.readAclById(oid, authorities);
+        if (!acl.isGranted(permissions,authorities,false))
+            throw new AccessDeniedException("No permission");
+        ImmutableMap<Long,ObsUnit> lookUpForObsUnit = getObsUnitMap(experiment.getObsUnits());
+        List<StatisticType> statisticTypes = getStatisticTypesFromString(data.getValueHeader());
+        TraitUom traitUom = new TraitUom();
+        traitUom.setLocalTraitName(data.getName());
+        traitUom.setTraitProtocol(data.getProtocol());
+        traitUom.setEoAccession(data.getEnvironmentOntology());
+        traitUom.setToAccession(data.getTraitOntology());
+        for (PhenotypeUploadValue value : data.getPhenotypeUploadValues()) {
+            ObsUnit obsUnit = lookUpForObsUnit.get(value.getPassportId());
+            if (obsUnit == null) {
+                Passport passport = passportRepository.findOne(value.getPassportId());
+                Stock stock = passport.getStocks().get(0);
+                obsUnit = new ObsUnit();
+                obsUnit.setStock(stock);
+                obsUnit.setExperiment(experiment);
+            }
+
+            for (int i = 0;i<value.getValues().size();i++) {
+                String phenValue = value.getValues().get(i);
+                StatisticType statisticType = statisticTypes.get(i);
+                Trait trait = new Trait();
+                trait.setStatisticType(statisticType);
+                trait.setValue(phenValue);
+                trait.setObsUnit(obsUnit);
+                traitUom.addTrait(trait);
+            }
+        }
+        traitUom = traitUomRepository.save(traitUom);
+        CumulativePermission permission = new CumulativePermission();
+        permission.set(BasePermission.ADMINISTRATION);
+        permission.set(BasePermission.WRITE);
+        permission.set(BasePermission.READ);
+        permission.set(BasePermission.DELETE);
+        permission.set(BasePermission.CREATE);
+        addPermission(traitUom, new PrincipalSid(SecurityUtil.getUsername()),
+                permission);
+        addPermission(traitUom,new GrantedAuthoritySid("ROLE_ADMIN"),permission);
+
+
+        return traitUom.getId();
+    }
+
+
+
+    private List<StatisticType> getStatisticTypesFromString(List<String> valueHeader) {
+        //TODO cache it
+        AppData appData = helperService.getAppData();
+        List<StatisticType> statisticTypes = new ArrayList<StatisticType>();
+        for (int i =0;i<valueHeader.size();i++) {
+            for (StatisticType type : appData.getStatisticTypeList()) {
+                if (type.getStatType().equalsIgnoreCase(valueHeader.get(i))) {
+                    statisticTypes.add(type);
+                    break;
+                }
+            }
+        }
+        return statisticTypes;
+    }
+
+    private ImmutableMap<Long,ObsUnit> getObsUnitMap(Set<ObsUnit> obsunits) {
+        Map<Long,ObsUnit> map = Maps.newHashMap();
+        for (ObsUnit obsUnit:obsunits) {
+            Long passportId =obsUnit.getStock().getPassport().getId();
+            if (!map.containsKey(passportId))
+                map.put(passportId,obsUnit);
+        }
+        return ImmutableMap.copyOf(map);
+    }
+
+    public void addPermission(TraitUom traitUom, Sid recipient,
+                              Permission permission) {
+        MutableAcl acl;
+        ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,
+                traitUom.getId());
+
+        try {
+            acl = (MutableAcl) aclService.readAclById(oid);
+        } catch (NotFoundException nfe) {
+            acl = aclService.createAcl(oid);
+        }
+        acl.insertAce(acl.getEntries().size(), permission, recipient, true);
+        aclService.updateAcl(acl);
+        logger.debug("Added permission " + permission + " for Sid " + recipient
+                + " Phenotype " + traitUom);
     }
 }
 

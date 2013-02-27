@@ -17,7 +17,7 @@ public class PhenotypeUploadData {
     private String protocol;
     private String traitOntology;
     private String environmentOntology;
-    private List<PhenotypeValue> phenotypeValues = new ArrayList<PhenotypeValue>();
+    private List<PhenotypeUploadValue> phenotypeUploadValues = new ArrayList<PhenotypeUploadValue>();
     private String errorMessage;
     private List<String> valueHeader;
     private int errorValueCount = 0;
@@ -27,8 +27,8 @@ public class PhenotypeUploadData {
     }
 
 
-    public List<PhenotypeValue> getPhenotypeValues() {
-        return phenotypeValues;
+    public List<PhenotypeUploadValue> getPhenotypeUploadValues() {
+        return phenotypeUploadValues;
     }
 
     public void setName(String name) {
@@ -51,8 +51,8 @@ public class PhenotypeUploadData {
         this.environmentOntology = environmentOntology;
     }
 
-    public void setPhenotypeValues(List<PhenotypeValue> phenotypeValues) {
-        this.phenotypeValues = phenotypeValues;
+    public void setPhenotypeUploadValues(List<PhenotypeUploadValue> phenotypeUploadValues) {
+        this.phenotypeUploadValues = phenotypeUploadValues;
     }
 
     public String getName() {
@@ -91,14 +91,18 @@ public class PhenotypeUploadData {
         return valueHeader;
     }
 
-    public void addPhenotypeValue(PhenotypeValue phenotypeValue) {
-        if (phenotypeValue.isHasParseError() || phenotypeValue.isIdKnown())
+    public void addPhenotypeValue(PhenotypeUploadValue phenotypeUploadValue) {
+        if (phenotypeUploadValue.hasParseError() || !phenotypeUploadValue.isIdKnown())
             errorValueCount++;
-        phenotypeValues.add(phenotypeValue);
+        phenotypeUploadValues.add(phenotypeUploadValue);
     }
 
     public int getErrorValueCount() {
         return errorValueCount;
+    }
+
+    public void setErrorValueCount(int errorValueCount) {
+        this.errorValueCount = errorValueCount;
     }
 }
 

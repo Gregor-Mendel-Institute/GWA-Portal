@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.phenotype;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.AttributeOverride;
@@ -35,7 +37,7 @@ public class TraitUom extends BaseEntity {
     private AclTraitUomIdentity acl;
 	
 	@OneToMany(mappedBy="traitUom",cascade={CascadeType.PERSIST,CascadeType.MERGE})
-	private Set<Trait> traits;
+	private Set<Trait> traits = new HashSet<Trait>();
 	
 	private String local_trait_name;
 	private String trait_protocol;
@@ -78,7 +80,7 @@ public class TraitUom extends BaseEntity {
 	}
 	
 	public Set<Trait> getTraits() {
-		return traits;
+		return Collections.unmodifiableSet(traits);
 	}
 	
 	public Set<StatisticType> getStatisticTypes() {
@@ -158,4 +160,9 @@ public class TraitUom extends BaseEntity {
 	public void setTraitOntologyTerm(Term traitOntologyTerm) {
 		this.traitOntologyTerm = traitOntologyTerm;
 	}
+
+    public void addTrait(Trait trait) {
+        traits.add(trait);
+        trait.setTraitUom(this);
+    }
 }

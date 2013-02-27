@@ -1,9 +1,16 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
 import com.github.gwtbootstrap.client.ui.*;
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.FileUpload;
+import com.github.gwtbootstrap.client.ui.TextArea;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.ValueListBox;
 import com.github.gwtbootstrap.client.ui.constants.AlertType;
-import com.gmi.nordborglab.browser.client.dto.PhenotypeUploadData;
-import com.gmi.nordborglab.browser.client.dto.PhenotypeValue;
+import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
+import com.gmi.nordborglab.browser.client.util.HTML5Helper;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadValueProxy;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeUploadWizardUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
@@ -11,7 +18,6 @@ import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.dom.client.DataTransfer;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -23,10 +29,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.LayoutPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
@@ -34,10 +37,8 @@ import elemental.client.Browser;
 import elemental.events.Event;
 import elemental.events.EventListener;
 import elemental.events.ProgressEvent;
-import elemental.html.Blob;
 import elemental.html.File;
 import elemental.html.FileList;
-import elemental.js.html.JsFormData;
 import elemental.xml.XMLHttpRequest;
 
 import java.util.List;
@@ -51,32 +52,13 @@ import java.util.List;
  */
 public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploadWizardUiHandlers> implements PhenotypeUploadWizardPresenterWidget.MyView {
 
+
+
     interface Binder extends UiBinder<Widget, PhenotypeUploadWizardView> {
 
     }
-    private static class ExtDataTransfer extends DataTransfer {
 
-        protected ExtDataTransfer() {}
-        public final native FileList getFiles() /*-{
-            return this.files;
-        }-*/;
-
-    }
-    private static class ExtJsFormData extends JsFormData {
-
-        protected ExtJsFormData() {}
-
-        public final native static ExtJsFormData newExtJsForm() /*-{
-            return new $wnd.FormData();
-        }-*/;
-
-        public final native void append(String name,Blob file,String filename) /*-{
-            this.append(name,file,filename);
-        }-*/;
-
-    }
-
-    private static class ValueColumn extends Column<PhenotypeValue,String> {
+    private static class ValueColumn extends Column<PhenotypeUploadValueProxy,String> {
 
         private final int headerIx;
         private ValueColumn(int headerIx) {
@@ -85,7 +67,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         }
 
         @Override
-        public String getValue(PhenotypeValue object) {
+        public String getValue(PhenotypeUploadValueProxy object) {
             return object == null ? null :  object.getValues().get(headerIx);
         }
     }
@@ -118,13 +100,16 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     @UiField
     CustomPager phenotypeValuePager;
     @UiField(provided=true)
-    DataGrid<PhenotypeValue> phenotypeValuesDataGrid;
+    DataGrid<PhenotypeUploadValueProxy> phenotypeValuesDataGrid;
 
     @UiField TextBox phenotypeNameTb;
     @UiField TextBox traitOntologyTb;
     @UiField TextBox environmentOntologyTb;
     @UiField TextArea protocolTb;
     @UiField(provided=true) ValueListBox<UnitOfMeasureProxy> unitOfMeasureDd;
+
+    @UiField ControlGroup phentoypeNameGroup;
+    @UiField ControlGroup unitOfMeasureGroup;
 
     @UiField Alert phenotypeValueStatus;
 
@@ -134,7 +119,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     public PhenotypeUploadWizardView(final Binder binder,
                                      final CustomDataGridResources dataGridResources) {
 
-        phenotypeValuesDataGrid = new DataGrid<PhenotypeValue>(50,dataGridResources);
+        phenotypeValuesDataGrid = new DataGrid<PhenotypeUploadValueProxy>(50,dataGridResources);
         unitOfMeasureDd = new ValueListBox<UnitOfMeasureProxy>(new AbstractRenderer<UnitOfMeasureProxy>() {
             @Override
             public String render(UnitOfMeasureProxy object) {
@@ -149,9 +134,9 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
     private void initCellTable() {
 
-        phenotypeValuesDataGrid.addColumn(new Column<PhenotypeValue, Number>(new NumberCell()) {
+        phenotypeValuesDataGrid.addColumn(new Column<PhenotypeUploadValueProxy, Number>(new NumberCell()) {
             @Override
-            public Long getValue(PhenotypeValue object) {
+            public Long getValue(PhenotypeUploadValueProxy object) {
                 if (object == null)
                     return null;
                 Long id = null;
@@ -167,15 +152,15 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
             }
         },"ID");
 
-        phenotypeValuesDataGrid.addColumn(new Column<PhenotypeValue, String>(new TextCell()) {
+        phenotypeValuesDataGrid.addColumn(new Column<PhenotypeUploadValueProxy, String>(new TextCell()) {
             @Override
-            public String getValue(PhenotypeValue object) {
+            public String getValue(PhenotypeUploadValueProxy object) {
                 return object == null ? null : object.getAccessionName();
             }
         },"Name");
     }
 
-    private <C> void addColumn(Column<PhenotypeValue,C> column,String header) {
+    private <C> void addColumn(Column<PhenotypeUploadValueProxy,C> column,String header) {
         phenotypeValuesDataGrid.addColumn(column,header);
     }
 
@@ -230,7 +215,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         e.stopPropagation();;
         e.preventDefault();
 
-        ExtDataTransfer dataTransfer =  (ExtDataTransfer)e.getDataTransfer();
+        HTML5Helper.ExtDataTransfer dataTransfer =  (HTML5Helper.ExtDataTransfer)e.getDataTransfer();
         FileList fileList = dataTransfer.getFiles();
         updateSelectedPhenotypeFileTable(fileList);
     }
@@ -289,7 +274,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
             }
         });
-        ExtJsFormData formData = ExtJsFormData.newExtJsForm();
+        HTML5Helper.ExtJsFormData formData = HTML5Helper.ExtJsFormData.newExtJsForm();
         formData.append("file",file,file.getName());
         xhr.open("POST","/provider/phenotype/upload");
         xhr.send(formData);
@@ -306,17 +291,17 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     }
 
     @Override
-    public void showPhenotypeValuePanel(PhenotypeUploadData data, UnitOfMeasureProxy unitOfMeasure) {
+    public void showPhenotypeValuePanel(PhenotypeUploadDataProxy data, UnitOfMeasureProxy unitOfMeasure) {
         resetUploadForm();
         String message = "All phentoype values successfully parsed";
         AlertType messageType = AlertType.SUCCESS;
+        if (data.getErrorValueCount() > 0) {
+            messageType = AlertType.ERROR;
+            message = data.getErrorValueCount()+" of "+data.getPhenotypeUploadValues().size() + " phenotype values haven an error.";
+        }
         if (data.getErrorMessage() != null && !data.getErrorMessage().equals("")) {
             messageType = AlertType.ERROR;
             message = data.getErrorMessage();
-        }
-        if (data.getErrorValueCount() > 0) {
-            messageType = AlertType.ERROR;
-            message = message + " "+data.getErrorValueCount()+" of "+data.getPhenotypeValues().size() + " phenotype values haven an error.";
         }
         phenotypeValueStatus.setType(messageType);
         phenotypeValueStatus.setText(message);
@@ -351,7 +336,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     }
 
     @Override
-    public HasData<PhenotypeValue> getPhenotypeValueDisplay() {
+    public HasData<PhenotypeUploadValueProxy> getPhenotypeValueDisplay() {
         return phenotypeValuesDataGrid;
     }
 
@@ -363,8 +348,38 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         }
     }
 
+    @Override
+    public HasText getPhenotypeName() {
+        return phenotypeNameTb;
+    }
+
+    @Override
+    public UnitOfMeasureProxy getUnitOfMeasure() {
+        return unitOfMeasureDd.getValue();
+    }
+
+    @Override
+    public void showConstraintViolations() {
+        updateConstraints();
+    }
+
+    private void updateConstraints() {
+        if (phenotypeNameTb.getText().equals(""))
+            phentoypeNameGroup.setType(ControlGroupType.ERROR);
+        else
+            phentoypeNameGroup.setType(ControlGroupType.NONE);
+
+        if (unitOfMeasureDd.getValue() == null)
+            unitOfMeasureGroup.setType(ControlGroupType.ERROR);
+        else
+            unitOfMeasureGroup.setType(ControlGroupType.NONE);
+
+    }
+
     public final native void logPhenotypeValue(String value) /*-{
         return $wnd.console.log(value);
     }-*/;
+
+
 
 }

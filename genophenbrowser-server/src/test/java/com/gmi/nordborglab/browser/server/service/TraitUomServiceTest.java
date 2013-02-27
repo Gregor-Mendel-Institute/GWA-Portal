@@ -6,15 +6,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
+import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.domain.GrantedAuthoritySid;
+import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.model.*;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -40,6 +49,10 @@ public class TraitUomServiceTest extends BaseTest {
 	
 	@Resource 
 	private UserRepository userRepository;
+
+    @Resource
+    private MutableAclService aclService;
+
 
 	@Before
 	public void setUp() {
@@ -185,9 +198,111 @@ public class TraitUomServiceTest extends BaseTest {
 		assertEquals(0,traitPage.getNumber());
 		assertEquals(600, traitPage.getTotalElements());
 	}
-	
-	
-	private void createTestUser(String role) {
+
+    @Test(expected = AccessDeniedException.class)
+    public void testSavePhenotypeUploadNoAnnonymousAllowed() {
+        SecurityUtils.setAnonymousUser();
+        service.savePhenotypeUploadData(1L,new PhenotypeUploadData());
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void testSavePhenotypeUploadNoPermissionFound() {
+        createTestUser("ROLE_USER");
+        service.savePhenotypeUploadData(1L,new PhenotypeUploadData());
+    }
+
+    @Test
+    public void testSavePhenotypeUploadInExistingExperiment() {
+        createTestUser("ROLE_ADMIN");
+        PhenotypeUploadData data = new PhenotypeUploadData();
+        getPhenotypeUploadData(data);
+        Long id = service.savePhenotypeUploadData(1L,data);
+        TraitUom traitUom = repository.findOne(id);
+        assertPhenotypeUploaddata(data,traitUom);
+        assertEquals(1,traitUom.getExperiment().getId().longValue());
+    }
+
+    @Test
+    public void testSavePhenotypeUploadInEmptyExperiment() {
+        createTestUser("ROLE_ADMIN");
+        PhenotypeUploadData data = new PhenotypeUploadData();
+        getPhenotypeUploadData(data);
+        Long id = service.savePhenotypeUploadData(5451L,data);
+        TraitUom traitUom = repository.findOne(id);
+        assertPhenotypeUploaddata(data,traitUom);
+        assertEquals(5451L,traitUom.getExperiment().getId().longValue());
+    }
+
+    @Test
+    public void testSavePhenotypeUploadAndPermission() {
+        createTestUser("ROLE_USER");
+        PhenotypeUploadData data = new PhenotypeUploadData();
+        getPhenotypeUploadData(data);
+        Long id = service.savePhenotypeUploadData(5600L,data);
+        TraitUom traitUom = repository.findOne(id);
+        Acl acl;
+        ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,id);
+        List<Sid> sids = new ArrayList<Sid>();
+        sids.add(new PrincipalSid(SecurityUtils.TEST_USERNAME));
+        acl = aclService.readAclById(oid, sids);
+        assertPermission(acl,sids);
+        List<Sid> adminSids = Arrays.asList((Sid)new GrantedAuthoritySid("ROLE_ADMIN"));
+        acl = aclService.readAclById(oid, adminSids);
+        assertPermission(acl,sids);
+        traitUom.setLocalTraitName("modified234");
+        TraitUom modifiedTraitUom = service.save(traitUom);
+        assertNotNull(traitUom);
+        assertEquals("modified234", modifiedTraitUom.getLocalTraitName());
+    }
+
+    private void getPhenotypeUploadData(PhenotypeUploadData data) {
+        data.setName("Testphenotype");
+        data.setTraitOntology("TO:TEST");
+        data.setEnvironmentOntology("TO:TEST");
+        data.setProtocol("TEST");
+        data.setUnitOfMeasure("days");
+        data.setValueHeader(Arrays.asList("mean", "std"));
+        List<PhenotypeUploadValue> values = new ArrayList<PhenotypeUploadValue>();
+        PhenotypeUploadValue value = null;
+        value = new PhenotypeUploadValue();
+        value.setPassportId(1L);
+        value.setValues(Arrays.asList("1", "2"));
+        values.add(value);
+        value = new PhenotypeUploadValue();
+        value.setPassportId(6959L);
+        value.setValues(Arrays.asList("3", "4"));
+        values.add(value);
+        data.setPhenotypeUploadValues(values);
+    }
+
+    private void assertPhenotypeUploaddata(PhenotypeUploadData data,TraitUom traitUom) {
+        assertEquals(data.getName(),traitUom.getLocalTraitName());
+        assertEquals(data.getTraitOntology(),traitUom.getToAccession());
+        assertEquals(data.getEnvironmentOntology(),traitUom.getEoAccession());
+        assertEquals(data.getProtocol(),traitUom.getTraitProtocol());
+        assertNotNull(traitUom.getTraits());
+        assertEquals(4,traitUom.getTraits().size());
+        assertNotNull(traitUom.getExperiment());
+        for (PhenotypeUploadValue value : data.getPhenotypeUploadValues()) {
+            for (int i=0;i<value.getValues().size();i++) {
+                String val = value.getValues().get(0);
+                boolean found = false;
+                for (Trait trait:traitUom.getTraits()) {
+                    if (trait.getValue().equals(val))  {
+                        assertEquals(data.getValueHeader().get(i),trait.getStatisticType().getStatType());
+                        assertEquals(value.getPassportId(),trait.getObsUnit().getStock().getPassport().getId());
+                        found = true;
+                        break;
+                    }
+                }
+                assertTrue(found);
+                break;
+            }
+        }
+    }
+
+
+    private void createTestUser(String role) {
 		AppUser appUser = new AppUser("test@test.at");
 		appUser.setOpenidUser(false);
 		Md5PasswordEncoder encoder = new Md5PasswordEncoder();
@@ -203,4 +318,12 @@ public class TraitUomServiceTest extends BaseTest {
 		userRepository.save(appUser);
 		SecurityUtils.makeActiveUser(SecurityUtils.TEST_USERNAME, SecurityUtils.TEST_PASSWORD,grantedAuthorities);
 	}
+
+    private void assertPermission(Acl acl,List<Sid> sids) {
+        assertTrue(acl.isGranted(Arrays.asList(BasePermission.ADMINISTRATION), sids, false));
+        assertTrue(acl.isGranted(Arrays.asList(BasePermission.WRITE), sids, false));
+        assertTrue(acl.isGranted(Arrays.asList(BasePermission.READ), sids, false));
+        assertTrue(acl.isGranted(Arrays.asList(BasePermission.DELETE), sids, false));
+        assertTrue(acl.isGranted(Arrays.asList(BasePermission.READ), sids, false));
+    }
 }

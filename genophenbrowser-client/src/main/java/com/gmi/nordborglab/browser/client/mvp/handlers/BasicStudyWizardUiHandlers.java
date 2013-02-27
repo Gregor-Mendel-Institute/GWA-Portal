@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.handlers;
 
+import com.gmi.nordborglab.browser.shared.proxy.StatisticTypeProxy;
 import com.gwtplatform.mvp.client.UiHandlers;
 
 /**
@@ -25,4 +26,6 @@ public interface BasicStudyWizardUiHandlers extends UiHandlers{
     void onSelectedExperimentChanged();
 
     void onSaveExperiment(String name, String originator, String design);
+
+    void onSelectStatisticType(StatisticTypeProxy statisticType);
 }

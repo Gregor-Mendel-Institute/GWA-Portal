@@ -1,16 +1,9 @@
 package com.gmi.nordborglab.browser.server.rest;
 
-import java.util.List;
-import java.util.Map;
 
-/**
- * Created with IntelliJ IDEA.
- * User: uemit.seren
- * Date: 2/7/13
- * Time: 1:41 PM
- * To change this template use File | Settings | File Templates.
- */
-public class PhenotypeValue {
+import java.util.List;
+
+public class PhenotypeUploadValue {
 
     private String sourceId;
     private Long stockId;
@@ -20,8 +13,9 @@ public class PhenotypeValue {
     private boolean hasParseError = false;
     private boolean isIdKnown = false;
 
-    public PhenotypeValue() {
+    public PhenotypeUploadValue() {
     }
+
 
 
     public String getSourceId() {
@@ -52,7 +46,7 @@ public class PhenotypeValue {
         return values;
     }
 
-    public boolean isHasParseError() {
+    public boolean hasParseError() {
         return hasParseError;
     }
 
@@ -72,11 +66,12 @@ public class PhenotypeValue {
         this.values = values;
     }
 
-    public void setHasParseError(boolean hasParseError) {
+    public void setParseError(boolean hasParseError) {
         this.hasParseError = hasParseError;
     }
 
     public void setIdKnown(boolean idKnown) {
         isIdKnown = idKnown;
     }
+
 }

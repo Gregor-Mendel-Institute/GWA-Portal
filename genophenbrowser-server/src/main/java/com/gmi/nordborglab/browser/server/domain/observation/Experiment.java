@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.server.domain.observation;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.AttributeOverride;
@@ -41,7 +42,7 @@ public class Experiment extends BaseEntity {
     private AclExperimentIdentity acl;
 	
 	@OneToMany(mappedBy="experiment",cascade={CascadeType.PERSIST,CascadeType.MERGE})
-	private Set<ObsUnit> obsUnits;
+	private Set<ObsUnit> obsUnits = new HashSet<ObsUnit>();
 	
 	@Transient
 	private CustomAccessControlEntry userPermission = null;
