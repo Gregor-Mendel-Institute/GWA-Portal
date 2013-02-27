@@ -29,37 +29,34 @@ public class WizardPanel extends ResizeComposite {
 	private static WizardPanelUiBinder uiBinder = GWT
 			.create(WizardPanelUiBinder.class);
 
-	interface WizardPanelUiBinder extends UiBinder<Widget, WizardPanel> {
-	}
-	
+    interface WizardPanelUiBinder extends UiBinder<Widget, WizardPanel> {
+    }
 	interface MyStyle extends CssResource {
-		String stepContainer();
-		String stepContainer_item();
-		String stepContainer_item_active();
-		String arrow_container();
-		String arrow_border();
-		String arrow();
-		String step_number();
-		String step_title();
-	}
-	
+        String stepContainer();
+        String stepContainer_item();
+        String stepContainer_item_active();
+        String arrow_container();
+        String arrow_border();
+        String arrow();
+        String step_number();
+        String step_title();
+    }
 	@UiField MyStyle style;
-	@UiField FlowPanel stepContainer;
-	@UiField DeckLayoutPanel pageContainer;
-	@UiField Button nextBtn;
-	@UiField Button previousBtn;
-	@UiField Button cancelBtn;
-	@UiField HTMLPanel indicator;
-	@UiField MainResources mainRes;
-	private Integer numberOfSteps = 0;
-	private List<HTMLPanel> stepWidgets = new ArrayList<HTMLPanel>();
-
+    @UiField FlowPanel stepContainer;
+    @UiField DeckLayoutPanel pageContainer;
+    @UiField Button nextBtn;
+    @UiField Button previousBtn;
+    @UiField Button cancelBtn;
+    @UiField HTMLPanel indicator;
+    @UiField MainResources mainRes;
+    private Integer numberOfSteps = 0;
+    private List<HTMLPanel> stepWidgets = new ArrayList<HTMLPanel>();
 	public WizardPanel() {
 		initWidget(uiBinder.createAndBindUi(this));
 		pageContainer.setAnimationDuration(1000);
 		pageContainer.setAnimationVertical(true);
 	}
-	
+
 	@UiChild(tagname="page")
 	public void addPage(Widget page,String title) {
 		numberOfSteps = numberOfSteps +1;
@@ -80,34 +77,35 @@ public class WizardPanel extends ResizeComposite {
 	    pageContainer.add(page);
 	    pageContainer.showWidget(0);
 	    stepWidgets.add(item);
-	} 
-	
-	
+	}
+
 	public void nextStep() {
 		previousBtn.setVisible(true);
-		int visibleIndex = pageContainer.getVisibleWidgetIndex(); 
+		int visibleIndex = pageContainer.getVisibleWidgetIndex();
 		if (visibleIndex < pageContainer.getWidgetCount()-1)
 			pageContainer.showWidget(visibleIndex+1);
 		updateWizardControls();
 	}
-	
+
 	public void previousStep() {
-		int visibleIndex = pageContainer.getVisibleWidgetIndex(); 
+		int visibleIndex = pageContainer.getVisibleWidgetIndex();
 		if ( visibleIndex> 0)
 			pageContainer.showWidget(visibleIndex-1);
 		updateWizardControls();
-		nextBtn.setText("Next");
-		nextBtn.removeStyleName(mainRes.style().button_red());
-		nextBtn.addStyleName(mainRes.style().button_blue());
 	}
-	
+
 	private void updateWizardControls() {
-		int visibleIndex = pageContainer.getVisibleWidgetIndex(); 
-		if (visibleIndex+1 == pageContainer.getWidgetCount()) { 
+		int visibleIndex = pageContainer.getVisibleWidgetIndex();
+		if (visibleIndex+1 == pageContainer.getWidgetCount()) {
 			nextBtn.setText("Finish");
 			nextBtn.removeStyleName(mainRes.style().button_blue());
 			nextBtn.addStyleName(mainRes.style().button_red());
 		}
+        else {
+            nextBtn.setText("Next");
+            nextBtn.removeStyleName(mainRes.style().button_red());
+            nextBtn.addStyleName(mainRes.style().button_blue());
+        }
 		if (visibleIndex == 0)
 			previousBtn.setVisible(false);
 		indicator.getElement().getStyle().setTop(40+visibleIndex*105,Style.Unit.PX);
@@ -119,16 +117,21 @@ public class WizardPanel extends ResizeComposite {
 				step.setStylePrimaryName(style.stepContainer_item());
 		}
 	}
-	
+
 	public HandlerRegistration addNextButtonClickHandler(ClickHandler handler) {
 		return nextBtn.addClickHandler(handler);
 	}
-	
+
 	public HandlerRegistration addPreviousButtonClickHandler(ClickHandler handler) {
 		return previousBtn.addClickHandler(handler);
 	}
-	
+
 	public HandlerRegistration addCancelButtonClickHandler(ClickHandler handler) {
 		return cancelBtn.addClickHandler(handler);
 	}
+
+    public void reset() {
+        pageContainer.showWidget(0);
+        updateWizardControls();
+    }
 }
