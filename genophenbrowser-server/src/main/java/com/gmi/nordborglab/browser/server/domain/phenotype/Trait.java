@@ -1,9 +1,6 @@
 package com.gmi.nordborglab.browser.server.domain.phenotype;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -21,6 +18,7 @@ import javax.persistence.TemporalType;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.genotype.Allele;
 import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
 
 @Entity
@@ -74,6 +72,7 @@ public class Trait extends BaseEntity {
 
 	public void setObsUnit(ObsUnit obsUnit) {
 		this.obsUnit = obsUnit;
+        obsUnit.getTraits().add(this);
 	}
 
 	public String getValue() {
@@ -99,5 +98,9 @@ public class Trait extends BaseEntity {
 	public void addStudy(Study study) {
 		studies.add(study);
 	}
+
+    public Set<Allele> getAlleles() {
+        return obsUnit.getStock().getPassport().getAlleles();
+    }
 	
 }

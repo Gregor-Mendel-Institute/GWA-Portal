@@ -1,13 +1,16 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.repository.AlleleAssayRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
+import com.gmi.nordborglab.browser.server.security.CustomUser;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.CdvService;
 import com.google.common.base.Function;
@@ -44,6 +47,9 @@ public class CdvServiceImpl implements CdvService {
 
 	@Resource
 	protected RoleHierarchy roleHierarchy;
+
+    @Resource
+    protected AlleleAssayRepository alleleAssayRepository;
 	
 	@Resource
 	protected MutableAclService aclService;
@@ -85,8 +91,11 @@ public class CdvServiceImpl implements CdvService {
 	@Override
 	@Transactional(readOnly = false)
 	public Study saveStudy(Study study) {
+        study = checkStudyPermissions(study, BasePermission.WRITE);
+        CustomUser user = SecurityUtil.getUserFromContext();
+        if (user != null)
+            study.setProducer(user.getFullName());
 		study = studyRepository.save(study);
-		study = checkStudyPermissions(study, BasePermission.WRITE);
 		return study;
 	}
 
@@ -181,8 +190,20 @@ public class CdvServiceImpl implements CdvService {
 		List<Trait> traits = traitRepository.findAllByStudiesId(studyId);
 		return traits;
 	}
-	
-	private Study checkStudyPermissions(Study study,Permission permission) {
+
+    @Override
+    public List<AlleleAssay> findAlleleAssaysWithStats(Long phenotypeId, Long statisticTypeId) {
+        Long traitValuesCount = traitRepository.countNumberOfTraitValues(phenotypeId, statisticTypeId);
+        List<AlleleAssay> alleleAssays = alleleAssayRepository.findAll();
+        for (AlleleAssay alleleAssay :alleleAssays) {
+            Long availableAllelesCount = alleleAssayRepository.countAvailableAlleles(phenotypeId, statisticTypeId, alleleAssay.getId());
+            alleleAssay.setTraitValuesCount(traitValuesCount);
+            alleleAssay.setAvailableAllelesCount(availableAllelesCount);
+        }
+        return alleleAssays;
+    }
+
+    private Study checkStudyPermissions(Study study,Permission permission) {
 		if (study.getTraits().size() == 0)
 			throw new RuntimeException("Study must have phenotypes assigned");
 		TraitUom trait = Iterables.get(study.getTraits(), 0).getTraitUom();

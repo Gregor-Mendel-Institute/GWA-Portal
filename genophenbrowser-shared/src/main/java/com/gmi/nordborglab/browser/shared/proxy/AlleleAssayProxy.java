@@ -26,4 +26,7 @@ public interface AlleleAssayProxy extends EntityProxy {
 	
 	public Date getAssayDate();
 	public void setAssayDate(Date assayDate);
+
+    public long getAvailableAllelesCount();
+    public long getTraitValuesCount();
 }

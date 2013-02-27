@@ -59,6 +59,8 @@ public class TraitServiceTest extends BaseTest {
 		List<Trait> traits = service.findAllTraitValuesByStatisticType(1L, 2L);
 		assertNotNull("nothin returned",traits);
 		assertEquals("Wrong number returned",167, traits.size());
+        assertNotNull(traits.get(0).getAlleles());
+        assertEquals(1,traits.get(0).getAlleles().size());
 	}
 	
 	

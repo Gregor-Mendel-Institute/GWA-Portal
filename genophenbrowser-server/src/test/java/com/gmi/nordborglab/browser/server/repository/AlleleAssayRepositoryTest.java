@@ -63,4 +63,12 @@ public class AlleleAssayRepositoryTest extends BaseTest{
 		assertEquals("wrong CommonName for Taxonomy", "test",actual.getScoringTechType().getScoringTechGroup());
 		assertEquals("wrong CommonName for Taxonomy", "test",actual.getPolyType().getPolyType());
 	}
+
+    @Test
+    public void testFindAlleleAssayWithStats() {
+        Long count = repository.countAvailableAlleles(1L, 2L, 1L);
+        assertEquals(167,count.intValue());
+        count = repository.countAvailableAlleles(1L, 2L, 2L);
+        assertEquals(0,count.intValue());
+    }
 }

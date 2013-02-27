@@ -5,15 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
@@ -43,9 +35,35 @@ public class AlleleAssay extends BaseEntity {
 	private String producer;
 	private String comments;
 	private Date assay_date;
-	
-	
-	public ScoringTechType getScoringTechType() {
+
+    @Transient
+    private long availableAllelesCount =0;
+
+    @Transient
+    private long traitValuesCount = 0;
+
+
+
+
+    public long getTraitValuesCount() {
+        return traitValuesCount;
+    }
+
+    public void setTraitValuesCount(long traitValuesCount) {
+        this.traitValuesCount = traitValuesCount;
+    }
+
+    public long getAvailableAllelesCount() {
+        return availableAllelesCount;
+    }
+
+
+    public void setAvailableAllelesCount(long availableAllelesCount) {
+        this.availableAllelesCount = availableAllelesCount;
+    }
+
+
+    public ScoringTechType getScoringTechType() {
 		return scoringTechType;
 	}
 	public void setScoringTechType(ScoringTechType scoringTechType) {
@@ -91,4 +109,5 @@ public class AlleleAssay extends BaseEntity {
 	public List<Study> getStudies() {
 		return Collections.unmodifiableList(studies);
 	}
+
 }

@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.shared.service;
 
+import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.google.web.bindery.requestfactory.shared.Request;
@@ -20,4 +21,6 @@ public interface CdvRequest extends RequestContext {
 
 	Request<StudyPageProxy> findAll(String name, String phenotype, String experiment,
 			Long alleleAssayId, Long stduyProtocolId,int start, int size);
+
+    Request<List<AlleleAssayProxy>> findAlleleAssaysWithStats(Long phenotypeId, Long statisticTypeId);
 }
