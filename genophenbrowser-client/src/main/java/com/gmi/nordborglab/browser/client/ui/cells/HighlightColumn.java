@@ -1,4 +1,4 @@
-package com.gmi.nordborglab.browser.client.ui;
+package com.gmi.nordborglab.browser.client.ui.cells;
 
 import com.gmi.nordborglab.browser.client.util.SearchTerm;
 import com.google.gwt.user.cellview.client.Column;

@@ -1,4 +1,4 @@
-package com.gmi.nordborglab.browser.client.ui;
+package com.gmi.nordborglab.browser.client.ui.cells;
 
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.google.gwt.cell.client.IconCellDecorator;

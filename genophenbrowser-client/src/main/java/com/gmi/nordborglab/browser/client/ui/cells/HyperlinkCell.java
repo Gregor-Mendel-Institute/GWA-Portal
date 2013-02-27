@@ -1,4 +1,4 @@
-package com.gmi.nordborglab.browser.client.ui;
+package com.gmi.nordborglab.browser.client.ui.cells;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
