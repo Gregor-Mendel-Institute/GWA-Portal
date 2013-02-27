@@ -3,10 +3,10 @@ package com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport;
 import javax.annotation.Nullable;
 
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
-import com.gmi.nordborglab.browser.client.ui.FlagCell;
+import com.gmi.nordborglab.browser.client.ui.cells.FlagCell;
 import com.gmi.nordborglab.browser.client.util.SearchTerm;
-import com.gmi.nordborglab.browser.client.ui.HighlightColumn;
-import com.gmi.nordborglab.browser.client.ui.HyperlinkCell;
+import com.gmi.nordborglab.browser.client.ui.cells.HighlightColumn;
+import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
 import com.google.common.base.Function;

@@ -1,6 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
-import com.gmi.nordborglab.browser.client.ui.HyperlinkCell;
+import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.user.cellview.client.Column;

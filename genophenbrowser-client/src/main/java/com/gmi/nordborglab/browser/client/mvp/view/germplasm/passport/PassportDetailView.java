@@ -11,7 +11,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.Ex
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportDetailPresenter;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
-import com.gmi.nordborglab.browser.client.ui.HyperlinkCell;
+import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.util.CustomDataTable;
 import com.gmi.nordborglab.browser.client.util.CustomDataTable.Filter;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;

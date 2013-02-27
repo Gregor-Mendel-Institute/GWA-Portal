@@ -2,7 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
 import java.util.Date;
 
-import com.gmi.nordborglab.browser.client.ui.HyperlinkCell;
+import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.TextCell;
