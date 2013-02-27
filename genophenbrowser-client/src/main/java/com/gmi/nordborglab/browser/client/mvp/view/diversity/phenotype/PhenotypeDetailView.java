@@ -15,6 +15,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDet
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
+import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.LocalityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
@@ -165,45 +166,14 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 
 	@Override
 	public void setGeoChartData(Multiset<String> data) {
-		geoChartData = DataTable.create();
-		geoChartData.addColumn(ColumnType.STRING, "Country");
-		geoChartData.addColumn(ColumnType.NUMBER, "Frequency");
-		if (data != null) {
-			for (String cty : data.elementSet()) {
-				int i = geoChartData.addRow();
-				geoChartData.setValue(i, 0, cty);
-				geoChartData.setValue(i, 1, data.count(cty));
-			}
-		}
-		
+		geoChartData = DataTableUtils.createPhenotypeGeoChartTable(data);
 	}
 
 	@Override
 	public void setHistogramChartData(
 			ImmutableSortedMap<Double, Integer> data) {
-		this.histogramData = DataTable.create();
-		histogramData.addColumn(ColumnType.STRING, "Bin");
-		histogramData.addColumn(ColumnType.NUMBER, "Frequency");
-		if (data != null) {
-			histogramData.addRows(data.size() - 1);
-			ImmutableList<Double> keys = data.keySet().asList();
-			ImmutableList<Integer> values = data.values().asList();
-			for (int i = 0; i < data.size() - 1; i++) {
-				histogramData.setValue(i, 0, keys.get(i) + " - " + keys.get(i + 1));
-				histogramData.setValue(i, 1, values.get(i));
-			}
-			showBlank = false;
-		}
-		else {
-			histogramData.addRows(3);
-			histogramData.setValue(0, 0, "A");
-			histogramData.setValue(0, 1, 5);
-			histogramData.setValue(1, 0, "B");
-			histogramData.setValue(1, 1, 10);
-			histogramData.setValue(2, 0, "C");
-			histogramData.setValue(2, 1, 7);
-			showBlank = true;
-		}
+        showBlank = data==null;
+		this.histogramData = DataTableUtils.createPhenotypeHistogramTable(data);
 	}
 
 	@Override
@@ -216,57 +186,12 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 
 	@Override
 	public void setPhenotypExplorerData(ImmutableList<TraitProxy> traits) {
-		phenotypeExplorerData = DataTable.create();
-		phenotypeExplorerData.addColumn(ColumnType.STRING, "ID Name Phenotype");
-		phenotypeExplorerData.addColumn(ColumnType.NUMBER, "Date");
-		phenotypeExplorerData.addColumn(ColumnType.NUMBER, "Longitude");
-		phenotypeExplorerData.addColumn(ColumnType.NUMBER, "Latitude");
-		phenotypeExplorerData.addColumn(ColumnType.NUMBER, "Phenotype");
-		phenotypeExplorerData.addColumn(ColumnType.STRING, "Accession");
-		phenotypeExplorerData.addColumn(ColumnType.STRING, "Country");
-		if (traits != null) {
-			phenotypeExplorerData.addRows(traits.size());
-			int i = 0;
-			String name = "";
-			String accession = "";
-			Double longitude = null;
-			Double latitude = null;
-			Double phenotype = null;
-			String country = "";
-			for (TraitProxy trait : traits) {
-				try {
-					PassportProxy passport = trait.getObsUnit().getStock()
-							.getPassport();
-					accession = passport.getAccename();
-					name = accession + " ID:" + passport.getId() + " Phenotype:"
-							+ trait.getValue();
-					if (trait.getValue() != null && !trait.getValue().equals(""))
-						phenotype = Double.parseDouble(trait.getValue());
-					LocalityProxy locality = trait.getObsUnit().getStock()
-							.getPassport().getCollection().getLocality();
-					longitude = locality.getLongitude();
-					latitude = locality.getLatitude();
-					country = locality.getCountry();
-	
-				} catch (Exception e) {
-					
-				}
-	
-				phenotypeExplorerData.setValue(i, 0, name);
-				phenotypeExplorerData.setValue(i, 1, 1900);
-				if (longitude != null)
-					phenotypeExplorerData.setValue(i, 2, longitude);
-				if (latitude != null)
-					phenotypeExplorerData.setValue(i, 3, latitude);
-				if (phenotype != null)
-					phenotypeExplorerData.setValue(i, 4, phenotype);
-				phenotypeExplorerData.setValue(i, 5, accession);
-				phenotypeExplorerData.setValue(i, 6, country);
-				i = i + 1;
-			}
-		}
-	}
-	
+        phenotypeExplorerData = DataTableUtils.createPhentoypeExplorerTable(traits);
+    }
+
+
+
+
 	private void forceLayout() {
 		if (!widget.isAttached() || !widget.isVisible())
 			return;
@@ -312,9 +237,7 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 	}
 
 	private Options createColumnChartOptions() {
-		Options options = Options.create();
-		options.setTitle("Phenotype Histogram");
-		Options animationOptions = Options.create();
+		Options options = DataTableUtils.getDefaultPhenotypeHistogramOptions();
 		if (showBlank) {
 			options.setTitle("<- Select a phenotype type from the piechart");
 			options.setColors("#CCC");
@@ -325,9 +248,6 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 			legendOption.set("position", "none");
 			options.set("legend", legendOption);
 		}
-		animationOptions.set("duration", 1000.0);
-		animationOptions.set("easing", "out");
-		options.set("animation", animationOptions);
 		return options;
 	}
 
