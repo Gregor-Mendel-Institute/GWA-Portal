@@ -47,6 +47,14 @@ public class SecurityUtil {
 		return grantedAuthorities;
 	}
 
+    public static CustomUser getUserFromContext() {
+        Authentication auth = getAuthentication();
+        if (auth.getPrincipal() instanceof CustomUser) {
+            return (CustomUser)auth.getPrincipal();
+        }
+        return null;
+    }
+
 	public static CustomUser getUserFromAppUser(AppUser appUser) {
 		return new CustomUser(appUser.getFirstname(),appUser.getLastname(),appUser.getEmail(),		
 				appUser.getUsername(), 

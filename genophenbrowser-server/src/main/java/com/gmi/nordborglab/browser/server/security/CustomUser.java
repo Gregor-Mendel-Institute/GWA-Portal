@@ -41,4 +41,8 @@ public class CustomUser extends User {
 	public String getJson() {
 		return SecurityUtil.serializeUserToJson(this);
 	}
+
+    public String getFullName() {
+        return (String.format("%s %s",firstname,lastname)).trim();
+    }
 }
