@@ -20,7 +20,30 @@
       <artifactId>requestfactory-client</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+        <groupId>com.google.guava</groupId>
+          <artifactId>guava-gwt</artifactId>
+    </dependency>
+      <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+      </dependency>
   </dependencies>
+
+    <dependencyManagement>
+    <dependencies>
+    <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava-gwt</artifactId>
+        <version>${guava.version}</version>
+    </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava-gwt</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+    </dependencies>
+    </dependencyManagement>
 
   <build>
     <plugins>
