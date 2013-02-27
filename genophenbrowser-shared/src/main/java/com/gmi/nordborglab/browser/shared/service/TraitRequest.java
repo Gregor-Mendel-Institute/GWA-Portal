@@ -13,5 +13,4 @@ public interface TraitRequest extends RequestContext {
 	Request<List<TraitProxy>> findAllTraitValues(Long phenotypeId,Long alleleAssayId,Long statisticTypeId);
 
 	Request<List<TraitProxy>> findAllTraitValuesByStatisticType(Long phenotypeId,Long statisticTypeId);
-
 }
