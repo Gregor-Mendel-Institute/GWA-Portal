@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.gmi.nordborglab.browser.server.security.CustomUser;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,7 +19,8 @@ public class SecurityUtils {
 	public static String TEST_PASSWORD = "test";
 	
 	public static void makeActiveUser(String username,String password,Collection<? extends GrantedAuthority> authorities) {
-		Authentication authRequest = new UsernamePasswordAuthenticationToken(username, password,authorities);
+        CustomUser user = new CustomUser(username,"","",username,password,true,true,true,true,authorities);
+        Authentication authRequest = new UsernamePasswordAuthenticationToken(user, password,authorities);
     	SecurityContextHolder.getContext().setAuthentication(authRequest);
 	}
 	
