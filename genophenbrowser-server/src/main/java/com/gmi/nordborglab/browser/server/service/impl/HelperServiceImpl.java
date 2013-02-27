@@ -5,8 +5,14 @@ import java.util.*;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.cdv.Transformation;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TransformationData;
+import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.server.math.Transformations;
+import com.gmi.nordborglab.browser.server.repository.*;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
-import com.gmi.nordborglab.browser.server.rest.PhenotypeValue;
+import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
+import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,21 +30,11 @@ import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.phenotype.UnitOfMeasure;
-import com.gmi.nordborglab.browser.server.repository.AlleleAssayRepository;
-import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
-import com.gmi.nordborglab.browser.server.repository.PassportRepository;
-import com.gmi.nordborglab.browser.server.repository.SampstatRepository;
-import com.gmi.nordborglab.browser.server.repository.StatisticTypeRepository;
-import com.gmi.nordborglab.browser.server.repository.StockRepository;
-import com.gmi.nordborglab.browser.server.repository.StudyProtocolRepository;
-import com.gmi.nordborglab.browser.server.repository.StudyRepository;
-import com.gmi.nordborglab.browser.server.repository.TaxonomyRepository;
-import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
-import com.gmi.nordborglab.browser.server.repository.UnitOfMeasureRepository;
 import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.browser.shared.service.HelperFactory;
 import com.google.common.collect.Iterables;
 import com.google.web.bindery.autobean.vm.AutoBeanFactorySource;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.supercsv.cellprocessor.CellProcessorAdaptor;
 import org.supercsv.cellprocessor.ParseDouble;
 import org.supercsv.cellprocessor.ParseLong;
@@ -47,9 +43,7 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.cellprocessor.ift.StringCellProcessor;
 import org.supercsv.exception.SuperCsvCellProcessorException;
 import org.supercsv.io.CsvListReader;
-import org.supercsv.io.CsvMapReader;
 import org.supercsv.io.ICsvListReader;
-import org.supercsv.io.ICsvMapReader;
 import org.supercsv.prefs.CsvPreference;
 import org.supercsv.util.CsvContext;
 
@@ -116,6 +110,9 @@ public class HelperServiceImpl implements HelperService {
 	
 	@Resource
 	private StatisticTypeRepository statisticTypeRepository;
+
+    @Resource
+    private TransformationRepository transformationRepository;
 	
 	@Resource
 	private TraitUomRepository traitUomRepository;
@@ -221,12 +218,14 @@ public class HelperServiceImpl implements HelperService {
 		List<AlleleAssay> alleleAssayValues = alleleAssayRepository.findAll();
 		List<StudyProtocol> studyProtocolValues = studyProtocolRepository.findAll();
 		List<Sampstat> sampStatValues = sampstatRepository.findAll();
+        List<Transformation> transformationValues = transformationRepository.findAll();
 		AppData appData = new AppData();
 		appData.setStatisticTypeList(statisticTypeValues);
 		appData.setUnitOfMeasureList(unitOfMeasureValues);
 		appData.setAlleleAssayList(alleleAssayValues);
 		appData.setStudyProtocolList(studyProtocolValues);
 		appData.setSampStatList(sampStatValues);
+        appData.setTransformationList(transformationValues);
 		return appData;
 	}
 
@@ -279,10 +278,20 @@ public class HelperServiceImpl implements HelperService {
         return data;
     }
 
-    private PhenotypeValue parseAndCheckPhenotypeValue(List<String> phenotypeValues) {
+    @Override
+    public List<TransformationData> calculateTransformations(List<Double> values) {
+        List<TransformationData> transformations = Lists.newArrayList();
+        transformations.add(new TransformationData(TransformationDataProxy.TYPE.LOG,Transformations.logTransform(values)));
+        transformations.add(new TransformationData(TransformationDataProxy.TYPE.SQRT,Transformations.sqrtTransform(values)));
+        transformations.add(new TransformationData(TransformationDataProxy.TYPE.BOXCOX,Transformations.boxCoxTransform(values)));
+        return transformations;
+    }
+
+
+    private PhenotypeUploadValue parseAndCheckPhenotypeValue(List<String> phenotypeValues) {
         boolean hasError = false;
         boolean isIdKnown = false;
-        PhenotypeValue parsedValue = new PhenotypeValue() ;
+        PhenotypeUploadValue parsedValue = new PhenotypeUploadValue() ;
         try {
             String sourceId = phenotypeValues.get(0);
             parsedValue.setValues(phenotypeValues.subList(1,phenotypeValues.size()));
@@ -312,7 +321,7 @@ public class HelperServiceImpl implements HelperService {
         catch (Exception e) {
             hasError = true;
         }
-        parsedValue.setHasParseError(hasError);
+        parsedValue.setParseError(hasError);
         parsedValue.setIdKnown(isIdKnown);
         return parsedValue;
     }

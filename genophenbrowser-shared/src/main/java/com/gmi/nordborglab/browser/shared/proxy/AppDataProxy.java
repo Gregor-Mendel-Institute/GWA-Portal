@@ -23,5 +23,8 @@ public interface AppDataProxy extends ValueProxy {
 	
 	public List<SampStatProxy> getSampStatList();
 	public void setSampStatList(List<SampStatProxy> sampStatList);
+
+    public List<TransformationProxy> getTransformationList();
+    public void setTransformationList(List<TransformationProxy> transformationList);
 	
 }

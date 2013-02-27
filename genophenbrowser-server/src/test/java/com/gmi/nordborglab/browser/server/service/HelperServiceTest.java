@@ -28,6 +28,7 @@ import com.gmi.nordborglab.browser.server.repository.TaxonomyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
+import org.springframework.security.access.AccessDeniedException;
 
 public class HelperServiceTest extends BaseTest {
 	
@@ -225,6 +226,10 @@ public class HelperServiceTest extends BaseTest {
 		
 		assertNotNull("Could not retrieve Sampstats",data.getSampStatList());
 		assertTrue("no elements found for Sampstats",data.getSampStatList().size()>0);
+
+        assertNotNull("Could not retrieve Transformations",data.getTransformationList());
+        assertTrue("no elements found for Transformations",data.getTransformationList().size()>0);
 	}
-	 
+
+
 }

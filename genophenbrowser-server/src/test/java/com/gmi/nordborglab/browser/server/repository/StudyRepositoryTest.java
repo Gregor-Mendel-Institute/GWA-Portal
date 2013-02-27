@@ -31,6 +31,7 @@ public class StudyRepositoryTest extends BaseTest{
 		assertNotNull("did not find expected entity", actual);
 		assertEquals((double)1L, (double)actual.getId(),0L);
 		assertNotNull("Allele assay is not found",actual.getAlleleAssay());
+        assertNotNull("Transformation is not found",actual.getTransformation());
 		//assertNotNull("did not find attached Taxonomy",actual.get());
 		//assertNotNull("did not find attached Collection",actual.getScoringTechType());
 	}

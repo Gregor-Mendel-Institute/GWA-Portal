@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.server.domain;
 import java.util.List;
 
 import com.gmi.nordborglab.browser.server.domain.cdv.StudyProtocol;
+import com.gmi.nordborglab.browser.server.domain.cdv.Transformation;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Sampstat;
 import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
@@ -15,6 +16,9 @@ public class AppData {
 	protected List<AlleleAssay> alleleAssayList;
 	protected List<StudyProtocol> studyProtocolList;
 	protected List<Sampstat> sampStatList;
+    protected List<Transformation> transformationList;
+
+
 		
 	public AppData() {}
 
@@ -57,5 +61,12 @@ public class AppData {
 	public void setSampStatList(List<Sampstat> sampStatList) {
 		this.sampStatList = sampStatList;
 	}
-	
+
+    public List<Transformation> getTransformationList() {
+        return transformationList;
+    }
+
+    public void setTransformationList(List<Transformation> transformationList) {
+        this.transformationList = transformationList;
+    }
 }

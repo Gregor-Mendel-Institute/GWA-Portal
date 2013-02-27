@@ -1,21 +1,8 @@
 package com.gmi.nordborglab.browser.server.domain.cdv;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
@@ -42,9 +29,15 @@ public class Study extends BaseEntity {
 	@JoinColumn(name="div_allele_assay_id")
 	private AlleleAssay alleleAssay;
 
+    @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(name = "cdv_phen_transformation_id",nullable = false)
+    private Transformation transformation;
+
 	private String name;
 	private String producer;
-	private Date study_date;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date study_date = new Date();
 	@NotNull
 	private Boolean isdone=false;
 	
@@ -154,4 +147,15 @@ public class Study extends BaseEntity {
 	public boolean isOwner() {
 		return isOwner;
 	}
+
+
+
+    public Transformation getTransformation() {
+        return transformation;
+    }
+
+    public void setTransformation(Transformation transformation) {
+        this.transformation = transformation;
+        transformation.getStudies().add(this);
+    }
 }
