@@ -1,23 +1,31 @@
 package com.gmi.nordborglab.browser.server.domain.acl;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="acl_sid", schema="acl")
+@SequenceGenerator(name = "idSequence", sequenceName = "acl.acl_sid_id_seq")
 public class AclSid {
 
 	@Id
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="idSequence")
 	@Column(unique=true,nullable=false)
 	private Long id;
 	
 	private boolean principal;
 	@Column(unique=true)
 	private String sid;
-	
-	public Long getId() {
+
+    public AclSid() {
+
+    }
+
+    public AclSid(boolean principal, String sid) {
+        this.principal = principal;
+        this.sid = sid;
+    }
+
+    public Long getId() {
 		return id;
 	}
 	
