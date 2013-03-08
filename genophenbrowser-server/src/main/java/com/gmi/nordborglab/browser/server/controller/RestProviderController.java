@@ -5,20 +5,18 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.data.annotation.*;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.StudyGWASData;
-import com.gmi.nordborglab.browser.server.service.GWASDataService;
-import com.gmi.nordborglab.browser.server.service.HelperService;
+import com.gmi.nordborglab.browser.server.service.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
-import com.gmi.nordborglab.browser.server.service.CdvService;
-import com.gmi.nordborglab.browser.server.service.TraitService;
 import com.google.common.base.Joiner;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -39,6 +37,9 @@ public class RestProviderController {
 
     @Resource
     private GWASDataService gwasService;
+
+    @Resource
+    private GeneAnnotDataService geneAnnotDataService;
 	
 	@RequestMapping(method=RequestMethod.GET,value="/study/{id}/phenotypedata")
 	public @ResponseBody String getPhenotypeData(@PathVariable("id") Long id) {
@@ -109,6 +110,25 @@ public class RestProviderController {
        gwasResultId = gwasResult.getId();
        return gwasResultId;
     }
+
+
+    @RequestMapping(method = RequestMethod.GET,value="/genes/getGenes")
+    public @ResponseBody FetchGeneResult getGenes(@RequestParam("chromosome") String chromosome,@RequestParam("start") Long start,@RequestParam("end") Long end,@RequestParam("isFeatures") Boolean isFeatures)  {
+        List<Gene> genes = geneAnnotDataService.getGenes(chromosome,start,end,isFeatures);
+        FetchGeneResult result = new FetchGeneResult(genes);
+        return result;
+    }
+
+
+    @RequestMapping(method = RequestMethod.GET,value="/genes/getGeneDescription")
+    public @ResponseBody
+    FetchGeneInfoResult getGenes(@RequestParam("gene") String gene)  {
+        Isoform isoform = geneAnnotDataService.getGeneIsoform(gene);
+        FetchGeneInfoResult result = new FetchGeneInfoResult(isoform.getDescription());
+        return result;
+    }
+
+
 
 
 
