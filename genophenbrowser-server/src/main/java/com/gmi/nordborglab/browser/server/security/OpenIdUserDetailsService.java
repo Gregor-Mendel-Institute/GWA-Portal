@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.acl.AclSid;
+import com.gmi.nordborglab.browser.server.repository.AclSidRepository;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,6 +24,10 @@ public class OpenIdUserDetailsService implements UserDetailsService,
 
 	@Resource
 	protected UserRepository userRepository;
+
+    @Resource
+    protected AclSidRepository aclSidRepository;
+
 	
 	// private final Map<String,CustomUserDetails> registeredUsers = new
 	// HashMap<String, CustomUserDetails>();
@@ -100,7 +106,13 @@ public class OpenIdUserDetailsService implements UserDetailsService,
 		authorities.add(authority);
 		appUser.setAuthorities(authorities);
 		userRepository.save(appUser);
-		
+
+        //FIXME WORKAROUND for  http://forum.springsource.org/showthread.php?55490-ACL-Transaction-must-be-running
+        AclSid sid = aclSidRepository.findBySid(appUser.getUsername());
+		if (sid == null) {
+            sid = new AclSid(true,appUser.getUsername());
+            aclSidRepository.save(sid);
+        }
 		return SecurityUtil.getUserFromAppUser(appUser);
 	}
 }

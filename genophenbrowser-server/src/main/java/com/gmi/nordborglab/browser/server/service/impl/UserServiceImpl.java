@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.acl.AclSid;
+import com.gmi.nordborglab.browser.server.repository.AclSidRepository;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,10 @@ import com.gmi.nordborglab.browser.server.service.UserService;
 public class UserServiceImpl implements UserService {
 	
 	@Resource
-	UserRepository userRepository;
+	private UserRepository userRepository;
+
+    @Resource
+    private AclSidRepository aclSidRepository;
 
 	
 	@Override
@@ -47,6 +52,9 @@ public class UserServiceImpl implements UserService {
 			authorities.add(authority);
 			appUser.setAuthorities(authorities);
 			userRepository.save(appUser);
+            //FIXME workaround because exception is thrown when AclSid doesnt exist and first time permission is added
+            AclSid aclSid = new AclSid(true,appUser.getUsername());
+            aclSidRepository.save(aclSid);
 		}
 	}
 
