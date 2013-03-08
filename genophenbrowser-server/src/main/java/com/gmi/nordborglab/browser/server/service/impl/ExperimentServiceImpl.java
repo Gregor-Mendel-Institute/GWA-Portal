@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -57,11 +58,9 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 		experiment = experimentRepository.save(experiment);
 		if (isNewRecord) {
 			CumulativePermission permission = new CumulativePermission();
-			permission.set(BasePermission.ADMINISTRATION);
-            permission.set(BasePermission.WRITE);
-            permission.set(BasePermission.READ);
-            permission.set(BasePermission.DELETE);
-            permission.set(BasePermission.CREATE);
+			permission.set(CustomPermission.ADMINISTRATION);
+            permission.set(CustomPermission.EDIT);
+            permission.set(CustomPermission.READ);
 			addPermission(experiment, new PrincipalSid(SecurityUtil.getUsername()),
 				permission);
             addPermission(experiment,new GrantedAuthoritySid("ROLE_ADMIN"),permission);
@@ -93,7 +92,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 		List<String> authorities = SecurityUtil.getAuthorities(roleHierarchy);
 		PageRequest pageRequest = new PageRequest(start, size);
 		Page<Experiment> page = experimentRepository.findByAcl(authorities,
-				BasePermission.READ.getMask(), pageRequest);
+                CustomPermission.READ.getMask(), pageRequest);
 		return new ExperimentPage(page.getContent(), pageRequest,
 				page.getTotalElements());
 	}

@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.acl.AclExperimentIdentity;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 
@@ -23,7 +24,7 @@ import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 @Table(name="div_experiment",schema="observation")
 @AttributeOverride(name="id", column=@Column(name="div_experiment_id"))
 @SequenceGenerator(name="idSequence", sequenceName="observation.div_experiment_div_experiment_id_seq")
-public class Experiment extends BaseEntity {
+public class Experiment extends SecureEntity {
 
     @NotNull
     @Size(min=2)

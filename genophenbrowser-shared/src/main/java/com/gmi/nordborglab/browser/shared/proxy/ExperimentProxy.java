@@ -8,7 +8,7 @@ import javax.validation.constraints.Size;
 
 
 @ProxyForName(value="com.gmi.nordborglab.browser.server.domain.observation.Experiment", locator="com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
-public interface ExperimentProxy extends EntityProxy{
+public interface ExperimentProxy extends SecureEntityProxy{
 	
 	Long getId();
 	

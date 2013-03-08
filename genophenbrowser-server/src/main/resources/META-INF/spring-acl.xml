@@ -27,6 +27,8 @@
     </constructor-arg>
   </bean>
 
+ <bean id="permissionFactory" class="com.gmi.nordborglab.browser.server.security.CustomPermissionFactory" />
+
  <bean id="sidRetrievalStrategy" class="org.springframework.security.acls.domain.SidRetrievalStrategyImpl">
  	<constructor-arg ref="roleHierarchy" />
  </bean>  
@@ -45,15 +47,8 @@
             <property name="sidRetrievalStrategy" ref="sidRetrievalStrategy" />
         </bean>
     </constructor-arg>
-    <constructor-arg>
-    	<bean class="com.gmi.nordborglab.browser.server.security.BitmaskPermissionGrantingStrategy">
-    		<constructor-arg>
-      		<bean
-      			class="org.springframework.security.acls.domain.ConsoleAuditLogger"
-      			autowire-candidate="false" />
-    		</constructor-arg>
-    	</bean>
-    </constructor-arg>
+    <constructor-arg ref="permissionGrantingStrategy" />
+    <property name="permissionFactory" ref="permissionFactory"/>
   </bean>
 
   <bean id="aclService" class="org.springframework.security.acls.jdbc.JdbcMutableAclService">

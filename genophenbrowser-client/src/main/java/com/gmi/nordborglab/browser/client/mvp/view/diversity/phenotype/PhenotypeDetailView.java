@@ -141,12 +141,12 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 	public void setState(State state,int permission) {
 		this.state = state;
 		phenotypeDisplayEditor.setVisible(state == State.DISPLAYING);
-		phenotypeEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
+		phenotypeEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
 		edit.setVisible(state == State.DISPLAYING && 
-				(permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
-		save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
-		cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
-		delete.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.DELETE) == AccessControlEntryProxy.DELETE);
+				(permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+		save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+		cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+		delete.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
 	}
 
 	@Override

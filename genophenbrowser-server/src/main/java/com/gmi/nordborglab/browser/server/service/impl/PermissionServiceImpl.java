@@ -5,16 +5,18 @@ import static com.gmi.nordborglab.browser.server.domain.specifications.AppUserSp
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.SecureEntity;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.acls.domain.AccessControlEntryImpl;
-import org.springframework.security.acls.domain.AclImpl;
-import org.springframework.security.acls.domain.GrantedAuthoritySid;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.domain.*;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.acls.model.Acl;
 import org.springframework.security.acls.model.MutableAclService;
@@ -26,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.acl.PermissionPrincipal;
 import com.gmi.nordborglab.browser.server.domain.acl.SearchPermissionUserRole;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 import com.gmi.nordborglab.browser.server.security.CustomAcl;
@@ -54,36 +54,52 @@ public class PermissionServiceImpl implements PermissionService {
 		Acl acl = aclService.readAclById(oid);
 		List<AccessControlEntry> entries =  acl.getEntries();
 		List<CustomAccessControlEntry> customEntries = new ArrayList<CustomAccessControlEntry>();
+        Sid owner = acl.getOwner();
 		for (AccessControlEntry entry:entries) {
 			PermissionPrincipal principal = null;
 			AppUser user = null;
 			Sid sid = entry.getSid();
-			if (sid instanceof GrantedAuthoritySid) {
+			if (sid instanceof GrantedAuthoritySid && ((GrantedAuthoritySid) sid).getGrantedAuthority().equalsIgnoreCase("ROLE_ANONYMOUS")) {
 				GrantedAuthoritySid authSid = (GrantedAuthoritySid)sid;
-				principal = new PermissionPrincipal(authSid.getGrantedAuthority(),authSid.getGrantedAuthority(),false);
+                String name = "";
+                if (entry.getPermission().getMask() == 0) {
+                    name = "Private - Only the people listed below can access";
+                }
+                else  {
+                    name = "Public - Anyone can access";
+                }
+				principal = new PermissionPrincipal(authSid.getGrantedAuthority(),name,false,false);
 			}
 			else if (sid instanceof PrincipalSid) {
 				user = userRepository.findOne(((PrincipalSid)sid).getPrincipal());
-				principal = new PermissionPrincipal(user.getUsername(),user.getFirstname() +" "+user.getLastname(),false);
+				principal = new PermissionPrincipal(user.getUsername(),user.getFirstname() +" "+user.getLastname() + " ("+user.getEmail()+")",true,sid.equals(owner));
 			}
-			customEntries.add(new CustomAccessControlEntry((Long)entry.getId(),entry.getPermission().getMask(), entry.isGranting(), principal));
+            if (principal != null)
+			    customEntries.add(new CustomAccessControlEntry((Long)entry.getId(),entry.getPermission().getMask(), entry.isGranting(), principal));
 		}
+        Collections.sort(customEntries,new Comparator<CustomAccessControlEntry>() {
+            @Override
+            public int compare(CustomAccessControlEntry o1, CustomAccessControlEntry o2) {
+                if (o1.getPrincipal().getIsUser() == o2.getPrincipal().getIsUser())
+                    return 0;
+                if (o1.getPrincipal().getIsUser())
+                    return 1;
+                return -1;
+            }
+        });
+
 		CustomAcl customAcl = new CustomAcl(customEntries,acl.isEntriesInheriting());
 		return customAcl;
 	}
 
 	@Override
-	public CustomAcl getPermissions(Experiment experiment) {
-		return getGenericPermissions(experiment);
+	public CustomAcl getPermissions(SecureEntity object) {
+		return getGenericPermissions(object);
 	}
 
-	@Override
-	public CustomAcl getPermissions(TraitUom traitUom) {
-		return getGenericPermissions(traitUom);
-	}
 
 	@Override
-	public CustomAcl updatePermissions(Experiment experiment, CustomAcl acl) {
+	public CustomAcl updatePermissions(SecureEntity experiment, CustomAcl acl) {
 		updateGenericPermissions(experiment,acl);
 		return getGenericPermissions(experiment);
 	}
@@ -93,26 +109,34 @@ public class PermissionServiceImpl implements PermissionService {
 		ObjectIdentity oid = new ObjectIdentityImpl(entity);
 		AclImpl currentAcl = (AclImpl)aclService.readAclById(oid);
 		currentAcl.setEntriesInheriting(acl.getIsEntriesInheriting());
-		for (int i =0;i<currentAcl.getEntries().size();i++) {
-			AccessControlEntryImpl ace  = (AccessControlEntryImpl)currentAcl.getEntries().get(i);
-			for (int j = 0;j<acl.getEntries().size();j++) {
-				CustomAccessControlEntry customAce = acl.getEntries().get(j); 
-				if (ace.getId().equals(customAce.getId())) {
-					if (customAce.getMask() == 0) {
-						currentAcl.deleteAce(i);
-					}
-					else if (customAce.getMask() != ace.getPermission().getMask()) {
-						currentAcl.updateAce(i, new CustomPermission(customAce.getMask()));
-					}
-					acl.getEntries().remove(j);
-					break;
-				}
-			}
+		// update existing or delete them
+        for (int i =0;i<currentAcl.getEntries().size();i++) {
+			final AccessControlEntryImpl ace  = (AccessControlEntryImpl)currentAcl.getEntries().get(i);
+            if (ace.getSid() instanceof GrantedAuthoritySid && ((GrantedAuthoritySid)ace.getSid()).getGrantedAuthority().equals("ROLE_ADMIN"))
+                continue;
+            CustomAccessControlEntry customAce = Iterables.find(acl.getEntries(),new Predicate<CustomAccessControlEntry>() {
+                @Override
+                public boolean apply(@Nullable CustomAccessControlEntry customAccessControlEntry) {
+                   if (customAccessControlEntry == null)
+                       return false;
+                    return customAccessControlEntry.getId().equals(ace.getId());
+                }
+            },null);
+
+            if (customAce == null) {
+               currentAcl.deleteAce(i);
+            }
+            else {
+                if (customAce.getMask() !=ace.getPermission().getMask())
+                    currentAcl.updateAce(i,new CustomPermission(customAce.getMask()));
+            }
+            acl.getEntries().remove(customAce);
 		}
+
+
 		for (CustomAccessControlEntry newAce: acl.getEntries()) {
 			boolean isDuplicate = false;
 			Sid sid = null;
-			
 			if (newAce.getPrincipal().getIsUser()) {
 				if (userRepository.findOne(newAce.getPrincipal().getId()) == null)
 					break;
@@ -142,14 +166,23 @@ public class PermissionServiceImpl implements PermissionService {
 				sid = new GrantedAuthoritySid(newAce.getPrincipal().getId());
 			}
 			if (!isDuplicate)
-				currentAcl.insertAce(currentAcl.getEntries().size(), new CustomPermission(newAce.getMask()), sid, newAce.getIsGranting());
+				currentAcl.insertAce(currentAcl.getEntries().size(), new CustomPermission(newAce.getMask()), sid, true);
 		}
 		aclService.updateAcl(currentAcl);
 	}
 
+    @Override
+    public List<AppUser> findAllUsers() {
+        //TODO think about security
+        List<AppUser> users = (List<AppUser>)userRepository.findAll();
+        return users;
+    }
+
+
+
 	@Override
 	public SearchPermissionUserRole searchUserAndRoles(String query) {
-		PermissionPrincipal principal = null;
+		/*PermissionPrincipal principal = null;
 		SearchPermissionUserRole result = new SearchPermissionUserRole();
 		List<PermissionPrincipal> principals = new ArrayList<PermissionPrincipal>();
 		if ("ROLE_ADMIN".toLowerCase().contains(query.toLowerCase()))
@@ -163,7 +196,8 @@ public class PermissionServiceImpl implements PermissionService {
 			principals.add(new PermissionPrincipal(user.getUsername(), user.getFirstname()+" "+ user.getLastname(), true));
 		}
 		result.setPrincipals(principals);
-		return result;
+		return result; */
+        return null;
 	}
 
 }

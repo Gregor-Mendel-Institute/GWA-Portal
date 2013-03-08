@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.BasePermission;
@@ -41,7 +42,7 @@ public class TraitServiceImpl implements TraitService {
 	public List<Trait> findAllTraitValues(Long phenotypeId, Long alleleAssayId,Long statisticTypeId) {
 		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
 		final ImmutableList<Permission> permissions = ImmutableList
-				.of(BasePermission.READ);
+				.of(CustomPermission.READ);
 		ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,phenotypeId);
 		Acl acl = aclService.readAclById(oid, authorities);
 		try {

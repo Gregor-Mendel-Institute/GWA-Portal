@@ -25,6 +25,7 @@
 			<g:ToggleButton ui:field="save" addStyleNames="{mainRes.style.button_grey}" visible="false">Save</g:ToggleButton>
 			<g:Anchor ui:field="cancel" visible="false" addStyleNames="{mainRes.style.cursor}">Cancel</g:Anchor>
 			<g:Anchor ui:field="delete" visible="false" addStyleNames="{mainRes.style.cursor}">Delete</g:Anchor>
+            <g:ToggleButton ui:field="share" visible="false" addStyleNames="{mainRes.style.button_red}">Share</g:ToggleButton>
 		</g:HTMLPanel>
 		<ed:ExperimentEditEditor ui:field="experimentEditEditor" visible="false"></ed:ExperimentEditEditor>
 		<ed:ExperimentDisplayEditor ui:field="experimentDisplayEditor"></ed:ExperimentDisplayEditor>

@@ -5,13 +5,15 @@ public class PermissionPrincipal {
 	protected String id;
 	protected String name;
 	protected boolean isUser = true;
+    protected boolean isOwner = false;
 	
 	public PermissionPrincipal() {}
 	
-	public PermissionPrincipal(String id, String name, boolean isUser) {
+	public PermissionPrincipal(String id, String name, boolean isUser, boolean isOwner) {
 		this.id = id;
 		this.name = name;
 		this.isUser = isUser;
+        this.isOwner = isOwner;
 	}
 	
 	public String getId() {
@@ -34,5 +36,12 @@ public class PermissionPrincipal {
 	public void setIsUser(boolean isUser) {
 		this.isUser = isUser;
 	}
-	
+
+    public boolean getIsOwner() {
+        return isOwner;
+    }
+
+    public void setIsOwner(boolean owner) {
+        isOwner = owner;
+    }
 }

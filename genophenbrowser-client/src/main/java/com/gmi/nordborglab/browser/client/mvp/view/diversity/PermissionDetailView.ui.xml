@@ -4,25 +4,79 @@
 	xmlns:g='urn:import:com.google.gwt.user.client.ui'
 	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
 	xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+    xmlns:b="urn:import:com.github.gwtbootstrap.client.ui" xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
+    xmlns:chzn="urn:import:com.watopi.chosen.client.gwt"
 	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
 	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
 	ui:generateLocales='default'>
 	
 	<ui:with field="mainRes" type="com.gmi.nordborglab.browser.client.resources.MainResources" />
+    <ui:style>
+        .title {
+            border-bottom: 1px solid #ebebeb;
+        }
+        .link_box {
+            width:100%;
+        }
+        .newPermissionDd {
+            margin-left:125px;
+            vertical-align: top;
+        }
+    </ui:style>
+    <b:FluidContainer height="520px" >
+        <b:FluidRow >
+            <b:Column size="12">
+                <g:HTMLPanel>
+                    <div>Link to share</div>
+                    <div><b:TextBox ui:field="shareUrlTb" addStyleNames="{style.link_box}"></b:TextBox></div>
+                </g:HTMLPanel>
+            </b:Column>
+        </b:FluidRow>
+        <b:FluidRow>
+            <b:Column size="12">
+                <g:HTMLPanel>
+                    <div class="{style.title}">Permissions</div>
+                </g:HTMLPanel>
+            </b:Column>
+        </b:FluidRow>
+        <b:FluidRow>
+            <b:Column size="12" height="230px">
+                <ed:PermissionEditor ui:field="permissionEditor" />
+            </b:Column>
+        </b:FluidRow>
 
-	<g:LayoutPanel>
-	<g:layer top="0" left="0" right="0" height="10em">
-		<g:FlowPanel>
-		 	<g:SuggestBox ui:field="searchBox"></g:SuggestBox>
-		</g:FlowPanel>
-	</g:layer>
-	<g:layer top="10em" left="0" right="0" bottom="10em">
-		<ed:PermissionEditor ui:field="permissionEditor"></ed:PermissionEditor>
-	</g:layer>
-	<g:layer bottom="0" height="10em" left="0" right="0">
-		<g:FlowPanel>
-			<g:Button ui:field="save" addStyleNames="{mainRes.style.button_blue}" visible="true">Save</g:Button>
-		</g:FlowPanel>	
-	</g:layer>
-	</g:LayoutPanel>
+        <b:FluidRow ui:field="addUserPanel">
+            <b:Column size="12" >
+                <b:WellForm>
+                    <b:ControlLabel>Add users:</b:ControlLabel>
+                    <g:HTMLPanel>
+                        <chzn:ChosenListBox ui:field="usersSearchBox"  placeholderText="Enter name or email address..." />
+                        <c:CellWidget ui:field="newPermissionDd" visible="false" addStyleNames="{style.newPermissionDd}" />
+                    </g:HTMLPanel>
+                    <b:ButtonToolbar ui:field="addUserBtnPanel">
+                        <b:Button type="SUCCESS" ui:field="addUserBtn">
+                            Add user(s)
+                        </b:Button>
+                        <b:Button type="DEFAULT" ui:field="cancelUserBtn">Cancel</b:Button>
+                    </b:ButtonToolbar>
+                </b:WellForm>
+            </b:Column>
+        </b:FluidRow>
+        <b:FluidRow ui:field="changeNotificationPanel">
+            <b:Column size="12">
+                <b:Alert ui:field="alertMessage" type="WARNING" close="false" animation="true">Permission modified. Please save</b:Alert>
+                <b:ButtonToolbar>
+                        <b:Button type="SUCCESS" ui:field="saveBtn">
+                            Save changes
+                        </b:Button>
+                        <b:Button type="DEFAULT" ui:field="cancelBtn">Cancel</b:Button>
+                </b:ButtonToolbar>
+            </b:Column>
+        </b:FluidRow>
+        <b:FluidRow ui:field="donePanel">
+            <b:Column size="12">
+                <b:Button type="PRIMARY" ui:field="doneBtn">Done</b:Button>
+            </b:Column>
+        </b:FluidRow>
+    </b:FluidContainer>
 </ui:UiBinder>

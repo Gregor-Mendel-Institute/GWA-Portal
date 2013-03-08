@@ -157,7 +157,7 @@ public class PassportDetailPresenter
 	private int getPermission() {
 		int permission = 0;
 		if (currentUser.isAdmin()) {
-			permission = AccessControlEntryProxy.WRITE;
+			permission = AccessControlEntryProxy.EDIT;
 		}
 		return permission;
 	}

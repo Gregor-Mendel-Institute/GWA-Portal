@@ -1,43 +1,83 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
 
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
+import com.gmi.nordborglab.browser.client.events.PermissionDoneEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PermissionUiHandlers;
-import com.gmi.nordborglab.browser.client.ui.CustomMultiWordSuggestOracle.MultiWordSuggestion;
-import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
-import com.gmi.nordborglab.browser.shared.proxy.CustomAclProxy;
-import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.PermissionDetailView;
+import com.gmi.nordborglab.browser.shared.proxy.*;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.PermissionRequest;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
-import com.google.web.bindery.requestfactory.shared.EntityProxy;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
+import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.PresenterWidget;
-
+import com.gwtplatform.mvp.client.View;
+import com.gwtplatform.mvp.client.proxy.PlaceManager;
 
 
 public class PermissionDetailPresenter extends
-		PresenterWidget<MyView> implements PermissionUiHandlers{
+		PresenterWidget<PermissionDetailPresenter.MyView> implements PermissionUiHandlers{
 
-	private EntityProxy proxy; 
+    public interface MyView extends View,HasUiHandlers<PermissionUiHandlers> {
+
+        PermissionDetailView.PermissionEditDriver getEditDriver();
+
+        void addPermission(AccessControlEntryProxy permission);
+
+        List<AccessControlEntryProxy> getPermissionList();
+
+        void setShareUrl(String shareUrl);
+
+        String getModuleUrl();
+
+        void setAvailableUsersToSearch(List<AppUserProxy> users);
+
+        void showModifiedNotificaitonPanel(boolean dirty);
+
+        void setAccessControlEntryPlaceHolder(AccessControlEntryProxy newPermission);
+
+        void resetUserSearchBox();
+
+    }
+
+	private SecureEntityProxy proxy;
 	private CustomAclProxy acl;
-	private boolean isProxyChanged = false;
 	private final CustomRequestFactory rf;
 	private Receiver<CustomAclProxy> receiver = null;
 	private PermissionRequest editContext = null;
+    private final PlaceManager placeManager;
+    private final AccessControlEntryProxy newPermissionPlaceHolder;
+    private final Map<String,AppUserProxy> userMap = Maps.newHashMap();
+
+
 
 	@Inject
-	public PermissionDetailPresenter(final EventBus eventBus, final MyView view, final CustomRequestFactory rf) {
+	public PermissionDetailPresenter(final EventBus eventBus, final MyView view,
+                                     final CustomRequestFactory rf, final PlaceManager placeManager) {
 		super(eventBus, view);
 		getView().setUiHandlers(this);
 		this.rf = rf;
+        this.placeManager = placeManager;
+        PermissionRequest ctx = rf.permissionRequest();
+        this.newPermissionPlaceHolder = ctx.create(AccessControlEntryProxy.class);
+        newPermissionPlaceHolder.setPrincipal(ctx.create(PermissionPrincipalProxy.class));
+        newPermissionPlaceHolder.setMask(AccessControlEntryProxy.READ);
+        newPermissionPlaceHolder.getPrincipal().setIsUser(true);
 		receiver = new Receiver<CustomAclProxy>() {
 
 			public void onSuccess(CustomAclProxy response) {
@@ -64,27 +104,40 @@ public class PermissionDetailPresenter extends
 	@Override
 	protected void onBind() {
 		super.onBind();
+        rf.permissionRequest().findAllUsers().fire(new Receiver<List<AppUserProxy>>() {
+            @Override
+            public void onSuccess(List<AppUserProxy> response) {
+                for (AppUserProxy user:response) {
+                    userMap.put(user.getUsername(),user);
+                }
+                getView().setAvailableUsersToSearch(response);
+                getView().setAccessControlEntryPlaceHolder(newPermissionPlaceHolder);
+            }
+        });
 	}
 	
 	@Override
 	protected void onReset() {
 		super.onReset();
-		if (isProxyChanged) {
-			rf.permissionRequest().getPermissions((ExperimentProxy)proxy).fire(new Receiver<CustomAclProxy>() {
+	}
 
-				@Override
-				public void onSuccess(CustomAclProxy response) {
-					acl = response;
-					onEdit();
-				}
-			});
-		}
-	}
-	
-	public void setDomainObject(EntityProxy proxy) {
-		isProxyChanged = !proxy.equals(this.proxy);
+    private String getShareUrl(String shareUrlToken) {
+        return getView().getModuleUrl()+"#"+shareUrlToken;
+    }
+
+    public void setDomainObject(SecureEntityProxy proxy,final String shareUrlToken) {
 		this.proxy = proxy;
+        rf.permissionRequest().getPermissions(proxy).fire(new Receiver<CustomAclProxy>() {
+
+            @Override
+            public void onSuccess(CustomAclProxy response) {
+                acl = response;
+                getView().setShareUrl(getShareUrl(shareUrlToken));
+                onEdit();
+            }
+        });
 	}
+
 
 	@Override
 	public void onSave() {
@@ -95,25 +148,73 @@ public class PermissionDetailPresenter extends
 	
 	public void onEdit() {
 		editContext = rf.permissionRequest();
-		editContext.updatePermissions((ExperimentProxy)proxy, acl).to(receiver);
+		editContext.updatePermissions(proxy, acl).to(receiver);
 		getView().getEditDriver().edit(acl,editContext);
+        getView().showModifiedNotificaitonPanel(false);
 	}
 
-	@Override
-	public void onAddPermission(MultiWordSuggestion selectedItem) {
-		boolean isAdd = true;
-		List<AccessControlEntryProxy> permissionList = getView().getPermissionList();
-		for (AccessControlEntryProxy permission:permissionList) {
-			if (permission.getPrincipal().getId().equals(selectedItem.getPrincipal().getId())) {
-				isAdd = false;
-				break;
-			}
-		}
-		if (isAdd) {
-			AccessControlEntryProxy newPermission = editContext.create(AccessControlEntryProxy.class);
-			newPermission.setIsGranting(true);
-			newPermission.setPrincipal(selectedItem.getPrincipal());
-			permissionList.add(newPermission);
-		}
-	}
+    @Override
+    public void onDelete(AccessControlEntryProxy object) {
+        getView().getPermissionList().remove(object);
+        getView().showModifiedNotificaitonPanel(true);
+    }
+
+    @Override
+    public void onUpdatePermission(AccessControlEntryProxy value) {
+        getView().showModifiedNotificaitonPanel(true);
+    }
+
+    @Override
+    public void onCancel() {
+        onEdit();
+    }
+
+    @Override
+    public void onDone() {
+        getEventBus().fireEventFromSource(new PermissionDoneEvent(),this);
+    }
+
+    @Override
+    public void onCancelAddUser() {
+         resetNewPermissionHolder();
+    }
+
+    @Override
+    public void onAddPermission(Set<String> users, AccessControlEntryProxy permissionToAdd) {
+        boolean isModified = false;
+        for (final String user:users) {
+
+            AccessControlEntryProxy foundPermission = Iterables.find(getView().getPermissionList(),new Predicate<AccessControlEntryProxy>() {
+                @Override
+                public boolean apply(@Nullable AccessControlEntryProxy accessControlEntryProxy) {
+                    if (accessControlEntryProxy == null)
+                        return false;
+                    return (accessControlEntryProxy.getPrincipal().getId().equals(user));
+                }
+            },null);
+            if (foundPermission == null) {
+                AccessControlEntryProxy newPermission = editContext.create(AccessControlEntryProxy.class);
+                PermissionPrincipalProxy principal = editContext.create(PermissionPrincipalProxy.class);
+                principal.setId(user);
+                principal.setIsUser(true);
+                principal.setName(getDisplayName(userMap.get(user)));
+                newPermission.setPrincipal(principal);
+                newPermission.setMask(newPermissionPlaceHolder.getMask());
+                getView().getPermissionList().add(newPermission);
+                isModified = true;
+            }
+        }
+        getView().showModifiedNotificaitonPanel(isModified);
+        getView().resetUserSearchBox();
+        resetNewPermissionHolder();
+    }
+
+    private void resetNewPermissionHolder() {
+        newPermissionPlaceHolder.setMask(AccessControlEntryProxy.READ);
+        getView().setAccessControlEntryPlaceHolder(newPermissionPlaceHolder);
+    }
+
+    private String getDisplayName(AppUserProxy user) {
+        return user.getFirstname()+" "+user.getLastname() + " ("+user.getEmail()+")";
+    }
 }

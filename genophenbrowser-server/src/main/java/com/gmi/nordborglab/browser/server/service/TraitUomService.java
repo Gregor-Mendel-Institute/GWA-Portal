@@ -16,7 +16,7 @@ public interface TraitUomService {
 	@PostAuthorize("hasPermission(returnObject,'READ')")
 	TraitUom findPhenotype(Long id);
 	
-	@PreAuthorize("hasRole('ROLE_USER') and (#trait.id != null and (hasPermission(#trait,'WRITE') or hasPermission(#trait,'ADMINISTRATION')))")
+	@PreAuthorize("hasRole('ROLE_USER') and (#trait.id != null and (hasPermission(#trait,'EDIT') or hasPermission(#trait,'ADMINISTRATION')))")
 	TraitUom save(TraitUom trait);
 	
 	List<TraitUom> findPhenotypesByPassportId(Long passportId);

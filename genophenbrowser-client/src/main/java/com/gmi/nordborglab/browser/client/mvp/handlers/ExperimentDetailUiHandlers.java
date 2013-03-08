@@ -10,4 +10,6 @@ public interface ExperimentDetailUiHandlers extends UiHandlers {
 	public void onCancel();
 
 	public void onDelete();
+
+    void onShare();
 }

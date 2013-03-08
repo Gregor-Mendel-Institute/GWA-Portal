@@ -161,9 +161,9 @@ public class PassportDetailView extends ViewImpl implements
 		passportDisplayEditor.setVisible(state == State.DISPLAYING);
 		//taxonomyEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
 		edit.setVisible(state == State.DISPLAYING && 
-				(permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
-		save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
-		cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
+				(permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+		save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+		cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
 	}
 	
 	@Override

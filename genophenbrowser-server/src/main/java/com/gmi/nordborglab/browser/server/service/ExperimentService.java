@@ -14,10 +14,10 @@ public interface ExperimentService {
 
     List<Experiment> findAllByAcl(Integer permission);
 	
-	@PreAuthorize("hasRole('ROLE_USER') and (#experiment.id == null or hasPermission(#experiment,'WRITE') or hasPermission(#experiment,'ADMINISTRATION'))")
+	@PreAuthorize("hasRole('ROLE_USER') and (#experiment.id == null or hasPermission(#experiment,'EDIT') or hasPermission(#experiment,'ADMINISTRATION'))")
 	Experiment save(Experiment experiment);
 	
-	@PostAuthorize("hasPermission(returnObject,'READ')")
+    @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.observation.Experiment','READ')")
 	Experiment findExperiment(Long id);
 	
 	

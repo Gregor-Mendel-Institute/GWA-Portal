@@ -194,7 +194,7 @@ public class StudyListPresenter extends
 	
 	protected void checkPermissionAndUpdateView() {
 		int permission = currentUser.getPermissionMask(phenotype.getUserPermission());
-		boolean showAdd = (((permission & AccessControlEntryProxy.CREATE) == AccessControlEntryProxy.CREATE) || 
+		boolean showAdd = (((permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT) ||
 			((permission & AccessControlEntryProxy.ADMINISTRATION) == AccessControlEntryProxy.ADMINISTRATION));
 		getView().showAddBtn(showAdd);
 	}

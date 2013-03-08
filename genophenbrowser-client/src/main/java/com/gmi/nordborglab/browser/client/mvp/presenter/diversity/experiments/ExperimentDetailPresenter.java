@@ -2,6 +2,8 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments;
 
 import java.util.Set;
 
+import com.gmi.nordborglab.browser.client.events.PermissionDoneEvent;
+import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import javax.validation.ConstraintViolation;
@@ -53,7 +55,9 @@ public class ExperimentDetailPresenter
 		void setState(State state,int permission);
 
 		State getState();
-	}
+
+        void showPermissionPanel(boolean show);
+    }
 
 	public static enum State {
 		DISPLAYING, EDITING, SAVING;
@@ -74,7 +78,7 @@ public class ExperimentDetailPresenter
 		}
 		return title;
 	}
-
+    public static final Object TYPE_SetPermissionContent = new Object();
 	private final PlaceManager placeManager;
 	private final ExperimentManager experimentManager;
 	ExperimentProxy experiment;
@@ -82,6 +86,7 @@ public class ExperimentDetailPresenter
 	private ExperimentEditDriver editDriver = null;
 	private Receiver<ExperimentProxy> receiver = null;
 	protected boolean fireLoadExperimentEvent = false;
+    private final PermissionDetailPresenter permissionDetailPresenter;
 	
 	public static Type<PlaceRequestHandler> type = new Type<PlaceRequestHandler>();
 	
@@ -90,9 +95,11 @@ public class ExperimentDetailPresenter
 			final MyView view, final MyProxy proxy,
 			final PlaceManager placeManager,
 			final ExperimentManager experimentManager,
-			final CurrentUser currentUser) {
+			final CurrentUser currentUser,
+            final PermissionDetailPresenter permissionDetailPresenter) {
 		super(eventBus, view, proxy);
 		getView().setUiHandlers(this);
+        this.permissionDetailPresenter =permissionDetailPresenter;
 		this.placeManager = placeManager;
 		this.currentUser = currentUser;
 		this.experimentManager = experimentManager;
@@ -126,7 +133,13 @@ public class ExperimentDetailPresenter
 	@Override
 	protected void onBind() {
 		super.onBind();
-
+        setInSlot(TYPE_SetPermissionContent,permissionDetailPresenter);
+        registerHandler(getEventBus().addHandlerToSource(PermissionDoneEvent.TYPE,permissionDetailPresenter,new PermissionDoneEvent.Handler() {
+            @Override
+            public void onPermissionDone(PermissionDoneEvent event) {
+                getView().showPermissionPanel(false);
+            }
+        }));
 	}
 
 	@Override
@@ -216,8 +229,14 @@ public class ExperimentDetailPresenter
 	public void onDelete() {
 		
 	}
-	
-	@ProxyEvent
+
+    @Override
+    public void onShare() {
+        getView().showPermissionPanel(true);
+        permissionDetailPresenter.setDomainObject(experiment, placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest()));
+    }
+
+    @ProxyEvent
 	public void onLoadExperiment(LoadExperimentEvent event) {
 		experiment = event.getExperiment();
 		PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id",experiment.getId().toString());

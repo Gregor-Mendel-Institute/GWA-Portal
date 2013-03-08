@@ -7,6 +7,7 @@ import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitRepository;
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
 import com.google.common.collect.ImmutableList;
@@ -64,7 +65,7 @@ public class CdvServiceTest extends BaseTest {
 	public void checkNoVisiblePermissionWhenNoAdmin() {
 		SecurityUtils.setAnonymousUser();
 		Study study = service.findStudy(1L);
-		assertTrue((study.getUserPermission().getMask() & BasePermission.READ.getMask()) == BasePermission.READ.getMask()); 
+		assertTrue((study.getUserPermission().getMask() & CustomPermission.READ.getMask()) == CustomPermission.READ.getMask());
 		assertFalse(study.isOwner());
 	}
 	

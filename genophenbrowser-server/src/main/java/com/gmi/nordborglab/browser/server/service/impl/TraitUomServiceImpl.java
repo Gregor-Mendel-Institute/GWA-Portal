@@ -14,6 +14,7 @@ import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.repository.PassportRepository;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.google.common.collect.*;
 import org.elasticsearch.client.Client;
@@ -98,7 +99,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
 	
 	private FluentIterable<TraitUom> filterPhenotypesByAcl(List<TraitUom> traitsToFilter) {
 		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-		final ImmutableList<Permission> permissions = ImmutableList.of(BasePermission.READ);
+		final ImmutableList<Permission> permissions = ImmutableList.of(CustomPermission.READ);
 		FluentIterable<TraitUom> traits = FluentIterable.from(traitsToFilter);
 		if (traits .size() > 0) {
 			final ImmutableBiMap<TraitUom,ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(traits.toImmutableList()).inverse();
@@ -265,7 +266,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
     public List<TraitUom> findPhenotypesByExperimentAndAcl(Long id, int permission) {
         final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
         //TODO either change signature to always use WRITE permission or retrieve correct permission from int
-        final ImmutableList<Permission> permissions = ImmutableList.of(BasePermission.WRITE);
+        final ImmutableList<Permission> permissions = ImmutableList.of(CustomPermission.EDIT);
         FluentIterable<TraitUom> traits = FluentIterable.from(traitUomRepository.findByExperimentId(id));
         if (traits.size() > 0) {
             final ImmutableBiMap<TraitUom,ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(traits.toImmutableList()).inverse();
@@ -317,7 +318,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         Experiment experiment =  experimentRepository.findOne(experimentId);
         checkNotNull(experiment);
         List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-        final ImmutableList<Permission> permissions = ImmutableList.of(BasePermission.WRITE);
+        final ImmutableList<Permission> permissions = ImmutableList.of(CustomPermission.EDIT);
         ObjectIdentity oid = new ObjectIdentityImpl(Experiment.class,
                 experimentId);
         Acl acl = aclService.readAclById(oid, authorities);
@@ -352,11 +353,9 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         }
         traitUom = traitUomRepository.save(traitUom);
         CumulativePermission permission = new CumulativePermission();
-        permission.set(BasePermission.ADMINISTRATION);
-        permission.set(BasePermission.WRITE);
-        permission.set(BasePermission.READ);
-        permission.set(BasePermission.DELETE);
-        permission.set(BasePermission.CREATE);
+        permission.set(CustomPermission.ADMINISTRATION);
+        permission.set(CustomPermission.EDIT);
+        permission.set(CustomPermission.READ);
         addPermission(traitUom, new PrincipalSid(SecurityUtil.getUsername()),
                 permission);
         addPermission(traitUom,new GrantedAuthoritySid("ROLE_ADMIN"),permission);
@@ -404,6 +403,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
             acl = aclService.createAcl(oid);
         }
         acl.insertAce(acl.getEntries().size(), permission, recipient, true);
+        acl.setEntriesInheriting(true);
         aclService.updateAcl(acl);
         logger.debug("Added permission " + permission + " for Sid " + recipient
                 + " Phenotype " + traitUom);

@@ -1,10 +1,13 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
+import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.gmi.nordborglab.browser.client.editors.ExperimentDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.ExperimentEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter.State;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASViewerPresenter;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AclExperimentEntryProxy;
@@ -39,10 +42,13 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 	@UiField ToggleButton save;
 	@UiField Anchor cancel;
 	@UiField Anchor delete;
-	private final ExperimentEditDriver experimentEditDriver;
+    @UiField
+    ToggleButton share;
+    private final ExperimentEditDriver experimentEditDriver;
 	private final ExperimentDisplayDriver experimentDisplayDriver;
 	private State state = State.DISPLAYING;
 	private final MainResources resources;
+    private Modal permissionPopUp = new Modal(true);
 
 	@Inject
 	public ExperimentDetailView(final Binder binder,
@@ -55,6 +61,11 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 		this.experimentDisplayDriver = experimentDisplayDriver;
 		this.experimentDisplayDriver.initialize(experimentDisplayEditor);
 		this.experimentEditDriver.initialize(experimentEditEditor);
+        permissionPopUp.setBackdrop(BackdropType.STATIC);
+        permissionPopUp.setTitle("Permissions");
+        permissionPopUp.setMaxHeigth("700px");
+        permissionPopUp.setCloseVisible(false);
+        permissionPopUp.setKeyboard(false);
 	}
 
 	@Override
@@ -67,18 +78,29 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 		return experimentEditDriver;
 	}
 
+    @Override
+    public void setInSlot(Object slot, Widget content) {
+        if (slot == ExperimentDetailPresenter.TYPE_SetPermissionContent) {
+            permissionPopUp.add(content);
+        }
+        else {
+            super.setInSlot(slot, content);
+        }
+    }
+
 
 
 	@Override
 	public void setState(State state,int permission) {
 		this.state = state;
 		experimentDisplayEditor.setVisible(state == State.DISPLAYING);
-		experimentEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
+		experimentEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
 		edit.setVisible(state == State.DISPLAYING && 
-				(permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
-		save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
-		cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
-		delete.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.DELETE) == AccessControlEntryProxy.DELETE);
+				(permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+		save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+		cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+		delete.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+        share.setVisible((permission & AccessControlEntryProxy.ADMINISTRATION) == AccessControlEntryProxy.ADMINISTRATION);
 	}
 
 	@Override
@@ -86,7 +108,15 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 		return state;
 	}
 
-	@Override
+    @Override
+    public void showPermissionPanel(boolean show) {
+        if (show)
+            permissionPopUp.show();
+        else
+            permissionPopUp.hide();
+    }
+
+    @Override
 	public ExperimentDisplayDriver getExperimentDisplayDriver() {
 		return experimentDisplayDriver;
 	}
@@ -119,5 +149,10 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 			getUiHandlers().onCancel();
 		}
 	}
+
+    @UiHandler("share")
+    public void onClickShareBtn(ClickEvent e) {
+        getUiHandlers().onShare();
+    }
 	
 }

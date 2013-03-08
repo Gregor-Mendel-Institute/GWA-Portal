@@ -12,6 +12,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.server.repository.GWASResultRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -38,6 +40,9 @@ public class PermissionServiceTest extends BaseTest {
 	
 	@Resource 
 	protected ExperimentRepository experimentReposity;
+
+    @Resource
+    protected GWASResultRepository gwasResultRepository;
 	
 	
 	
@@ -60,9 +65,9 @@ public class PermissionServiceTest extends BaseTest {
 	@Test()
 	public void testGetPermissionsNotAllowedWhenNoAdministrationPermission() {
 		SecurityUtils.setAnonymousUser();
-		Experiment experiment = experimentReposity.findOne(1L);
+		GWASResult object = gwasResultRepository.findOne(901L);
 		try {
-			permissionService.getPermissions(experiment);
+			permissionService.getPermissions(object);
 			fail("No exception thrown");
 		}
 		catch (Exception e) {
@@ -90,8 +95,8 @@ public class PermissionServiceTest extends BaseTest {
 	public void testGetPermissions() {
 		Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
 	    SecurityUtils.makeActiveUser("TEST", "TEST",adminAuthorities);
-	    Experiment experiment = experimentReposity.findOne(1L);
-	    CustomAcl acl = permissionService.getPermissions(experiment);
+	    Experiment obj = experimentReposity.findOne(1L);
+	    CustomAcl acl = permissionService.getPermissions(obj);
 		assertNotNull("no ace entries found",acl);
 		assertNotNull(acl.getEntries());
 	}
@@ -104,10 +109,10 @@ public class PermissionServiceTest extends BaseTest {
 	    CustomAcl acl = permissionService.getPermissions(experiment);
 	    int count  = acl.getEntries().size();
 	    CustomAccessControlEntry newAce = new CustomAccessControlEntry(null, 1, true);
-	    newAce.setPrincipal(new PermissionPrincipal("ROLE_UNKNOW","ROLE_ANONYMOUS",false));
+	    newAce.setPrincipal(new PermissionPrincipal("ROLE_UNKNOW","ROLE_ANONYMOUS",false,false));
 	    acl.getEntries().add(newAce);
 	    newAce = new CustomAccessControlEntry(null, 1, true);
-	    newAce.setPrincipal(new PermissionPrincipal("UNKNOWNUSER","Fernando Rabanal",true));
+	    newAce.setPrincipal(new PermissionPrincipal("UNKNOWNUSER","Fernando Rabanal",true,false));
 	    acl.getEntries().add(newAce);
 	    CustomAcl newAcl = permissionService.updatePermissions(experiment, acl);
 	    assertEquals("acl for unknown role/user was created", count,newAcl.getEntries().size());
@@ -115,7 +120,8 @@ public class PermissionServiceTest extends BaseTest {
 	
 	@Test
 	public void testNoDuplicatePermissionSaved() {
-		Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
+
+        Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
 		PermissionPrincipal principal = null;
 	    SecurityUtils.makeActiveUser("TEST", "TEST",adminAuthorities);
 	    Experiment experiment = experimentReposity.findOne(1L);
@@ -123,10 +129,10 @@ public class PermissionServiceTest extends BaseTest {
 	    int count  = acl.getEntries().size();
 	    CustomAccessControlEntry newAce = new CustomAccessControlEntry(null, 1, true);
 	    //newAce.set("ROLE_ANONYMOUS");
-	    newAce.setPrincipal(new PermissionPrincipal("ROLE_ANONYMOUS","ROLE_ANONYMOUS",false));
+	    newAce.setPrincipal(new PermissionPrincipal("ROLE_ANONYMOUS","ROLE_ANONYMOUS",false,false));
 	    acl.getEntries().add(newAce);
 	    newAce = new CustomAccessControlEntry(null, 1, true);
-	    newAce.setPrincipal(new PermissionPrincipal("fer.rabanal@gmail.com","Fernando Rabanal",true));
+	    newAce.setPrincipal(new PermissionPrincipal("fer.rabanal@gmail.com","Fernando Rabanal",true,false));
 	    acl.getEntries().add(newAce);
 	    acl.getEntries().add(newAce);
 	    CustomAcl newAcl = permissionService.updatePermissions(experiment, acl);
@@ -146,10 +152,10 @@ public class PermissionServiceTest extends BaseTest {
 	    ace.setMask(0);
 	    acl.setIsEntriesInheriting(true);
 	    CustomAccessControlEntry newAce = new CustomAccessControlEntry(null, 1, true);
-	    newAce.setPrincipal(new PermissionPrincipal("ROLE_ANONYMOUS","ROLE_ANONYMOUS",false));
+	    newAce.setPrincipal(new PermissionPrincipal("ROLE_ANONYMOUS","ROLE_ANONYMOUS",false,false));
 	    acl.getEntries().add(newAce);
 	    newAce = new CustomAccessControlEntry(null,1,true);
-	    newAce.setPrincipal(new PermissionPrincipal("fer.rabanal@gmail.com","Fernando Rabanal",true));
+	    newAce.setPrincipal(new PermissionPrincipal("fer.rabanal@gmail.com","Fernando Rabanal",true,false));
 	    acl.getEntries().add(newAce);
 	    CustomAcl newAcl = permissionService.updatePermissions(experiment, acl);
 	    assertNotSame(newAcl, ace);

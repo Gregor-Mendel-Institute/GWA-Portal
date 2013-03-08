@@ -1,0 +1,150 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+    <ui:with field="access" type="java.lang.String" />
+    <ui:with field="iconClass" type="java.lang.String" />
+    <ui:with field="accessClass" type="java.lang.String" />
+    <ui:with field="editCheckBox" type="java.lang.String" />
+    <ui:with field="viewCheckBox" type="java.lang.String" />
+    <ui:with field="privateCheckBox" type="java.lang.String" />
+    <ui:with field="publicCheckBox" type="java.lang.String" />
+
+    <ui:style type="com.gmi.nordborglab.browser.client.ui.cells.PermissionSelectionCell.MyStyle">
+        .select_container {
+
+        }
+        .access_container:hover {
+            border-color: #999;
+        }
+        .access_container {
+            -webkit-user-select:none;
+            margin: 0;
+            padding: 2px 4px 5px;
+            text-decoration: none;
+            list-style: none;
+            vertical-align: middle;
+            cursor: pointer;
+            outline: none;
+            white-space: nowrap;
+            color: #15c;
+            display:inline-block;
+            position:relative;
+            box-sizing:border-box;
+            border-width:1px;
+            border-style:solid;
+            border-color:#ffffff;
+        }
+
+        .access_container_opened {
+            border-style: solid;
+            border-width: 1px;
+            color: #15c;
+            box-sizing:border-box;
+            border-color:#15c !important;
+        }
+
+        .access_text {
+            padding-right: 5px;
+            vertical-align: top;
+            white-space: nowrap;
+            display:inline-block;
+            position:relative;
+        }
+
+        .access_icon {
+            display:inline-block;
+            position:relative;
+        }
+
+        .menu {
+           display:none;
+            position: absolute;
+            top:100%;
+            left:0px;
+            z-index:1000;
+            -webkit-border-radius: 0;
+            -moz-border-radius: 0;
+            border-radius: 0;
+            -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            -webkit-transition: opacity 0.218s;
+            -moz-transition: opacity 0.218s;
+            -o-transition: opacity 0.218s;
+            transition: opacity 0.218s;
+            background: #fff;
+            border: 1px solid #ccc;
+            border: 1px solid rgba(0,0,0,.2);
+            cursor: default;
+            font-size: 13px;
+            margin: 0;
+            outline: none;
+            padding: 6px 0;
+            width:129px;
+        }
+        .menu li {
+            position: relative;
+            color: #333;
+            cursor: pointer;
+            list-style: none;
+            margin: 0;
+            padding: 6px 8em 6px 30px;
+            white-space: nowrap;
+        }
+        .menu li:hover {
+            background-color: #eee;
+            border-color: #eee;
+            border-style: dotted;
+            border-width: 1px 0;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .not_selectable {
+            cursor:default !important;
+        }
+        .not_selectable:hover {
+            border:1px solid #ffffff;
+        }
+
+
+        .checkbox_column  {
+            left: 5px;
+            position: absolute;
+            right: auto;
+            vertical-align: middle;
+            color: #333;
+            line-height:20px;
+        }
+        .hide  {
+            display:none;
+        }
+    </ui:style>
+
+    <div class="dropdown {style.select_container}" title="" role="listbox">
+        <div class="{style.access_container} {accessClass}" ui:field="menu">
+            <div class="{style.access_text}"><ui:text from="{access}" /></div>
+            <div class="icon-caret-down {style.access_icon} {iconClass}" ui:field="downIcon" />
+        </div>
+
+        <ul class="{style.menu}" role="menu" ui:field="permMenu">
+            <li ui:field="editItem">
+                <div class="{style.checkbox_column} {editCheckBox}" ui:field="editItemCb"></div>
+                Can Edit
+
+            </li>
+            <li ui:field="viewItem">
+                <div class="{style.checkbox_column}  {viewCheckBox}" ui:field="viewItemCb"></div>
+                    Can View
+            </li>
+        </ul>
+        <ul class="{style.menu}" role="menu" ui:field="accessMenu">
+            <li ui:field="privateItem">
+                <div class="{style.checkbox_column}  {privateCheckBox}" ui:field="privateItemCb"></div>
+                    Private
+            </li>
+            <li ui:field="publicItem">
+                <div class="{style.checkbox_column}  {publicCheckBox}" ui:field="publicItemCb"></div>
+                    Public
+            </li>
+        </ul>
+    </div>
+</ui:UiBinder>

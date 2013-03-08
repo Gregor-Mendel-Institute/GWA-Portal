@@ -15,6 +15,7 @@ import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,14 +80,14 @@ public class TraitUomServiceTest extends BaseTest {
     @Test
     public void testFindPhenotypesByExperimentAndAclWithNoPermission() {
         SecurityUtils.setAnonymousUser();
-        List<TraitUom> traits = service.findPhenotypesByExperimentAndAcl(1L,BasePermission.WRITE.getMask());
+        List<TraitUom> traits = service.findPhenotypesByExperimentAndAcl(1L, CustomPermission.EDIT.getMask());
         assertEquals(0L, traits.size());
     }
 
     @Test
     public void testFindPhenotypesByExperimentAndAcl() {
         createTestUser("ROLE_ADMIN");
-        List<TraitUom> traits = service.findPhenotypesByExperimentAndAcl(1L,BasePermission.WRITE.getMask());
+        List<TraitUom> traits = service.findPhenotypesByExperimentAndAcl(1L, CustomPermission.EDIT.getMask());
         assertEquals(107L, traits.size());
     }
 	
@@ -101,7 +102,7 @@ public class TraitUomServiceTest extends BaseTest {
 	public void checkNoVisiblePermissionWhenNoAdmin() {
 		SecurityUtils.setAnonymousUser();
 		TraitUom phenotype = service.findPhenotype(1L);
-		assertTrue((phenotype.getUserPermission().getMask() & BasePermission.READ.getMask()) == BasePermission.READ.getMask()); 
+		assertTrue((phenotype.getUserPermission().getMask() & CustomPermission.READ.getMask()) == CustomPermission.READ.getMask());
 		assertFalse(phenotype.isOwner());
 	}
 	
@@ -125,8 +126,8 @@ public class TraitUomServiceTest extends BaseTest {
 		createTestUser("ROLE_ADMIN");
 		TraitUom phenotype = service.findPhenotype(1L);
 		assertTrue(phenotype.isOwner());
-		assertTrue((phenotype.getUserPermission().getMask() & BasePermission.WRITE.getMask()) == BasePermission.WRITE.getMask()); 
-		assertTrue((phenotype.getUserPermission().getMask() & BasePermission.ADMINISTRATION.getMask()) == BasePermission.ADMINISTRATION.getMask());
+		assertTrue((phenotype.getUserPermission().getMask() & CustomPermission.EDIT.getMask()) == CustomPermission.EDIT.getMask());
+		assertTrue((phenotype.getUserPermission().getMask() & CustomPermission.ADMINISTRATION.getMask()) == CustomPermission.ADMINISTRATION.getMask());
 	}
 	
 	
@@ -136,8 +137,7 @@ public class TraitUomServiceTest extends BaseTest {
 	public void checkNoEditPermissionWhenNoPermission() {
 		createTestUser("ROLE_USER");
 		TraitUom phenotype = service.findPhenotype(1L);
-		assertFalse((phenotype.getUserPermission().getMask() & BasePermission.WRITE.getMask()) == BasePermission.WRITE.getMask()); 
-		assertFalse((phenotype.getUserPermission().getMask() & BasePermission.DELETE.getMask()) == BasePermission.DELETE.getMask());
+		assertFalse((phenotype.getUserPermission().getMask() & CustomPermission.EDIT.getMask()) == CustomPermission.EDIT.getMask());
 	}
 	
 	
@@ -320,10 +320,8 @@ public class TraitUomServiceTest extends BaseTest {
 	}
 
     private void assertPermission(Acl acl,List<Sid> sids) {
-        assertTrue(acl.isGranted(Arrays.asList(BasePermission.ADMINISTRATION), sids, false));
-        assertTrue(acl.isGranted(Arrays.asList(BasePermission.WRITE), sids, false));
-        assertTrue(acl.isGranted(Arrays.asList(BasePermission.READ), sids, false));
-        assertTrue(acl.isGranted(Arrays.asList(BasePermission.DELETE), sids, false));
-        assertTrue(acl.isGranted(Arrays.asList(BasePermission.READ), sids, false));
+        assertTrue(acl.isGranted(Arrays.asList(CustomPermission.ADMINISTRATION), sids, false));
+        assertTrue(acl.isGranted(Arrays.asList(CustomPermission.EDIT), sids, false));
+        assertTrue(acl.isGranted(Arrays.asList(CustomPermission.READ), sids, false));
     }
 }

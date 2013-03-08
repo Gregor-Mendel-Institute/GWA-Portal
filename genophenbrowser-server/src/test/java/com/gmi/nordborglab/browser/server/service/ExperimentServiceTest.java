@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -115,7 +116,7 @@ public class ExperimentServiceTest extends BaseTest {
 		sids.add(new PrincipalSid(SecurityUtils.TEST_USERNAME));
 		acl = aclService.readAclById(oid, sids);
 		List<Permission> permissions = new ArrayList<Permission>();
-		permissions.add(BasePermission.ADMINISTRATION);
+		permissions.add(CustomPermission.ADMINISTRATION);
 		assertTrue(acl.isGranted(permissions, sids, false));
         List<Sid> adminSids = Arrays.asList((Sid)new GrantedAuthoritySid("ROLE_ADMIN"));
         acl = aclService.readAclById(oid, adminSids);
@@ -131,7 +132,7 @@ public class ExperimentServiceTest extends BaseTest {
 	public void checkNoVisiblePermissionWhenNoAdmin() {
 		createTestUser("ROLE_ANONYMOUS");
 		Experiment experiment = service.findExperiment(1L);
-		assertTrue((experiment.getUserPermission().getMask() & BasePermission.READ.getMask()) == BasePermission.READ.getMask()); 
+		assertTrue((experiment.getUserPermission().getMask() & CustomPermission.READ.getMask()) == CustomPermission.READ.getMask());
 		assertFalse(experiment.isOwner());
 	}
 	
@@ -140,8 +141,8 @@ public class ExperimentServiceTest extends BaseTest {
 	public void checkVisiblePermissionsWhenAdmin() {
 		createTestUser("ROLE_ADMIN");
 		Experiment experiment = service.findExperiment(1L);
-		assertTrue((experiment.getUserPermission().getMask() & BasePermission.WRITE.getMask()) == BasePermission.WRITE.getMask()); 
-		assertTrue((experiment.getUserPermission().getMask() & BasePermission.ADMINISTRATION.getMask()) == BasePermission.ADMINISTRATION.getMask());
+		assertTrue((experiment.getUserPermission().getMask() & CustomPermission.EDIT.getMask()) == CustomPermission.EDIT.getMask());
+		assertTrue((experiment.getUserPermission().getMask() & CustomPermission.ADMINISTRATION.getMask()) == CustomPermission.ADMINISTRATION.getMask());
 	}
 	
 	
@@ -149,15 +150,14 @@ public class ExperimentServiceTest extends BaseTest {
 	public void checkNoEditPermissionWhenNoPermission() {
 		createTestUser("ROLE_USER");
 		Experiment experiment = service.findExperiment(1L);
-		assertFalse((experiment.getUserPermission().getMask() & BasePermission.WRITE.getMask()) == BasePermission.WRITE.getMask()); 
-		assertFalse((experiment.getUserPermission().getMask() & BasePermission.DELETE.getMask()) == BasePermission.DELETE.getMask());
+		assertFalse((experiment.getUserPermission().getMask() & CustomPermission.EDIT.getMask()) == CustomPermission.EDIT.getMask());
 	}
 
     @Test
     public void testFindAllByAcl() {
         createTestUser("ROLE_ADMIN");
         long count = repository.count();
-        long foundCount= service.findAllByAcl(BasePermission.WRITE.getMask()).size();
+        long foundCount= service.findAllByAcl(CustomPermission.EDIT.getMask()).size();
         assertEquals(count,foundCount);
     }
 	

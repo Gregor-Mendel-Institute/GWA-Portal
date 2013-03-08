@@ -10,6 +10,7 @@ import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.security.CustomUser;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.CdvService;
@@ -59,7 +60,7 @@ public class CdvServiceImpl implements CdvService {
 	public StudyPage findStudiesByPhenotypeId(Long id, int start, int size) {
 		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
 		final ImmutableList<Permission> permissions = ImmutableList
-				.of(BasePermission.READ);
+				.of(CustomPermission.READ);
 		ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,id);
 		Acl acl = aclService.readAclById(oid, authorities);
 		try {
@@ -83,7 +84,7 @@ public class CdvServiceImpl implements CdvService {
 	@Override
 	public Study findStudy(Long id) {
 		Study study = studyRepository.findOne(id);
-		study = checkStudyPermissions(study,BasePermission.READ);
+		study = checkStudyPermissions(study, CustomPermission.READ);
 		return study;
 	}
 
@@ -91,7 +92,7 @@ public class CdvServiceImpl implements CdvService {
 	@Override
 	@Transactional(readOnly = false)
 	public Study saveStudy(Study study) {
-        study = checkStudyPermissions(study, BasePermission.WRITE);
+        study = checkStudyPermissions(study, CustomPermission.EDIT);
         CustomUser user = SecurityUtil.getUserFromContext();
         if (user != null)
             study.setProducer(user.getFullName());
@@ -109,7 +110,7 @@ public class CdvServiceImpl implements CdvService {
 	
 	private FluentIterable<Study> filterStudiesByAcl(List<Study> studiesToFilter) {
 		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-		final ImmutableList<Permission> permissions = ImmutableList.of(BasePermission.READ);
+		final ImmutableList<Permission> permissions = ImmutableList.of(CustomPermission.READ);
 		FluentIterable<Study> studies = FluentIterable.from(studiesToFilter);
 		if (studies.size() > 0) {
 			List<Object[]> studyTraits = traitUomRepository.findAllByStudiesGrouped(studiesToFilter);
@@ -186,7 +187,7 @@ public class CdvServiceImpl implements CdvService {
 	@Override
 	public List<Trait> findTraitValues(Long studyId) {
 		Study study = studyRepository.findOne(studyId);
-		study = checkStudyPermissions(study,BasePermission.READ);
+		study = checkStudyPermissions(study, CustomPermission.READ);
 		List<Trait> traits = traitRepository.findAllByStudiesId(studyId);
 		return traits;
 	}

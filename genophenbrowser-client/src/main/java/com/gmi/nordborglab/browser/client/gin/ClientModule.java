@@ -17,12 +17,10 @@ import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
 import com.gmi.nordborglab.browser.client.manager.HelperManager;
 import com.gmi.nordborglab.browser.client.manager.ObsUnitManager;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
-import com.gmi.nordborglab.browser.client.mvp.presenter.MyView;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailTabPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentPermissionPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.PhenotypeListPresenter;
@@ -52,7 +50,6 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.PermissionDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentDetailTabView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentDetailView;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentPermissionView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentsOverviewTabView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentsOverviewView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.PhenotypeListView;
@@ -203,13 +200,9 @@ public class ClientModule extends AbstractPresenterModule {
 				StudyGWASPlotPresenter.MyProxy.class);
 
 		bindPresenterWidget(PermissionDetailPresenter.class,
-				MyView.class,
+				PermissionDetailPresenter.MyView.class,
 				PermissionDetailView.class);
 
-		bindPresenter(ExperimentPermissionPresenter.class,
-				ExperimentPermissionPresenter.MyView.class,
-				ExperimentPermissionView.class,
-				ExperimentPermissionPresenter.MyProxy.class);
 
 		bindPresenter(StudyWizardPresenter.class,
 				StudyWizardPresenter.MyView.class, StudyWizardView.class,
@@ -291,6 +284,6 @@ public class ClientModule extends AbstractPresenterModule {
 		else {
 			cache = new at.gmi.nordborglab.widgets.geneviewer.client.datasource.DefaultCacheImpl();
 		}
-		return new JBrowseCacheDataSourceImpl("/gwas/",cache);
+		return new JBrowseCacheDataSourceImpl("/provider/genes/",cache);
 	}
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
@@ -44,7 +45,7 @@ public class ObsUnitServiceImpl implements ObsUnitService {
 	public ObsUnitPage findObsUnits(Long id, int start, int size) {
 		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
 		final ImmutableList<Permission> permissions = ImmutableList
-				.of(BasePermission.READ);
+				.of(CustomPermission.READ);
 		ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,id);
 		Acl acl = aclService.readAclById(oid, authorities);
 		try {
@@ -70,7 +71,7 @@ public class ObsUnitServiceImpl implements ObsUnitService {
 			Long alleleAssayId) {
 		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
 		final ImmutableList<Permission> permissions = ImmutableList
-				.of(BasePermission.READ);
+				.of(CustomPermission.READ);
 		ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,phenotypeId);
 		Acl acl = aclService.readAclById(oid, authorities);
 		try {

@@ -15,4 +15,6 @@ public interface PermissionPrincipalProxy extends ValueProxy {
 	
 	public boolean getIsUser();
 	public void setIsUser(boolean isUser);
+
+    boolean getIsOwner();
 }

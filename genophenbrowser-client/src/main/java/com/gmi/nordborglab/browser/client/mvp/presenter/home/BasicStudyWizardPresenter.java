@@ -381,7 +381,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     availableExperiments = response;
                     getView().setExperiments(availableExperiments);
                 }
-            }, AccessControlEntryProxy.WRITE);
+            }, AccessControlEntryProxy.EDIT);
         }
         else {
             getView().setExperiments(availableExperiments);
@@ -523,7 +523,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     getView().onShowPhenotypeUploadPanel(false);
                 }
             }
-        },getView().getSelectedExperiment().getId(), AccessControlEntryProxy.WRITE);
+        },getView().getSelectedExperiment().getId(), AccessControlEntryProxy.EDIT);
     }
 
     private void filterAndDisplayPhenotypeList(final Long phenotypeId) {

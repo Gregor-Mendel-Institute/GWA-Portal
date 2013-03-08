@@ -10,6 +10,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
@@ -63,7 +64,7 @@ public class ExperimentRepositoryTest extends BaseTest{
 		permissions.add("ROLE_ADMIN");
 		permissions.add("ROLE_USER");
 		permissions.add("ROLE_ANONYMOUS");
-		Page<Experiment> page = repository.findByAcl(permissions,BasePermission.READ.getMask(),new PageRequest(0, 5));
+		Page<Experiment> page = repository.findByAcl(permissions,CustomPermission.READ.getMask(),new PageRequest(0, 5));
 		assertNotNull(page);
 		assertEquals(14, page.getTotalElements());
 		assertEquals(5,page.getContent().size());
@@ -77,7 +78,7 @@ public class ExperimentRepositoryTest extends BaseTest{
 		List<String> permissions = new ArrayList<String>();
 		permissions.add("ROLE_USER");
 		permissions.add("ROLE_ANONYMOUS");
-		Page<Experiment> page = repository.findByAcl(permissions,BasePermission.READ.getMask(),new PageRequest(0, 5));
+		Page<Experiment> page = repository.findByAcl(permissions,CustomPermission.READ.getMask(),new PageRequest(0, 5));
 		assertNotNull(page);
 		assertEquals(2, page.getTotalElements());
 		assertEquals(2,page.getContent().size());
@@ -92,7 +93,7 @@ public class ExperimentRepositoryTest extends BaseTest{
 	public void findByAnonymousUser() {
 		List<String> permissions = new ArrayList<String>();
 		permissions.add("ROLE_ANONYMOUS");
-		Page<Experiment> page = repository.findByAcl(permissions,BasePermission.READ.getMask(),new PageRequest(0, 5));
+		Page<Experiment> page = repository.findByAcl(permissions,CustomPermission.READ.getMask(),new PageRequest(0, 5));
 		assertNotNull(page);
 		assertEquals(1, page.getTotalElements());
 		assertEquals(1,page.getContent().size());
@@ -115,7 +116,7 @@ public class ExperimentRepositoryTest extends BaseTest{
         permissions.add("ROLE_USER");
         permissions.add("ROLE_ANONYMOUS");
         long count = repository.findAll().size();
-        long foundCount = repository.findAllByAcl(permissions,BasePermission.WRITE.getMask()).size();
+        long foundCount = repository.findAllByAcl(permissions, CustomPermission.EDIT.getMask()).size();
         assertEquals(count,foundCount);
     }
 
