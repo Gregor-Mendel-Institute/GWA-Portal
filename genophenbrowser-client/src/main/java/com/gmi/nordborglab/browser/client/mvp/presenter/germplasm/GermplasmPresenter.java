@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
+import com.gmi.nordborglab.browser.client.events.LoadTaxonomiesEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.HelperManager;
 import com.gmi.nordborglab.browser.client.manager.TaxonomyManager;
@@ -120,6 +121,7 @@ public class GermplasmPresenter extends
 				public void onSuccess(List<TaxonomyProxy> response) {
 					fireEvent(new LoadingIndicatorEvent(false));
 					taxonomies = ImmutableList.copyOf(response);
+                    LoadTaxonomiesEvent.fire(GermplasmPresenter.this,taxonomies);
 					getView().initMenu(taxonomies);
 					getView().setActiveMenuItem(selectedTaxonomyId, alleleAssayId);
 				}
@@ -186,7 +188,7 @@ public class GermplasmPresenter extends
 			}
 		},id,type);
 	}
-	
+
 	protected boolean titleUpdateRequired(String type,Long id) {
 		boolean required = false;
 		if (type != null) {
