@@ -2,8 +2,13 @@ package com.gmi.nordborglab.browser.client.util;
 
 import com.google.gwt.dom.client.DataTransfer;
 import elemental.html.Blob;
+import elemental.html.File;
 import elemental.html.FileList;
+import elemental.js.html.JsBlob;
+import elemental.js.html.JsFile;
 import elemental.js.html.JsFormData;
+
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,4 +40,15 @@ public abstract class HTML5Helper {
         }-*/;
 
     }
+
+   public static class ExtJsFile extends JsBlob  {
+
+        protected ExtJsFile() {}
+
+
+        public final native JsBlob webkitSlice(double start, double end, String contentType,String test) /*-{
+            return this.slice(start, end, contentType);
+        }-*/;
+    }
+
 }
