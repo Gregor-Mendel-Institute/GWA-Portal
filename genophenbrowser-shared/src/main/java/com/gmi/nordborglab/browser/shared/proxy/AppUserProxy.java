@@ -9,7 +9,7 @@ import com.google.web.bindery.requestfactory.shared.ValueProxy;
 @ProxyForName(value="com.gmi.nordborglab.browser.server.domain.acl.AppUser")
 public interface AppUserProxy extends ValueProxy{
 	
-	//String getUsername();
+	String getUsername();
 	String getFirstname();
 	void setFirstname(String firstname);
 	String getLastname();
