@@ -41,6 +41,7 @@
 	<entry-point class="com.gmi.nordborglab.browser.client.entrypoints.Browser" />
 	
 	<set-property name='ClientBundle.enableInlining' value='false' />
+    <set-property name="user.agent" value="safari,gecko1_8" />
 	
 	<replace-with class="com.gmi.nordborglab.browser.client.validation.ClientValidatorFactory">
         <when-type-is class="javax.validation.ValidatorFactory" />
