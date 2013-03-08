@@ -29,21 +29,22 @@
           <artifactId>guava</artifactId>
       </dependency>
   </dependencies>
-
-    <dependencyManagement>
-    <dependencies>
-    <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava-gwt</artifactId>
-        <version>${guava.version}</version>
-    </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava-gwt</artifactId>
-            <version>${guava.version}</version>
-        </dependency>
-    </dependencies>
-    </dependencyManagement>
+   <dependencyManagement>
+       <dependencies>
+           <dependency>
+               <groupId>com.google.guava</groupId>
+               <artifactId>guava-gwt</artifactId>
+               <scope>provided</scope>
+               <version>${guava.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>com.google.guava</groupId>
+               <artifactId>guava</artifactId>
+               <scope>provided</scope>
+               <version>${guava.version}</version>
+           </dependency>
+       </dependencies>
+   </dependencyManagement>
 
   <build>
     <plugins>
