@@ -91,11 +91,11 @@ public class TaxonomyDetailView extends ViewWithUiHandlers<TaxonomyDetailUiHandl
 	public void setState(State state, int permission) {
 		this.state = state;
 		taxonomyDisplayEditor.setVisible(state == State.DISPLAYING);
-		taxonomyEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
-		edit.setVisible(state == State.DISPLAYING && 
-				(permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
-		save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
-		cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
+		taxonomyEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+		edit.setVisible(state == State.DISPLAYING &&
+				(permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+		save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+		cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
 	}
 	
 	
