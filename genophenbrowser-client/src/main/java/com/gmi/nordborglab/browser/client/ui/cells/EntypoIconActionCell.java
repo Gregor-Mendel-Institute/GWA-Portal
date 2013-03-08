@@ -29,6 +29,7 @@ public class EntypoIconActionCell<C> extends AbstractCell<C> {
 
     private final String entypoString;
     private final ActionCell.Delegate<C> delegate;
+    private final boolean hasMargin;
 
     interface Template extends SafeHtmlTemplates {
 
@@ -38,10 +39,15 @@ public class EntypoIconActionCell<C> extends AbstractCell<C> {
     }
     private static Template templates = GWT.create(Template.class);
 
-    public EntypoIconActionCell(final String entypoString,ActionCell.Delegate<C> delegate) {
+    public EntypoIconActionCell(String entypoString, ActionCell.Delegate<C> delegate,boolean hasMargin) {
         super("click");
         this.entypoString = entypoString;
         this.delegate = delegate;
+        this.hasMargin = hasMargin;
+    }
+
+    public EntypoIconActionCell(final String entypoString,ActionCell.Delegate<C> delegate) {
+        this(entypoString,delegate,false);
     }
 
 
@@ -61,7 +67,9 @@ public class EntypoIconActionCell<C> extends AbstractCell<C> {
         SafeStylesBuilder builder = new SafeStylesBuilder();
         builder.append(SafeStylesUtils.fromTrustedNameAndValue("font-family", "EntypoRegular"));
         builder.append(SafeStylesUtils.forFontSize(38, Style.Unit.PX));
-        builder.append(SafeStylesUtils.forMarginRight(15, Style.Unit.PX));
+        if (hasMargin) {
+            builder.append(SafeStylesUtils.forMarginRight(15, Style.Unit.PX));
+        }
         builder.append(SafeStylesUtils.forCursor(Style.Cursor.POINTER));
         SafeHtml rendered = templates.cell(builder.toSafeStyles(), SafeHtmlUtils.fromTrustedString(entypoString));
         sb.append(rendered);
