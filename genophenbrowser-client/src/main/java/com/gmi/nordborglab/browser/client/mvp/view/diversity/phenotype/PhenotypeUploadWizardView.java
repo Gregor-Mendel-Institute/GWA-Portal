@@ -18,6 +18,7 @@ import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -276,7 +277,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         });
         HTML5Helper.ExtJsFormData formData = HTML5Helper.ExtJsFormData.newExtJsForm();
         formData.append("file",file,file.getName());
-        xhr.open("POST","/provider/phenotype/upload");
+        xhr.open("POST", GWT.getHostPageBaseURL()+"provider/phenotype/upload");
         xhr.send(formData);
     }
 
