@@ -1,18 +1,25 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.tools;
 
+import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.TabLink;
 import com.github.gwtbootstrap.client.ui.TabPanel;
+import com.github.gwtbootstrap.client.ui.constants.BackdropType;
+import com.gmi.nordborglab.browser.client.CurrentUser;
 import com.gmi.nordborglab.browser.client.NameTokens;
+import com.gmi.nordborglab.browser.client.editors.GWASResultEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASViewerUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASViewerPresenter;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
 import com.google.common.collect.Lists;
 import com.google.gwt.cell.client.*;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -24,6 +31,7 @@ import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
+import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
@@ -41,8 +49,9 @@ import java.util.List;
 public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> implements GWASViewerPresenter.MyView{
 
     interface Binder extends UiBinder<Widget, GWASViewerView> {
-
     }
+
+    public interface GWASResultEditDriver extends RequestFactoryEditorDriver<GWASResultProxy,GWASResultEditEditor> {}
 
     public static class ActionHasCell implements HasCell<GWASResultProxy,GWASResultProxy> {
 
@@ -88,15 +97,25 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     DataGrid<GWASResultProxy> gwasResultDataGrid;
     @UiField
     SimpleLayoutPanel gwasPlotContainer;
+    @UiField
+    TabLink gwasUploadTab;
 
     public enum PANELS {PLOTS,LIST,UPLOAD}
     private PANELS activePanel;
     private boolean isPlotsDisplayed = false;
+    private final GWASResultEditDriver editDriver;
+    private GWASResultEditEditor gwasEditEditor = new GWASResultEditEditor();
+    private Modal editPopUp = new Modal(true);
+    private Modal permissionPopUp = new Modal(true);
+    private final CurrentUser currentUser;
 
     @Inject
     public GWASViewerView(final Binder binder, final CustomDataGridResources dataGridResources,
-                          final PlaceManager placeManager) {
+                          final PlaceManager placeManager, final GWASResultEditDriver editDriver,
+                          final CurrentUser currentUser) {
         this.placeManager = placeManager;
+        this.currentUser = currentUser;
+        this.editDriver = editDriver;
         gwasResultDataGrid = new DataGrid<GWASResultProxy>(50,dataGridResources,new EntityProxyKeyProvider<GWASResultProxy>());
         widget = binder.createAndBindUi(this);
         gwasResultPager.setDisplay(gwasResultDataGrid);
@@ -113,7 +132,29 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
             }
         });
         initDataGridColumns();
+        this.editDriver.initialize(gwasEditEditor);
 
+        this.gwasEditEditor.getSaveButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().saveEdits();
+            }
+        });
+
+        this.gwasEditEditor.getCancelButton().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().cancelEdits();
+            }
+        });
+        editPopUp.setBackdrop(BackdropType.STATIC);
+        editPopUp.setTitle("Edit GWAS result");
+        editPopUp.add(gwasEditEditor);
+        permissionPopUp.setBackdrop(BackdropType.STATIC);
+        permissionPopUp.setTitle("Permissions");
+        permissionPopUp.setMaxHeigth("700px");
+        permissionPopUp.setCloseVisible(false);
+        permissionPopUp.setKeyboard(false);
     }
 
     private void initDataGridColumns() {
@@ -141,6 +182,19 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
                 return object.getType();
             }
         },"Type");
+        gwasResultDataGrid.addColumn(new Column<GWASResultProxy, String>(new TextCell()) {
+            @Override
+            public String getValue(GWASResultProxy object) {
+                if (currentUser.getAppUser().getEmail().equals(object.getAppUser().getEmail())) {
+                    return "me";
+                }
+                else {
+                    return object.getAppUser().getFirstname() + " " + object.getAppUser().getLastname();
+                }
+            }
+        },"Owner");
+
+
         gwasResultDataGrid.addColumn(new Column<GWASResultProxy, Number>(new NumberCell(format)) {
             @Override
             public Number getValue(GWASResultProxy object) {
@@ -160,21 +214,21 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
             public void execute(GWASResultProxy object) {
                 getUiHandlers().onEdit(object);
             }
-        })));
+        },true)));
 
         hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("&#128273",new ActionCell.Delegate<GWASResultProxy>() {
             @Override
             public void execute(GWASResultProxy object) {
                 getUiHandlers().onShowPermissions(object);
             }
-        })));
+        },true)));
 
         hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("&#59177;",new ActionCell.Delegate<GWASResultProxy>() {
             @Override
             public void execute(GWASResultProxy object) {
                 getUiHandlers().onDelete(object);
             }
-        })));
+        },true)));
 
         gwasResultDataGrid.addColumn(new IdentityColumn<GWASResultProxy>(new CompositeCell<GWASResultProxy>(hasCells)) {
             @Override
@@ -184,9 +238,9 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         },"Actions");
 
         gwasResultDataGrid.setColumnWidth(0,70, Style.Unit.PX);
-        gwasResultDataGrid.setColumnWidth(3,100, Style.Unit.PX);
         gwasResultDataGrid.setColumnWidth(4,100, Style.Unit.PX);
-        gwasResultDataGrid.setColumnWidth(5,120, Style.Unit.PX);
+        gwasResultDataGrid.setColumnWidth(5,100, Style.Unit.PX);
+        gwasResultDataGrid.setColumnWidth(6,120, Style.Unit.PX);
     }
 
     @Override
@@ -201,6 +255,9 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         }
         else if (slot == GWASViewerPresenter.TYPE_SetGWASPLOTContent) {
             gwasPlotContainer.setWidget(content);
+        }
+        else if (slot == GWASViewerPresenter.TYPE_SetPermissionContent) {
+            permissionPopUp.add(content);
         }
         else {
             super.setInSlot(slot, content);
@@ -223,6 +280,15 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         if (activePanel == panel)
             return;
         activePanel = panel;
+        switch (panel) {
+            case PLOTS:
+            case LIST:
+                tabPanel.selectTab(0);
+                break;
+            case UPLOAD:
+                tabPanel.selectTab(1);
+               break;
+        }
         updatePanelVisibility();
     }
 
@@ -233,17 +299,14 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         switch (activePanel) {
             case PLOTS:
                 tabPaneContainer.setWidgetVisible(gwasPlotContainer,true);
-                tabPanel.selectTab(0);
                 isPlotsDisplayed = true;
                 break;
             case LIST:
-                tabPaneContainer.setWidgetVisible(gwasListPanel,true);
-                tabPanel.selectTab(0);
+                tabPaneContainer.setWidgetVisible(gwasListPanel, true);
                 isPlotsDisplayed = false;
                 break;
             case UPLOAD:
                 tabPaneContainer.setWidgetVisible(gwasUploadPanel,true);
-                tabPanel.selectTab(1);
                 break;
         }
     }
@@ -253,5 +316,35 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     public HasData<GWASResultProxy> getDisplay()  {
         return gwasResultDataGrid;
     }
+
+    @Override
+    public void hideUploadPanel(boolean hide) {
+       gwasUploadTab.setVisible(!hide);
+    }
+
+
+    @Override
+    public GWASResultEditDriver getEditDriver() {
+        return editDriver;
+    }
+
+    @Override
+    public void showEditPanel(boolean show) {
+        if (show)
+            editPopUp.show();
+        else
+            editPopUp.hide();
+
+    }
+
+    @Override
+    public void showPermissionPanel(boolean show) {
+        if (show)
+            permissionPopUp.show();
+        else
+            permissionPopUp.hide();
+
+    }
+
 
 }

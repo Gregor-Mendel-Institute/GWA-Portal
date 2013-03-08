@@ -33,13 +33,18 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
 
     @Override
     public void onUploadError(String responseText) {
-        DisplayNotificationEvent.fireError(this,"Upload error",responseText);
-        getView().showUploadPanel();
+        //DisplayNotificationEvent.fireError(this,"Upload error",responseText);
+        //getView().showUploadPanel();
     }
     @Override
     public void onUploadFinished(String responseText) {
-        Long id = Long.parseLong(responseText);
-        getView().showUploadPanel();
-        GWASUploadedEvent.fire(getEventBus(),id);
+        //Long id = Long.parseLong(responseText);
+        //getView().showUploadPanel();
+        //GWASUploadedEvent.fire(getEventBus(),id);
+    }
+
+    @Override
+    public void onClose() {
+        GWASUploadedEvent.fire(getEventBus(),0L);
     }
 }

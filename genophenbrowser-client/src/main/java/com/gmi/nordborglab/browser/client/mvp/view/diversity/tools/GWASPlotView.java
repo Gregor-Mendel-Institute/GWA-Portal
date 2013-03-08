@@ -96,6 +96,7 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
             chart.clearDisplayGenes();
             chart.clearSelection();
             chart.draw(dataTable,gwasData.getMaxScore(),0,gwasData.getChrLengths().get(i-1),gwasData.getBonferroniThreshold());
+            chart.onResize();
             i++;
         }
     }

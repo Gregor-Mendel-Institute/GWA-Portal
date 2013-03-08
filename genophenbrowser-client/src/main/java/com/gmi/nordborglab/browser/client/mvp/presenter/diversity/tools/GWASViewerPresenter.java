@@ -3,13 +3,21 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools;
 import com.gmi.nordborglab.browser.client.CurrentUser;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
+import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.GWASResultLoadedEvent;
 import com.gmi.nordborglab.browser.client.events.GWASUploadedEvent;
+import com.gmi.nordborglab.browser.client.events.PermissionDoneEvent;
 import com.gmi.nordborglab.browser.client.manager.GWASDataManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASViewerUiHandlers;
+import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.GermplasmPresenter;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASPlotView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASViewerView;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
+import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
+import com.gmi.nordborglab.browser.shared.service.GWASDataRequest;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.view.client.HasData;
@@ -17,6 +25,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
+import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
@@ -26,7 +35,9 @@ import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.*;
 
+import javax.validation.ConstraintViolation;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,39 +57,81 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView,GW
 
         HasData<GWASResultProxy> getDisplay();
 
+        void hideUploadPanel(boolean hide);
+
+        GWASViewerView.GWASResultEditDriver getEditDriver();
+
+        void showEditPanel(boolean show);
+
+        void showPermissionPanel(boolean show);
     }
     @ProxyCodeSplit
     @NameToken(NameTokens.gwasViewer)
     public interface MyProxy extends ProxyPlace<GWASViewerPresenter>{
 
     }
-    @ContentSlot
-    public static final GwtEvent.Type<RevealContentHandler<?>> TYPE_SetGWASUploadContent = new GwtEvent.Type<RevealContentHandler<?>>();
 
-    public static final GwtEvent.Type<RevealContentHandler<?>> TYPE_SetGWASPLOTContent = new GwtEvent.Type<RevealContentHandler<?>>();
+    public static final Object TYPE_SetGWASUploadContent = new Object();
+    public static final Object TYPE_SetGWASPLOTContent = new Object();
+    public static final Object TYPE_SetPermissionContent = new Object();
+
     private final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget;
     private final ListDataProvider<GWASResultProxy> dataProvider = new ListDataProvider<GWASResultProxy>();
     private final CurrentUser currentUser;
     private final PlaceManager placeManager;
     private final GWASDataManager gwasDataManager;
-    private Long gwasResultId = null;
+    private GWASResultProxy gwasResult = null;
     private List<GWASResultProxy> gwasResults;
     private final GWASPlotPresenterWidget gwasPlotPresenterWidget;
+    private boolean isFireEvent = false;
+    private Receiver<GWASResultProxy> receiverOfSave = null;
+    private GWASDataRequest ctx;
+    private final PermissionDetailPresenter permissionDetailPresenter;
+
     @Inject
     public GWASViewerPresenter(EventBus eventBus, MyView view, GWASViewerPresenter.MyProxy proxy,
                                final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget,
                                final CurrentUser currentUser,
                                final PlaceManager placeManager,
                                final GWASDataManager gwasDataManager,
-                               final GWASPlotPresenterWidget gwasPlotPresenterWidget) {
+                               final GWASPlotPresenterWidget gwasPlotPresenterWidget,
+                               final PermissionDetailPresenter permissionDetailPresenter) {
         super(eventBus, view, proxy);
         this.gwasUploadWizardPresenterWidget = gwasUploadWizardPresenterWidget;
         this.gwasPlotPresenterWidget = gwasPlotPresenterWidget;
+        this.permissionDetailPresenter = permissionDetailPresenter;
         this.placeManager = placeManager;
         this.gwasDataManager = gwasDataManager;
         this.currentUser = currentUser;
         getView().setUiHandlers(this);
         dataProvider.addDataDisplay(getView().getDisplay());
+        receiverOfSave = new Receiver<GWASResultProxy>() {
+            public void onSuccess(GWASResultProxy response) {
+                replaceItem(response);
+                updateDataGrid();
+                getView().showEditPanel(false);
+            }
+
+            public void onFailure(ServerFailure error) {
+                fireEvent(new DisplayNotificationEvent("Error while saving",error.getMessage(),true,DisplayNotificationEvent.LEVEL_ERROR,0));
+                getView().showEditPanel(false);
+            }
+
+            public void onConstraintViolation(
+                    Set<ConstraintViolation<?>> violations) {
+                super.onConstraintViolation(violations);
+                getView().showEditPanel(true);
+            }
+        };
+    }
+
+    private void replaceItem(GWASResultProxy result) {
+        for (int i =0;i<gwasResults.size();i++) {
+            if (gwasResults.get(i).getId().equals(result.getId())) {
+                gwasResults.set(i,result);
+                return;
+            }
+        }
     }
 
 
@@ -92,6 +145,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView,GW
         super.onBind();
         setInSlot(TYPE_SetGWASUploadContent,gwasUploadWizardPresenterWidget);
         setInSlot(TYPE_SetGWASPLOTContent,gwasPlotPresenterWidget);
+        setInSlot(TYPE_SetPermissionContent,permissionDetailPresenter);
         registerHandler(GWASUploadedEvent.register(getEventBus(),new GWASUploadedEvent.Handler() {
             @Override
             public void onGWASUploaded(GWASUploadedEvent event) {
@@ -105,6 +159,12 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView,GW
                 });
             }
         }));
+        registerHandler(getEventBus().addHandlerToSource(PermissionDoneEvent.TYPE,permissionDetailPresenter,new PermissionDoneEvent.Handler() {
+            @Override
+            public void onPermissionDone(PermissionDoneEvent event) {
+                getView().showPermissionPanel(false);
+            }
+        }));
     }
 
     private void updateDataGrid() {
@@ -116,11 +176,15 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView,GW
     @Override
     public void onReset() {
         super.onReset();
-        getView().hideListPanel((gwasResults == null || gwasResults.size() == 0));
+        if (isFireEvent)
+            GWASResultLoadedEvent.fire(getEventBus(), gwasResult);
+        isFireEvent = false;
+        getView().hideUploadPanel(!currentUser.isLoggedIn());
+        getView().hideListPanel(((gwasResults == null || gwasResults.size() == 0) && gwasResult == null));
         updateDataGrid();
-        if (gwasResultId != null) {
-            gwasPlotPresenterWidget.loadPlots(gwasResultId, GetGWASDataAction.TYPE.GWASVIEWER);
+        if (gwasResult != null) {
             getView().showPanel(GWASViewerView.PANELS.PLOTS);
+            gwasPlotPresenterWidget.loadPlots(gwasResult.getId(), GetGWASDataAction.TYPE.GWASVIEWER);
         }
     }
 
@@ -133,37 +197,75 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView,GW
     @Override
     public void prepareFromRequest(PlaceRequest request) {
         super.prepareFromRequest(request);
+        Long gwasResultId=null;
         try {
             gwasResultId = Long.parseLong(request.getParameter("id",null));
         }
         catch (Exception e) {}
-        if (!currentUser.isLoggedIn() && gwasResultId == null) {
+        if (gwasResult != null && gwasResult.getId().equals(gwasResultId)) {
+            getProxy().manualReveal(this);
+        }
+        else if (!currentUser.isLoggedIn() && gwasResultId == null) {
             getProxy().manualRevealFailed();
-            Window.Location.assign("/login?url="+placeManager.buildHistoryToken(request));
+            Window.Location.assign(GWT.getHostPageBaseURL()+"login?url="+placeManager.buildHistoryToken(request));
             return;
         }
-        gwasDataManager.findAllGWASResults(new Receiver<List<GWASResultProxy>>() {
-            @Override
-            public void onSuccess(List<GWASResultProxy> response) {
-                gwasResults = response;
-                getProxy().manualReveal(GWASViewerPresenter.this);
-            }
+        else if (gwasResultId != null) {
+            gwasDataManager.findOneGWASResults(new Receiver<GWASResultProxy>() {
 
-            @Override
-            public void onFailure(ServerFailure error) {
-                getProxy().manualReveal(GWASViewerPresenter.this);
-            }
-        });
-        getProxy().manualReveal(this);
+                @Override
+                public void onSuccess(GWASResultProxy response) {
+                    gwasResult = response;
+                    isFireEvent = true;
+                    getProxy().manualReveal(GWASViewerPresenter.this);
+                }
+                @Override
+                public void onFailure(ServerFailure error) {
+                    if (currentUser.isLoggedIn()) {
+                        getProxy().manualReveal(GWASViewerPresenter.this);
+                    }
+                    else {
+                        getProxy().manualRevealFailed();
+                        placeManager.revealPlace(new PlaceRequest(NameTokens.experiments));
+                    }
+
+                }
+            },gwasResultId);
+        }
+        else if (gwasResults != null) {
+            gwasResult = null;
+            getView().showPanel(GWASViewerView.PANELS.LIST);
+            getProxy().manualReveal(GWASViewerPresenter.this);
+        }
+        else {
+            gwasResult = null;
+            gwasDataManager.findAllGWASResults(new Receiver<List<GWASResultProxy>>() {
+                @Override
+                public void onSuccess(List<GWASResultProxy> response) {
+                    gwasResults = response;
+                    getProxy().manualReveal(GWASViewerPresenter.this);
+                }
+
+                @Override
+                public void onFailure(ServerFailure error) {
+                    getProxy().manualReveal(GWASViewerPresenter.this);
+                }
+            });
+        }
     }
 
     @Override
     public void onShowPermissions(GWASResultProxy object) {
+        getView().showPermissionPanel(true);
+        permissionDetailPresenter.setDomainObject(object,placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest().with("id",object.getId().toString())));
     }
 
     @Override
     public void onEdit(GWASResultProxy object) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        getView().showEditPanel(true);
+        ctx = gwasDataManager.getContext();
+        getView().getEditDriver().edit(object, ctx);
+        ctx.save(object).to(receiverOfSave);
     }
 
     @Override
@@ -178,5 +280,17 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView,GW
                 }
             }, object);
         }
+    }
+
+    @Override
+    public void cancelEdits() {
+       ctx = null;
+       getView().showEditPanel(false);
+    }
+
+    @Override
+    public void saveEdits() {
+        RequestContext req = getView().getEditDriver().flush();
+        req.fire();
     }
 }

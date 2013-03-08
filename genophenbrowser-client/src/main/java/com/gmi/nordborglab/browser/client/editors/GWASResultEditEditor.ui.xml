@@ -1,0 +1,52 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui" xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
+             xmlns:e="urn:import:com.google.gwt.editor.ui.client"
+        >
+    <ui:style>
+        .actionButtons {
+            margin-top: 10px;
+        }
+        .cancelButton {
+            float: right;
+        }
+
+
+    </ui:style>
+    <b:FluidContainer ui:field="gwasSavePanel">
+        <b:FluidRow >
+            <b:Column size="12">
+                <g:HTMLPanel>
+                    <div>
+                        <b:WellForm ui:field="gwasForm">
+                            <b:ControlLabel>Name</b:ControlLabel>
+                            <b:Tooltip text='Name of GWAS result' trigger="FOCUS" placement="RIGHT">
+                            <e:ValueBoxEditorDecorator ui:field="name" >
+                                <e:valuebox>
+                                    <b:TextBox placeholder="Name" alternateSize="XLARGE"></b:TextBox>
+                                </e:valuebox>
+                            </e:ValueBoxEditorDecorator>
+                            </b:Tooltip>
+                            <b:ControlLabel>Type</b:ControlLabel>
+                            <b:Tooltip text='Type of GWAS result (LM, AMM, etc)' trigger="FOCUS" placement="RIGHT">
+                            <e:ValueBoxEditorDecorator ui:field="type" >
+                                <e:valuebox>
+                                    <b:TextBox placeholder="Type" alternateSize="XLARGE"></b:TextBox>
+                                </e:valuebox>
+                            </e:ValueBoxEditorDecorator>
+                            </b:Tooltip>
+                            <b:ControlLabel>Comments</b:ControlLabel>
+                            <b:Tooltip text='Additonal comments' trigger="FOCUS" placement="RIGHT"><b:TextArea placeholder="Comments" visibleLines="6" alternateSize="XLARGE" ui:field="comments"></b:TextArea></b:Tooltip>
+                            <b:ButtonToolbar>
+                            <b:ButtonGroup addStyleNames="{style.actionButtons}">
+                                <b:Button type="PRIMARY" icon="UPLOAD" ui:field="createGWASBtn">Create</b:Button>
+                                <b:Button ui:field="cancelGWASBtn" icon="BAN_CIRCLE" addStyleNames="{style.cancelButton}">Cancel</b:Button>
+                            </b:ButtonGroup>
+                            </b:ButtonToolbar>
+                        </b:WellForm>
+                    </div>
+                </g:HTMLPanel>
+            </b:Column>
+        </b:FluidRow>
+    </b:FluidContainer>
+</ui:UiBinder>

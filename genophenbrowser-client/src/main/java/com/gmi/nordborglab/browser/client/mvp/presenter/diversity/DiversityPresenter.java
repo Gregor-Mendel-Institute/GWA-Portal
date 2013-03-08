@@ -1,6 +1,8 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity;
 
 import java.util.List;
+
+import com.gmi.nordborglab.browser.client.events.GWASResultLoadedEvent;
 import com.gwtplatform.mvp.client.View;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
@@ -52,6 +54,7 @@ public class DiversityPresenter extends
 	protected List<TaxonomyProxy> taxonomies = null;
 	private final SearchPresenter searchPresenter;
 
+
 	@Inject
 	public DiversityPresenter(final EventBus eventBus, final MyView view,
 			final MyProxy proxy, final PlaceManager placeManager, 
@@ -72,6 +75,16 @@ public class DiversityPresenter extends
 	protected void onBind() {
 		super.onBind();
 		setInSlot(TYPE_SearchPresenterContent, searchPresenter);
+        registerHandler(GWASResultLoadedEvent.register(getEventBus(),new GWASResultLoadedEvent.Handler() {
+            @Override
+            public void onGWASResultLoaded(GWASResultLoadedEvent event) {
+                if (placeManager.getCurrentPlaceRequest().matchesNameToken(NameTokens.gwasViewer)) {
+                    getView().clearBreadcrumbs(1);
+                    getView().setBreadcrumbs(0, "ALL", placeManager.buildHistoryToken(new PlaceRequest(NameTokens.gwasViewer)));
+                    getView().setBreadcrumbs(1, event.getGWASResult().getName(),placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest()));
+                }
+            }
+        }));
 	}
 	
 	@Override 

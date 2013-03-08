@@ -10,13 +10,17 @@ import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ParseDouble;
 import org.supercsv.cellprocessor.ParseInt;
 import org.supercsv.cellprocessor.constraint.Equals;
+import org.supercsv.cellprocessor.constraint.IsIncludedIn;
 import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvListReader;
 import org.supercsv.io.ICsvListReader;
 import org.supercsv.io.ICsvMapReader;
+import org.supercsv.prefs.CsvPreference;
 import sun.util.locale.StringTokenIterator;
 
 import java.io.File;
+import java.io.FileReader;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +34,14 @@ import java.util.Map;
 public class CSVGWASReader implements GWASReader {
 
     private static CellProcessor[] headerCellProcessors = new CellProcessor[] {
-       new Equals("chr"),new Equals("position"),new Equals("pval"),new Optional(new Equals("maf")),new Optional(new Equals("mac"))
+       new Equals("chr"),new Equals("position"),new IsIncludedIn(new String[] {"score","pvalue"}),
+       new Optional(new Equals("maf")),
+       new Optional(new Equals("mac")),
+       new Optional(new Equals("GVE"))
     };
 
     private static CellProcessor[] cellProcessors = new CellProcessor[] {
-       new ParseInt(),new ParseInt(),new ParseDouble(), new Optional(new ParseDouble()), new Optional(new ParseInt())
+       new ParseInt(),new ParseInt(),new ParseDouble(), new Optional(new ParseDouble()), new Optional(new ParseInt()), new Optional(new ParseDouble())
     };
     private static String header[] = new String[] {"chr","pos","pval","maf","max"};
 
@@ -55,7 +62,7 @@ public class CSVGWASReader implements GWASReader {
     public void isValidGWASFile(File file) throws Exception {
         if (!file.exists())
             throw new Exception("File does not exist");
-        ICsvListReader reader = null;
+        ICsvListReader reader = new CsvListReader(new FileReader(file), CsvPreference.STANDARD_PREFERENCE);
         try {
             reader.read(headerCellProcessors);
             reader.read(cellProcessors);
@@ -71,7 +78,7 @@ public class CSVGWASReader implements GWASReader {
 
     @Override
     public Map<String, GWASData> parseGWASDataFromFile(File originalFile) throws Exception {
-        ICsvListReader reader = null;
+        ICsvListReader reader = new CsvListReader(new FileReader(originalFile), CsvPreference.STANDARD_PREFERENCE);
         try {
             Map<String,GWASData> data = Maps.newHashMap();
             reader.getHeader(true);
@@ -87,11 +94,13 @@ public class CSVGWASReader implements GWASReader {
                     data.put(key,gwasData);
                     positions.clear();
                     pvalues.clear();
-                    chr = (Integer)row.get(chr);
+                    chr = (Integer)row.get(0);
                 }
                 else {
                     positions.add((Integer)row.get(1));
-                    pvalues.add((Float)row.get(2));
+                    Double value = (Double)row.get(2);
+                    Float floatValue = (float)(double)value;
+                    pvalues.add(floatValue);
                 }
             }
             return data;

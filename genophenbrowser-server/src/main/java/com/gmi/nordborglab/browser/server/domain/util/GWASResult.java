@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.util;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 
 import javax.persistence.*;
@@ -16,7 +17,7 @@ import javax.persistence.*;
 @Table(name="gwas_results",schema="util")
 @AttributeOverride(name="id", column=@Column(name="id"))
 @SequenceGenerator(name="idSequence", sequenceName="util.gwas_results_id_seq")
-public class GWASResult extends BaseEntity{
+public class GWASResult extends SecureEntity  {
 
     private String name;
 

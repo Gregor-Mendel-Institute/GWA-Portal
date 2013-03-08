@@ -29,10 +29,14 @@ public class GWASDataManager extends RequestFactoryManager<GWASDataRequest>{
     }
 
     public void findAllGWASResults(Receiver<List<GWASResultProxy>> receiver) {
-        getContext().findAllGWASResults().fire(receiver);
+        getContext().findAllGWASResults().with("appUser").fire(receiver);
     }
 
     public void delete(Receiver<List<GWASResultProxy>> receiver, GWASResultProxy object) {
         getContext().delete(object).fire(receiver);
+    }
+
+    public void findOneGWASResults(Receiver<GWASResultProxy> receiver,Long id) {
+        getContext().findOneGWASResult(id).fire(receiver);
     }
 }

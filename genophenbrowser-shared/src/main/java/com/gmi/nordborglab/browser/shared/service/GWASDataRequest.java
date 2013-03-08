@@ -20,4 +20,8 @@ public interface GWASDataRequest extends RequestContext {
     Request<List<GWASResultProxy>> findAllGWASResults();
 
     Request<List<GWASResultProxy>> delete(GWASResultProxy object);
+
+    Request<GWASResultProxy> findOneGWASResult(Long id);
+
+    Request<GWASResultProxy> save(GWASResultProxy object);
 }

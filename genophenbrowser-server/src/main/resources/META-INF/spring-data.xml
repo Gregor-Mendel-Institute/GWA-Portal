@@ -105,9 +105,6 @@
 		<property name="username" value="${database.username}" />
 		<property name="password" value="${database.password}" />
 	</bean>
-	
-	<context:property-placeholder location="classpath:META-INF/persistence_${spring.profiles.active}.properties"/>
-	
 
 </beans>
 

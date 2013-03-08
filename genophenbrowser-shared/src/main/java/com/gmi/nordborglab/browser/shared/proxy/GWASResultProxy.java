@@ -12,7 +12,7 @@ import com.google.web.bindery.requestfactory.shared.ProxyForName;
  */
 
 @ProxyForName(value="com.gmi.nordborglab.browser.server.domain.util.GWASResult", locator="com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
-public interface GWASResultProxy extends EntityProxy{
+public interface GWASResultProxy extends SecureEntityProxy{
 
     public Long getId();
 
@@ -28,4 +28,6 @@ public interface GWASResultProxy extends EntityProxy{
     public int getNumberOfSNPs();
 
     public float getMaxScore();
+
+    AppUserProxy getAppUser();
 }

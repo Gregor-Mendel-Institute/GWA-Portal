@@ -132,4 +132,38 @@ public class GWASDataServiceTest extends BaseTest {
         }
         catch (IOException e) {}
     }
+
+    @Test
+    public void testFindOneGWASResult() {
+        Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
+        SecurityUtils.makeActiveUser("TEST","TEST", adminAuthorities);
+        GWASResult result = gwasDataService.findOneGWASResult(901L);
+        assertNotNull(result);
+        assertEquals(901L,result.getId().longValue());
+
+    }
+
+    @Test(expected=AccessDeniedException.class)
+    public void testFindOneGWASResultAccessDenied() {
+        SecurityUtils.setAnonymousUser();
+        GWASResult result = gwasDataService.findOneGWASResult(901L);
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testSaveAccessDeniedException() {
+        SecurityUtils.setAnonymousUser();
+        GWASResult actual = gwasDataService.findOneGWASResult(901L);
+        gwasDataService.save(actual);
+    }
+
+    @Test()
+    public void testSave() {
+        Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
+        SecurityUtils.makeActiveUser("TEST","TEST", adminAuthorities);
+        GWASResult actual = gwasDataService.findOneGWASResult(1100L);
+        actual.setName("TEST");
+        GWASResult updated = gwasDataService.save(actual);
+        assertNotNull(updated);
+        assertEquals("TEST",updated.getName());
+    }
 }
