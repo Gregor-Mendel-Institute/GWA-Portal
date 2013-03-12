@@ -2,6 +2,9 @@ package com.gmi.nordborglab.browser.client.editors;
 
 import java.util.Collection;
 
+import com.github.gwtbootstrap.client.ui.TextArea;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.ValueListBox;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.google.gwt.core.client.GWT;
@@ -10,7 +13,6 @@ import com.google.gwt.editor.ui.client.ValueBoxEditorDecorator;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.ValueListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
@@ -25,11 +27,14 @@ public class PhenotypeEditEditor extends Composite implements Editor<PhenotypePr
 			UiBinder<Widget, PhenotypeEditEditor> {
 	}
 	
-	@UiField  ValueBoxEditorDecorator<String> localTraitName; 
-	@UiField  ValueBoxEditorDecorator<String> traitProtocol;
-	@UiField(provided=true) ValueListBox<UnitOfMeasureProxy> unitOfMeasure;
-	@UiField ValueBoxEditorDecorator<String> toAccession;
-	@UiField ValueBoxEditorDecorator<String> eoAccession;
+	@UiField
+    TextBox localTraitName;
+	@UiField
+    TextArea traitProtocol;
+	@UiField(provided=true)
+    ValueListBox<UnitOfMeasureProxy> unitOfMeasure;
+	@UiField TextBox toAccession;
+	@UiField TextBox eoAccession;
 
 	public PhenotypeEditEditor() {
 		unitOfMeasure = new ValueListBox<UnitOfMeasureProxy>(new ProxyRenderer<UnitOfMeasureProxy>(null) {
