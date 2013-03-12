@@ -9,7 +9,6 @@ public class CustomPermission extends AbstractPermission {
     public static final Permission READ = new CustomPermission(1 << 0, 'R'); // 1
     public static final Permission EDIT = new CustomPermission(1 << 1, 'E'); // 2
     public static final Permission ADMINISTRATION = new CustomPermission(1 << 2, 'A'); // 4
-    public static final Permission ALL = new CustomPermission(7,'S');
 
     public CustomPermission(int mask) {
         super(mask);
