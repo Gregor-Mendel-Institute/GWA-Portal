@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.data.ChrGWAData;
+import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.repository.GWASResultRepository;
 import com.google.common.collect.Lists;
@@ -23,7 +26,7 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
@@ -56,10 +59,12 @@ public class GWASDataServiceTest extends BaseTest {
 	@Test
 	public void testGetGWASDataByStudyId() {
 		SecurityUtils.setAnonymousUser();
-		ImmutableMap<String,GWASData> map = gwasDataService.getGWASDataByStudyId(1L);
-		assertNotNull("nothing returned",map);
+        GWASData gwasdata =gwasDataService.getGWASDataByStudyId(1L);
+        assertNotNull(gwasdata);
+		Map<String,ChrGWAData> map = gwasdata.getChrGWASData();
+        assertNotNull("nothing returned", map);
 		assertTrue("chromosome found",map.containsKey("chr1"));
-		GWASData data = map.get("chr1");
+		ChrGWAData data = map.get("chr1");
 		assertNotNull("Positions are null",data.getPositions());
 		assertNotNull("pvalues are null",data.getPvalues());
 		assertEquals("Chr is incorred","chr1", data.getChr());
@@ -108,10 +113,11 @@ public class GWASDataServiceTest extends BaseTest {
     public void testGetGWASDataByViewerId() {
         Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
         SecurityUtils.makeActiveUser("TEST","TEST", adminAuthorities);
-        ImmutableMap<String,GWASData> map = gwasDataService.getGWASDataByViewerId(750L);
+        GWASData gwasData =gwasDataService.getGWASDataByViewerId(750L);
+        Map<String,ChrGWAData> map =  gwasData.getChrGWASData();
         assertNotNull("nothing returned",map);
         assertTrue("chromosome found",map.containsKey("chr1"));
-        GWASData data = map.get("chr1");
+        ChrGWAData data = map.get("chr1");
         assertNotNull("Positions are null",data.getPositions());
         assertNotNull("pvalues are null",data.getPvalues());
         assertEquals("Chr is incorred","chr1", data.getChr());

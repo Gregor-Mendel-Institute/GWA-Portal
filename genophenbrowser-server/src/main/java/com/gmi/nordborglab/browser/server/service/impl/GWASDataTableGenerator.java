@@ -7,9 +7,11 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.gmi.nordborglab.browser.server.data.ChrGWAData;
+import com.gmi.nordborglab.browser.server.data.GWASData;
 import org.springframework.stereotype.Component;
 
-import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASDataForClient;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.google.common.collect.ImmutableList;
@@ -34,8 +36,8 @@ public class GWASDataTableGenerator implements DataTableGenerator {
 	public DataTable generateDataTable(Query query, HttpServletRequest request)
 			throws DataSourceException {
         String chr = request.getParameter("chr");
-        Map<String,GWASData> map = getGWASData(request);
-		GWASData data = map.get(chr);
+        GWASData gwasData = getGWASData(request);
+		ChrGWAData data = gwasData.getChrGWASData().get(chr);
 		DataTable table = convertGWASDataToDataTable(data);
 		return table;
 	}
@@ -46,43 +48,43 @@ public class GWASDataTableGenerator implements DataTableGenerator {
 	}
 
 	public GWASDataForClient getGWASDataForClient(HttpServletRequest request) throws DataSourceException {
-		GWASDataForClient gwasData =null;
-        Map<String,GWASData> map = getGWASData(request);
+		GWASDataForClient gwasDataForClient =null;
+        GWASData gwasData = getGWASData(request);
 		List<String> dataTables = new ArrayList<String>();
 		List<String> chromosomes = new ArrayList<String>();
 		///TODO not hardcoded
 		List<Integer> chrLenghts = ImmutableList.of(30429953, 19701870, 23467451, 18578708, 26992130);
-		for (Map.Entry<String, GWASData> entry : map.entrySet())
+		for (Map.Entry<String, ChrGWAData> entry : gwasData.getChrGWASData().entrySet())
         {
             String chr = entry.getKey();
         	chromosomes.add(chr);
-            GWASData data = entry.getValue();
+            ChrGWAData data = entry.getValue();
             DataTable dataTable =  convertGWASDataToDataTable(data);   
             CharSequence json = JsonRenderer.renderDataTable(dataTable, true, false, true);
             dataTables.add(json.toString());
         }
-		gwasData = new GWASDataForClient(10,6, chromosomes, chrLenghts, dataTables);
-		return gwasData;
+		gwasDataForClient = new GWASDataForClient(gwasData.getMaxScore(),gwasData.getBonferroniScore(), chromosomes, chrLenghts, dataTables);
+		return gwasDataForClient;
 	}
 
-    private  Map<String,GWASData> getGWASData(HttpServletRequest request) {
-        Map<String,GWASData> map = null;
+    private  GWASData getGWASData(HttpServletRequest request) {
+        GWASData gwasData = null;
         Long id = Long.parseLong(request.getParameter("id"));
         TYPE type = TYPE.valueOf(request.getParameter("type").toUpperCase());
         switch (type) {
             case STUDY:
-                map = gwasDataService.getGWASDataByStudyId(id);
+                gwasData = gwasDataService.getGWASDataByStudyId(id);
                 break;
             case GWASVIEWER:
-                map = gwasDataService.getGWASDataByViewerId(id);
+                gwasData = gwasDataService.getGWASDataByViewerId(id);
                 break;
             default:
                 throw new RuntimeException("unknown type "+type);
         }
-        return map;
+        return gwasData;
     }
 	
-	public static DataTable convertGWASDataToDataTable(GWASData data) throws DataSourceException  {
+	public static DataTable convertGWASDataToDataTable(ChrGWAData data) throws DataSourceException  {
 		DataTable table = new DataTable();
 		table.addColumn(new ColumnDescription("pos",ValueType.NUMBER,"Position"));
 		table.addColumn(new ColumnDescription("pValue",ValueType.NUMBER,"pValue"));

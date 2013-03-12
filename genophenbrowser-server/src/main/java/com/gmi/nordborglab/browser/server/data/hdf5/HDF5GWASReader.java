@@ -7,6 +7,8 @@ import java.util.Map;
 
 import ch.systemsx.cisd.hdf5.*;
 
+import com.gmi.nordborglab.browser.server.data.ChrGWAData;
+import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.data.GWASReader;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
@@ -24,25 +26,38 @@ public class HDF5GWASReader implements GWASReader{
 	}
 
 	@Override
-	public GWASData readForChr(String file,String chr, Double limit) {
+	public ChrGWAData readForChr(String file,String chr, Double limit) {
 		IHDF5Reader reader = getReader(file);
-		GWASData data = getForChr(reader, chr, limit);
+		ChrGWAData data = getForChr(reader, chr, limit);
 		reader.close();
 		return data;
 	}
 
 	@Override
-	public Map<String, GWASData> readAll(String file,Double limit) {
-		
+	public GWASData readAll(String file,Double limit) {
 		IHDF5Reader reader = getReader(file);
-		Map<String,GWASData> data = readAll(reader,limit);
-		reader.close();
-		return data;
+        GWASData gwasData;
+		Map<String,ChrGWAData> data = readAll(reader,limit);
+        long numberOfSNPs = 0;
+        if (reader.hasAttribute(pValueGroup,"numberOfSNPs")) {
+            numberOfSNPs = reader.getLongAttribute(pValueGroup,"numberOfSNPs");
+        }
+        double bonferroniScore = 6;
+        if (reader.hasAttribute(pValueGroup,"bonferroniScore")) {
+            bonferroniScore = reader.getDoubleAttribute(pValueGroup,"bonferroniScore");
+        }
+        float maxScore = 10;
+        if (reader.hasAttribute(pValueGroup,"maxScore")) {
+            maxScore = reader.getFloatAttribute(pValueGroup,"maxScore");
+        }
+        gwasData = new GWASData(data,numberOfSNPs,bonferroniScore,maxScore);
+        reader.close();
+		return gwasData;
 	}
 
-    protected Map<String,GWASData> readAll(IHDF5Reader reader,Double limit) {
+    protected Map<String,ChrGWAData> readAll(IHDF5Reader reader,Double limit) {
         List<String> members = reader.getGroupMembers(pValueGroup);
-        Map<String,GWASData> data = new LinkedHashMap<String, GWASData>();
+        Map<String,ChrGWAData> data = new LinkedHashMap<String, ChrGWAData>();
         for (String chr:members) {
             data.put(chr,getForChr(reader,chr,limit));
         }
@@ -88,15 +103,15 @@ public class HDF5GWASReader implements GWASReader{
     }
 
     @Override
-    public Map<String,GWASData> parseGWASDataFromFile(File originalFile) throws Exception {
+    public Map<String,ChrGWAData> parseGWASDataFromFile(File originalFile) throws Exception {
        IHDF5Reader reader = null;
-       Map<String,GWASData> newDataMap = Maps.newHashMap();
+       Map<String,ChrGWAData> newDataMap = Maps.newHashMap();
        try {
            reader = getReader(originalFile);
-           Map<String,GWASData> data = readAll(reader,1.0);
-           for (Map.Entry<String,GWASData> entry:data.entrySet()) {
-               GWASData newGWASData = GWASData.sortAndConvertToScores(entry.getValue());
-               newDataMap.put(entry.getKey(),newGWASData);
+           Map<String,ChrGWAData> data = readAll(reader,null);
+           for (Map.Entry<String,ChrGWAData> entry:data.entrySet()) {
+               ChrGWAData newChrGWAData = ChrGWAData.sortAndConvertToScores(entry.getValue());
+               newDataMap.put(entry.getKey(), newChrGWAData);
            }
 
        }catch (Exception e) {
@@ -110,20 +125,29 @@ public class HDF5GWASReader implements GWASReader{
     }
 
     @Override
-    public void saveGWASDataToFile(Map<String, GWASData> data, File destFile) throws Exception {
+    public void saveGWASDataToFile(Map<String, ChrGWAData> data, File destFile) throws Exception {
         IHDF5Writer writer = null;
         try {
             writer = HDF5Factory.open(destFile);
             writer.createGroup(pValueGroup);
-            for (Map.Entry<String,GWASData> entry:data.entrySet()) {
+            long numberOfSnps = 0;
+            float maxScore = 0;
+            for (Map.Entry<String,ChrGWAData> entry:data.entrySet()) {
                 String chr = entry.getKey();
-                GWASData gwasData = entry.getValue();
+                ChrGWAData chrGWAData = entry.getValue();
                 String positionDataSet = pValueGroup + chr + "/positions";
                 String scoresDataSet = pValueGroup + chr + "/scores";
                 writer.createGroup(pValueGroup+chr);
-                writer.writeFloatArray(scoresDataSet,gwasData.getPvalues());
-                writer.writeIntArray(positionDataSet,gwasData.getPositions());
+                writer.writeFloatArray(scoresDataSet, chrGWAData.getPvalues());
+                writer.writeIntArray(positionDataSet, chrGWAData.getPositions());
+                numberOfSnps+= chrGWAData.getPositions().length;
+                if (chrGWAData.getPvalues()[0] > maxScore)
+                    maxScore = chrGWAData.getPvalues()[0];
             }
+            writer.setLongAttribute(pValueGroup,"numberOfSNPs",numberOfSnps);
+            //TODO calculate benjamini hochberg
+            writer.setDoubleAttribute(pValueGroup, "bonferroniScore", -Math.log10(0.05 / numberOfSnps));
+            writer.setFloatAttribute(pValueGroup,"maxScore",maxScore);
             writer.flush();
 
         }catch (Exception e) {
@@ -136,14 +160,14 @@ public class HDF5GWASReader implements GWASReader{
     }
 
 
-    protected GWASData getForChr(IHDF5Reader reader,String chr,Double limit) {
+    protected ChrGWAData getForChr(IHDF5Reader reader,String chr,Double limit) {
 		int[] positions = null;
 		float[] scores = null;
 		String path = pValueGroup+chr;
 		HDF5DataSetInformation info = reader.getDataSetInformation(path+"/positions");
 		Double fraction = null;
 		if (limit != null) 
-			  fraction = new Double(info.getNumberOfElements()*limit);
+			  fraction = limit > info.getNumberOfElements() ? info.getNumberOfElements() : limit;
 		if (fraction == null) {
 			positions = reader.readIntArray(path+"/positions");
 			scores = reader.readFloatArray(path+"/scores");
@@ -153,7 +177,7 @@ public class HDF5GWASReader implements GWASReader{
 			positions  = reader.readIntArrayBlock(path+"/positions",fraction.intValue(),0);
 			scores = reader.readFloatArrayBlock(path+"/scores",fraction.intValue(),0);
 		}
-		GWASData chrData = new GWASData(positions, scores, chr);
+		ChrGWAData chrData = new ChrGWAData(positions, scores, chr);
 		return chrData;
 	}
 	
