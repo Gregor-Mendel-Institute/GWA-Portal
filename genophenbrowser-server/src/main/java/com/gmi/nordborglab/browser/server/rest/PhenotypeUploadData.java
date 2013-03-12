@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.server.rest;
 
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
  */
 public class PhenotypeUploadData {
 
+    private TraitUom traitUom;
     private String name;
     private String unitOfMeasure;
     private String protocol;
@@ -26,11 +29,17 @@ public class PhenotypeUploadData {
     public PhenotypeUploadData() {
     }
 
+    public TraitUom getTraitUom() {
+        return traitUom;
+    }
+
+    public void setTraitUom(TraitUom traitUom) {
+        this.traitUom = traitUom;
+    }
 
     public List<PhenotypeUploadValue> getPhenotypeUploadValues() {
         return phenotypeUploadValues;
     }
-
     public void setName(String name) {
         this.name = name;
     }
