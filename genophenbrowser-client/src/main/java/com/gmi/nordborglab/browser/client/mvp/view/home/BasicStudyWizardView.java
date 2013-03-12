@@ -561,12 +561,13 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     }
 
     @Override
-    public void setStatisticTypes(Set<StatisticTypeProxy> statisticTypes) {
+    public void setStatisticTypes(List<StatisticTypeProxy> statisticTypes,List<Long> statisticTypeTraitCounts) {
         resetStatisticTypeLinks();
-        for (StatisticTypeProxy statisticType:statisticTypes) {
+        for (int i =0;i<statisticTypes.size();i++) {
+            StatisticTypeProxy statisticType = statisticTypes.get(i);
             NavLink link = statisticTypeLinks.get(statisticType);
             if (link != null) {
-                link.setText(statisticType.getStatType()+" ["+statisticType.getNumberOfTraits()+"]");
+                link.setText(statisticType.getStatType()+" ["+statisticTypeTraitCounts.get(i)+"]");
                 link.setDisabled(false);
             }
         }
