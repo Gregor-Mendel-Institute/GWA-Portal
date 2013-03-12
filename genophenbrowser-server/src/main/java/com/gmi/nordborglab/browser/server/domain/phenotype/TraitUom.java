@@ -1,8 +1,6 @@
 package com.gmi.nordborglab.browser.server.domain.phenotype;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -38,7 +36,7 @@ public class TraitUom extends BaseEntity {
 	
 	@OneToMany(mappedBy="traitUom",cascade={CascadeType.PERSIST,CascadeType.MERGE})
 	private Set<Trait> traits = new HashSet<Trait>();
-	
+
 	private String local_trait_name;
 	private String trait_protocol;
 	private String to_accession;
@@ -62,14 +60,17 @@ public class TraitUom extends BaseEntity {
 	boolean isOwner = false;
 	
 	@Transient 
-	private Set<StatisticType> statisticTypes;
-	
-	public TraitUom() { }
+	private List<StatisticType> statisticTypes;
+
+    @Transient
+    private List<Long> statisticTypeTraitCounts;
+
+    public TraitUom() { }
 	
 	public AclTraitUomIdentity getAcl() {
 		return acl;
 	}
-	
+
 	public Experiment getExperiment() {
 		///TODO change database schema for more efficient access
 		if (experiment == null) {
@@ -83,11 +84,11 @@ public class TraitUom extends BaseEntity {
 		return Collections.unmodifiableSet(traits);
 	}
 	
-	public Set<StatisticType> getStatisticTypes() {
+	public List<StatisticType> getStatisticTypes() {
 		return statisticTypes;
 	}
 	
-	public void setStatisticTypes(Set<StatisticType> statisticTypes) {
+	public void setStatisticTypes(List<StatisticType> statisticTypes) {
 		this.statisticTypes = statisticTypes;
 	}
 	
@@ -164,5 +165,14 @@ public class TraitUom extends BaseEntity {
     public void addTrait(Trait trait) {
         traits.add(trait);
         trait.setTraitUom(this);
+    }
+
+
+    public void setStatisticTypeTraitCounts(List<Long> statisticTypeTraitCounts) {
+        this.statisticTypeTraitCounts = statisticTypeTraitCounts;
+    }
+
+    public List<Long> getStatisticTypeTraitCounts() {
+        return statisticTypeTraitCounts;
     }
 }

@@ -19,8 +19,11 @@ public class StatisticType extends BaseEntity {
 	
 	@Transient
 	private Long numberOfTraits;
-	
-	public Long getNumberOfTraits() {
+
+    public StatisticType() {
+    }
+
+    public Long getNumberOfTraits() {
 		return numberOfTraits;
 	}
 
