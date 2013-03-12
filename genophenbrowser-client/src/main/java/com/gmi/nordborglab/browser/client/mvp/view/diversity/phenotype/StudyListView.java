@@ -6,7 +6,10 @@ import com.gmi.nordborglab.browser.client.mvp.handlers.StudyListUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.StudyListPresenter;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
+import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
+import com.google.common.collect.Lists;
+import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -21,6 +24,8 @@ import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+
+import java.util.List;
 
 public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> implements
 		StudyListPresenter.MyView {
@@ -73,6 +78,10 @@ public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> imple
 		dataGrid.addColumn(new StudyListDataGridColumns.ProtocolColumn(),"Protocol");
 		dataGrid.addColumn(new StudyListDataGridColumns.AlleleAssayColumn(),"Genotype");
 		dataGrid.addColumn(new StudyListDataGridColumns.StudyDateColumn(),"Study date");
+        List<HasCell<StudyJobProxy,?>> cells = Lists.newArrayList();
+        cells.add(new StudyListDataGridColumns.StatusCell());
+        cells.add(new StudyListDataGridColumns.ProgressCell());
+        dataGrid.addColumn(new StudyListDataGridColumns.StatusColumn(cells),"Status");
 	}
 
 	@UiHandler("newStudyBtn")

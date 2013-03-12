@@ -22,5 +22,7 @@ public interface CdvService {
 	public List<Trait> findTraitValues(Long studyId);
 
     public List<AlleleAssay> findAlleleAssaysWithStats(Long phenotypeId, Long statisticTypeId);
+
+    public Study createStudyJob(Long studyId);
 	
 }

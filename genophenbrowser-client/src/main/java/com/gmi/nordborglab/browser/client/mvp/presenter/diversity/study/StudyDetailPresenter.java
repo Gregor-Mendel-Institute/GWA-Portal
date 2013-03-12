@@ -4,15 +4,15 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
+import com.gmi.nordborglab.browser.client.events.*;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASUploadWizardPresenterWidget;
+import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gmi.nordborglab.browser.client.CurrentUser;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
-import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
-import com.gmi.nordborglab.browser.client.events.LoadStudyEvent;
-import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter.State;
@@ -64,7 +64,13 @@ public class StudyDetailPresenter extends
 		StudyEditDriver getEditDriver();
 
 		State getState();
-	}
+
+        void showGWASUploadPopup(boolean show);
+
+        void showGWASBtns(boolean show);
+
+        void showJobInfo(StudyJobProxy job, int permissionMask);
+    }
 
 	protected StudyProxy study;
 	protected boolean fireLoadEvent;
@@ -75,6 +81,9 @@ public class StudyDetailPresenter extends
 	private Multiset<String> geochartData;
 	private static int BIN_COUNT = 20;
 	protected final Receiver<StudyProxy> receiver;
+    protected final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget;
+
+    public static final Object TYPE_SetGWASUploadContent = new Object();
 
 	public enum LOWER_CHART_TYPE {
 		histogram, explorer
@@ -93,10 +102,12 @@ public class StudyDetailPresenter extends
 	@Inject
 	public StudyDetailPresenter(final EventBus eventBus, final MyView view,
 			final MyProxy proxy, final PlaceManager placeManager,
-			final CdvManager cdvManager, final CurrentUser currentUser) {
+			final CdvManager cdvManager, final CurrentUser currentUser,
+            final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget) {
 		super(eventBus, view, proxy);
 		getView().setUiHandlers(this);
 		this.placeManager = placeManager;
+        this.gwasUploadWizardPresenterWidget = gwasUploadWizardPresenterWidget;
 		this.cdvManager = cdvManager;
 		this.currentUser = currentUser;
 		receiver = new Receiver<StudyProxy>() {
@@ -130,6 +141,20 @@ public class StudyDetailPresenter extends
 	@Override
 	protected void onBind() {
 		super.onBind();
+        setInSlot(TYPE_SetGWASUploadContent,gwasUploadWizardPresenterWidget);
+        registerHandler(GWASUploadedEvent.register(getEventBus(), new GWASUploadedEvent.Handler() {
+            @Override
+            public void onGWASUploaded(GWASUploadedEvent event) {
+                getView().showGWASUploadPopup(false);
+                getView().showGWASBtns(false);
+                cdvManager.findOne(new Receiver<StudyProxy>() {
+                    @Override
+                    public void onSuccess(StudyProxy response) {
+                        study = response;
+                    }
+                },study.getId());
+            }
+        }));
 	}
 
 	@Override
@@ -148,10 +173,13 @@ public class StudyDetailPresenter extends
 		LoadingIndicatorEvent.fire(this, false);
 		calculateGeoChartData();
 		calculateHistogramData();
+        getView().showJobInfo(study.getJob(),currentUser.getPermissionMask(study.getUserPermission()));
 		getView().setGeoChartData(geochartData);
 		getView().setHistogramChartData(histogramData);
 		getView().scheduledLayout();
 		getView().setPhenotypExplorerData(ImmutableSet.copyOf(study.getTraits()));
+        gwasUploadWizardPresenterWidget.setMultipleUpload(false);
+        gwasUploadWizardPresenterWidget.setRestURL("/provider/study/" + study.getId() + "/upload");
 	}
 
 	@Override
@@ -256,7 +284,7 @@ public class StudyDetailPresenter extends
 		CdvRequest ctx = cdvManager.getContext();
 				
 		getView().getEditDriver().edit(study, ctx);
-		ctx.saveStudy(study).with("traits.obsUnit.stock.passport.collection.locality","alleleAssay","protocol","userPermission").to(receiver);
+		ctx.saveStudy(study).with(CdvManager.FULL_PATH).to(receiver);
 		
 	}
 
@@ -279,8 +307,23 @@ public class StudyDetailPresenter extends
 		// TODO Auto-generated method stub
 		
 	}
-	
-	private int getPermission() {
+
+    @Override
+    public void onStartAnalysis() {
+        if (study.getJob() != null)
+            return;
+        cdvManager.createStudyJob(new Receiver<StudyProxy>() {
+
+            @Override
+            public void onSuccess(StudyProxy response) {
+                study = response;
+                getView().showGWASBtns(false);
+                StudyModifiedEvent.fire(getEventBus(), response);
+            }
+        }, study.getId());
+    }
+
+    private int getPermission() {
 		int permission = 0;
 		if (study != null) 
 		    permission =  currentUser.getPermissionMask(study.getUserPermission());

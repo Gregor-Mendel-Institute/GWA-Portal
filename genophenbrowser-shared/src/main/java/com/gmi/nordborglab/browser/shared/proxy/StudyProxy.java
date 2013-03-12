@@ -31,9 +31,6 @@ public interface StudyProxy extends EntityProxy {
 	public Date getStudyDate();
 	public void setStudyDate(Date date);
 	
-	public Boolean isDone();
-	public void setIsDone(Boolean isDone);
-
 	public AccessControlEntryProxy getUserPermission();
 	public boolean isOwner();
 	
@@ -44,5 +41,7 @@ public interface StudyProxy extends EntityProxy {
 
     public void setTransformation(TransformationProxy transformation);
     public TransformationProxy getTransformation();
+
+    public StudyJobProxy getJob();
 	
 }

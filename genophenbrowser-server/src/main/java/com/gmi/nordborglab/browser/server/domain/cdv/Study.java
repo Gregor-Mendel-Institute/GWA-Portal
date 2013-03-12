@@ -9,6 +9,7 @@ import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 import com.google.common.collect.Iterables;
 
@@ -33,13 +34,15 @@ public class Study extends BaseEntity {
     @JoinColumn(name = "cdv_phen_transformation_id",nullable = false)
     private Transformation transformation;
 
+    @OneToOne(fetch = FetchType.LAZY,cascade={CascadeType.PERSIST,CascadeType.MERGE},mappedBy="study")
+    private StudyJob job;
+
 	private String name;
 	private String producer;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date study_date = new Date();
-	@NotNull
-	private Boolean isdone=false;
+
 	
 	@Transient
 	private TraitUom phenotype;
@@ -87,14 +90,6 @@ public class Study extends BaseEntity {
 
 	public void setStudyDate(Date study_date) {
 		this.study_date = study_date;
-	}
-
-	public Boolean isDone() {
-		return isdone;
-	}
-
-	public void setIsDone(Boolean isDone) {
-		this.isdone = isDone;
 	}
 
 	public StudyProtocol getProtocol() {
@@ -157,5 +152,14 @@ public class Study extends BaseEntity {
     public void setTransformation(Transformation transformation) {
         this.transformation = transformation;
         transformation.getStudies().add(this);
+    }
+
+    public StudyJob getJob() {
+        return job;
+    }
+
+    public void setJob(StudyJob job) {
+        this.job = job;
+        job.setStudy(this);
     }
 }

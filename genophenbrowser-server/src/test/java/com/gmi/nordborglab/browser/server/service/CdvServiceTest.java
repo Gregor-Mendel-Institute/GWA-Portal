@@ -179,5 +179,23 @@ public class CdvServiceTest extends BaseTest {
 		service.findStudiesByPhenotypeId(1L, 0, 50);
 	}
 
+    @Test
+    public void testCreateStudyJob() {
+        Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
+        SecurityUtils.makeActiveUser("TEST", "TEST",adminAuthorities);
+        Study study = service.createStudyJob(1L);
+        assertNotNull(study);
+        assertNotNull(study.getJob());
+        assertEquals("Queued",study.getJob().getStatus());
+        assertEquals(1,study.getJob().getProgress().doubleValue(),0);
+    }
+
+    @Test(expected=AccessDeniedException.class)
+    public void testCreateStudyJobPermissionDenied() {
+        SecurityUtils.setAnonymousUser();
+        Study study = service.createStudyJob(1L);
+    }
+
+
 
 }

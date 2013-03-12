@@ -7,6 +7,7 @@ import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadPhenotypeEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
+import com.gmi.nordborglab.browser.client.events.StudyModifiedEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyListUiHandlers;
@@ -14,12 +15,14 @@ import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
+import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 import com.gwtplatform.mvp.client.HasUiHandlers;
@@ -34,6 +37,8 @@ import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
+
+import java.util.Arrays;
 
 public class StudyListPresenter extends
 		Presenter<StudyListPresenter.MyView, StudyListPresenter.MyProxy> implements StudyListUiHandlers{
@@ -101,6 +106,17 @@ public class StudyListPresenter extends
 	protected void onBind() {
 		super.onBind();
 		dataProvider.addDataDisplay(getView().getDisplay());
+        registerHandler(StudyModifiedEvent.register(getEventBus(), new StudyModifiedEvent.Handler() {
+            @Override
+            public void onStudyModified(StudyModifiedEvent event) {
+                for (int i=0;i < getView().getDisplay().getVisibleItemCount();i++) {
+                    if (getView().getDisplay().getVisibleItem(i).getId().equals(event.getStudy().getId())) {
+                        dataProvider.updateRowData(i, Arrays.asList(event.getStudy()));
+                        break;
+                    }
+                }
+            }
+        }));
 	}
 	
 	@Override

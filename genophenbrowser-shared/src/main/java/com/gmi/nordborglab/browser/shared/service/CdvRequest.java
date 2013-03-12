@@ -23,4 +23,6 @@ public interface CdvRequest extends RequestContext {
 			Long alleleAssayId, Long stduyProtocolId,int start, int size);
 
     Request<List<AlleleAssayProxy>> findAlleleAssaysWithStats(Long phenotypeId, Long statisticTypeId);
+
+    Request<StudyProxy> createStudyJob(Long studyId);
 }

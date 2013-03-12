@@ -2,6 +2,12 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.study;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.ProgressBar;
+import com.github.gwtbootstrap.client.ui.base.ProgressBarBase;
+import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.gmi.nordborglab.browser.client.editors.StudyDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.StudyEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyDetailUiHandlers;
@@ -10,11 +16,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDet
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
-import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
-import com.gmi.nordborglab.browser.shared.proxy.LocalityProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
-import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
-import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
+import com.gmi.nordborglab.browser.shared.proxy.*;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
@@ -82,6 +84,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 	private ResizeableMotionChart motionChart;
 	private GeoChart geoChart = new GeoChart();
 	private PieChart pieChart;
+    private Modal gwasUploadPopup = new Modal(true);
 	
 	@UiField StudyDisplayEditor studyDisplayEditor;
 	@UiField StudyEditEditor studyEditEditor;
@@ -106,8 +109,22 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 	@UiField
 	Anchor delete;
 	@UiField(provided=true) MainResources mainRes;
-	
-	@Inject
+    @UiField
+    Button uploadBtn;
+    @UiField
+    Button startBtn;
+    @UiField
+    Label jobStatusLb;
+    @UiField
+    ProgressBar jobStatusProgress;
+    @UiField
+    com.google.gwt.user.client.ui.Label modifiedLb;
+    @UiField
+    com.google.gwt.user.client.ui.Label createdLb;
+    @UiField
+    com.google.gwt.user.client.ui.Label taskLb;
+
+    @Inject
 	public StudyDetailView(final Binder binder, final StudyDisplayDriver displayDriver, final StudyEditDriver editDriver, final MainResources mainRes) {
 		this.mainRes = mainRes;
 		widget = binder.createAndBindUi(this);
@@ -148,11 +165,72 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 	public State getState() {
 		return state;
 	}
-	
+
+    @Override
+    public void showGWASUploadPopup(boolean show) {
+        if (show) {
+            gwasUploadPopup.show();
+        }
+        else {
+            gwasUploadPopup.hide();
+        }
+
+    }
+
+    @Override
+    public void showGWASBtns(boolean show) {
+        uploadBtn.setVisible(false);
+        startBtn.setVisible(false);
+    }
+
+    @Override
+    public void showJobInfo(StudyJobProxy job, int permission) {
+        String jobStatusText ="";
+        LabelType jobLabelType = null;
+        ProgressBar.Color progresBarColor = null;
+        String jobTask = "";
+        boolean showJobActionBtns = false;
+        boolean showProgress = false;
+        Integer progress = 0;
+        if (job == null) {
+            jobStatusText = "NA";
+            jobLabelType = LabelType.DEFAULT;
+            showProgress = false;
+            showJobActionBtns = true;
+        }
+        else {
+            jobStatusText = job.getStatus();
+            jobTask = job.getTask();
+            progress = job.getProgress();
+            jobStatusLb.setText(job.getStatus());
+            if (job.getStatus().equalsIgnoreCase("Finished")) {
+                jobLabelType = LabelType.SUCCESS;
+                showProgress = false;
+            }
+            else if (job.getStatus().equalsIgnoreCase("Queued")) {
+                jobLabelType = LabelType.IMPORTANT;
+                showProgress = true;
+                progresBarColor = ProgressBarBase.Color.DANGER;
+            }
+            else if (job.getStatus().equalsIgnoreCase("Running")) {
+                jobLabelType = LabelType.WARNING;
+                showProgress = true;
+                progresBarColor = ProgressBarBase.Color.WARNING;
+            }
+        }
+        jobStatusProgress.setPercent(progress);
+        jobStatusProgress.setVisible(showProgress);
+        jobStatusProgress.setColor(progresBarColor);
+        jobStatusProgress.setText(progress.toString());
+        jobStatusLb.setText(jobStatusText);
+        jobStatusLb.setType(jobLabelType);
+        taskLb.setText(jobTask);
+        uploadBtn.setVisible(state == State.DISPLAYING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT && showJobActionBtns);
+        startBtn.setVisible(state == State.DISPLAYING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT && showJobActionBtns);
+    }
 
 
-	
-	private void forceLayout() {
+    private void forceLayout() {
 		if (!widget.isAttached() || !widget.isVisible())
 			return;
 		drawUpperCharts();
@@ -348,6 +426,18 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 				.iconContainer_active());
 		drawLowerCharts();
 	}
+
+    @UiHandler("uploadBtn")
+    public void onClickUploadBtn(ClickEvent e) {
+        gwasUploadPopup.setMaxHeigth(widget.getOffsetHeight()+"px");
+        gwasUploadPopup.setWidth(widget.getOffsetWidth());
+        gwasUploadPopup.show();
+    }
+
+    @UiHandler("startBtn")
+    public void onClickStartBtn(ClickEvent e)  {
+        getUiHandlers().onStartAnalysis();
+    }
 	
 	@UiHandler("edit") 
 	public void onEdit(ClickEvent e){
@@ -377,4 +467,14 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 			getUiHandlers().onCancel();
 		}
 	}
+
+    @Override
+    public void setInSlot(Object slot, Widget content) {
+        if (slot == StudyDetailPresenter.TYPE_SetGWASUploadContent) {
+            gwasUploadPopup.add(content);
+        }
+        else  {
+            super.setInSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
+        }
+    }
 }

@@ -6,7 +6,10 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOve
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.StudyListDataGridColumns;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
+import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
+import com.google.common.collect.Lists;
+import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -19,6 +22,8 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+
+import java.util.List;
 
 public class StudyOverviewView extends ViewImpl implements
 		StudyOverviewPresenter.MyView {
@@ -62,13 +67,19 @@ public class StudyOverviewView extends ViewImpl implements
 		dataGrid.addColumn(new StudyListDataGridColumns.ProtocolColumn(),"Protocol");
 		dataGrid.addColumn(new StudyListDataGridColumns.AlleleAssayColumn(),"Genotype");
 		dataGrid.addColumn(new StudyListDataGridColumns.StudyDateColumn(),"Study date");
+        List<HasCell<StudyJobProxy,?>> cells = Lists.newArrayList();
+        cells.add(new StudyListDataGridColumns.StatusCell());
+        cells.add(new StudyListDataGridColumns.ProgressCell());
+        dataGrid.addColumn(new StudyListDataGridColumns.StatusColumn(cells),"Status");
 		dataGrid.setColumnWidth(0, 15, Unit.PCT);
 		dataGrid.setColumnWidth(1, 15, Unit.PCT);
 		dataGrid.setColumnWidth(2, 15, Unit.PCT);
 		dataGrid.setColumnWidth(3, 55, Unit.PX);
 		dataGrid.setColumnWidth(4, 150, Unit.PX);
 		dataGrid.setColumnWidth(5, 80, Unit.PX);
-		
+        dataGrid.setColumnWidth(6,200,Unit.PX);
+
+
 	}
 	
 	@Override

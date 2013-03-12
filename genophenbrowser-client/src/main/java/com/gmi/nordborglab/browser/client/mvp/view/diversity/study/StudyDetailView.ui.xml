@@ -13,15 +13,63 @@
 
 
 	 <ui:style>
-		.container {
-			padding: 19px 19px;
-		}
-		
-		.actionRow {
-			float: right;
-		}
-		 
-	</ui:style>
+         .container {
+             padding: 19px 19px;
+         }
+
+         .actionRow {
+             float: right;
+         }
+
+         .subheader {
+             border-bottom: 1px solid #cdcdcd;
+             margin-bottom: 5px;
+         }
+
+         .subheader h1 {
+             font-size: 15px;
+             line-height: 34px;
+             margin-bottom: 0px;
+             color: #808080;
+         }
+
+         .subheader_container {
+             margin-left: 10px;
+             margin-top: 10px;
+         }
+
+         .progressBar {
+             margin-bottom:0px !important;
+             display:inline-block;
+             width:100px;
+             margin-left:25px;
+         }
+         .job_table {
+
+         }
+         .job_table td {
+             padding: 3px 0;
+             vertical-align: middle;
+         }
+
+         .job_action_container {
+             float: right;
+             width: auto;
+             margin-top: 10px;
+         }
+         .job_actions {
+             font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+             border: 1px solid #ccc;
+             color: #808185;
+             display: block;
+             float: right;
+             font-size: 13px;
+             margin-right: 5px;
+             padding: 2px 4px 4px;
+             text-decoration: none;
+         }
+
+     </ui:style>
 	<g:ScrollPanel>
 		<g:LayoutPanel>
 			<g:layer left="0" top="0" height="28em" right="0">
@@ -39,6 +87,8 @@
 											addStyleNames="{mainRes.style.cursor}">Cancel</g:Anchor>
 										<g:Anchor ui:field="delete" visible="true"
 											addStyleNames="{mainRes.style.cursor}">Delete</g:Anchor>
+                                        <b:Button text="Upload" type="DANGER" icon="UPLOAD" ui:field="uploadBtn"/>
+                                        <b:Button text="Run analsis" type="INFO" icon="CLOUD" ui:field="startBtn" />
 									</div>
 								</g:HTMLPanel>
 							</g:layer>
@@ -46,7 +96,45 @@
 								<g:FlowPanel>
 									<ed:StudyDisplayEditor ui:field="studyDisplayEditor" />
 									<ed:StudyEditEditor ui:field="studyEditEditor" visible="false"/>
+                                    <g:HTMLPanel addStyleNames="{style.subheader_container}">
+                                        <div class="{style.subheader}">
+                                            <h1>
+                                                GWAS Status
+                                            </h1>
+                                            <!--<div class="{style.job_action_container}">
+                                                 <g:Anchor addStyleNames="{style.job_actions}" text="Upload"></g:Anchor>
+                                             </div>-->
+                                        </div>
+                                        <div>
+                                            <table class="{style.job_table}">
+                                                <colgroup>
+                                                    <col style="width:90px"></col>
+                                                    <col></col>
+                                                 </colgroup>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><span>Status</span></td>
+                                                        <td><b:Label ui:field="jobStatusLb" />
+                                                            <b:ProgressBar ui:field="jobStatusProgress" addStyleNames="{style.progressBar}"></b:ProgressBar>
 
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Task</td>
+                                                        <td><g:Label ui:field="taskLb" /></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Modified</td>
+                                                        <td><g:Label ui:field="modifiedLb" /></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Created</td>
+                                                        <td><g:Label ui:field="createdLb" /></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </g:HTMLPanel>
 								</g:FlowPanel>
 							</g:layer>
 						</g:LayoutPanel>
@@ -77,7 +165,6 @@
 								<g:SimpleLayoutPanel ui:field="upperChartContainer" />
 							</g:layer>
 						</g:LayoutPanel>
-
 					</g:layer>
 				</g:LayoutPanel>
 			</g:layer>

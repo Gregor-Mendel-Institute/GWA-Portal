@@ -5,6 +5,7 @@ import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.gmi.nordborglab.browser.server.repository.AlleleAssayRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitRepository;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -135,8 +137,13 @@ public class CdvServiceImpl implements CdvService {
 					ObjectIdentity identity = identities.get(entry.getKey());
 					if (acls.containsKey(identity)) {
 						Acl acl = acls.get(identity);
-						if (acl.isGranted(permissions, authorities, false)) 
-							flag = true;
+						try {
+                            if (acl.isGranted(permissions, authorities, false))
+							    flag = true;
+                        }
+                        catch (NotFoundException ex) {
+
+                        }
 					}
 					return flag;
 				}
@@ -170,7 +177,7 @@ public class CdvServiceImpl implements CdvService {
 			pageStart = start/size;
 		PageRequest pageRequest = new PageRequest(start, size);
 		Sort sort = new Sort("id");
-		ImmutableList<Study> studies = filterStudiesByAcl(studyRepository.findAll(sort)).toImmutableList();
+		ImmutableList<Study> studies = filterStudiesByAcl(studyRepository.findAll(sort)).toList();
 		List<Study> partitionedStudies = Iterables.get(Iterables.partition(studies, size),pageStart);
 		int	totalElements = partitionedStudies.size();
 		if (totalElements > 0) {
@@ -202,6 +209,25 @@ public class CdvServiceImpl implements CdvService {
             alleleAssay.setAvailableAllelesCount(availableAllelesCount);
         }
         return alleleAssays;
+    }
+
+    @Transactional(readOnly = false)
+    @Override
+    public Study createStudyJob(Long studyId) {
+        Study study = studyRepository.findOne(studyId);
+        if (study.getJob() != null) {
+            throw new RuntimeException("Study has already a job assigned");
+        }
+        study = checkStudyPermissions(study, CustomPermission.EDIT);
+        StudyJob job = new StudyJob();
+        job.setStatus("Queued");
+        job.setProgress(1);
+        job.setCreateDate(new Date());
+        job.setModificationDate(new Date());
+        job.setTask("Waiting for workflow to start");
+        study.setJob(job);
+        studyRepository.save(study);
+        return study;
     }
 
     private Study checkStudyPermissions(Study study,Permission permission) {
