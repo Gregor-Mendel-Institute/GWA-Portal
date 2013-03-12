@@ -235,16 +235,23 @@ public class HelperServiceImpl implements HelperService {
         ICsvListReader metaInformationReader = null;
         ICsvListReader valueHeaderReader = null;
         ICsvListReader  valueReader = null;
+        boolean hasMetaInfo = false;
         try {
-
             metaInformationReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
-
+            String[] valueHeader = null;
             final String[] metaHeader = metaInformationReader.getHeader(true);
-            final Map<String, String> metaInfo = getMetaInformationFromHeader(metaHeader);
-            updatePhenotypeUploadDataWithMetaInformation(data, metaInfo);
+            hasMetaInfo = (metaHeader.length > 0 && metaHeader[0].equals("#HEADER"));
+            if (hasMetaInfo) {
+                final Map<String, String> metaInfo = getMetaInformationFromHeader(metaHeader);
+                updatePhenotypeUploadDataWithMetaInformation(data, metaInfo);
+                valueHeader = metaInformationReader.getHeader(false);
+            }
+            else {
+                valueHeader = metaHeader;
+            }
 
 
-            final String[] valueHeader = metaInformationReader.getHeader(false);
+
             final int columnCount = valueHeader.length;
             data.setValueHeader(Arrays.asList(valueHeader).subList(1,valueHeader.length));
 
@@ -252,16 +259,20 @@ public class HelperServiceImpl implements HelperService {
             CellProcessor[] valueCellProcessors = createValueCellProcessors(columnCount);
 
             valueHeaderReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
-            valueHeaderReader.getHeader(true);
+            if (hasMetaInfo)
+                valueHeaderReader.getHeader(true);
             valueHeaderReader.read(valueHeaderCellProccessors);
 
             valueReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
-            valueReader.getHeader(true);
+            if (hasMetaInfo)
+                valueReader.getHeader(true);
             valueReader.getHeader(false);
 
             List<String> phenotypeValues = null;
             while ((phenotypeValues= valueReader.read())!=null) {
-                data.addPhenotypeValue(parseAndCheckPhenotypeValue(phenotypeValues));
+                PhenotypeUploadValue value = parseAndCheckPhenotypeValue(phenotypeValues);
+                if (value != null)
+                    data.addPhenotypeValue(value);
             }
         }
         catch (SuperCsvCellProcessorException e) {
@@ -329,6 +340,7 @@ public class HelperServiceImpl implements HelperService {
     private void updatePhenotypeUploadDataWithMetaInformation(PhenotypeUploadData data, Map<String, String> metaInfo) {
         if (metaInfo.containsKey("name"))
             data.setName(metaInfo.get("name"));
+        //TODO retrieve unitofMeasureFromText
         if (metaInfo.containsKey("unitofmeasure"))
             data.setUnitOfMeasure(metaInfo.get("unitofmeasure"));
         if (metaInfo.containsKey("protocol"))
@@ -368,6 +380,15 @@ public class HelperServiceImpl implements HelperService {
         //TODO properly implement parse issues on the backend.
         return null;
 
+    }
+
+    private UnitOfMeasure getUnitOfMeasureFromText(String text) {
+        List<UnitOfMeasure> unitOfmeasures = unitOfMeasureRepository.findAll();
+        for (UnitOfMeasure unitOfMeasure:unitOfmeasures) {
+            if (unitOfMeasure.getUnitType().equalsIgnoreCase(text))
+                return unitOfMeasure;
+        }
+        return null;
     }
 
 }
