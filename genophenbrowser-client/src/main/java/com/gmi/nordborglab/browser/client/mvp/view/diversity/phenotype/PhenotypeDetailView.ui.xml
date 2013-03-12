@@ -39,11 +39,13 @@
 							</g:HTMLPanel>
 						</g:layer>
 						<g:layer top="47px" bottom="0" left="0" right="0">
-							<g:FlowPanel>
-								<ed:PhenotypeEditEditor ui:field="phenotypeEditEditor"
-									visible="false"></ed:PhenotypeEditEditor>
-								<ed:PhenotypeDisplayEditor ui:field="phenotypeDisplayEditor"></ed:PhenotypeDisplayEditor>
-							</g:FlowPanel>
+							<b:Form type="HORIZONTAL">
+                                <g:FlowPanel>
+                                    <ed:PhenotypeEditEditor ui:field="phenotypeEditEditor"
+                                        visible="false"></ed:PhenotypeEditEditor>
+                                    <ed:PhenotypeDisplayEditor ui:field="phenotypeDisplayEditor"></ed:PhenotypeDisplayEditor>
+                                </g:FlowPanel>
+                            </b:Form>
 						</g:layer>
 					</g:LayoutPanel>
 				</g:layer>
