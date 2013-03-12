@@ -87,7 +87,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
 					totalElements);
 		}
 		else {
-			page = new TraitUomPage(traits.toImmutableList().asList(), pageRequest, 0);
+			page = new TraitUomPage(traits.toList().asList(), pageRequest, 0);
 		}
 		return page;
 	}
@@ -102,7 +102,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
 		final ImmutableList<Permission> permissions = ImmutableList.of(CustomPermission.READ);
 		FluentIterable<TraitUom> traits = FluentIterable.from(traitsToFilter);
 		if (traits .size() > 0) {
-			final ImmutableBiMap<TraitUom,ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(traits.toImmutableList()).inverse();
+			final ImmutableBiMap<TraitUom,ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(traits.toList()).inverse();
 			final ImmutableMap<ObjectIdentity,Acl> acls = ImmutableMap.copyOf(aclService.readAclsById(identities.values().asList(), authorities));
 			
 			Predicate<TraitUom> predicate = new Predicate<TraitUom>() {
@@ -140,7 +140,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
 	@Override
 	public TraitUom findPhenotype(Long id) {
 		TraitUom traitUom = traitUomRepository.findOne(id);
-		Set<StatisticType> statisticTypeToReturn = new HashSet<StatisticType>();
+		List<StatisticType> statisticTypeToReturn = Lists.newArrayList();
 		List<Object[]> statisticTypes = traitUomRepository.countTraitsForStatisticType(id);
 		for (Object[] statisticTypeWithCount:  statisticTypes) {
 			StatisticType type = (StatisticType) statisticTypeWithCount[0];
@@ -223,7 +223,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
 	@Override
 	public List<TraitUom> findPhenotypesByPassportId(Long passportId) {
 		Sort sort = new Sort("id");
-		return filterPhenotypesByAcl(traitUomRepository.findAllByPasportId(passportId,sort)).toImmutableList();
+		return filterPhenotypesByAcl(traitUomRepository.findAllByPasportId(passportId,sort)).toList();
 	}
 
 	@Override
@@ -257,19 +257,20 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
 					totalElements);
 		}
 		else {
-			page = new TraitUomPage(traits.toImmutableList().asList(), pageRequest, 0);
+			page = new TraitUomPage(traits.toList().asList(), pageRequest, 0);
 		}
 		return page;
 	}
 
     @Override
     public List<TraitUom> findPhenotypesByExperimentAndAcl(Long id, int permission) {
+        List<TraitUom> traitsToReturn = Lists.newArrayList();
         final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
         //TODO either change signature to always use WRITE permission or retrieve correct permission from int
         final ImmutableList<Permission> permissions = ImmutableList.of(CustomPermission.EDIT);
         FluentIterable<TraitUom> traits = FluentIterable.from(traitUomRepository.findByExperimentId(id));
         if (traits.size() > 0) {
-            final ImmutableBiMap<TraitUom,ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(traits.toImmutableList()).inverse();
+            final ImmutableBiMap<TraitUom,ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(traits.toList()).inverse();
             final ImmutableMap<ObjectIdentity,Acl> acls = ImmutableMap.copyOf(aclService.readAclsById(identities.values().asList(), authorities));
 
             Predicate<TraitUom> predicate = new Predicate<TraitUom>() {
@@ -291,23 +292,27 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
                 }
             };
             traits = traits.filter(predicate);
-
-            for (TraitUom traitUom:traits) {
-                Set<StatisticType> statisticTypeToReturn = new HashSet<StatisticType>();
+            traitsToReturn = traits.toList();
+            for (TraitUom traitUom:traitsToReturn) {
+                //FIXME because Hibernate returns singleton instances setting a transient field like numberofTraits will overwrite the same field for other phenotypes.
+                List<Long> statisticTypeTraitCounts = Lists.newArrayList();
+                List<StatisticType> statisticTypesToReturn = Lists.newArrayList();
                 List<Object[]> statisticTypes = traitUomRepository.countTraitsForStatisticType(traitUom.getId());
                 for (Object[] statisticTypeWithCount:  statisticTypes) {
                     StatisticType type = (StatisticType) statisticTypeWithCount[0];
                     type.setNumberOfTraits((Long)statisticTypeWithCount[1]);
-                    statisticTypeToReturn.add(type);
+                    statisticTypesToReturn.add(type);
+                    statisticTypeTraitCounts.add(type.getNumberOfTraits());
                 }
-                traitUom.setStatisticTypes(statisticTypeToReturn);
+                traitUom.setStatisticTypes(statisticTypesToReturn);
+                traitUom.setStatisticTypeTraitCounts(statisticTypeTraitCounts);
                 traitUom = setPermissionAndOwner(traitUom);
                 if (traitUom.getToAccession() != null) {
                     traitUom.setTraitOntologyTerm(termRepository.findByAcc(traitUom.getToAccession()));
                 }
             }
         }
-        return traits.toImmutableList();
+        return traitsToReturn;
     }
 
     @Transactional(readOnly = false)
@@ -324,13 +329,9 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         Acl acl = aclService.readAclById(oid, authorities);
         if (!acl.isGranted(permissions,authorities,false))
             throw new AccessDeniedException("No permission");
-        ImmutableMap<Long,ObsUnit> lookUpForObsUnit = getObsUnitMap(experiment.getObsUnits());
+        Map<Long,ObsUnit> lookUpForObsUnit = getObsUnitMap(experiment.getObsUnits());
         List<StatisticType> statisticTypes = getStatisticTypesFromString(data.getValueHeader());
-        TraitUom traitUom = new TraitUom();
-        traitUom.setLocalTraitName(data.getName());
-        traitUom.setTraitProtocol(data.getProtocol());
-        traitUom.setEoAccession(data.getEnvironmentOntology());
-        traitUom.setToAccession(data.getTraitOntology());
+        TraitUom traitUom = data.getTraitUom();
         for (PhenotypeUploadValue value : data.getPhenotypeUploadValues()) {
             ObsUnit obsUnit = lookUpForObsUnit.get(value.getPassportId());
             if (obsUnit == null) {
@@ -339,10 +340,13 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
                 obsUnit = new ObsUnit();
                 obsUnit.setStock(stock);
                 obsUnit.setExperiment(experiment);
+                lookUpForObsUnit.put(value.getPassportId(),obsUnit);
             }
 
             for (int i = 0;i<value.getValues().size();i++) {
                 String phenValue = value.getValues().get(i);
+                if (phenValue.equals("") || phenValue.equals("NA"))
+                    continue;
                 StatisticType statisticType = statisticTypes.get(i);
                 Trait trait = new Trait();
                 trait.setStatisticType(statisticType);
@@ -357,8 +361,8 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         permission.set(CustomPermission.EDIT);
         permission.set(CustomPermission.READ);
         addPermission(traitUom, new PrincipalSid(SecurityUtil.getUsername()),
-                permission);
-        addPermission(traitUom,new GrantedAuthoritySid("ROLE_ADMIN"),permission);
+                permission,experimentId);
+        addPermission(traitUom,new GrantedAuthoritySid("ROLE_ADMIN"),permission,experimentId);
 
 
         return traitUom.getId();
@@ -381,27 +385,30 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         return statisticTypes;
     }
 
-    private ImmutableMap<Long,ObsUnit> getObsUnitMap(Set<ObsUnit> obsunits) {
+    private Map<Long,ObsUnit> getObsUnitMap(Set<ObsUnit> obsunits) {
         Map<Long,ObsUnit> map = Maps.newHashMap();
         for (ObsUnit obsUnit:obsunits) {
             Long passportId =obsUnit.getStock().getPassport().getId();
             if (!map.containsKey(passportId))
                 map.put(passportId,obsUnit);
         }
-        return ImmutableMap.copyOf(map);
+        return map;
     }
 
     public void addPermission(TraitUom traitUom, Sid recipient,
-                              Permission permission) {
+                              Permission permission,Long experimentId) {
         MutableAcl acl;
         ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,
                 traitUom.getId());
+
+        Acl experimentAcl = aclService.readAclById(new ObjectIdentityImpl(Experiment.class,experimentId));
 
         try {
             acl = (MutableAcl) aclService.readAclById(oid);
         } catch (NotFoundException nfe) {
             acl = aclService.createAcl(oid);
         }
+        acl.setParent(experimentAcl);
         acl.insertAce(acl.getEntries().size(), permission, recipient, true);
         acl.setEntriesInheriting(true);
         aclService.updateAcl(acl);
