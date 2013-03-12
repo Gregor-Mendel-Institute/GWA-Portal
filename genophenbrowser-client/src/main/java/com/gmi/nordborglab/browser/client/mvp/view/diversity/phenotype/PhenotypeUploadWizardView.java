@@ -8,7 +8,9 @@ import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.ValueListBox;
 import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
+import com.gmi.nordborglab.browser.client.editors.PhenotypeEditEditor;
 import com.gmi.nordborglab.browser.client.util.HTML5Helper;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadValueProxy;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeUploadWizardUiHandlers;
@@ -33,6 +35,7 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
+import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import elemental.client.Browser;
 import elemental.events.Event;
@@ -72,7 +75,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
             return object == null ? null :  object.getValues().get(headerIx);
         }
     }
-
+    public interface PhenotypeDriver extends RequestFactoryEditorDriver<PhenotypeProxy, PhenotypeEditEditor> {}
 
     private final Widget widget;
 
@@ -103,34 +106,24 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     @UiField(provided=true)
     DataGrid<PhenotypeUploadValueProxy> phenotypeValuesDataGrid;
 
-    @UiField TextBox phenotypeNameTb;
-    @UiField TextBox traitOntologyTb;
-    @UiField TextBox environmentOntologyTb;
-    @UiField TextArea protocolTb;
-    @UiField(provided=true) ValueListBox<UnitOfMeasureProxy> unitOfMeasureDd;
-
-    @UiField ControlGroup phentoypeNameGroup;
-    @UiField ControlGroup unitOfMeasureGroup;
-
     @UiField Alert phenotypeValueStatus;
+    @UiField
+    PhenotypeEditEditor phenotypeEditor;
+
+    private final PhenotypeDriver driver;
 
 
     private File file = null;
     @Inject
     public PhenotypeUploadWizardView(final Binder binder,
-                                     final CustomDataGridResources dataGridResources) {
-
+                                     final CustomDataGridResources dataGridResources,final PhenotypeDriver driver) {
+        this.driver = driver;
         phenotypeValuesDataGrid = new DataGrid<PhenotypeUploadValueProxy>(50,dataGridResources);
-        unitOfMeasureDd = new ValueListBox<UnitOfMeasureProxy>(new AbstractRenderer<UnitOfMeasureProxy>() {
-            @Override
-            public String render(UnitOfMeasureProxy object) {
-                return object == null ? "" : object.getUnitType();
-            }
-        });
         initCellTable();
         widget = binder.createAndBindUi(this);
         uploadPhenotypePanel.setWidgetVisible(phenotypeValuePanel,false);
         phenotypeValuePager.setDisplay(phenotypeValuesDataGrid);
+        driver.initialize(phenotypeEditor);
     }
 
     private void initCellTable() {
@@ -292,7 +285,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     }
 
     @Override
-    public void showPhenotypeValuePanel(PhenotypeUploadDataProxy data, UnitOfMeasureProxy unitOfMeasure) {
+    public void showPhenotypeValuePanel(PhenotypeUploadDataProxy data) {
         resetUploadForm();
         String message = "All phentoype values successfully parsed";
         AlertType messageType = AlertType.SUCCESS;
@@ -310,11 +303,6 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
         uploadPhenotypePanel.setWidgetVisible(phenotypeUploadPanel, false);
         uploadPhenotypePanel.setWidgetVisible(phenotypeValuePanel,true);
-        protocolTb.setText(data.getProtocol());
-        phenotypeNameTb.setText(data.getName());
-        traitOntologyTb.setText(data.getTraitOntology());
-        environmentOntologyTb.setText(data.getEnvironmentOntology());
-        unitOfMeasureDd.setValue(unitOfMeasure);
     }
 
     @Override
@@ -322,18 +310,14 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         resetUploadForm();
         phenotypeValueStatus.setVisible(false);
         phenotypeValueStatus.setText("");
-        protocolTb.setText("");
-        phenotypeNameTb.setText("");
-        traitOntologyTb.setText("");
-        environmentOntologyTb.setText("");
-        unitOfMeasureDd.setValue(null);
         uploadPhenotypePanel.setWidgetVisible(phenotypeValuePanel,false);
         uploadPhenotypePanel.setWidgetVisible(phenotypeUploadPanel, true);
     }
 
+
     @Override
     public void setUnitOfMeasureList(List<UnitOfMeasureProxy> unitOfMeasureList) {
-        unitOfMeasureDd.setAcceptableValues(unitOfMeasureList);
+        phenotypeEditor.setAcceptableValuesForUnitOfMeasure(unitOfMeasureList);
     }
 
     @Override
@@ -343,39 +327,26 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
     @Override
     public void addColumns(List<String> valueColumns) {
+        for (int i=2;i<phenotypeValuesDataGrid.getColumnCount();i++) {
+            phenotypeValuesDataGrid.removeColumn(i);
+        }
 
         for (int i = 0;i<valueColumns.size();i++) {
             phenotypeValuesDataGrid.addColumn(new ValueColumn(i),valueColumns.get(i));
         }
     }
 
-    @Override
-    public HasText getPhenotypeName() {
-        return phenotypeNameTb;
-    }
-
-    @Override
-    public UnitOfMeasureProxy getUnitOfMeasure() {
-        return unitOfMeasureDd.getValue();
-    }
 
     @Override
     public void showConstraintViolations() {
-        updateConstraints();
-    }
-
-    private void updateConstraints() {
-        if (phenotypeNameTb.getText().equals(""))
-            phentoypeNameGroup.setType(ControlGroupType.ERROR);
-        else
-            phentoypeNameGroup.setType(ControlGroupType.NONE);
-
-        if (unitOfMeasureDd.getValue() == null)
-            unitOfMeasureGroup.setType(ControlGroupType.ERROR);
-        else
-            unitOfMeasureGroup.setType(ControlGroupType.NONE);
 
     }
+
+    @Override
+    public PhenotypeDriver getDriver() {
+        return driver;
+    }
+
 
     public final native void logPhenotypeValue(String value) /*-{
         return $wnd.console.log(value);
