@@ -35,19 +35,22 @@ public class CustomPager extends AbstractPager {
 	@UiField Anchor previousPage;
 	@UiField Anchor nextPage;
 
+
 	public CustomPager() {
 		initWidget(uiBinder.createAndBindUi(this));
-		pageSize.addItem("10");
+		pageSize.addItem("15");
 		pageSize.addItem("25");
 		pageSize.addItem("50");
 		pageSize.addItem("100");
 		pageSize.addItem("250");
 		pageSize.addItem("500");
+        setRangeLimited(false);
 	}
 
 	@Override
 	protected void onRangeOrRowCountChanged() {
 		HasRows display = getDisplay();
+        this.pageSize.setSelectedValue(String.valueOf(display.getVisibleRange().getLength()));
 	    label.setText(createText());
 	    // Update the prev and first buttons.
 	    setPreviousPageEnabled(!hasPreviousPage());
@@ -124,5 +127,4 @@ public class CustomPager extends AbstractPager {
 			nextPage.removeStyleName("disabled");
 			*/
 	}
-
 }
