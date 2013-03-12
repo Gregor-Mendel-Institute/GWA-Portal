@@ -1,12 +1,15 @@
 package com.gmi.nordborglab.browser.server.math;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+import static com.google.common.base.Predicates.notNull;
 
 /**
  * Created with IntelliJ IDEA.
@@ -73,7 +76,7 @@ public abstract class Transformations {
 
     }
     public static List<Double> logTransform(List<Double> values) {
-        DescriptiveStatistics stats = new DescriptiveStatistics(Doubles.toArray(values));
+        DescriptiveStatistics stats = new DescriptiveStatistics(Doubles.toArray(Collections2.filter(values,notNull())));
         Double variance =  stats.getVariance();
         Double min = stats.getMin();
         return Lists.transform(values, new LogTransformFunc(min, variance));
@@ -81,7 +84,7 @@ public abstract class Transformations {
 
 
     public static List<Double> sqrtTransform(List<Double> values) {
-        DescriptiveStatistics stats = new DescriptiveStatistics(Doubles.toArray(values));
+        DescriptiveStatistics stats = new DescriptiveStatistics(Doubles.toArray(Collections2.filter(values,notNull())));
         Double variance =  stats.getVariance();
         Double min = stats.getMin();
         return Lists.transform(values, new SqrtTransformFunc(min, variance));
