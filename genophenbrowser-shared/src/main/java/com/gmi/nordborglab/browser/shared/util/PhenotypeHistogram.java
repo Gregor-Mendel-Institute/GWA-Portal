@@ -22,7 +22,8 @@ public class PhenotypeHistogram {
         SortedMultiset<Double> data = TreeMultiset.create();
         data.clear();
         for (Double value : values) {
-            data.add(value);
+            if (value != null)
+                data.add(value);
         }
         if (data.size() == 0)
             return null;
