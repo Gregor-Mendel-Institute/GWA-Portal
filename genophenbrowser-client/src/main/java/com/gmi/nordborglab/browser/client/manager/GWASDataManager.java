@@ -33,7 +33,7 @@ public class GWASDataManager extends RequestFactoryManager<GWASDataRequest>{
     }
 
     public void delete(Receiver<List<GWASResultProxy>> receiver, GWASResultProxy object) {
-        getContext().delete(object).fire(receiver);
+        getContext().delete(object).with("appUser").fire(receiver);
     }
 
     public void findOneGWASResults(Receiver<GWASResultProxy> receiver,Long id) {
