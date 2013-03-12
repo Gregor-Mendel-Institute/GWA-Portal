@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
@@ -20,7 +19,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
@@ -218,7 +216,7 @@ public class TraitUomServiceTest extends BaseTest {
         getPhenotypeUploadData(data);
         Long id = service.savePhenotypeUploadData(1L,data);
         TraitUom traitUom = repository.findOne(id);
-        assertPhenotypeUploaddata(data,traitUom);
+        assertPhenotypeUploadData(data, traitUom);
         assertEquals(1,traitUom.getExperiment().getId().longValue());
     }
 
@@ -229,7 +227,7 @@ public class TraitUomServiceTest extends BaseTest {
         getPhenotypeUploadData(data);
         Long id = service.savePhenotypeUploadData(5451L,data);
         TraitUom traitUom = repository.findOne(id);
-        assertPhenotypeUploaddata(data,traitUom);
+        assertPhenotypeUploadData(data, traitUom);
         assertEquals(5451L,traitUom.getExperiment().getId().longValue());
     }
 
@@ -262,6 +260,7 @@ public class TraitUomServiceTest extends BaseTest {
         data.setProtocol("TEST");
         data.setUnitOfMeasure("days");
         data.setValueHeader(Arrays.asList("mean", "std"));
+
         List<PhenotypeUploadValue> values = new ArrayList<PhenotypeUploadValue>();
         PhenotypeUploadValue value = null;
         value = new PhenotypeUploadValue();
@@ -275,7 +274,7 @@ public class TraitUomServiceTest extends BaseTest {
         data.setPhenotypeUploadValues(values);
     }
 
-    private void assertPhenotypeUploaddata(PhenotypeUploadData data,TraitUom traitUom) {
+    private void assertPhenotypeUploadData(PhenotypeUploadData data, TraitUom traitUom) {
         assertEquals(data.getName(),traitUom.getLocalTraitName());
         assertEquals(data.getTraitOntology(),traitUom.getToAccession());
         assertEquals(data.getEnvironmentOntology(),traitUom.getEoAccession());
