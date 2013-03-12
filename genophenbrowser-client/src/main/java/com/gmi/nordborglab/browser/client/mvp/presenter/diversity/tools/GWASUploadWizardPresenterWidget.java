@@ -19,10 +19,20 @@ import com.gwtplatform.mvp.client.View;
 public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadWizardPresenterWidget.MyView> implements GWASUploadWizardUiHandlers{
 
 
+    private boolean multipleUpload=true;
+    private String restURL = "provider/gwas/upload";
+
+    public boolean isMultipleUpload() {
+        return multipleUpload;
+    }
+
     public interface MyView extends View,HasUiHandlers<GWASUploadWizardUiHandlers>{
 
         void showUploadPanel();
 
+        void setmultipleUpload(boolean multipleUpload);
+
+        void setRestURL(String restUrl);
     }
 
     @Inject
@@ -36,15 +46,24 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
         //DisplayNotificationEvent.fireError(this,"Upload error",responseText);
         //getView().showUploadPanel();
     }
+
     @Override
     public void onUploadFinished(String responseText) {
         //Long id = Long.parseLong(responseText);
         //getView().showUploadPanel();
         //GWASUploadedEvent.fire(getEventBus(),id);
     }
-
     @Override
     public void onClose() {
         GWASUploadedEvent.fire(getEventBus(),0L);
+    }
+
+    public void setMultipleUpload(boolean multipleUpload) {
+        this.multipleUpload = multipleUpload;
+        getView().setmultipleUpload(multipleUpload);
+    }
+    public void setRestURL(String restUrl) {
+        this.restURL = restUrl;
+        getView().setRestURL(restUrl);
     }
 }

@@ -87,6 +87,17 @@ public class RestProviderController {
         return data;
     }
 
+    @RequestMapping(method = RequestMethod.POST,value="/study/{id}/upload")
+    public @ResponseBody Long uploadStudyGWASResult(@PathVariable("id") Long id,@RequestParam("file") CommonsMultipartFile file) throws IOException {
+        Long studyId = null;
+        Study study = gwasService.uploadStudyGWASResult(id,file);
+        studyId = study.getId();
+        return studyId;
+    }
+
+
+
+
 
     @RequestMapping(method = RequestMethod.POST,value="/phenotype/upload")
     public @ResponseBody

@@ -185,6 +185,9 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         gwasResultDataGrid.addColumn(new Column<GWASResultProxy, String>(new TextCell()) {
             @Override
             public String getValue(GWASResultProxy object) {
+                if (object.getAppUser() == null) {
+                    return "N/A";
+                }
                 if (currentUser.getAppUser().getEmail().equals(object.getAppUser().getEmail())) {
                     return "me";
                 }

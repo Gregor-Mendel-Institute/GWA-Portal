@@ -68,8 +68,8 @@
 
     </ui:style>
 
-    <g:LayoutPanel ui:field="uploadGWASPanel">
-        <g:layer top="0" bottom="0">
+    <!--<g:LayoutPanel ui:field="uploadGWASPanel">
+        <g:layer top="0" bottom="0">-->
             <b:FluidContainer ui:field="gwasUploadPanel" addStyleNames="{style.uploadContainer}">
                 <b:FluidRow >
                     <b:Column size="12">
@@ -87,7 +87,7 @@
                                 </thead>
                                 <tbody>
                                     <td>1</td><td>6083872</td>
-                                    <td>0.023 | 5.1673</td><td>0.3191 (can be empty)</td><td>30 (can be empty)</td><td>0.0016 (can be empty)</td>
+                                    <td>0.023 | 5.1673</td><td>0.3191 (can be empty or "NA")</td><td>30 (can be empty or "NA")</td><td>0.0016 (can be empty or "NA")</td>
                                 </tbody>
                             </table>
                             <h4>Upload</h4>
@@ -152,27 +152,12 @@
                              </div>
                             <table class="{style.fileSelectTable} table table-striped" id="fileToUploadTable">
                                 <tbody>
-                                    <!--<tr>
-                                        <td><span ui:field="gwasFileName"></span></td>
-                                        <td><span ui:field="gwasFileSize"></span></td>
-                                        <td>
-                                            <div ui:field="gwasFileExtError"><span class="label label-important">Error</span> Filetype not allowed</div>
-                                            <div ui:field="gwasFileExtOk">
-                                                <span ui:field="gwasFileExt"></span> <b:Icon type="OK" addStyleNames="{style.gwasFileExtCheck}" ui:field="gwasFileExtCheck"></b:Icon>
-                                            </div>
-                                        </td>
-                                        <td><b:ProgressBar ui:field="fileUploadProgressBar" visible="false" addStyleNames="{style.progressbar}"></b:ProgressBar></td>
-                                        <td>
-                                            <b:Button type="WARNING" icon="BAN_CIRCLE" ui:field="gwasFileUploadCancelBtn" visible="false">Cancel</b:Button>
-                                            <b:Button addStyleNames="pull-right" icon="UPLOAD" type="PRIMARY"  ui:field="gwasFileUploadStartBtn" visible="false">Upload</b:Button>
-                                        </td>
-                                    </tr>    -->
                                 </tbody>
                             </table>
                         </g:HTMLPanel>
                     </b:Column>
                 </b:FluidRow>
             </b:FluidContainer>
-        </g:layer>
-    </g:LayoutPanel>
+       <!-- </g:layer>
+    </g:LayoutPanel>-->
 </ui:UiBinder>

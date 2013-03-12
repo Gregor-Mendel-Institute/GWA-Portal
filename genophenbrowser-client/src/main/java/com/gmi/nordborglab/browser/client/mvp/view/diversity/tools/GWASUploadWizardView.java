@@ -50,10 +50,9 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     interface Binder extends UiBinder<Widget, GWASUploadWizardView> {
 
     }
+
     private final Widget widget;
 
-    @UiField
-    LayoutPanel uploadGWASPanel;
     @UiField
     FluidContainer gwasUploadPanel;
     @UiField
@@ -80,7 +79,6 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     HTMLPanel fileSelectPanel;
     @UiField
     HTML gwasFileDropPanel;
-
     @UiField
     TableElement checkFileTable;
 
@@ -89,11 +87,13 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
 
     @UiField
     HeadingElement multipleFileCheckText;
+
     @UiField
     DivElement gwasFileDropText;
     @UiField
     Button gwasFileUploadCloseBtn;
     private File file = null;
+    private boolean multipleUpload=true;
 
     private List<String> headerColumns = ImmutableList.of("chr","position","pvalue|score","maf","mac","GVE");
     private Map<File,Boolean> filesToUpload = Maps.newLinkedHashMap();
@@ -101,6 +101,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
 
     private BiMap<File,Element> filesToRow =  HashBiMap.create();
     private int currentUploadCount = 0;
+    private String restURL = "provider/gwas/upload";
 
     /*@UiField
     DivElement gwasFileExtError;
@@ -155,8 +156,13 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     }
 
     private void updateSelectedGWASFileTable(FileList fileList) {
+        if (fileList.length() == 0)
+            return;
+        if (!multipleUpload && filesToUpload.size() == 1 )
+            return;
         fileSelectPanel.addStyleName("in");
-        for (int i =0;i<fileList.getLength();i++) {
+        int fileListLength = multipleUpload ? fileList.getLength() : 1;
+        for (int i =0;i<fileListLength;i++) {
             File file = fileList.item(i);
 
             boolean fileExtOk =  checkFileExtOk(file);
@@ -573,7 +579,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
             });
             HTML5Helper.ExtJsFormData formData = HTML5Helper.ExtJsFormData.newExtJsForm();
             formData.append("file",file,file.getName());
-            xhr.open("POST",GWT.getHostPageBaseURL()+"provider/gwas/upload");
+            xhr.open("POST",GWT.getHostPageBaseURL()+restURL);
             xhr.send(formData);
             currentUploadCount +=1;
         }
@@ -627,6 +633,16 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     @Override
     public void showUploadPanel() {
         resetUploadForm();
+    }
+
+    @Override
+    public void setmultipleUpload(boolean multipleUpload) {
+        this.multipleUpload = multipleUpload;
+    }
+
+    @Override
+    public void setRestURL(String restUrl) {
+        this.restURL = restUrl;
     }
 
 }

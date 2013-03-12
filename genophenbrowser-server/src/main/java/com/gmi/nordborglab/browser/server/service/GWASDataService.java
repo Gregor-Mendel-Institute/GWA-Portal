@@ -1,6 +1,9 @@
 package com.gmi.nordborglab.browser.server.service;
 
+import com.gmi.nordborglab.browser.server.data.ChrGWAData;
+import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -13,9 +16,9 @@ import java.util.List;
 
 public interface GWASDataService {
 
-	public ImmutableMap<String,GWASData> getGWASDataByStudyId(Long studyId);
+	public GWASData getGWASDataByStudyId(Long studyId);
 
-    public ImmutableMap<String,GWASData> getGWASDataByViewerId(Long gwasResultId);
+    public GWASData getGWASDataByViewerId(Long gwasResultId);
 
     @PreAuthorize("hasRole('ROLE_USER')")
     public GWASResult uploadGWASResult(CommonsMultipartFile file) throws IOException;
@@ -32,4 +35,6 @@ public interface GWASDataService {
     @PreAuthorize("hasRole('ROLE_USER') AND hasPermission(#gwasResult,'edit')")
     public GWASResult save(GWASResult gwasResult);
 
+    @PreAuthorize("hasRole('ROLE_USER')")
+    Study uploadStudyGWASResult(Long studyId,CommonsMultipartFile file) throws IOException;
 }

@@ -176,6 +176,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView,GW
     @Override
     public void onReset() {
         super.onReset();
+        this.gwasUploadWizardPresenterWidget.setRestURL("provider/gwas/upload");
         if (isFireEvent)
             GWASResultLoadedEvent.fire(getEventBus(), gwasResult);
         isFireEvent = false;
@@ -265,7 +266,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView,GW
         getView().showEditPanel(true);
         ctx = gwasDataManager.getContext();
         getView().getEditDriver().edit(object, ctx);
-        ctx.save(object).to(receiverOfSave);
+        ctx.save(object).with("appUser").to(receiverOfSave);
     }
 
     @Override
