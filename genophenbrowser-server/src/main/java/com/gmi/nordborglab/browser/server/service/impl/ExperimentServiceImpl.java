@@ -90,7 +90,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 	@Override
 	public ExperimentPage findByAcl(int start, int size) {
 		List<String> authorities = SecurityUtil.getAuthorities(roleHierarchy);
-		PageRequest pageRequest = new PageRequest(start, size);
+		PageRequest pageRequest = new PageRequest(start/size, size);
 		Page<Experiment> page = experimentRepository.findByAcl(authorities,
                 CustomPermission.READ.getMask(), pageRequest);
 		return new ExperimentPage(page.getContent(), pageRequest,
