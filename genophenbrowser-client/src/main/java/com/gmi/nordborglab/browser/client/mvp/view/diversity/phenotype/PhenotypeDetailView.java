@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
@@ -400,7 +401,7 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 	}
 
 	@Override
-	public void setPhenotypePieChartData(Set<StatisticTypeProxy> statisticTypes) {
+	public void setPhenotypePieChartData(List<StatisticTypeProxy> statisticTypes) {
 		phenotypeTypeData = DataTable.create();
 		phenotypeTypeData.addColumn(ColumnType.STRING, "Type");
 		phenotypeTypeData.addColumn(ColumnType.NUMBER, "Values");

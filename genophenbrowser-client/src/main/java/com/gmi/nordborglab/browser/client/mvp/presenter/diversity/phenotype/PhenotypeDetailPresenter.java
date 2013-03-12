@@ -78,7 +78,7 @@ public class PhenotypeDetailPresenter
 
 		void setPhenotypExplorerData(ImmutableList<TraitProxy> traits);
 
-		void setPhenotypePieChartData(Set<StatisticTypeProxy> statisticTypes);
+		void setPhenotypePieChartData(List<StatisticTypeProxy> statisticTypes);
 
 		void drawCharts();
 	}
@@ -91,7 +91,7 @@ public class PhenotypeDetailPresenter
 	protected final CurrentUser currentUser;
 	protected final Receiver<PhenotypeProxy> receiver;
 	private ImmutableSortedMap<Double, Integer> histogramData;
-	private Set<StatisticTypeProxy> statisticTypes;
+	private List<StatisticTypeProxy> statisticTypes;
 	protected HashMap<StatisticTypeProxy, List<TraitProxy>> cache = new HashMap<StatisticTypeProxy, List<TraitProxy>>();
 			
 	private Multiset<String> geochartData;
