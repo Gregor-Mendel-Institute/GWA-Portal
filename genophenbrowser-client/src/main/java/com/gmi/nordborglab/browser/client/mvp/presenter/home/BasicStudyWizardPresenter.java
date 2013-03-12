@@ -103,7 +103,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
         void updateSummaryView(AlleleAssayProxy alleleAssayProxy, PhenotypeProxy phenotype);
 
-        void setStatisticTypes(Set<StatisticTypeProxy> statisticTypes);
+        void setStatisticTypes(List<StatisticTypeProxy> statisticTypes,List<Long> statisticTypesTraitCounts);
 
         void setPhenotypeHistogramData(ImmutableSortedMap<Double, Integer> histogram);
 
@@ -271,7 +271,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
             @Override
             public void onSelectionChange(SelectionChangeEvent selectionChangeEvent) {
                 statisticPhenotypeValueCache.clear();
-                getView().setStatisticTypes(phenotypeSelectionModel.getSelectedObject().getStatisticTypes());
+                PhenotypeProxy selectedObj = phenotypeSelectionModel.getSelectedObject();
+                getView().setStatisticTypes(selectedObj.getStatisticTypes(),selectedObj.getStatisticTypeTraitCounts());
             }
         });
         genotypeSelectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
@@ -493,6 +494,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     public void onSuccess(StudyProxy response) {
                         PlaceRequest placeRequest = new ParameterizedPlaceRequest(NameTokens.study).with("id",response.getId().toString());
                         resetState();
+                        placeManager.setOnLeaveConfirmation(null);
                         placeManager.revealPlace(placeRequest);
                     }
                     @Override
