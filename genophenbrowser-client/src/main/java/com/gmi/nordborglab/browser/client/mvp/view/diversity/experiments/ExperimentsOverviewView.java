@@ -37,7 +37,7 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
 	public ExperimentsOverviewView(final Binder binder,
 			final PlaceManager placeManager, final CustomDataGridResources dataGridResources) {
 		this.placeManager = placeManager;
-		table = new DataGrid<ExperimentProxy>(15,dataGridResources,new EntityProxyKeyProvider<ExperimentProxy>());
+		table = new DataGrid<ExperimentProxy>(50,dataGridResources,new EntityProxyKeyProvider<ExperimentProxy>());
 		initCellTable();
 		widget = binder.createAndBindUi(this);
 		pager.setDisplay(table);
