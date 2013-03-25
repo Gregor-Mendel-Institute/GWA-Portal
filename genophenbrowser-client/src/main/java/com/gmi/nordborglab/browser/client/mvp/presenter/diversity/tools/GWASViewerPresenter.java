@@ -177,6 +177,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView,GW
     public void onReset() {
         super.onReset();
         this.gwasUploadWizardPresenterWidget.setRestURL("provider/gwas/upload");
+        this.gwasUploadWizardPresenterWidget.setMultipleUpload(true);
         if (isFireEvent)
             GWASResultLoadedEvent.fire(getEventBus(), gwasResult);
         isFireEvent = false;
