@@ -18,4 +18,6 @@ public interface PhenotypeUploadWizardUiHandlers  extends UiHandlers{
     void onCancel();
 
     void onCreate();
+
+    void startUpload();
 }
