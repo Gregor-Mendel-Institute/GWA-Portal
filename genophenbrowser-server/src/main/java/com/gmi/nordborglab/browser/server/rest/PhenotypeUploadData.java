@@ -1,8 +1,11 @@
 package com.gmi.nordborglab.browser.server.rest;
 
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import org.springframework.util.comparator.BooleanComparator;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -112,6 +115,15 @@ public class PhenotypeUploadData {
 
     public void setErrorValueCount(int errorValueCount) {
         this.errorValueCount = errorValueCount;
+    }
+
+    public void sortByErrors() {
+        Collections.sort(phenotypeUploadValues,new Comparator<PhenotypeUploadValue>() {
+            @Override
+            public int compare(PhenotypeUploadValue o1, PhenotypeUploadValue o2) {
+                return BooleanComparator.TRUE_LOW.compare(o1.hasError(),o2.hasError());
+            }
+        });
     }
 }
 
