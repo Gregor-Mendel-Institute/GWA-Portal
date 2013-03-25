@@ -254,11 +254,17 @@ public class CdvServiceImpl implements CdvService {
 			}
 		}
 		AccessControlEntry ace = null;
-		if (acl.getEntries().size() > 0)
+		if (acl.getEntries().size() > 0) {
 			 ace = acl.getEntries().get(0);
-		else if (acl.getParentAcl().getEntries().size() > 0)
-			ace = acl.getParentAcl().getEntries().get(0);
-			
+        }
+		else if (acl.getParentAcl().getEntries().size() > 0) {
+			for (AccessControlEntry aceToCheck:acl.getParentAcl().getEntries()) {
+                if (authorities.contains(aceToCheck.getSid())) {
+                    ace = aceToCheck;
+                    break;
+                }
+            }
+        }
 		study.setIsOwner(isOwner);
 		if (ace != null)
 			study.setUserPermission(new CustomAccessControlEntry((Long)ace.getId(),ace.getPermission().getMask(),ace.isGranting()));
