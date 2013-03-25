@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.server.service;
 
+import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -19,6 +20,9 @@ public interface ExperimentService {
 	
     @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.observation.Experiment','READ')")
 	Experiment findExperiment(Long id);
-	
-	
+
+
+    @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.observation.Experiment','EDIT')")
+    Experiment addPublication(Long id,Publication publication);
+
 }

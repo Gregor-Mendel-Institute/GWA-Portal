@@ -12,13 +12,14 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
+import com.google.common.collect.Iterables;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
@@ -187,11 +188,34 @@ public class ExperimentServiceTest extends BaseTest {
 		experiment.setName("test");
 		service.save(experiment);
 	}
+
+    @Test(expected=AccessDeniedException.class)
+    public void checkAnonynmousNotAllowedToAddPublications() {
+        SecurityUtils.setAnonymousUser();
+        service.addPublication(1L,new Publication());
+    }
+
+    @Test
+    public void addPublication() {
+
+    }
+
 	
 	@Test(expected=AccessDeniedException.class)
 	@Ignore
 	public void checkAnonymousNotAllowedToDelete() {
-		
+        createTestUser("ROLE_ADMIN");
+        Publication publication = new Publication();
+        publication.setFirstAuthor("TEST");
+        publication.setDOI("TEST");
+        publication.setTitle("TEST");
+        Experiment experiment = service.addPublication(1L,publication);
+        assertNotNull(experiment.getPublications());
+        assertEquals(1L,experiment.getPublications().size());
+        Publication pubToCheck = Iterables.get(experiment.getPublications(),0);
+        assertEquals("TEST",pubToCheck.getTitle());
+        assertEquals("TEST",pubToCheck.getDOI());
+        assertEquals("TEST",pubToCheck.getFirstAuthor());
 	}
 	
 

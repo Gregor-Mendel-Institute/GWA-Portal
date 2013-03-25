@@ -1,11 +1,33 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments;
 
+import java.util.Date;
 import java.util.Set;
 
 import com.gmi.nordborglab.browser.client.events.PermissionDoneEvent;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
+import com.gmi.nordborglab.browser.client.ui.PhaseAnimation;
+import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.ProvidesKey;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.HasUiHandlers;
+
+import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
 import com.gmi.nordborglab.browser.client.CurrentUser;
 import com.gmi.nordborglab.browser.client.NameTokens;
@@ -57,6 +79,14 @@ public class ExperimentDetailPresenter
 		State getState();
 
         void showPermissionPanel(boolean show);
+
+        HasData<PublicationProxy> getPublicationDisplay();
+
+        void scheduledLayout();
+
+        void phaseInPublication(PublicationProxy publicationProxy, ProvidesKey<PublicationProxy> providesKey);
+
+        HasText getDOIText();
     }
 
 	public static enum State {
@@ -87,9 +117,9 @@ public class ExperimentDetailPresenter
 	private Receiver<ExperimentProxy> receiver = null;
 	protected boolean fireLoadExperimentEvent = false;
     private final PermissionDetailPresenter permissionDetailPresenter;
-	
 	public static Type<PlaceRequestHandler> type = new Type<PlaceRequestHandler>();
-	
+    private final ListDataProvider<PublicationProxy> publicationDataProvider = new ListDataProvider<PublicationProxy>();
+
 	@Inject
 	public ExperimentDetailPresenter(final EventBus eventBus,
 			final MyView view, final MyProxy proxy,
@@ -122,6 +152,8 @@ public class ExperimentDetailPresenter
 				getView().setState(State.EDITING,getPermission());
 			}
 		};
+
+        publicationDataProvider.addDataDisplay(getView().getPublicationDisplay());
 	}
 
 	@Override
@@ -151,6 +183,7 @@ public class ExperimentDetailPresenter
 		}
 		getView().getExperimentDisplayDriver().display(experiment);
 		getView().setState(State.DISPLAYING,getPermission());
+        publicationDataProvider.setList(ImmutableList.copyOf(experiment.getPublications()));
 		LoadingIndicatorEvent.fire(this, false);
 	}
 
@@ -197,7 +230,7 @@ public class ExperimentDetailPresenter
 		ExperimentRequest ctx = experimentManager.getRequestFactory()
 				.experimentRequest();
 		editDriver.edit(experiment, ctx);
-		ctx.save(experiment).with("userPermission").to(receiver);
+		ctx.save(experiment).with("userPermission", "publications").to(receiver);
 	}
 
 	@Override
@@ -236,6 +269,118 @@ public class ExperimentDetailPresenter
         permissionDetailPresenter.setDomainObject(experiment, placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest()));
     }
 
+    @Override
+    public void onDeletePublication(PublicationProxy publication) {
+        if (getView().getState() == State.EDITING)
+            return;
+        ExperimentRequest ctx = experimentManager.getContext();
+        experiment = ctx.edit(experiment);
+        publication = ctx.edit(publication);
+        experiment.getPublications().remove(publication);
+        ctx.save(experiment).with("userPermission", "publications").to(new Receiver<ExperimentProxy>() {
+            @Override
+            public void onSuccess(ExperimentProxy response) {
+                experiment = response;
+                publicationDataProvider.setList(Lists.newArrayList(experiment.getPublications()));
+            }
+        }).fire();
+    }
+
+    @Override
+    public void queryDOI(String DOI) {
+        if (getView().getState() == State.EDITING)
+            return;
+        fireEvent(new LoadingIndicatorEvent(true));
+        RequestBuilder rb = new RequestBuilder(RequestBuilder.GET,"/doi/"+DOI);
+        rb.setHeader("Accept","application/vnd.citationstyles.csl+json");
+        try {
+            rb.sendRequest(null,new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    if (response.getStatusCode() == 200) {
+                        try {
+                            JSONObject object = JSONParser.parseStrict(response.getText()).isObject();
+                            String volume = object.get("volume").isString().stringValue();
+                            final String DOI = object.get("DOI").isString().stringValue();
+                            String URL = object.get("URL").isString().stringValue();
+                            String page = object.get("page").isString().stringValue();
+                            String issue = object.get("issue").isString().stringValue();
+                            String title = object.get("title").isString().stringValue();
+                            String journal = object.get("container-title").isString().stringValue();
+                            JSONObject authorObj = object.get("author").isArray().get(0).isObject();
+                            String author = authorObj.get("given").isString().stringValue()+" "+authorObj.get("family").isString().stringValue();
+                            JSONArray dateArr = object.get("issued").isObject().get("date-parts").isArray().get(0).isArray();
+                            Date issued = new Date((int)dateArr.get(0).isNumber().doubleValue(),(int)dateArr.get(1).isNumber().doubleValue(),(int)dateArr.get(2).isNumber().doubleValue());
+                            ExperimentRequest ctx = experimentManager.getContext();
+                            PublicationProxy publication = ctx.create(PublicationProxy.class);
+                            publication.setDOI(DOI);
+                            publication.setTitle(title);
+                            publication.setFirstAuthor(author);
+                            publication.setIssue(issue);
+                            publication.setJournal(journal);
+                            publication.setPage(page);
+                            publication.setURL(URL);
+                            publication.setVolume(volume);
+                            publication.setPubDate(issued);
+                            ctx.addPublication(experiment.getId(),publication).with("userPermission","publications").fire(new Receiver<ExperimentProxy>() {
+                                @Override
+                                public void onSuccess(ExperimentProxy response) {
+                                    fireEvent(new LoadingIndicatorEvent(false));
+                                    experiment =  response;
+                                    publicationDataProvider.setList(Lists.newArrayList(experiment.getPublications()));
+                                    PublicationProxy newPublication = Iterables.get(Collections2.filter(experiment.getPublications(), new Predicate<PublicationProxy>() {
+                                        @Override
+                                        public boolean apply(@Nullable PublicationProxy input) {
+                                            if (input != null && input.getDOI().equals(DOI)) {
+                                                return true;
+                                            }
+                                            return false;
+                                        }
+                                    }), 0);
+                                    getView().getDOIText().setText("");
+                                    getView().phaseInPublication(newPublication, publicationDataProvider);
+                                }
+
+                                @Override
+                                public void onFailure(ServerFailure error) {
+                                    DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this,"Publication","Error saving publicaiton");
+                                    fireEvent(new LoadingIndicatorEvent(false));
+                                }
+                            });
+                        }
+                        catch (Exception e) {
+                            DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this,"DOI query failed","Could not parse meta-data");
+                            fireEvent(new LoadingIndicatorEvent(false));
+                        }
+
+                    }
+                    else  if (response.getStatusCode() == 204) {
+                        DisplayNotificationEvent.fireWarning(ExperimentDetailPresenter.this,"DOI query failed","No metadata found");
+                        fireEvent(new LoadingIndicatorEvent(false));
+                    }
+                    else if (response.getStatusCode() == 404) {
+                        DisplayNotificationEvent.fireWarning(ExperimentDetailPresenter.this,"DOI query failed","DOI doesn't exist");
+                        fireEvent(new LoadingIndicatorEvent(false));
+                    }
+                    else {
+                        DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this,"DOI query failed","General error");
+                        fireEvent(new LoadingIndicatorEvent(false));
+                    }
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this,"Error",exception.getMessage());
+                    fireEvent(new LoadingIndicatorEvent(false));
+                }
+            });
+        }
+        catch (Exception e) {
+            DisplayNotificationEvent.fireError(this,"Error",e.getMessage());
+            fireEvent(new LoadingIndicatorEvent(false));
+        }
+    }
+
     @ProxyEvent
 	public void onLoadExperiment(LoadExperimentEvent event) {
 		experiment = event.getExperiment();
@@ -244,4 +389,10 @@ public class ExperimentDetailPresenter
 		TabData tabData = getProxy().getTabData();
 		getProxy().changeTab(new TabDataDynamic(tabData.getLabel(), tabData.getPriority(), historyToken));
 	}
+
+    @Override
+    protected void onReveal() {
+        super.onReveal();    //To change body of overridden methods use File | Settings | File Templates.
+        getView().scheduledLayout();
+    }
 }

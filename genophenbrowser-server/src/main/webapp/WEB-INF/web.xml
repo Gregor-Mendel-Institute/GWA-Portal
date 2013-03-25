@@ -110,6 +110,19 @@
 			org.springframework.web.context.support.HttpRequestHandlerServlet
 		</servlet-class>
 	</servlet>
+    <servlet>
+        <servlet-name>DOIProxy</servlet-name>
+        <servlet-class>org.eclipse.jetty.servlets.ProxyServlet$Transparent</servlet-class>
+        <load-on-startup>1</load-on-startup>
+        <init-param>
+            <param-name>ProxyTo</param-name>
+            <param-value>http://data.crossref.org</param-value>
+        </init-param>
+        <init-param>
+            <param-name>Prefix</param-name>
+            <param-value>/doi</param-value>
+        </init-param>
+    </servlet>
 
 	<servlet-mapping>
 		<servlet-name>spring</servlet-name>
@@ -126,5 +139,10 @@
 		<servlet-name>HDF5GWASDataServlet</servlet-name>
 		<url-pattern>/gwasdata</url-pattern>
 	</servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>DOIProxy</servlet-name>
+        <url-pattern>/doi/*</url-pattern>
+    </servlet-mapping>
 
 </web-app>

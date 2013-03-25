@@ -5,6 +5,8 @@ import com.google.web.bindery.requestfactory.shared.ProxyForName;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
+import java.util.Set;
 
 
 @ProxyForName(value="com.gmi.nordborglab.browser.server.domain.observation.Experiment", locator="com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
@@ -35,4 +37,6 @@ public interface ExperimentProxy extends SecureEntityProxy{
 	AccessControlEntryProxy getUserPermission();
 	
 	int getNumberOfPhenotypes();
+
+    Set<PublicationProxy> getPublications();
 }

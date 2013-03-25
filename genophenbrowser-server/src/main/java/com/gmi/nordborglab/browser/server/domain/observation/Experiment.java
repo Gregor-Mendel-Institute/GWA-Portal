@@ -1,23 +1,16 @@
 package com.gmi.nordborglab.browser.server.domain.observation;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.acl.AclExperimentIdentity;
+import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 
 @Entity
@@ -44,6 +37,11 @@ public class Experiment extends SecureEntity {
 	
 	@OneToMany(mappedBy="experiment",cascade={CascadeType.PERSIST,CascadeType.MERGE})
 	private Set<ObsUnit> obsUnits = new HashSet<ObsUnit>();
+
+    @ManyToMany(fetch = FetchType.LAZY,cascade={CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinTable(schema="util",name = "publications_experiment", inverseJoinColumns = @JoinColumn(name = "publication_id", referencedColumnName = "id"),
+            joinColumns = @JoinColumn(name = "div_experiment_id", referencedColumnName = "div_experiment_id"))
+    private Set<Publication> publications = new HashSet<Publication>();
 	
 	@Transient
 	private CustomAccessControlEntry userPermission = null;
@@ -119,6 +117,23 @@ public class Experiment extends SecureEntity {
 	public void setNumberOfPhenotypes(int numberOfPhenotypes) {
 		this.numberOfPhenotypes = numberOfPhenotypes;
 	}
-	
-	
+
+    public Set<Publication> getPublications() {
+        return publications;
+    }
+
+    public void setPublications(Set<Publication> publications) {
+        this.publications = publications;
+    }
+
+    public void addPublication(Publication publication) {
+        publications.add(publication);
+        publication.addExperiment(this);
+    }
+
+    public void removePublication(Publication publication) {
+         publications.remove(publication);
+         publication.getExperiments().remove(this);
+    }
+
 }

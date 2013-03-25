@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import com.gmi.nordborglab.browser.server.domain.util.Publication;
+import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +43,9 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
 	@Resource
 	private ExperimentRepository experimentRepository;
+
+    @Resource
+    private PublicationRepository publicationRepository;
 	
 	@Resource 
 	private TraitUomService traitUomService;
@@ -111,8 +116,22 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 		experiment = setPermissionAndOwner(experiment);
 		return experiment;
 	}
-	
-	private Experiment setPermissionAndOwner(Experiment experiment) {
+
+    @Transactional(readOnly = false)
+    @Override
+    public Experiment addPublication(Long id, Publication publication) {
+        Experiment experiment = experimentRepository.findOne(id);
+        Publication existing = publicationRepository.findByDoi(publication.getDOI());
+        if (existing == null) {
+            existing = publication;
+        }
+        if (experiment.getPublications().contains(existing))
+            return experiment;
+        experiment.addPublication(existing);
+        return experiment;
+    }
+
+    private Experiment setPermissionAndOwner(Experiment experiment) {
 		List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
 		ObjectIdentity oid = new ObjectIdentityImpl(Experiment.class,
 				experiment.getId());
