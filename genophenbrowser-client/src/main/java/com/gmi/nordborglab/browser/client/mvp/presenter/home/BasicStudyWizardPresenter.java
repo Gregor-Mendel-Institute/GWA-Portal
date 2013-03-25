@@ -489,16 +489,19 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                 study.setProtocol(selectedStudyProtocol);
                 study.setTraits(ImmutableSet.copyOf(filteredPhenotypeValues));
                 study.setTransformation(selectedTransformation);
+                fireEvent(new LoadingIndicatorEvent(true,"Saving..."));
                 ctx.saveStudy(study).fire(new Receiver<StudyProxy>() {
                     @Override
                     public void onSuccess(StudyProxy response) {
+                        fireEvent(new LoadingIndicatorEvent(false));
                         PlaceRequest placeRequest = new ParameterizedPlaceRequest(NameTokens.study).with("id",response.getId().toString());
-                        resetState();
                         placeManager.setOnLeaveConfirmation(null);
                         placeManager.revealPlace(placeRequest);
+                        resetState();
                     }
                     @Override
                     public void onFailure(ServerFailure error) {
+                        fireEvent(new LoadingIndicatorEvent(false));
                         fireEvent(new DisplayNotificationEvent("Error",error.getMessage(),true,DisplayNotificationEvent.LEVEL_ERROR,DisplayNotificationEvent.DURATION_NORMAL));
                     }
                 });
