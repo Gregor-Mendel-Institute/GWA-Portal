@@ -95,13 +95,15 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     private File file = null;
     private boolean multipleUpload=true;
 
-    private List<String> headerColumns = ImmutableList.of("chr","position","pvalue|score","maf","mac","GVE");
+    private List<String> headerColumns = ImmutableList.of("chr","pos","pvalue|score","maf","mac","GVE");
     private Map<File,Boolean> filesToUpload = Maps.newLinkedHashMap();
     private Queue<File> filesInUploadQueue = Lists.newLinkedList();
 
     private BiMap<File,Element> filesToRow =  HashBiMap.create();
     private int currentUploadCount = 0;
     private String restURL = "provider/gwas/upload";
+
+    private static List<String> csvMimeTypes = Lists.newArrayList("text/csv","application/csv","application/excel","application/vnd.ms-excel","application/vnd.msexcel");
 
     /*@UiField
     DivElement gwasFileExtError;
@@ -169,7 +171,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
             boolean isParseOk = true;
             filesToUpload.put(file,(fileExtOk & isParseOk));
             addFileToTable(file,fileExtOk,isParseOk);
-            if (fileExtOk && file.getType().equals("text/csv")) {
+            if (fileExtOk && isValidCSVType(file.getType())) {
                 checkFileContents(file);
             }
         }
@@ -202,7 +204,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
         String progressBarCell = "";
         if (isExtOk) {
             progressBarCell = "<td><div class=\"progress progress-striped active\" style=\"width:200px\"><div class=\"bar\" style=\"width: 0%;\"></div></div></td>";
-            if (file.getType().equals("text/csv"))
+            if (isValidCSVType(file.getType()))
                 nameCell = "<td><a href=\"javascript:;\">"+file.getName()+"</a></td>";
         }
         else {
@@ -236,7 +238,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     }
 
     private void checkFileContents(final File file) {
-        if (file == null || !file.getType().equals("text/csv"))
+        if (file == null || !isValidCSVType(file.getType()))
             return;
         FileReader reader = Browser.getWindow().newFileReader();
         Blob blob = ((HTML5Helper.ExtJsFile)file).webkitSlice(0, 100,file.getType(),"test");
@@ -453,7 +455,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
 
     private boolean checkFileExtOk(File file) {
         String fileExt = file.getType();
-        if (fileExt.equals("application/x-hdf") || fileExt.equals("text/csv"))
+        if (fileExt.equals("application/x-hdf") || isValidCSVType(fileExt))
             return true;
 
         return false;
@@ -643,6 +645,10 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     @Override
     public void setRestURL(String restUrl) {
         this.restURL = restUrl;
+    }
+
+    private boolean isValidCSVType(String type) {
+        return csvMimeTypes.contains(type);
     }
 
 }

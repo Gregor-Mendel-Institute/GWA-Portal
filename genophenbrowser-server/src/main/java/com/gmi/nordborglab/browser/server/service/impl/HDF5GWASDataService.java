@@ -70,6 +70,8 @@ public class HDF5GWASDataService  implements GWASDataService {
 	protected RoleHierarchy roleHierarchy;
 	
 	protected GWASReader gwasReader;
+
+    private static List<String> csvMimeTypes = Lists.newArrayList("text/csv","application/csv","application/excel","application/vnd.ms-excel","application/vnd.msexcel");
 	
 	@Override
 	public GWASData getGWASDataByStudyId(Long studyId) {
@@ -87,7 +89,7 @@ public class HDF5GWASDataService  implements GWASDataService {
 			throw new AccessDeniedException("not allowed");
 		}
 		GWASReader gwasReader = new HDF5GWASReader(GWAS_STUDY_FOLDER);
-        GWASData gwasData = gwasReader.readAll(studyId+".hdf5", 0.05);
+        GWASData gwasData = gwasReader.readAll(studyId+".hdf5",2500D);
 		return gwasData;
 	}
 
@@ -287,7 +289,7 @@ public class HDF5GWASDataService  implements GWASDataService {
         Map<String,ChrGWAData> data =null;
         if (file.isEmpty())
             throw new RuntimeException("File is empty");
-        if (!file.getContentType().trim().equalsIgnoreCase("application/x-hdf") && !(file.getContentType().trim().equalsIgnoreCase("text/csv"))) {
+        if (!file.getContentType().trim().equalsIgnoreCase("application/x-hdf") && !(csvMimeTypes.contains(file.getContentType().trim()))) {
             throw new IOException("Content Type "+ file.getContentType()+ " not supported");
         }
         File tempFile = new File(TEMP_FOLDER +"/"+UUID.randomUUID().toString());
@@ -297,7 +299,7 @@ public class HDF5GWASDataService  implements GWASDataService {
             if (file.getContentType().trim().equalsIgnoreCase("application/x-hdf")) {
                 gwasReader = new HDF5GWASReader("");
             }
-            else if (file.getContentType().trim().equalsIgnoreCase("text/csv")) {
+            else  {
                 gwasReader = new CSVGWASReader();
             }
             gwasReader.isValidGWASFile(tempFile);
