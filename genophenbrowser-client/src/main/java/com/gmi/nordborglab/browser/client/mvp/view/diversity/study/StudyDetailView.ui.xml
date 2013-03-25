@@ -39,14 +39,16 @@
          }
 
          .progressBar {
-             margin-bottom:0px !important;
-             display:inline-block;
-             width:100px;
-             margin-left:25px;
+             margin-bottom: 0px !important;
+             display: inline-block;
+             width: 100px;
+             margin-left: 25px;
          }
+
          .job_table {
 
          }
+
          .job_table td {
              padding: 3px 0;
              vertical-align: middle;
@@ -57,8 +59,9 @@
              width: auto;
              margin-top: 10px;
          }
+
          .job_actions {
-             font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
              border: 1px solid #ccc;
              color: #808185;
              display: block;
@@ -67,6 +70,25 @@
              margin-right: 5px;
              padding: 2px 4px 4px;
              text-decoration: none;
+         }
+
+         .actionDropDown {
+
+         }
+
+         .actionDropDown >  a {
+             margin-top: 0px !important;
+             margin-bottom: 0px !important;
+         }
+
+         .actionDropDownContainer {
+             margin-bottom: 0px;
+             margin-left: 150px;
+         }
+
+         .statusLabel {
+            margin-top:6px;
+            float:left;
          }
 
      </ui:style>
@@ -87,8 +109,8 @@
 											addStyleNames="{mainRes.style.cursor}">Cancel</g:Anchor>
 										<g:Anchor ui:field="delete" visible="true"
 											addStyleNames="{mainRes.style.cursor}">Delete</g:Anchor>
-                                        <b:Button text="Upload" type="DANGER" icon="UPLOAD" ui:field="uploadBtn"/>
-                                        <b:Button text="Run analsis" type="INFO" icon="CLOUD" ui:field="startBtn" />
+                                        <!--<b:Button text="Upload" type="DANGER" icon="UPLOAD" ui:field="uploadBtn"/>
+                                        <b:Button text="Run analsis" type="INFO" icon="CLOUD" ui:field="startBtn" />-->
 									</div>
 								</g:HTMLPanel>
 							</g:layer>
@@ -114,9 +136,14 @@
                                                 <tbody>
                                                     <tr>
                                                         <td><span>Status</span></td>
-                                                        <td><b:Label ui:field="jobStatusLb" />
+                                                        <td><b:Label addStyleNames="{style.statusLabel}" ui:field="jobStatusLb" />
                                                             <b:ProgressBar ui:field="jobStatusProgress" addStyleNames="{style.progressBar}"></b:ProgressBar>
-
+                                                            <b:NavPills addStyleNames="{style.actionDropDownContainer}" ui:field="actionDd">
+                                                                <b:Dropdown text="Action" addStyleNames="{style.actionDropDown}">
+                                                                    <b:NavLink text="Upload" icon="UPLOAD" ui:field="uploadBtn" />
+                                                                    <b:NavLink text="Run analysis" icon="CLOUD" ui:field="startBtn"/>
+                                                                </b:Dropdown>
+                                                            </b:NavPills>
                                                         </td>
                                                     </tr>
                                                     <tr>

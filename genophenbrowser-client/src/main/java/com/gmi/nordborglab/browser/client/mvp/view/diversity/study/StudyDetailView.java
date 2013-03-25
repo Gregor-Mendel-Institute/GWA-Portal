@@ -2,10 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.study;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.ProgressBar;
+import com.github.gwtbootstrap.client.ui.*;
 import com.github.gwtbootstrap.client.ui.base.ProgressBarBase;
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.gmi.nordborglab.browser.client.editors.StudyDisplayEditor;
@@ -16,6 +13,8 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDet
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
+import com.gmi.nordborglab.browser.client.util.DataTableUtils;
+import com.gmi.nordborglab.browser.client.util.DateUtils;
 import com.gmi.nordborglab.browser.shared.proxy.*;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -42,6 +41,8 @@ import com.google.gwt.visualization.client.visualizations.corechart.PieChart.Pie
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+
+import java.util.Date;
 
 public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> implements
 		StudyDetailPresenter.MyView {
@@ -110,9 +111,9 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 	Anchor delete;
 	@UiField(provided=true) MainResources mainRes;
     @UiField
-    Button uploadBtn;
+    NavLink uploadBtn;
     @UiField
-    Button startBtn;
+    NavLink startBtn;
     @UiField
     Label jobStatusLb;
     @UiField
@@ -123,6 +124,8 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     com.google.gwt.user.client.ui.Label createdLb;
     @UiField
     com.google.gwt.user.client.ui.Label taskLb;
+    @UiField
+    NavPills actionDd;
 
     @Inject
 	public StudyDetailView(final Binder binder, final StudyDisplayDriver displayDriver, final StudyEditDriver editDriver, final MainResources mainRes) {
@@ -179,8 +182,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 
     @Override
     public void showGWASBtns(boolean show) {
-        uploadBtn.setVisible(false);
-        startBtn.setVisible(false);
+        actionDd.setVisible(show);
     }
 
     @Override
@@ -225,9 +227,12 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         jobStatusLb.setText(jobStatusText);
         jobStatusLb.setType(jobLabelType);
         taskLb.setText(jobTask);
-        uploadBtn.setVisible(state == State.DISPLAYING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT && showJobActionBtns);
-        startBtn.setVisible(state == State.DISPLAYING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT && showJobActionBtns);
+        createdLb.setText(DateUtils.formatTimeElapsedSinceMillisecond(System.currentTimeMillis() - job.getCreateDate().getTime()) + " ago");
+        modifiedLb.setText(DateUtils.formatTimeElapsedSinceMillisecond(System.currentTimeMillis()-job.getModificationDate().getTime())+ " ago");
+        actionDd.setVisible(state == State.DISPLAYING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT && showJobActionBtns);
     }
+
+
 
 
     private void forceLayout() {
@@ -297,50 +302,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 
 	@Override
 	public void setPhenotypExplorerData(ImmutableSet<TraitProxy> traits) {
-		this.phenotypeExplorerData = DataTable.create();
-		phenotypeExplorerData.addColumn(ColumnType.STRING, "ID Name Phenotype");
-		phenotypeExplorerData.addColumn(ColumnType.NUMBER, "Date");
-		phenotypeExplorerData.addColumn(ColumnType.NUMBER, "Longitude");
-		phenotypeExplorerData.addColumn(ColumnType.NUMBER, "Latitude");
-		phenotypeExplorerData.addColumn(ColumnType.NUMBER, "Phenotype");
-		phenotypeExplorerData.addColumn(ColumnType.STRING, "Accession");
-		phenotypeExplorerData.addColumn(ColumnType.STRING, "Country");
-		phenotypeExplorerData.addRows(traits.size());
-		int i = 0;
-		String name = "";
-		String accession = "";
-		Double longitude = null;
-		Double latitude = null;
-		Double phenotype = null;
-		String country = "";
-		for (TraitProxy trait : traits) {
-			try {
-				PassportProxy passport = trait.getObsUnit().getStock()
-						.getPassport();
-				accession = passport.getAccename();
-				name = accession + " ID:" + passport.getId() + " Phenotype:"
-						+ trait.getValue();
-				if (trait.getValue() != null && !trait.getValue().equals(""))
-					phenotype = Double.parseDouble(trait.getValue());
-				LocalityProxy locality = trait.getObsUnit().getStock()
-						.getPassport().getCollection().getLocality();
-				longitude = locality.getLongitude();
-				latitude = locality.getLatitude();
-				country = locality.getCountry();
-
-			} catch (Exception e) {
-
-			}
-
-			phenotypeExplorerData.setValue(i, 0, name);
-			phenotypeExplorerData.setValue(i, 1, 1900);
-			phenotypeExplorerData.setValue(i, 2, longitude);
-			phenotypeExplorerData.setValue(i, 3, latitude);
-			phenotypeExplorerData.setValue(i, 4, phenotype);
-			phenotypeExplorerData.setValue(i, 5, accession);
-			phenotypeExplorerData.setValue(i, 6, country);
-			i = i + 1;
-		}
+        this.phenotypeExplorerData = DataTableUtils.createPhentoypeExplorerTable(traits.asList());
 	}
 
 	@Override
@@ -429,6 +391,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 
     @UiHandler("uploadBtn")
     public void onClickUploadBtn(ClickEvent e) {
+        getUiHandlers().onClickUpload();
         gwasUploadPopup.setMaxHeigth(widget.getOffsetHeight()+"px");
         gwasUploadPopup.setWidth(widget.getOffsetWidth());
         gwasUploadPopup.show();

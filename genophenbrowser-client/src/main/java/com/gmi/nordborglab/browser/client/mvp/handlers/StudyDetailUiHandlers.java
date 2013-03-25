@@ -13,4 +13,6 @@ public interface StudyDetailUiHandlers extends UiHandlers {
 	public void onDelete();
 
     void onStartAnalysis();
+
+    void onClickUpload();
 }

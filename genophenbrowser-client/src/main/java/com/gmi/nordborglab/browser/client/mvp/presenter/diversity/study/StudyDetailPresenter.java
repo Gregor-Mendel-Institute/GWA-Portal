@@ -151,6 +151,7 @@ public class StudyDetailPresenter extends
                     @Override
                     public void onSuccess(StudyProxy response) {
                         study = response;
+                        getView().showJobInfo(study.getJob(),currentUser.getPermissionMask(study.getUserPermission()));
                     }
                 },study.getId());
             }
@@ -160,6 +161,8 @@ public class StudyDetailPresenter extends
 	@Override
 	protected void onReset() {
 		super.onReset();
+        gwasUploadWizardPresenterWidget.setMultipleUpload(false);
+        gwasUploadWizardPresenterWidget.setRestURL("/provider/study/" + study.getId() + "/upload");
 		if (fireLoadEvent) {
 			fireLoadEvent = false;
 			fireEvent(new LoadStudyEvent(study));
@@ -178,8 +181,6 @@ public class StudyDetailPresenter extends
 		getView().setHistogramChartData(histogramData);
 		getView().scheduledLayout();
 		getView().setPhenotypExplorerData(ImmutableSet.copyOf(study.getTraits()));
-        gwasUploadWizardPresenterWidget.setMultipleUpload(false);
-        gwasUploadWizardPresenterWidget.setRestURL("/provider/study/" + study.getId() + "/upload");
 	}
 
 	@Override
@@ -321,6 +322,12 @@ public class StudyDetailPresenter extends
                 StudyModifiedEvent.fire(getEventBus(), response);
             }
         }, study.getId());
+    }
+
+    @Override
+    public void onClickUpload() {
+        //gwasUploadWizardPresenterWidget.setMultipleUpload(false);
+        //gwasUploadWizardPresenterWidget.setRestURL("/provider/study/" + study.getId() + "/upload");
     }
 
     private int getPermission() {
