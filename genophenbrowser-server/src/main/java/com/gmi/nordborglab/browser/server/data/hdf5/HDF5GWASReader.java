@@ -137,9 +137,21 @@ public class HDF5GWASReader implements GWASReader{
                 ChrGWAData chrGWAData = entry.getValue();
                 String positionDataSet = pValueGroup + chr + "/positions";
                 String scoresDataSet = pValueGroup + chr + "/scores";
+                String macsDataSet = pValueGroup + chr  + "/macs";
+                String mafsDataSet = pValueGroup + chr  + "/mafs";
+                String gveDataSet = pValueGroup + chr  + "/GVEs";
                 writer.createGroup(pValueGroup+chr);
                 writer.writeFloatArray(scoresDataSet, chrGWAData.getPvalues());
                 writer.writeIntArray(positionDataSet, chrGWAData.getPositions());
+                if (chrGWAData.getMacs() != null) {
+                    writer.writeIntArray(macsDataSet,chrGWAData.getMacs());
+                }
+                if (chrGWAData.getMafs() != null) {
+                    writer.writeFloatArray(mafsDataSet,chrGWAData.getMafs());
+                }
+                if (chrGWAData.getGVEs() != null) {
+                    writer.writeFloatArray(gveDataSet,chrGWAData.getGVEs());
+                }
                 numberOfSnps+= chrGWAData.getPositions().length;
                 if (chrGWAData.getPvalues()[0] > maxScore)
                     maxScore = chrGWAData.getPvalues()[0];
@@ -163,6 +175,9 @@ public class HDF5GWASReader implements GWASReader{
     protected ChrGWAData getForChr(IHDF5Reader reader,String chr,Double limit) {
 		int[] positions = null;
 		float[] scores = null;
+        int[] macs = null;
+        float[] mafs = null;
+        float[] GVEs = null;
 		String path = pValueGroup+chr;
 		HDF5DataSetInformation info = reader.getDataSetInformation(path+"/positions");
 		Double fraction = null;
@@ -171,13 +186,31 @@ public class HDF5GWASReader implements GWASReader{
 		if (fraction == null) {
 			positions = reader.readIntArray(path+"/positions");
 			scores = reader.readFloatArray(path+"/scores");
+            if (reader.isDataSet(path+"/macs")) {
+                macs = reader.readIntArray(path+"/macs");
+            }
+            if (reader.isDataSet(path+"/mafs")) {
+                mafs = reader.readFloatArray(path+"/macs");
+            }
+            if (reader.isDataSet(path+"/GVEs")) {
+                GVEs = reader.readFloatArray(path+"/GVEs");
+            }
 		}
 		else
 		{
 			positions  = reader.readIntArrayBlock(path+"/positions",fraction.intValue(),0);
 			scores = reader.readFloatArrayBlock(path+"/scores",fraction.intValue(),0);
+            if (reader.isDataSet(path+"/macs")) {
+                macs = reader.readIntArrayBlock(path+"/macs",fraction.intValue(),0);
+            }
+            if (reader.isDataSet(path+"/mafs")) {
+                mafs = reader.readFloatArrayBlock(path+"/macs",fraction.intValue(),0);
+            }
+            if (reader.isDataSet(path+"/GVEs")) {
+                GVEs = reader.readFloatArrayBlock(path+"/GVEs",fraction.intValue(),0);
+            }
 		}
-		ChrGWAData chrData = new ChrGWAData(positions, scores, chr);
+		ChrGWAData chrData = new ChrGWAData(positions, scores, macs,mafs,GVEs,chr);
 		return chrData;
 	}
 	

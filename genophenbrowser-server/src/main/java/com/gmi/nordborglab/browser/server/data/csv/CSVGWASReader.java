@@ -38,7 +38,7 @@ import java.util.Map;
 public class CSVGWASReader implements GWASReader {
 
     private static CellProcessor[] headerCellProcessors = new CellProcessor[] {
-       new Equals("chr"),new Equals("position"),new IsIncludedIn(new String[] {"score","pvalue"}),
+       new Equals("chr"),new Equals("pos"),new IsIncludedIn(new String[] {"score","pvalue"}),
        new Optional(new Equals("maf")),
        new Optional(new Equals("mac")),
        new Optional(new Equals("GVE"))
@@ -111,10 +111,13 @@ public class CSVGWASReader implements GWASReader {
             int chr = 1;
             List<Integer> positions = Lists.newArrayList();
             List<Float> pvalues = Lists.newArrayList();
+            List<Integer> macs = Lists.newArrayList();
+            List<Float> mafs = Lists.newArrayList();
+            List<Float> GVEs = Lists.newArrayList();
             while ((row = reader.read(cellProcessors)) != null) {
                 if (chr != (Integer)row.get(0)) {
                     String key = "Chr"+chr;
-                    chrGWAData = ChrGWAData.sortAndConvertToScores(new ChrGWAData(Ints.toArray(positions), Floats.toArray(pvalues), key));
+                    chrGWAData = ChrGWAData.sortAndConvertToScores(new ChrGWAData(Ints.toArray(positions), Floats.toArray(pvalues), Ints.toArray(macs),Floats.toArray(mafs),Floats.toArray(GVEs),key));
                     data.put(key, chrGWAData);
                     positions.clear();
                     pvalues.clear();
@@ -125,10 +128,19 @@ public class CSVGWASReader implements GWASReader {
                     Double value = (Double)row.get(2);
                     Float floatValue = (float)(double)value;
                     pvalues.add(floatValue);
+                    if (row.get(3) !=null) {
+                        mafs.add((float)(double)(Double)row.get(3));
+                    }
+                    if (row.get(4) != null) {
+                        macs.add((Integer)row.get(4));
+                    }
+                    if (row.get(5) != null) {
+                        GVEs.add((float)(double)(Double)row.get(5));
+                    }
                 }
             }
             String key = "Chr"+chr;
-            data.put(key,ChrGWAData.sortAndConvertToScores(new ChrGWAData(Ints.toArray(positions),Floats.toArray(pvalues),key)));
+            data.put(key,ChrGWAData.sortAndConvertToScores(new ChrGWAData(Ints.toArray(positions),Floats.toArray(pvalues),Ints.toArray(macs),Floats.toArray(mafs),Floats.toArray(GVEs),key)));
             return data;
         }
         catch (Exception e) {

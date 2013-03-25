@@ -7,14 +7,21 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class ChrGWAData {
-	
+
 	private final int[] positions;
 	private final float[] pvalues;
+    private final int[] macs;
+    private final float[] mafs;
+    private final float[] GVEs;
+
 	private final String chr;
 	
-	public ChrGWAData(final int[] positions, final float[] pvalues, final String chr) {
+	public ChrGWAData(final int[] positions, final float[] pvalues, final int[] macs,final float[] mafs,final float[] GVEs,final String chr) {
 		this.positions = positions;
 		this.pvalues = pvalues;
+        this.macs = macs;
+        this.mafs = mafs;
+        this.GVEs = GVEs;
 		this.chr = chr;
 	}
 
@@ -30,6 +37,18 @@ public class ChrGWAData {
 		return chr;
 	}
 
+    public int[] getMacs() {
+        return macs;
+    }
+
+    public float[] getMafs() {
+        return mafs;
+    }
+
+    public float[] getGVEs() {
+        return GVEs;
+    }
+
     public static ChrGWAData sortAndConvertToScores(final ChrGWAData chrGWAData) {
         final boolean isPvalues = (Floats.max(chrGWAData.pvalues) <= 1.0);
         Integer[] idx = new Integer[chrGWAData.positions.length];
@@ -44,15 +63,31 @@ public class ChrGWAData {
         });
         int[] newPositions = new int[chrGWAData.positions.length];
         float[] newPvalues = new float[chrGWAData.positions.length];
+        int[] newMACs = null;
+        float[] newMAFs  = null;
+        float[] newGVEs = null;
+        if (chrGWAData.macs != null && chrGWAData.macs.length > 0)
+             newMACs  = new int[chrGWAData.positions.length];
+        if (chrGWAData.mafs != null  && chrGWAData.mafs.length > 0)
+            newMAFs  = new float[chrGWAData.positions.length];
+        if (chrGWAData.GVEs != null  && chrGWAData.GVEs.length > 0)
+            newGVEs  = new float[chrGWAData.positions.length];
+
         for (int i =0;i< chrGWAData.positions.length;i++)   {
             newPositions[i] = chrGWAData.positions[idx[i]];
+            if (newMACs != null)
+                newMACs[i] = chrGWAData.macs[idx[i]];
+            if (newMAFs != null)
+                newMAFs[i] = chrGWAData.mafs[idx[i]];
+            if (newGVEs != null)
+                newGVEs[i] = chrGWAData.GVEs[idx[i]];
             float pvalue = chrGWAData.pvalues[idx[i]];
             if (isPvalues && pvalue > 0.0) {
                 pvalue = (float)-Math.log10((double)pvalue);
             }
             newPvalues[i] = pvalue;
         }
-        return new ChrGWAData(newPositions,newPvalues, chrGWAData.getChr());
+        return new ChrGWAData(newPositions,newPvalues, newMACs,newMAFs,newGVEs,chrGWAData.getChr());
     }
 
 }
