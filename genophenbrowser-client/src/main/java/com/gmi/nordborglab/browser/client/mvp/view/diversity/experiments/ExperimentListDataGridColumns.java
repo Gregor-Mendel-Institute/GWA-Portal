@@ -37,7 +37,10 @@ public interface ExperimentListDataGridColumns {
 
 		@Override
 		public String getValue(ExperimentProxy object) {
-			return object.getDesign();
+            String retval = object.getDesign();
+            if (retval != null && retval.length() > 65 )
+                retval = retval.substring(0,65)+"...";
+			return retval;
 		}
 	}
 	
