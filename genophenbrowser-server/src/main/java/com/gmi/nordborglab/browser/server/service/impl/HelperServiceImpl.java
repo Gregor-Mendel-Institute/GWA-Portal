@@ -274,6 +274,8 @@ public class HelperServiceImpl implements HelperService {
                 if (value != null)
                     data.addPhenotypeValue(value);
             }
+            data.sortByErrors();
+
         }
         catch (SuperCsvCellProcessorException e) {
             data.setErrorMessage(String.format("Error parsing header. '%s'",e.getMessage()));
