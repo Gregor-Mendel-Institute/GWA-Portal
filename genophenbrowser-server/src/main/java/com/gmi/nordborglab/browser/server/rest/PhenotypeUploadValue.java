@@ -74,4 +74,8 @@ public class PhenotypeUploadValue {
         isIdKnown = idKnown;
     }
 
+    public boolean hasError() {
+        return !isIdKnown || hasParseError;
+    }
+
 }
