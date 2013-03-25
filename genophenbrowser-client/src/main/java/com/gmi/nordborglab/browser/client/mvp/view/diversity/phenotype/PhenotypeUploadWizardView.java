@@ -9,6 +9,7 @@ import com.github.gwtbootstrap.client.ui.ValueListBox;
 import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeEditEditor;
+import com.gmi.nordborglab.browser.client.ui.cells.BooleanIconCell;
 import com.gmi.nordborglab.browser.client.util.HTML5Helper;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
@@ -18,6 +19,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.Phen
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
+import com.google.gwt.cell.client.IconCellDecorator;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
@@ -26,6 +28,7 @@ import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.DropEvent;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.text.shared.AbstractRenderer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -128,7 +131,16 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
     private void initCellTable() {
 
-        phenotypeValuesDataGrid.addColumn(new Column<PhenotypeUploadValueProxy, Number>(new NumberCell()) {
+        NumberFormat format = NumberFormat.getFormat(NumberFormat.getDecimalFormat().getPattern()).overrideFractionDigits(0);
+        phenotypeValuesDataGrid.addColumn(new Column<PhenotypeUploadValueProxy, Boolean>(new BooleanIconCell()) {
+            @Override
+            public Boolean getValue(PhenotypeUploadValueProxy object) {
+                return (!object.hasParseError() && object.isIdKnown());
+            }
+        });
+
+
+        phenotypeValuesDataGrid.addColumn(new Column<PhenotypeUploadValueProxy, Number>(new NumberCell(format)) {
             @Override
             public Long getValue(PhenotypeUploadValueProxy object) {
                 if (object == null)
@@ -140,7 +152,9 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
                     try {
                        id = Long.parseLong(object.getSourceId());
                     }
-                    catch (Exception e) {}
+                    catch (Exception e) {
+
+                    }
                 }
                 return id;
             }
@@ -229,6 +243,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     public void onClickPhenotypeFileUploadStartBtn(ClickEvent e) {
         if (file == null)
             return;
+        getUiHandlers().startUpload();
         final XMLHttpRequest xhr  = Browser.getWindow().newXMLHttpRequest();
         xhr.getUpload().setOnerror(new EventListener() {
             @Override
@@ -327,7 +342,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
     @Override
     public void addColumns(List<String> valueColumns) {
-        for (int i=2;i<phenotypeValuesDataGrid.getColumnCount();i++) {
+        for (int i=3;i<phenotypeValuesDataGrid.getColumnCount();i++) {
             phenotypeValuesDataGrid.removeColumn(i);
         }
 
