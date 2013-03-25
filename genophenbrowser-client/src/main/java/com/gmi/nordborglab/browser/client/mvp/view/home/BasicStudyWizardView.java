@@ -622,6 +622,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
                 phenotypeChartContainer.add(geoChart);
                 geoChart.draw(phenotypeGeoChartData,createGeoChartOptions());
             case EXPLORER:
+                //TODO causes exception
                 ResizeableMotionChart motionChart = new ResizeableMotionChart(phenotypeExplorerData,createMotionChartOptions());
                 phenotypeChartContainer.add(motionChart);
                 break;
