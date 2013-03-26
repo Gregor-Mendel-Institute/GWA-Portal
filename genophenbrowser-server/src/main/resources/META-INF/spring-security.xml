@@ -56,10 +56,14 @@
 	           </attribute-exchange>
 	       </openid-login>
 		<access-denied-handler error-page="/denied"/>
+
 		
 		<logout invalidate-session="true"  
 			logout-success-url="/" 
 			logout-url="/logout" />
+
+        <remember-me key="GWASBrowser"  user-service-ref="openIdUserService"  />
+        <remember-me key="GWASBrowser" user-service-ref="JPAuserDetailsService"/>
 	</http>
 	
 	<authentication-manager>
