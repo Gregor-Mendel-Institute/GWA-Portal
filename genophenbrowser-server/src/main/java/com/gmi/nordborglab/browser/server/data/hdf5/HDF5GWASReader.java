@@ -190,7 +190,7 @@ public class HDF5GWASReader implements GWASReader{
                 macs = reader.readIntArray(path+"/macs");
             }
             if (reader.isDataSet(path+"/mafs")) {
-                mafs = reader.readFloatArray(path+"/macs");
+                mafs = reader.readFloatArray(path+"/mafs");
             }
             if (reader.isDataSet(path+"/GVEs")) {
                 GVEs = reader.readFloatArray(path+"/GVEs");
@@ -204,7 +204,7 @@ public class HDF5GWASReader implements GWASReader{
                 macs = reader.readIntArrayBlock(path+"/macs",fraction.intValue(),0);
             }
             if (reader.isDataSet(path+"/mafs")) {
-                mafs = reader.readFloatArrayBlock(path+"/macs",fraction.intValue(),0);
+                mafs = reader.readFloatArrayBlock(path+"/mafs",fraction.intValue(),0);
             }
             if (reader.isDataSet(path+"/GVEs")) {
                 GVEs = reader.readFloatArrayBlock(path+"/GVEs",fraction.intValue(),0);
