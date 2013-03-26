@@ -245,6 +245,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView,GW
                 @Override
                 public void onSuccess(List<GWASResultProxy> response) {
                     gwasResults = response;
+                    getView().showPanel(GWASViewerView.PANELS.LIST);
                     getProxy().manualReveal(GWASViewerPresenter.this);
                 }
 
