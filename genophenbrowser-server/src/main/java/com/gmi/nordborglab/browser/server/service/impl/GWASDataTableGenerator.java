@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.google.visualization.datasource.datatable.TableCell;
+import com.google.visualization.datasource.datatable.TableRow;
 import org.springframework.stereotype.Component;
 
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
@@ -88,11 +90,36 @@ public class GWASDataTableGenerator implements DataTableGenerator {
 		DataTable table = new DataTable();
 		table.addColumn(new ColumnDescription("pos",ValueType.NUMBER,"Position"));
 		table.addColumn(new ColumnDescription("pValue",ValueType.NUMBER,"pValue"));
+        if (data.getMacs() != null) {
+            table.addColumn(new ColumnDescription("mac",ValueType.NUMBER,"MAC"));
+        }
+        if (data.getMafs() != null) {
+            table.addColumn(new ColumnDescription("maf",ValueType.NUMBER,"MAF"));
+        }
+        if (data.getGVEs() != null) {
+            table.addColumn(new ColumnDescription("gve",ValueType.NUMBER,"GVE"));
+        }
 		
 		for (int i =0;i<data.getPositions().length;i++) {
-			table.addRowFromValues(data.getPositions()[i],data.getPvalues()[i]);
+            TableRow row = new TableRow();
+            row.addCell(new TableCell(data.getPositions()[i]));
+            row.addCell(new TableCell(round(data.getPvalues()[i])));
+            if (data.getMacs() != null) {
+                row.addCell(new TableCell(data.getMacs()[i]));
+            }
+            if (data.getMafs() != null) {
+                row.addCell(new TableCell(round(data.getMafs()[i])));
+            }
+            if (data.getGVEs() != null) {
+                row.addCell(new TableCell(round(data.getGVEs()[i])));
+            }
+			table.addRow(row);
 		}
 		return table;
 	}
+
+    private static double round(float value) {
+        return Math.round(value*1000.0)/1000.0;
+    }
 
 }
