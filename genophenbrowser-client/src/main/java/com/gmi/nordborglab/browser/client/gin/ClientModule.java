@@ -26,11 +26,8 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.Ex
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.PhenotypeListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.OntologyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.*;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDetailPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyGWASPlotPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOverviewPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyTabPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyWizardPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASPlotPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASViewerPresenter;
@@ -95,6 +92,9 @@ import com.gmi.nordborglab.browser.client.mvp.view.germplasm.stock.StockDetailVi
 import com.gmi.nordborglab.browser.client.mvp.view.main.SearchView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyOverviewView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.ontology.OntologyOverviewView;
+import org.jboss.errai.bus.client.ErraiBus;
+import org.jboss.errai.bus.client.framework.MessageBus;
+import org.jboss.errai.bus.client.framework.RequestDispatcher;
 
 public class ClientModule extends AbstractPresenterModule {
 
@@ -286,4 +286,16 @@ public class ClientModule extends AbstractPresenterModule {
 		}
 		return new JBrowseCacheDataSourceImpl("/provider/genes/",cache);
 	}
+
+    @Provides
+    @Singleton
+    public RequestDispatcher getRequestDispatcher() {
+        return ErraiBus.getDispatcher();
+    }
+
+    @Provides
+    @Singleton
+    public MessageBus getMessageBus() {
+        return ErraiBus.get();
+    }
 }

@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.client.mvp.view.home;
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.github.gwtbootstrap.client.ui.*;
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
@@ -136,6 +137,8 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     DataGrid<TraitProxy> missingGenotypesDataGrid;
     @UiField
     CustomPager missingGenotypesPager;
+    @UiField
+    CheckBox studyJobCb;
 
     private TransformationCard selectedTransformationCard;
 
@@ -542,6 +545,11 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @Override
     public HasData<TraitProxy> getMissingGenotypeDisplay() {
         return missingGenotypesDataGrid;
+    }
+
+    @Override
+    public HasValue<Boolean> getIsStudyJob() {
+        return studyJobCb;
     }
 
     private void resetStatisticTypeLinks() {

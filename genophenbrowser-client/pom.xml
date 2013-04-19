@@ -52,7 +52,11 @@
 	</repositories>
 
 	<dependencies>
-		<dependency>
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-bus</artifactId>
+        </dependency>
+        <dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>genophenbrowser-shared</artifactId>
 			<version>${project.version}</version>
@@ -287,6 +291,7 @@
 					<genParam>${gwt.genParam}</genParam>
 					<noserver>true</noserver>
 					<runTarget>${runTarget}</runTarget>
+                    <extraJvmArgs>-Xmx1024M -Xms896m -XX:PermSize=64m -XX:MaxPermSize=128m</extraJvmArgs>
 				</configuration>
                 <dependencies>
                     <dependency>

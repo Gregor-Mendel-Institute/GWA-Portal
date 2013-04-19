@@ -5,13 +5,16 @@ import java.util.*;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.cdv.Transformation;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TransformationData;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.math.Transformations;
 import com.gmi.nordborglab.browser.server.repository.*;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
+import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
@@ -83,9 +86,14 @@ public class HelperServiceImpl implements HelperService {
 
 
 
+    @Resource
+    private UserRepository userRepository;
 
 	@Resource
 	private ExperimentRepository experimentRepository;
+
+    @Resource
+    private UserNotificationRepository userNotificationRepository;
 	
 	@Resource
 	private StockRepository stockRepository;
@@ -219,6 +227,8 @@ public class HelperServiceImpl implements HelperService {
 		List<StudyProtocol> studyProtocolValues = studyProtocolRepository.findAll();
 		List<Sampstat> sampStatValues = sampstatRepository.findAll();
         List<Transformation> transformationValues = transformationRepository.findAll();
+        List<UserNotification> userNotifications = getUserNotifications(10);
+
 		AppData appData = new AppData();
 		appData.setStatisticTypeList(statisticTypeValues);
 		appData.setUnitOfMeasureList(unitOfMeasureValues);
@@ -226,6 +236,8 @@ public class HelperServiceImpl implements HelperService {
 		appData.setStudyProtocolList(studyProtocolValues);
 		appData.setSampStatList(sampStatValues);
         appData.setTransformationList(transformationValues);
+        appData.setUserNotificationList(userNotifications);
+
 		return appData;
 	}
 
@@ -300,6 +312,26 @@ public class HelperServiceImpl implements HelperService {
         return transformations;
     }
 
+    @Override
+    public List<UserNotification> getUserNotifications(Integer limit) {
+        AppUser appUser = userRepository.findOne(SecurityUtil.getUsername());
+        if (appUser == null)
+            return null;
+        List<UserNotification> notifications = userNotificationRepository.findByAppUserUsernameLikeOrAppUserIsNullOrderByIdDesc(SecurityUtil.getUsername());
+        return filterUserNotifications(notifications,appUser.getNotificationCheckDate(),limit);
+    }
+
+    private static List<UserNotification> filterUserNotifications(List<UserNotification> notifications, Date modificationCheckDate,Integer limit) {
+        List<UserNotification> recentNotifications = Lists.newArrayList();
+        for (int i = 0;i<notifications.size();i++) {
+            UserNotification notification = notifications.get(i);
+            if (!notification.isRead(modificationCheckDate) || limit == null || (limit != null && limit >recentNotifications.size())) {
+                recentNotifications.add(notification);
+            }
+        }
+        return recentNotifications;
+    }
+
 
     private PhenotypeUploadValue parseAndCheckPhenotypeValue(List<String> phenotypeValues) {
         boolean hasError = false;
@@ -355,7 +387,7 @@ public class HelperServiceImpl implements HelperService {
 
     private static Map<String,String> getMetaInformationFromHeader(String[] header) {
         Map<String,String> metaInfo = new HashMap<String,String>();
-        for (int i = 0;i<header.length;i++) {
+        for (int i = 1;i<header.length;i++) {
             String[] metaSplit = header[i].split("=");
             metaInfo.put(metaSplit[0].toLowerCase(),metaSplit[1]);
         }

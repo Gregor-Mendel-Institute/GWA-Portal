@@ -28,9 +28,6 @@
          "dynamic":"strict"
       },
       "snps":{
-         "_parent": {
-            "type":"gene"
-         },
          "properties":{
             "chr":{
                "type":"string",

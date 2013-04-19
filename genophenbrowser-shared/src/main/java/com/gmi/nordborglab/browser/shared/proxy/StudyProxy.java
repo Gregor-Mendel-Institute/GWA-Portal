@@ -43,5 +43,6 @@ public interface StudyProxy extends EntityProxy {
     public TransformationProxy getTransformation();
 
     public StudyJobProxy getJob();
-	
+
+    void setJob(StudyJobProxy studyJob);
 }

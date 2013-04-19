@@ -210,6 +210,7 @@ public class HelperServiceTest extends BaseTest {
 	
 	@Test
 	public void testGetAppData() {
+        SecurityUtils.setAnonymousUser();
 		AppData data = service.getAppData();
 		assertNotNull("could not retrive AppData",data);
 		assertNotNull("Could not retrieve StatisticTypeList",data.getStatisticTypeList());

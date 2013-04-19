@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/rabbit
+                           http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd">
+
+    <rabbit:connection-factory id="connectionFactory" host="${AMQP.HOST}" port="${AMQP.PORT}"  username="${AMQP.username}" password="${AMQP.password}" virtual-host="${AMQP.VHOST}" />
+    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory"  />
+    <rabbit:admin id="amqpAdmin" connection-factory="connectionFactory"/>
+
+    <rabbit:queue id="gwasJobIds" name="gwas_job_ids" />
+    <rabbit:queue id="gwasCheckJobs" name="gwas_check_jobs" />
+
+
+
+    <rabbit:listener-container connection-factory="connectionFactory">
+        <rabbit:listener queues="gwasJobIds" ref="submitAnalysisTask" method="onUpdateJobId"/>
+        <rabbit:listener queues="gwasCheckJobs" ref="submitAnalysisTask" method="onUpdateJobStatus"/>
+    </rabbit:listener-container>
+
+
+</beans>

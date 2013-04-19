@@ -53,7 +53,7 @@ public class StudyGWASPlotPresenter
 
 	@Inject
 	public StudyGWASPlotPresenter(final EventBus eventBus, final MyView view,
-			final MyProxy proxy, final PlaceManager placeManager, 
+			final MyProxy proxy, final PlaceManager placeManager,
    		    final CdvManager cdvManager,
             final GWASPlotPresenterWidget gwasPlotPresenterWidget) {
 		super(eventBus, view, proxy);

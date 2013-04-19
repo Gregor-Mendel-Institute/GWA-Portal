@@ -17,4 +17,8 @@ public interface GWASUploadWizardUiHandlers extends UiHandlers{
     void onUploadFinished(String responseText);
 
     void onClose();
+
+    void onUploadStart();
+
+    void onUploadEnd();
 }

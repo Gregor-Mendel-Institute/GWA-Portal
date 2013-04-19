@@ -42,7 +42,9 @@ public class DiversityView extends ViewImpl implements
 	@UiField AccordionGroup ontologiesAccGroup;
     @UiField AccordionGroup toolsAccGroup;
 	@UiField SimpleLayoutPanel searchContainer;
-	private ImmutableMap<MENU_ITEM, AccordionGroup> menuItems;
+    @UiField
+    AccordionGroup publicationsAccGroup;
+    private ImmutableMap<MENU_ITEM, AccordionGroup> menuItems;
 	private MENU_ITEM isOpenMenuItem;
 	
 	public interface MyStyle extends CssResource {
@@ -51,7 +53,7 @@ public class DiversityView extends ViewImpl implements
 	}
 	
 	
-	public enum MENU_ITEM  {EXPERIMENT,PHENOTYPE,STUDY,  ONTOLOGY,TOOLS}
+	public enum MENU_ITEM  {EXPERIMENT,PHENOTYPE,STUDY,ONTOLOGY,PUBLICATION,TOOLS}
 	
 	private final PlaceManager placeManager;
 
@@ -64,6 +66,7 @@ public class DiversityView extends ViewImpl implements
 				.put(MENU_ITEM.PHENOTYPE,phenotypeAccGroup)
 				.put(MENU_ITEM.STUDY,studyAccGroup)
 				.put(MENU_ITEM.ONTOLOGY,ontologiesAccGroup)
+                .put(MENU_ITEM.PUBLICATION,publicationsAccGroup)
                 .put(MENU_ITEM.TOOLS,toolsAccGroup)
                 .build();
 	}

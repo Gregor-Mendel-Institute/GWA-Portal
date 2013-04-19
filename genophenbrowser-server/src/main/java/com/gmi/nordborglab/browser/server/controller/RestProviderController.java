@@ -12,13 +12,11 @@ import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.StudyGWASData;
 import com.gmi.nordborglab.browser.server.service.*;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.google.common.base.Joiner;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 
@@ -38,8 +36,8 @@ public class RestProviderController {
     @Resource
     private GWASDataService gwasService;
 
-    @Resource
-    private GeneAnnotDataService geneAnnotDataService;
+    @Resource(name = "jbrowse")
+    private AnnotationDataService annotationDataService;
 	
 	@RequestMapping(method=RequestMethod.GET,value="/study/{id}/phenotypedata")
 	public @ResponseBody String getPhenotypeData(@PathVariable("id") Long id) {
@@ -125,7 +123,7 @@ public class RestProviderController {
 
     @RequestMapping(method = RequestMethod.GET,value="/genes/getGenes")
     public @ResponseBody FetchGeneResult getGenes(@RequestParam("chromosome") String chromosome,@RequestParam("start") Long start,@RequestParam("end") Long end,@RequestParam("isFeatures") Boolean isFeatures)  {
-        List<Gene> genes = geneAnnotDataService.getGenes(chromosome,start,end,isFeatures);
+        List<Gene> genes = annotationDataService.getGenes(chromosome,start,end,isFeatures);
         FetchGeneResult result = new FetchGeneResult(genes);
         return result;
     }
@@ -134,7 +132,7 @@ public class RestProviderController {
     @RequestMapping(method = RequestMethod.GET,value="/genes/getGeneDescription")
     public @ResponseBody
     FetchGeneInfoResult getGenes(@RequestParam("gene") String gene)  {
-        Isoform isoform = geneAnnotDataService.getGeneIsoform(gene);
+        Isoform isoform = annotationDataService.getGeneIsoform(gene);
         FetchGeneInfoResult result = new FetchGeneInfoResult(isoform.getDescription());
         return result;
     }

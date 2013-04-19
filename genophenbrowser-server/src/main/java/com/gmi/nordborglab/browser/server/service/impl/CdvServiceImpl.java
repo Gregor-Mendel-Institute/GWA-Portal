@@ -1,15 +1,13 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
+import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
-import com.gmi.nordborglab.browser.server.repository.AlleleAssayRepository;
-import com.gmi.nordborglab.browser.server.repository.StudyRepository;
-import com.gmi.nordborglab.browser.server.repository.TraitRepository;
-import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
+import com.gmi.nordborglab.browser.server.repository.*;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.security.CustomUser;
@@ -38,6 +36,9 @@ import java.util.Map;
 @Service
 @Transactional(readOnly = true)
 public class CdvServiceImpl implements CdvService {
+
+    @Resource
+    protected UserRepository userRepository;
 
 	@Resource
 	protected StudyRepository studyRepository;
@@ -98,6 +99,10 @@ public class CdvServiceImpl implements CdvService {
         CustomUser user = SecurityUtil.getUserFromContext();
         if (user != null)
             study.setProducer(user.getFullName());
+        if (study.getJob() != null && study.getJob().getAppUser() == null) {
+            AppUser appUser = userRepository.findOne(SecurityUtil.getUsername());
+            study.getJob().setAppUser(appUser);
+        }
 		study = studyRepository.save(study);
 		return study;
 	}
@@ -220,11 +225,13 @@ public class CdvServiceImpl implements CdvService {
         }
         study = checkStudyPermissions(study, CustomPermission.EDIT);
         StudyJob job = new StudyJob();
-        job.setStatus("Queued");
+        job.setStatus("Waiting");
         job.setProgress(1);
         job.setCreateDate(new Date());
         job.setModificationDate(new Date());
         job.setTask("Waiting for workflow to start");
+        AppUser appUser = userRepository.findOne(SecurityUtil.getUsername());
+        job.setAppUser(appUser);
         study.setJob(job);
         studyRepository.save(study);
         return study;

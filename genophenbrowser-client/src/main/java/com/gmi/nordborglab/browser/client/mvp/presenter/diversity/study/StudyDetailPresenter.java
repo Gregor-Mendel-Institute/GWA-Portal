@@ -101,9 +101,9 @@ public class StudyDetailPresenter extends
 
 	@Inject
 	public StudyDetailPresenter(final EventBus eventBus, final MyView view,
-			final MyProxy proxy, final PlaceManager placeManager,
-			final CdvManager cdvManager, final CurrentUser currentUser,
-            final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget) {
+                                final MyProxy proxy, final PlaceManager placeManager,
+                                final CdvManager cdvManager, final CurrentUser currentUser,
+                                final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget) {
 		super(eventBus, view, proxy);
 		getView().setUiHandlers(this);
 		this.placeManager = placeManager;
@@ -154,6 +154,15 @@ public class StudyDetailPresenter extends
                         getView().showJobInfo(study.getJob(),currentUser.getPermissionMask(study.getUserPermission()));
                     }
                 },study.getId());
+            }
+        }));
+        registerHandler(getEventBus().addHandler(LoadStudyEvent.TYPE,new LoadStudyEvent.LoadStudyHandler() {
+            @Override
+            public void onLoad(LoadStudyEvent event) {
+                if (study == null || study.getId().equals(event.getStudy().getId())) {
+                    study = event.getStudy();
+                    getView().showJobInfo(study.getJob(),currentUser.getPermissionMask(study.getUserPermission()));
+                }
             }
         }));
 	}
@@ -318,6 +327,7 @@ public class StudyDetailPresenter extends
             @Override
             public void onSuccess(StudyProxy response) {
                 study = response;
+                getView().showJobInfo(study.getJob(),currentUser.getPermissionMask(study.getUserPermission()));
                 getView().showGWASBtns(false);
                 StudyModifiedEvent.fire(getEventBus(), response);
             }
@@ -329,6 +339,7 @@ public class StudyDetailPresenter extends
         //gwasUploadWizardPresenterWidget.setMultipleUpload(false);
         //gwasUploadWizardPresenterWidget.setRestURL("/provider/study/" + study.getId() + "/upload");
     }
+
 
     private int getPermission() {
 		int permission = 0;

@@ -45,8 +45,8 @@ def _bulkIndexDocuments(documents,type):
     payload = ''
     for document in documents:
         bulk_index = index % document["chr"]
-        parent_routing_suffix = '"_parent":"%s"' % document['gene'][0]['name'] if 'gene' in document else '"_routing":"%s"' % document['position']
-        action = '{"index":{"_index":"%s","_type":"%s","_id":"%s",%s}}\n' % (bulk_index,type,document['position'],parent_routing_suffix)
+        #parent_routing_suffix = '"_parent":"%s"' % document['gene'][0]['name'] if 'gene' in document else '"_routing":"%s"' % document['position']
+        action = '{"index":{"_index":"%s","_type":"%s","_id":"%s"}}\n' % (bulk_index,type,document['position'])
         data = json.dumps(document,encoding='cp1252')+'\n'
         payload = payload + action + data
     req = requests.put(url,data=payload)

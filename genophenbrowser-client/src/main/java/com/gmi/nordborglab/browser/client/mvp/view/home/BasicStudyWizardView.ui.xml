@@ -50,16 +50,16 @@
     </ui:style>
 
     <gui:WizardPanel ui:field="wizard" addStyleNames="{style.wizard}">
-    <gui:page title="Experiment">
+    <gui:page title="Study">
         <g:FlowPanel addStyleNames="{style.experimentContainer}">
             <g:HTMLPanel>
                 <div class="alert alert-info">
-                    Select an experiment or <b:Button icon="PLUS"  ui:field="createExperimentBtn" type="SUCCESS">Create new experiment</b:Button>
+                    Select a study or <b:Button icon="PLUS"  ui:field="createExperimentBtn" type="SUCCESS">Create new experiment</b:Button>
                 </div>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="selectExperimentPanel">
                 <div>
-                    <h4>Available experiments:</h4>
+                    <h4>Available studies:</h4>
                 </div>
                 <div class="{style.selectExperimentContainer}">
                    <g:FlowPanel ui:field="experimentsContainer" />
@@ -68,11 +68,11 @@
             <b:Modal ui:field="createExperimentPanel" title="Create new experiment" backdrop="STATIC" keyboard="true" animation="true">
                         <b:WellForm>
                             <b:ControlLabel>Name</b:ControlLabel>
-                            <b:Tooltip text='Name of the experiment' trigger="FOCUS" placement="RIGHT"><b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="experimentNameTb"></b:TextBox></b:Tooltip>
+                            <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT"><b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="experimentNameTb"></b:TextBox></b:Tooltip>
                             <b:ControlLabel>Originator</b:ControlLabel>
-                            <b:Tooltip text='Originator of the experiment' trigger="FOCUS" placement="RIGHT"><b:TextBox placeholder="Originator" alternateSize="XLARGE"  ui:field="experimentOriginatorTb"></b:TextBox></b:Tooltip>
+                            <b:Tooltip text='Originator of the study' trigger="FOCUS" placement="RIGHT"><b:TextBox placeholder="Originator" alternateSize="XLARGE"  ui:field="experimentOriginatorTb"></b:TextBox></b:Tooltip>
                             <b:ControlLabel>Design</b:ControlLabel>
-                            <b:Tooltip text='Design of the experiment' trigger="FOCUS" placement="RIGHT"><b:TextArea placeholder="Design" visibleLines="8" alternateSize="XLARGE" ui:field="experimentDesignTb"></b:TextArea></b:Tooltip>
+                            <b:Tooltip text='Design of the study' trigger="FOCUS" placement="RIGHT"><b:TextArea placeholder="Design" visibleLines="8" alternateSize="XLARGE" ui:field="experimentDesignTb"></b:TextArea></b:Tooltip>
                         </b:WellForm>
                 <b:ModalFooter>
                     <b:Button icon="FILE" type="PRIMARY" ui:field="saveExperimentBtn">Save</b:Button>
@@ -231,7 +231,7 @@
             </g:layer>
             </g:LayoutPanel>
         </gui:page>
-            <gui:page title="Method">
+            <gui:page title="Analysis">
                 <g:LayoutPanel >
                 <g:layer top="20px" height="70px" left="20px" right="0">
                     <g:HTMLPanel>
@@ -247,6 +247,9 @@
                                <b:ControlLabel>Study name</b:ControlLabel>
                                <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT"><b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="studyNameTb"/></b:Tooltip>
                            </b:ControlGroup>
+                                <b:Tooltip text='If checked a job for the selected analysis will be run on the GMI HPC cluster ' trigger="FOCUS" placement="RIGHT">
+                                    <b:CheckBox ui:field="studyJobCb">Create HPC Job</b:CheckBox>
+                                </b:Tooltip>
                         </div>
                                 <div class="{style.selectExperimentContainer}">
                                     <g:FlowPanel ui:field="methodContainer" />

@@ -85,8 +85,9 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         private final Column<PublicationProxy,String> journalColumn;
         private final Column<PublicationProxy,String[]> doiColumn;
         private final IdentityColumn<PublicationProxy> actionColumn;
-        private boolean isCompact = false;
+        private Boolean isCompact;
         private boolean showAction = true;
+
 
         public ResponsiveDataGrid(int pageSize, Resources resources,ActionCell.Delegate<PublicationProxy> actionDelegate) {
             super(pageSize, resources,new EntityProxyKeyProvider<PublicationProxy>());
@@ -145,7 +146,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
                 }
             };
             //initColumns();
-            //updateColumns();
+           // updateColumns();
         }
 
 
@@ -227,7 +228,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
                 return;
             }
             boolean isNewCompact = (getOffsetWidth() < 800);
-            if (isNewCompact != isCompact) {
+            if (isCompact == null || isNewCompact != isCompact) {
                 isCompact = isNewCompact;
                 updateColumns();
             }

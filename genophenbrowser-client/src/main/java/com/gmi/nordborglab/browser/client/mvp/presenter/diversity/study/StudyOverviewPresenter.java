@@ -38,7 +38,7 @@ public class StudyOverviewPresenter
 
 	@Inject
 	public StudyOverviewPresenter(final EventBus eventBus, final MyView view,
-			final MyProxy proxy,final CdvManager cdvManager) {
+                                  final MyProxy proxy, final CdvManager cdvManager) {
 		super(eventBus, view, proxy);
 		this.cdvManager = cdvManager;
 		dataProvider = new AsyncDataProvider<StudyProxy>() {

@@ -128,7 +128,7 @@
 								<b:customTrigger>
 									<g:HTMLPanel addStyleNames="{style.header_section}">
 										<div class="{style.icon_header}">&#128255;</div>
-										<span>Experiments</span>
+										<span>Studies</span>
 									</g:HTMLPanel>
 								</b:customTrigger>
 								<base:UnorderedList addStyleNames="{style.submenu_container}">
@@ -156,8 +156,8 @@
 							<b:AccordionGroup ui:field="studyAccGroup">
 								<b:customTrigger>
 									<g:HTMLPanel addStyleNames="{style.header_section}">
-										<div class="{style.icon_header}">&#128214;</div>
-										<span>Studies</span>
+										<div class="{style.icon_header}">&#128187;</div>
+										<span>Analysis</span>
 									</g:HTMLPanel>
 								</b:customTrigger>
 								<base:UnorderedList addStyleNames="{style.submenu_container}">
@@ -181,6 +181,21 @@
 									</base:ListItem>
 								</base:UnorderedList>
 							</b:AccordionGroup>
+                            <b:AccordionGroup ui:field="publicationsAccGroup">
+                                <b:customTrigger>
+                                    <g:HTMLPanel addStyleNames="{style.header_section}">
+                                        <div class="{style.icon_header}">&#128214;</div>
+                                        <span>Publications</span>
+                                    </g:HTMLPanel>
+                                </b:customTrigger>
+                                <base:UnorderedList addStyleNames="{style.submenu_container}">
+                                    <base:ListItem addStyleNames="{style.submenu_item}">
+                                        <g:InlineHyperlink text="Overview"
+                                                           targetHistoryToken="{nameTokens.getPublications}"></g:InlineHyperlink>
+                                    </base:ListItem>
+                                </base:UnorderedList>
+                            </b:AccordionGroup>
+
                             <b:AccordionGroup ui:field="toolsAccGroup">
                                 <b:customTrigger>
                                     <g:HTMLPanel addStyleNames="{style.header_section}">

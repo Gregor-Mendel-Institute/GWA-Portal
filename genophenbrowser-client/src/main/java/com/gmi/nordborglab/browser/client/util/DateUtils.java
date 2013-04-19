@@ -10,6 +10,10 @@ package com.gmi.nordborglab.browser.client.util;
 public abstract class DateUtils {
 
     public static String formatTimeElapsedSinceMillisecond(long milisDiff) {
+        return formatTimeElapsedSinceMillisecond(milisDiff,3);
+    }
+
+    public static String formatTimeElapsedSinceMillisecond(long milisDiff,int numberOfUnitsToDisplay) {
         if(milisDiff<1000){ return "0 second";}
 
         String formattedTime = "";
@@ -39,7 +43,7 @@ public abstract class DateUtils {
         timeElapsed[0] = (int) (milisDiff / secondInMillis); // seconds
 
         // Only adds 3 significant high valued units
-        for(int i=(timeElapsed.length-1), j=0; i>=0 && j<3; i--){
+        for(int i=(timeElapsed.length-1), j=0; i>=0 && j<numberOfUnitsToDisplay; i--){
             // loop from high to low time unit
             if(timeElapsed[i] > 0){
                 formattedTime += ((j>0)? ", " :"")

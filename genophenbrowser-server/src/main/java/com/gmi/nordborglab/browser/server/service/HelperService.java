@@ -8,6 +8,7 @@ import com.gmi.nordborglab.browser.server.domain.AppData;
 import com.gmi.nordborglab.browser.server.domain.BreadcrumbItem;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TransformationData;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -20,5 +21,9 @@ public interface HelperService {
     PhenotypeUploadData getPhenotypeUploadData(byte[] inputStream) throws IOException;
 
     List<TransformationData> calculateTransformations(List<Double> values);
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    List<UserNotification> getUserNotifications(Integer limit);
+
 
 }

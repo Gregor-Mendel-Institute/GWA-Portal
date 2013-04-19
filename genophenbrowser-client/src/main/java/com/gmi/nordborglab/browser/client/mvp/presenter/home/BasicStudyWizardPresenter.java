@@ -24,6 +24,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.*;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -122,6 +123,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
         void setAvailableAlleleAssays(List<AlleleAssayProxy> alleleAssayList);
 
         HasData<TraitProxy> getMissingGenotypeDisplay();
+
+        HasValue<Boolean> getIsStudyJob();
     }
     static class PhenotypeNamePredicate implements Predicate<PhenotypeProxy> {
         private String query;
@@ -489,6 +492,15 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                 study.setProtocol(selectedStudyProtocol);
                 study.setTraits(ImmutableSet.copyOf(filteredPhenotypeValues));
                 study.setTransformation(selectedTransformation);
+                if (getView().getIsStudyJob().getValue()) {
+                    StudyJobProxy studyJob = ctx.create(StudyJobProxy.class);
+                    studyJob.setStatus("Waiting");
+                    studyJob.setProgress(1);
+                    studyJob.setCreateDate(new Date());
+                    studyJob.setModificationDate(new Date());
+                    studyJob.setTask("Waiting for workflow to start");
+                    study.setJob(studyJob);
+                }
                 fireEvent(new LoadingIndicatorEvent(true,"Saving..."));
                 ctx.saveStudy(study).fire(new Receiver<StudyProxy>() {
                     @Override

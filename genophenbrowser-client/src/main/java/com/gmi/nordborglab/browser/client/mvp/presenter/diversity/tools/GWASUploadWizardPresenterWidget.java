@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools;
 
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.GWASUploadedEvent;
+import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASUploadWizardUiHandlers;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
@@ -56,6 +57,16 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
     @Override
     public void onClose() {
         GWASUploadedEvent.fire(getEventBus(),0L);
+    }
+
+    @Override
+    public void onUploadStart() {
+        fireEvent(new LoadingIndicatorEvent(true,"Uploading..."));
+    }
+
+    @Override
+    public void onUploadEnd() {
+        fireEvent(new LoadingIndicatorEvent(false));
     }
 
     public void setMultipleUpload(boolean multipleUpload) {

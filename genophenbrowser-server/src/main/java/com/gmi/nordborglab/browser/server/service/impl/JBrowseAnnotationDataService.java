@@ -5,11 +5,8 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
-import com.gmi.nordborglab.browser.server.data.annotation.Gene;
-import com.gmi.nordborglab.browser.server.data.annotation.GeneAnnotation;
-import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
-import com.gmi.nordborglab.browser.server.data.annotation.JBrowseChrTrackData;
-import com.gmi.nordborglab.browser.server.service.GeneAnnotDataService;
+import com.gmi.nordborglab.browser.server.data.annotation.*;
+import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,8 +25,8 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 
-@Service
-public class JBrowseGeneAnnotDataService implements GeneAnnotDataService {
+@Service("jbrowse")
+public class JBrowseAnnotationDataService implements AnnotationDataService {
 
 
     private Map<String,JBrowseChrTrackData> map = Maps.newHashMap();
@@ -61,6 +57,11 @@ public class JBrowseGeneAnnotDataService implements GeneAnnotDataService {
         String gene = Splitter.on('.').split(isoform).iterator().next();
         GeneAnnotation annotation= annotationMap.get(gene);
         return annotation.getIsoforms().get(isoform);
+    }
+
+    @Override
+    public List<SNPAnnot> getSNPAnnotations(String chr,int[] positions) {
+        throw new RuntimeException("Not implemented");
     }
 
     private JBrowseChrTrackData getJBrowseChrTrackData(String chr) {

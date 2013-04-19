@@ -19,7 +19,7 @@ public class DataTableUtils {
 	public static CustomDataTable createDataTableFromString(String json) {
 		CustomDataTable dataTable = null;
 		try {
-			JavaScriptObject jsData = JsonUtils.safeEval(json);
+			JavaScriptObject jsData = JsonUtils.unsafeEval(json);
 			dataTable = (CustomDataTable) DataTable.create(jsData);
 		}
 		catch (Exception e) {}

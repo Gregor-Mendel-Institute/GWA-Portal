@@ -166,7 +166,6 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
         int fileListLength = multipleUpload ? fileList.getLength() : 1;
         for (int i =0;i<fileListLength;i++) {
             File file = fileList.item(i);
-
             boolean fileExtOk =  checkFileExtOk(file);
             boolean isParseOk = true;
             filesToUpload.put(file,(fileExtOk & isParseOk));
@@ -435,11 +434,11 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
             }
             else {
                 String[] parts = headerColumn.split("\\|");
-                if (columns[i].equals(parts[0])) {
+                if (columns[i].trim().equals(parts[0].trim())) {
                     elements[i].setInnerText(headerColumn);
                     elements[i].getStyle().setColor("green");
                 }
-                else if (parts.length == 2 && columns[i].equals(parts[1].trim())) {
+                else if (parts.length == 2 && columns[i].trim().equals(parts[1].trim())) {
                     elements[i].setInnerText(headerColumn);
                     elements[i].getStyle().setColor("green");
                 }
@@ -510,6 +509,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
         gwasFileUploadCancelBtn.setVisible(false);
         gwasFileUploadStartBtn.setVisible(false);
         filesInUploadQueue.addAll(filesToUpload.keySet());
+        getUiHandlers().onUploadStart();
         startPartialUpload();
     }
 
@@ -611,6 +611,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     }
 
     private void updateUploadStatus() {
+        getUiHandlers().onUploadEnd();
         gwasFileUploadCloseBtn.setVisible(true);
         GQuery query = $("#checkStatusMsg");
         int totalCount = filesToUpload.size();

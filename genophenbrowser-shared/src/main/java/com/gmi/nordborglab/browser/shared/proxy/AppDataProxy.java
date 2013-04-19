@@ -26,5 +26,6 @@ public interface AppDataProxy extends ValueProxy {
 
     public List<TransformationProxy> getTransformationList();
     public void setTransformationList(List<TransformationProxy> transformationList);
-	
+
+    public List<UserNotificationProxy> getUserNotificationList();
 }

@@ -18,6 +18,7 @@ import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
+import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.google.common.base.Predicate;
 import com.google.common.collect.*;
@@ -68,6 +69,9 @@ public class HDF5GWASDataService  implements GWASDataService {
 
 	@Resource
 	protected RoleHierarchy roleHierarchy;
+
+    @Resource(name="ES")
+    protected AnnotationDataService annotationDataService;
 	
 	protected GWASReader gwasReader;
 
@@ -90,6 +94,7 @@ public class HDF5GWASDataService  implements GWASDataService {
 		}
 		GWASReader gwasReader = new HDF5GWASReader(GWAS_STUDY_FOLDER);
         GWASData gwasData = gwasReader.readAll(studyId+".hdf5",2500D);
+        gwasData.sortByPosition();
 		return gwasData;
 	}
 
@@ -110,6 +115,8 @@ public class HDF5GWASDataService  implements GWASDataService {
         }
         GWASReader gwasReader = new HDF5GWASReader(GWAS_VIEWER_FOLDER);
         GWASData gwasData = gwasReader.readAll(gwasResultId+".hdf5", 2500D);
+        gwasData.sortByPosition();
+        gwasData = addAnnotation(gwasData);
         return gwasData;
     }
 
@@ -283,6 +290,14 @@ public class HDF5GWASDataService  implements GWASDataService {
         }
         acl.insertAce(acl.getEntries().size(), permission, recipient, true);
         aclService.updateAcl(acl);
+    }
+
+    private GWASData addAnnotation(GWASData data) {
+        for (Map.Entry<String,ChrGWAData> dataEntry : data.getChrGWASData().entrySet()) {
+            ChrGWAData chrData = dataEntry.getValue();
+            chrData.setSnpAnnotations(annotationDataService.getSNPAnnotations(dataEntry.getKey().toLowerCase(),chrData.getPositions()));
+        }
+        return data;
     }
 
     private Map<String,ChrGWAData> getGWASDataFromUploadFile(CommonsMultipartFile file) throws Exception {

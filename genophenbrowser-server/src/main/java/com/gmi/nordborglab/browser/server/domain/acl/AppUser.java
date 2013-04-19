@@ -1,6 +1,10 @@
 package com.gmi.nordborglab.browser.server.domain.acl;
 
 
+import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
+import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
+
+import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,8 +30,16 @@ public class AppUser {
 	
 	@OneToMany(cascade=CascadeType.ALL,mappedBy="user")
 	private List<Authority> authorities;
-	
-	public AppUser() {}
+
+
+    @OneToMany(cascade=CascadeType.ALL,mappedBy="appUser")
+    private List<UserNotification> userNotifications;
+
+    @OneToMany(cascade=CascadeType.ALL,mappedBy="appUser")
+    private List<StudyJob> studyJobs;
+    private Date notificationCheckDate;
+
+    public AppUser() {}
 	
 	public AppUser(String username) {
 		this.username = username;
@@ -122,4 +134,31 @@ public class AppUser {
 		this.password = password;
 	}
 
+    public List<UserNotification> getUserNotifications() {
+        return userNotifications;
+    }
+
+    public void addUserNotification(UserNotification userNotification) {
+        userNotifications.add(userNotification);
+    }
+
+    public List<StudyJob> getStudyJobs() {
+        return studyJobs;
+    }
+
+    public void addStudyJob(StudyJob studyJob) {
+        studyJobs.add(studyJob);
+    }
+
+    public Date getNotificationCheckDate() {
+        return notificationCheckDate;
+    }
+
+    public Date isNotificationCheckDate() {
+        return notificationCheckDate;
+    }
+
+    public void setNotificationCheckDate(Date notificationCheckDate) {
+        this.notificationCheckDate = notificationCheckDate;
+    }
 }

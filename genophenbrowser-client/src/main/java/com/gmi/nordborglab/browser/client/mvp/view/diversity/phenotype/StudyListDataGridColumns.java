@@ -188,6 +188,9 @@ public static class NameColumn extends Column<StudyProxy,String[]> {
             else if (value.equalsIgnoreCase("Queued")) {
                 className = LabelType.IMPORTANT.get();
             }
+            else if (value.equalsIgnoreCase("Error")) {
+                className = LabelType.IMPORTANT.get();
+            }
             sb.append(template.statustext(className,value));
         }
     }
@@ -203,7 +206,7 @@ public static class NameColumn extends Column<StudyProxy,String[]> {
         protected <X> void render(Context context, StudyJobProxy value, SafeHtmlBuilder sb, HasCell<StudyJobProxy, X> hasCell) {
             final Cell<X> cell = hasCell.getCell();
             sb.appendHtmlConstant("<div style=\"display:inline-block;margin-right:20px;\">");
-            if (!(cell instanceof ProgressBarCell && value != null && value.getStatus().equalsIgnoreCase("Finished"))) {
+            if (!(cell instanceof ProgressBarCell && value != null && (value.getStatus().equalsIgnoreCase("Finished") || value.getStatus().equalsIgnoreCase("Error")))) {
                 cell.render(context,hasCell.getValue(value),sb);
             }
             sb.appendHtmlConstant("</div>");

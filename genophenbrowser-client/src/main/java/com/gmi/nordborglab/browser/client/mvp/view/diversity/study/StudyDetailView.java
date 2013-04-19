@@ -10,6 +10,7 @@ import com.gmi.nordborglab.browser.client.editors.StudyEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter.State;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDetailPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDetailPresenter;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
@@ -41,8 +42,6 @@ import com.google.gwt.visualization.client.visualizations.corechart.PieChart.Pie
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
-
-import java.util.Date;
 
 public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> implements
 		StudyDetailPresenter.MyView {
@@ -219,6 +218,17 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
                 showProgress = true;
                 progresBarColor = ProgressBarBase.Color.WARNING;
             }
+            else if (job.getStatus().equalsIgnoreCase("Error")) {
+                jobLabelType = LabelType.IMPORTANT;
+                showProgress = false;
+            }
+            Long currentTimeMillis = System.currentTimeMillis();
+            if (job.getCreateDate() != null)  {
+                createdLb.setText(DateUtils.formatTimeElapsedSinceMillisecond(currentTimeMillis - job.getCreateDate().getTime()) + " ago");
+            }
+            if (job.getModificationDate() != null)  {
+                modifiedLb.setText(DateUtils.formatTimeElapsedSinceMillisecond(currentTimeMillis-job.getModificationDate().getTime())+ " ago");
+            }
         }
         jobStatusProgress.setPercent(progress);
         jobStatusProgress.setVisible(showProgress);
@@ -227,8 +237,6 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         jobStatusLb.setText(jobStatusText);
         jobStatusLb.setType(jobLabelType);
         taskLb.setText(jobTask);
-        createdLb.setText(DateUtils.formatTimeElapsedSinceMillisecond(System.currentTimeMillis() - job.getCreateDate().getTime()) + " ago");
-        modifiedLb.setText(DateUtils.formatTimeElapsedSinceMillisecond(System.currentTimeMillis()-job.getModificationDate().getTime())+ " ago");
         actionDd.setVisible(state == State.DISPLAYING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT && showJobActionBtns);
     }
 

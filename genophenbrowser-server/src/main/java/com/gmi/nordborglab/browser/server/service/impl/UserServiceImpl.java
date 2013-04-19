@@ -6,7 +6,10 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.gmi.nordborglab.browser.server.domain.acl.AclSid;
+import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.repository.AclSidRepository;
+import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
+import com.google.common.collect.Lists;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +25,17 @@ import com.gmi.nordborglab.browser.server.service.UserService;
 @Service("userService")
 @Transactional(readOnly=true)
 public class UserServiceImpl implements UserService {
-	
+
+
 	@Resource
 	private UserRepository userRepository;
 
     @Resource
+    private UserNotificationRepository userNotificationRepository;
+
+    @Resource
     private AclSidRepository aclSidRepository;
+
 
 	
 	@Override
@@ -57,5 +65,8 @@ public class UserServiceImpl implements UserService {
             aclSidRepository.save(aclSid);
 		}
 	}
+
+
+
 
 }

@@ -8,6 +8,7 @@ import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Sampstat;
 import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
 import com.gmi.nordborglab.browser.server.domain.phenotype.UnitOfMeasure;
+import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 
 public class AppData {
 	
@@ -17,6 +18,8 @@ public class AppData {
 	protected List<StudyProtocol> studyProtocolList;
 	protected List<Sampstat> sampStatList;
     protected List<Transformation> transformationList;
+
+    protected List<UserNotification> userNotificationList;
 
 
 		
@@ -68,5 +71,13 @@ public class AppData {
 
     public void setTransformationList(List<Transformation> transformationList) {
         this.transformationList = transformationList;
+    }
+
+    public List<UserNotification> getUserNotificationList() {
+        return userNotificationList;
+    }
+
+    public void setUserNotificationList(List<UserNotification> userNotificationList) {
+        this.userNotificationList = userNotificationList;
     }
 }

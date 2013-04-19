@@ -40,4 +40,10 @@ public class GWASData {
     public float getMaxScore() {
         return maxScore;
     }
+
+    public void sortByPosition() {
+        for (Map.Entry<String,ChrGWAData> dataEntry : chrGWASData.entrySet()) {
+             chrGWASData.put(dataEntry.getKey(),ChrGWAData.sortByPosition(dataEntry.getValue()));
+        }
+    }
 }

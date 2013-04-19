@@ -105,7 +105,7 @@ public class DiversityPresenter extends
 	protected void setTitle() {
 		PlaceRequest request = placeManager.getCurrentPlaceRequest();
 		String type = null;
-		String title ="Experiments";
+		String title ="Studies";
 		String subItem = null;
 		if (request.matchesNameToken(NameTokens.experiments)) {
 			getView().clearBreadcrumbs(0);
@@ -135,7 +135,7 @@ public class DiversityPresenter extends
 		else if (request.matchesNameToken(NameTokens.studyoverview)) {
 			getView().clearBreadcrumbs(0);
 			type="study";
-			title="Studies";
+			title="Analysis";
 			subItem = null;
 			getView().setActiveMenuItem(MENU_ITEM.STUDY, request);
 		}
@@ -147,13 +147,13 @@ public class DiversityPresenter extends
 			getView().setActiveMenuItem(MENU_ITEM.ONTOLOGY, request);
 		}
 		else if(request.matchesNameToken(NameTokens.study)) {
-			title = "Study";
+			title = "Analysis";
 			type ="study";
 			subItem = null;
 			getView().setActiveMenuItem(MENU_ITEM.STUDY, request);
 		}
 		else if ( request.matchesNameToken(NameTokens.studywizard)) {
-			title = "Study";
+			title = "Analysis";
 			type = "studywizard";
 			subItem = null;
 			getView().setActiveMenuItem(MENU_ITEM.STUDY, request);

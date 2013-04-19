@@ -1,10 +1,12 @@
 package com.gmi.nordborglab.browser.server.data;
 
 
+import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
 import com.google.common.primitives.Floats;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 public class ChrGWAData {
 
@@ -13,6 +15,7 @@ public class ChrGWAData {
     private final int[] macs;
     private final float[] mafs;
     private final float[] GVEs;
+    private List<SNPAnnot> snpAnnotations;
 
 	private final String chr;
 	
@@ -90,4 +93,48 @@ public class ChrGWAData {
         return new ChrGWAData(newPositions,newPvalues, newMACs,newMAFs,newGVEs,chrGWAData.getChr());
     }
 
+    public static ChrGWAData sortByIndex(final ChrGWAData chrGWAData, Integer[] idx) {
+        int[] newPositions = new int[chrGWAData.positions.length];
+        float[] newPvalues = new float[chrGWAData.positions.length];
+        int[] newMACs = null;
+        float[] newMAFs  = null;
+        float[] newGVEs = null;
+        if (chrGWAData.macs != null && chrGWAData.macs.length > 0)
+            newMACs  = new int[chrGWAData.positions.length];
+        if (chrGWAData.mafs != null  && chrGWAData.mafs.length > 0)
+            newMAFs  = new float[chrGWAData.positions.length];
+        if (chrGWAData.GVEs != null  && chrGWAData.GVEs.length > 0)
+            newGVEs  = new float[chrGWAData.positions.length];
+        for (int i =0;i< chrGWAData.positions.length;i++)   {
+            newPositions[i] = chrGWAData.positions[idx[i]];
+            if (newMACs != null)
+                newMACs[i] = chrGWAData.macs[idx[i]];
+            if (newMAFs != null)
+                newMAFs[i] = chrGWAData.mafs[idx[i]];
+            if (newGVEs != null)
+                newGVEs[i] = chrGWAData.GVEs[idx[i]];
+            newPvalues[i] = chrGWAData.pvalues[idx[i]];
+        }
+        return new ChrGWAData(newPositions,newPvalues, newMACs,newMAFs,newGVEs,chrGWAData.getChr());
+    }
+
+
+    public static ChrGWAData sortByPosition(final ChrGWAData chrGWAData) {
+        Integer[] idx = new Integer[chrGWAData.positions.length];
+        for( int i = 0 ; i < idx.length; i++ ) idx[i] = i;
+        Arrays.sort(idx,new Comparator<Integer>() {
+            public int compare(Integer i1, Integer i2) {
+                return Float.compare(chrGWAData.positions[i1], chrGWAData.positions[i2]);
+            }
+        });
+        return sortByIndex(chrGWAData,idx);
+    }
+
+    public List<SNPAnnot> getSnpAnnotations() {
+        return snpAnnotations;
+    }
+
+    public void setSnpAnnotations(List<SNPAnnot> snpAnnotations) {
+        this.snpAnnotations = snpAnnotations;
+    }
 }

@@ -3,30 +3,33 @@ package com.gmi.nordborglab.browser.client;
 public class NameTokens {
 
 	public static final String home = "!home";
-	public static final String experiments = "!experiments";
-	public static final String experiment = "!experiment/{id}/overview";
-	public static final String phenotypes = "!experiment/{id}/phenotypes";
+	public static final String experiments = "!studies";
+	public static final String experiment = "!study/{id}/overview";
+	public static final String phenotypes = "!study/{id}/phenotypes";
 	public static final String phenotype = "!phenotype/{id}/overview";
 	public static final String obsunit = "!phenotype/{id}/obsunits";
-	public static final String studylist = "!phenotype/{id}/studylist";
-	public static final String study = "!study/{id}/overview";
-	public static final String studygwas = "!study/{id}/studygwas";
+	public static final String studylist = "!phenotype/{id}/analysislist";
+	public static final String study = "!analysis/{id}/overview";
+	public static final String studygwas = "!analysis/{id}/studygwas";
 	public static final String experimentPermission = "!experiment/{id}/permission";
-	public static final String studywizard = "!phenotype/{id}/studywizard";
+	public static final String studywizard = "!phenotype/{id}/analysiswizard";
 	public static final String taxonomies = "!taxonomies";
 	public static final String taxonomy = "!taxonomy/{id}/overview";
 	public static final String passports = "!taxonomy/{id}/passports";
 	public static final String passport = "!passport/{id}/overview";
 	public static final String stock = "!stock/{id}/overview";
 	public static final String phenotypeoverview = "!phenotypes";
-	public static final String studyoverview = "!studyoverview";
+	public static final String studyoverview = "!analysisoverview";
 	public static final String ontologyoverview = "!ontologyoverview";
     public static final String gwasViewer="!gwasViewer";
-    public static final String basicstudywizard ="!studywizard";
+    public static final String basicstudywizard ="!analysiswizard";
+    public static final String publications = "!publications";
+
 
     public static String getHome() {
 		return home;
 	}
+
 
 	public static String getExperiments() {
 		return experiments;
@@ -109,4 +112,7 @@ public class NameTokens {
         return gwasViewer;
     }
 
+    public static String getPublications() {
+        return publications;
+    }
 }

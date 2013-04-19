@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 
@@ -18,14 +17,11 @@ import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
-import com.gmi.nordborglab.browser.shared.proxy.LocalityProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StatisticTypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multiset;
 import com.google.gwt.core.client.JsArray;
@@ -43,7 +39,6 @@ import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.Selection;
 import com.google.gwt.visualization.client.events.SelectHandler;
 import com.google.gwt.visualization.client.visualizations.MotionChart;

@@ -1,10 +1,13 @@
 package com.gmi.nordborglab.browser.server.domain.util;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,8 +33,8 @@ public class StudyJob extends BaseEntity{
     private String status;
 
     private String task;
-    private Integer progress;
 
+    private Integer progress;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="create_date")
     private Date createDate;
@@ -39,6 +42,14 @@ public class StudyJob extends BaseEntity{
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="modification_date")
     private Date modificationDate;
+
+    private String taskid;
+
+    private String payload;
+
+    @ManyToOne()
+    @JoinColumn(name="username")
+    private AppUser appUser;
 
 
     public Study getStudy() {
@@ -87,5 +98,29 @@ public class StudyJob extends BaseEntity{
 
     public void setModificationDate(Date modificationDate) {
         this.modificationDate = modificationDate;
+    }
+
+    public String getTaskid() {
+        return taskid;
+    }
+
+    public void setTaskid(String taskId) {
+        this.taskid = taskId;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
+    }
+
+    public AppUser getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(AppUser appUser) {
+        this.appUser = appUser;
     }
 }

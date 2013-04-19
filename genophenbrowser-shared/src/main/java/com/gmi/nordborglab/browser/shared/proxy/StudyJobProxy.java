@@ -23,4 +23,13 @@ public interface StudyJobProxy extends EntityProxy {
     public Date getCreateDate();
     public Date getModificationDate();
 
+    void setStatus(String status);
+
+    void setProgress(Integer progress);
+
+    void setCreateDate(Date date);
+
+    void setModificationDate(Date date);
+
+    void setTask(String task);
 }

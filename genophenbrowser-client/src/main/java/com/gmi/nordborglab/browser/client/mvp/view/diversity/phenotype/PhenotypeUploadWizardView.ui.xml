@@ -51,6 +51,17 @@
         .phenotypeValueStatusIcon {
             margin-right:10px;
         }
+        .checkFileTableContainer {
+            border: 2px dashed #00848e;
+            height: 250px;
+        }
+        .multipleFilesPanel {
+            height: 250px;
+            border: 2px dashed #00848e;
+        }
+        .buttonWithMargin {
+            margin-left:10px !important;
+        }
     </ui:style>
     <g:LayoutPanel ui:field="uploadPhenotypePanel">
         <g:layer top="0" bottom="0">
@@ -58,16 +69,64 @@
                 <b:FluidRow >
                     <b:Column size="12">
                         <g:HTMLPanel>
+                            <h4>File-Format</h4>
+                            <p>The first line in the CSV can encode meta-information for the phenotype. It has to start with <b>#HEADER</b>. It is optional and can be omitted</p>
+                            <table class="table table-striped">
+                               <thead>
+                                   <th>
+                                       #HEADER,name=FT10,unitofmeasure=[days|count|g],protocol=Protocol of the phenotype,traitontology=TO:02312,environmentontology=EO:0123
+                                </th>
+                               </thead>
+                            </table>
+                            <p>
+                                The actual phenotype data has to be in the following format. At the minimum the <b>accessionid</b> column and one <b>value</b> column have to be provided.
+                            </p>
+                            <table class="table table-striped" >
+                                <thead>
+                                    <th>accessionid</th>
+                                    <th>MEAN</th>
+                                    <th>MEASURE</th>
+                                    <th>STD</th>
+                                    <th>MODE</th>
+                                    <th>COUNT</th>
+                                    <th>VARIANCE</th>
+                                    <th>MEDIAN</th>
+                                </thead>
+                                <tbody>
+                                    <td>6909</td><td>12.2</td><td>20.2</td><td>12.23</td><td>30</td><td>40</td><td>12.5</td><td>14.5</td>
+                                </tbody>
+                            </table>
                             <h4>Upload</h4>
-                            <p>Use on of the methods below to upload a phenotype to your experiment</p>
+                            <p>Use on of the methods below to upload a pvalue file:</p>
                         </g:HTMLPanel>
                     </b:Column>
                 </b:FluidRow>
                 <b:FluidRow>
                     <b:Column size="12">
                         <g:HTML ui:field="phenotypeFileDropPanel">
-                            <div class="{style.filedroppanel}">
+                            <div class="{style.filedroppanel}" ui:field="phenotypeFileDropText">
                                 <h1>Drag and drop phenotype files from your computer here</h1>
+                            </div>
+                            <div ui:field="multipleFilesPanel" style="display:none;" class="{style.multipleFilesPanel}">
+                                <h1 ui:field="multipleFileCheckText"></h1>
+                            </div>
+                            <div ui:field="checkFileTableContainer" style="display:none;" class="{style.checkFileTableContainer}">
+                                <h5 id="checkFileTableHeader" style="margin-left:5px;"></h5>
+                                <table class="table table-striped" ui:field="checkMetaTable">
+                                    <thead>
+                                        <th></th>
+                                    </thead>
+                                </table>
+                                <table class="table table-striped" ui:field="checkFileTable">
+                                    <thead>
+                                        <tr>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </g:HTML>
                     </b:Column>
@@ -76,25 +135,23 @@
                     <b:Column size="3">
                         <b:Controls>
                             <b:Form ui:field="phenotypeUploadForm">
-                                <b:Button type="SUCCESS" icon="PLUS" ui:field="phenotypeFileBrowseBtn">Browse files...</b:Button>
+                                <b:ButtonGroup>
+                                    <b:Button type="SUCCESS" icon="PLUS" ui:field="phenotypeFileBrowseBtn">Browse files...</b:Button>
+                                    <b:Button type="WARNING" icon="BAN_CIRCLE" ui:field="phenotypeFileUploadCancelBtn" visible="false" addStyleNames="{style.buttonWithMargin}">Cancel</b:Button>
+                                    <b:Button icon="UPLOAD" type="PRIMARY"  ui:field="phenotypeFileUploadStartBtn" visible="false" addStyleNames="{style.buttonWithMargin}">Start Upload</b:Button>
+                                </b:ButtonGroup>
+
                                 <b:FileUpload ui:field="phenotypeFileUploadBtn" addStyleNames="{style.fileinput}"></b:FileUpload>
                             </b:Form>
                         </b:Controls>
                     </b:Column>
                     <b:Column size="9">
                         <g:HTMLPanel ui:field="fileSelectPanel" addStyleNames="fade">
-                            <table class="{style.fileSelectTable} table table-striped">
+                            <div class="alert">
+                                <span id="checkStatusMsg" style="font-size:130%"></span>
+                            </div>
+                            <table class="{style.fileSelectTable} table table-striped" id="fileToUploadTable">
                                 <tbody>
-                                    <tr>
-                                        <td><span ui:field="phenotypeFileName"></span></td>
-                                        <td><span ui:field="phenotypeFileSize"></span></td>
-                                        <td><span ui:field="phenotypeFileExtCheck" /><span ui:field="phenotypeFileExt"></span></td>
-                                        <td><b:ProgressBar ui:field="fileUploadProgressBar" visible="false" addStyleNames="{style.progressbar}"></b:ProgressBar></td>
-                                        <td>
-                                            <b:Button type="WARNING" icon="BAN_CIRCLE" ui:field="phenotypeFileUploadCancelBtn" visible="false">Cancel</b:Button>
-                                            <b:Button addStyleNames="pull-right" icon="UPLOAD" type="PRIMARY"  ui:field="phenotypeFileUploadStartBtn" visible="false">Upload</b:Button>
-                                        </td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </g:HTMLPanel>

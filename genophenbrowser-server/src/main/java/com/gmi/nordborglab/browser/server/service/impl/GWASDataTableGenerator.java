@@ -9,8 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
 import com.google.visualization.datasource.datatable.TableCell;
 import com.google.visualization.datasource.datatable.TableRow;
+import com.google.visualization.datasource.datatable.value.BooleanValue;
+import com.google.visualization.datasource.datatable.value.TextValue;
+import com.google.visualization.datasource.datatable.value.Value;
 import org.springframework.stereotype.Component;
 
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
@@ -99,6 +103,10 @@ public class GWASDataTableGenerator implements DataTableGenerator {
         if (data.getGVEs() != null) {
             table.addColumn(new ColumnDescription("gve",ValueType.NUMBER,"GVE"));
         }
+        if (data.getSnpAnnotations() != null) {
+            table.addColumn(new ColumnDescription("annotation",ValueType.TEXT,"Annotation"));
+            table.addColumn(new ColumnDescription("inGene",ValueType.BOOLEAN,"inGene"));
+        }
 		
 		for (int i =0;i<data.getPositions().length;i++) {
             TableRow row = new TableRow();
@@ -112,6 +120,17 @@ public class GWASDataTableGenerator implements DataTableGenerator {
             }
             if (data.getGVEs() != null) {
                 row.addCell(new TableCell(round(data.getGVEs()[i])));
+            }
+            if (data.getSnpAnnotations() != null) {
+                SNPAnnot annot = data.getSnpAnnotations().get(i);
+                Value annotationValue = TextValue.getNullValue();
+
+                if (annot.getAnnotation() != null) {
+                    annotationValue = new TextValue(data.getSnpAnnotations().get(i).getAnnotation());
+                }
+                row.addCell(new TableCell(annotationValue));
+                Value inGeneValue = BooleanValue.getInstance(annot.isInGene());
+                row.addCell(new TableCell(inGeneValue));
             }
 			table.addRow(row);
 		}
