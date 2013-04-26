@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-
   <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
     <resetJUL>true</resetJUL>
   </contextListener>
@@ -14,11 +13,9 @@
     </encoder>
   </appender>
 
-  <!-- <logger name="org.springframework" level="info" />
-  <logger name="org.springframework.beans" level="debug" />
-  -->
 
-  <root level="warn">
+
+  <root level="INFO">
     <appender-ref ref="console" />
   </root>
 </configuration>
