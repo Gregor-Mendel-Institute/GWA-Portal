@@ -81,7 +81,7 @@ public class RestProviderController {
         }
         csvData = builder.toString();
         //todo mapping between alleleassay and genotype
-        StudyGWASData data = new StudyGWASData(csvData,study.getProtocol().getAnalysisMethod(),82);
+        StudyGWASData data = new StudyGWASData(csvData,study.getProtocol().getAnalysisMethod(),study.getAlleleAssay().getId().intValue());
         return data;
     }
 
