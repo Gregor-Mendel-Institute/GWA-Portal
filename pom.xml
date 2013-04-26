@@ -28,13 +28,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<mavenVersion>3.0</mavenVersion>
-		<guava.version>14.0</guava.version>
-		<gwt.version>2.5.1-rc1</gwt.version>
+		<guava.version>14.0.1</guava.version>
+		<gwt.version>2.5.1</gwt.version>
 		<junit.version>4.11</junit.version>
 		<mockito.version>1.9.5</mockito.version>
 		<hibernate-validator.version>4.2.0.Final</hibernate-validator.version>
-		<slf4j.version>1.7.2</slf4j.version>
-		<logback.version>1.0.9</logback.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<logback.version>1.0.11</logback.version>
 		<maven.clean.plugin>2.5</maven.clean.plugin>
 		<maven.deploy.plugin>2.7</maven.deploy.plugin>
 		<maven.install.plugin>2.4</maven.install.plugin>
@@ -70,7 +70,7 @@
 		<maven.assembly.plugin>2.3</maven.assembly.plugin>
 		<maven.antrun.plugin>1.7</maven.antrun.plugin>
 		<java.version>1.6</java.version>
-        <errai.version>2.2.0.Final</errai.version>
+        <errai.version>2.3.0.Final</errai.version>
 	</properties>
 
 	<repositories>
@@ -151,11 +151,6 @@
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
-				<version>${logback.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-core</artifactId>
 				<version>${logback.version}</version>
 			</dependency>
         </dependencies>
