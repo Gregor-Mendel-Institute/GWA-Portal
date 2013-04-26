@@ -83,7 +83,7 @@ public class UserNotification extends BaseEntity{
         return isRead;
     }
 
-    public void setIsRead(boolean isRead) {
+    public void setRead(boolean isRead) {
         this.isRead = isRead;
     }
 }

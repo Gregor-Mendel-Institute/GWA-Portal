@@ -3,22 +3,22 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.main;
 import com.gmi.nordborglab.browser.client.CurrentUser;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.LoadUserNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.MainUiHandlers;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UserNotificationProxy;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
-import com.gmi.nordborglab.browser.shared.service.HelperRequest;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
+import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyStandard;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
@@ -41,7 +41,7 @@ public class MainPagePresenter extends
         void showNotification(String caption, String message, int level,
 				int duration);
         void showLoadingIndicator(boolean show, String text);
-        void refreshNotifications(List<UserNotificationProxy> notifications);
+        void refreshNotifications(List<UserNotificationProxy> notifications, boolean isRead);
 
         void resetNotificationBubble();
     }
@@ -54,11 +54,13 @@ public class MainPagePresenter extends
 
     }
 	private final UserInfoPresenter userInfoPresenter;
+    private List<UserNotificationProxy> userNotificationList;
 
     private final AppUserFactory appUserFactory;
     protected final CurrentUser currentUser;
     private final PlaceManager placeManager;
     private final CustomRequestFactory rf;
+    private boolean isRead = false;
 
     public enum MENU {HOME,DIVERSITY,GERMPLASM,GENOTYPE;}
 	@Inject
@@ -100,11 +102,28 @@ public class MainPagePresenter extends
 				getView().showLoadingIndicator(event.getShow(),event.getText());
 			}
 		}));
+        registerHandler(getEventBus().addHandler(LoadUserNotificationEvent.TYPE, new LoadUserNotificationEvent.Handler() {
+            @Override
+            public void onLoaduserNotifications(LoadUserNotificationEvent event) {
+                refreshUserNotifications();
+            }
+        }));
        // registerHandler(getEventBus().addHandler(LoadNotificationEvent.getType(),new )
 		//setInSlot(TYPE_SetUserInfoContent, userInfoPresenter);
 	}
 
-	private MENU getParentMenuFromRequest(PlaceRequest request) {
+    private void refreshUserNotifications() {
+        rf.helperRequest().getUserNotifications(10).fire(new Receiver<List<UserNotificationProxy>>() {
+            @Override
+            public void onSuccess(List<UserNotificationProxy> response) {
+                isRead = false;
+                userNotificationList = response;
+                getView().refreshNotifications(response, isRead);
+            }
+        });
+    }
+
+    private MENU getParentMenuFromRequest(PlaceRequest request) {
 		MENU menu = MENU.HOME;
 		if (request.matchesNameToken(NameTokens.experiment)  ||
 			request.matchesNameToken(NameTokens.experiments) ||
@@ -133,10 +152,12 @@ public class MainPagePresenter extends
 	@Override
 	protected void onReset() {
 		super.onReset();
+        if (userNotificationList == null)
+            userNotificationList = currentUser.getAppData().getUserNotificationList();
 		getView().showUserInfo(currentUser.getAppUser());
 		PlaceRequest request = placeManager.getCurrentPlaceRequest();
 		getView().setActiveNavigationItem(getParentMenuFromRequest(request));
-        getView().refreshNotifications(currentUser.getAppData().getUserNotificationList());
+        getView().refreshNotifications(userNotificationList,isRead);
 	}
 
 	@Override
@@ -147,9 +168,9 @@ public class MainPagePresenter extends
 
     @Override
     public void onOpenAccountInfo() {
-        if (currentUser.getAppData().getUserNotificationList() == null)
+        if (userNotificationList== null)
             return;
-        if (Iterables.find(currentUser.getAppData().getUserNotificationList(), new Predicate<UserNotificationProxy>() {
+        if (Iterables.find(userNotificationList, new Predicate<UserNotificationProxy>() {
             @Override
             public boolean apply(@Nullable UserNotificationProxy input) {
                 return !input.isRead();
@@ -162,16 +183,9 @@ public class MainPagePresenter extends
 
     @Override
     public void onCloseAccountInfo() {
-        if (currentUser.getAppData().getUserNotificationList() == null)
+        if (userNotificationList == null)
             return;
-
-        HelperRequest ctx = rf.helperRequest();
-        for (UserNotificationProxy notification:currentUser.getAppData().getUserNotificationList()) {
-            if (!notification.isRead()) {
-                ctx.edit(notification);
-                notification.setIsRead(true);
-            }
-        }
-        getView().refreshNotifications(currentUser.getAppData().getUserNotificationList());
+        isRead = true;
+        getView().refreshNotifications(userNotificationList,isRead);
     }
 }

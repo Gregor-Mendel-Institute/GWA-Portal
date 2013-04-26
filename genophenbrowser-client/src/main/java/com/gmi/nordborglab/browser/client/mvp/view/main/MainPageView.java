@@ -8,6 +8,8 @@ import com.gmi.nordborglab.browser.client.ui.NotificationPopup;
 import com.gmi.nordborglab.browser.client.util.DateUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UserNotificationProxy;
+import com.google.gwt.animation.client.AnimationScheduler;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
@@ -36,6 +38,7 @@ import elemental.html.File;
 import java.util.List;
 
 import static com.google.gwt.query.client.GQuery.$;
+import static com.google.gwt.query.client.GQuery.Events;
 
 public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements MainPagePresenter.MyView {
 
@@ -79,7 +82,8 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
         @Override
         public boolean f(com.google.gwt.user.client.Event e) {
             updateCheckNotificationDate();
-            return true;
+            e.stopPropagation();
+            return false;
         }
     };
 
@@ -87,7 +91,8 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
         @Override
         public boolean f(com.google.gwt.user.client.Event e) {
             getUiHandlers().onCloseAccountInfo();
-            return true;
+            e.stopPropagation();
+            return false;
         }
     };
 
@@ -142,13 +147,14 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
 	@Override
 	public void showUserInfo(AppUserProxy user) {
 		this.user = user;
+        $(userLink).unbind("mouseenter mouseleave");
 		if (user == null) {
 			userLink.setHref(null);
             loginTextLb.setInnerText("Log In");
 			//userLink.setText("Log In");
             arrorIcon.getStyle().setDisplay(Display.NONE);
 			userInfoContainer.setVisible(false);
-            $(userLink).hover(null,null);
+
 		}
 		else {
 			userLink.setHref(null);
@@ -158,8 +164,8 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
 			userInfoContainer.setVisible(true);
 			userEmail.setText(user.getEmail());
 			userName.setText(user.getFirstname() + " " + user.getLastname());
-            $(userLink).hover(onHoverAccountHandler,onHoverEndAccountHandler);
-		}
+            $(userLink).mouseenter(onHoverAccountHandler).mouseleave(onHoverEndAccountHandler);
+        }
 	}
 
 	@Override
@@ -209,35 +215,38 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
 	}
 
     @Override
-    public void refreshNotifications(List<UserNotificationProxy> notifications) {
+    public void refreshNotifications(List<UserNotificationProxy> notifications, boolean isRead) {
         int newCount = 0;
         String  notificationTable  = "<tr class=\"success\" style=\"text-align:center;\"><td>No notifications!</td></tr>";
         clearNotificationTable();
-        if (notifications != null ){
+        if (notifications != null && notifications.size() > 0 ){
             StringBuilder builder = new StringBuilder();
             for (UserNotificationProxy notification: notifications) {
-                if (!notification.isRead()) {
+                if (!notification.isRead() && !isRead) {
                     newCount+=1;
                 }
-                builder.append(getHTMLFromNotification(notification));
+                builder.append(getHTMLFromNotification(notification,isRead));
             }
             notificationTable = builder.toString();
         }
         $("#notificationTable > tbody").append(notificationTable);
+        notifyBubble.removeClassName("wiggle");
         notifyBubble.getStyle().setDisplay(newCount > 0 ? Display.INLINE : Display.NONE);
-        notifyBubble.setInnerText(String.valueOf(newCount));
         if (newCount > 0) {
-            notifyBubble.addClassName("wiggle");
+            $(notifyBubble).animate(null,1,new Function() {
+                public void f(Element e) {
+                    e.addClassName("wiggle");
+                }
+            });
         }
-        else {
-            notifyBubble.removeClassName("wiggle");
-        }
+        notifyBubble.setInnerText(String.valueOf(newCount));
     }
 
     @Override
     public void resetNotificationBubble() {
         notifyBubble.setInnerText("0");
         notifyBubble.getStyle().setDisplay(Display.NONE);
+        notifyBubble.removeClassName("wiggle");
     }
 
     @UiHandler("userLink")
@@ -252,8 +261,9 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
         $("#notificationTable > tbody > tr").remove();
     }
 
-    private String getHTMLFromNotification(UserNotificationProxy notification) {
-        boolean isRead = notification.isRead();
+    private String getHTMLFromNotification(UserNotificationProxy notification, boolean isRead) {
+        if (!isRead )
+            isRead = notification.isRead();
         StringBuilder builder = new StringBuilder("<tr class=\""+(isRead ? "" : style.unread_notification())+"\">");
         String icon = getNotificationIconFromType(notification.getType());
         builder.append("<td><div class=\""+style.circle()+" "+(!isRead ? style.circle_red():"")+"\"></div></td>");
@@ -268,6 +278,9 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
         String icon = "&#8505;";
         if (type.equalsIgnoreCase("gwasjob")) {
             icon = "&#128248;";
+        }
+        else if (type.equalsIgnoreCase("permission")) {
+            icon="&#59196;";
         }
         return icon;
     }

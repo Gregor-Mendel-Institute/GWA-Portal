@@ -13,8 +13,15 @@ import javax.annotation.Nullable;
 import javax.annotation.Resource;
 
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
+import com.gmi.nordborglab.browser.server.errai.ClientComService;
+import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.*;
 import org.springframework.security.acls.model.AccessControlEntry;
@@ -44,6 +51,9 @@ public class PermissionServiceImpl implements PermissionService {
 	
 	@Resource 
 	protected UserRepository userRepository;
+
+    @Resource
+    protected UserNotificationRepository userNotificationRepository;
 	
 	
 	@Resource
@@ -99,13 +109,20 @@ public class PermissionServiceImpl implements PermissionService {
 
 
 	@Override
+    @Transactional(readOnly=false)
 	public CustomAcl updatePermissions(SecureEntity experiment, CustomAcl acl) {
-		updateGenericPermissions(experiment,acl);
+		List<UserNotification> notifications = updateGenericPermissions(experiment,acl);
+        for (UserNotification notification: notifications) {
+            userNotificationRepository.save(notification);
+            ClientComService.pushUserNotification(notification.getAppUser().getUsername(), notification.getAppUser().getEmail(), "permission", 0L);
+        }
 		return getGenericPermissions(experiment);
 	}
 	
-	@Transactional(readOnly=false)
-	protected void updateGenericPermissions(Object entity,CustomAcl acl) {
+
+	protected List<UserNotification> updateGenericPermissions(SecureEntity entity,CustomAcl acl) {
+        List<UserNotification> notifications = Lists.newArrayList();
+        AppUser owner = userRepository.findOne(SecurityUtil.getUsername());
 		ObjectIdentity oid = new ObjectIdentityImpl(entity);
 		AclImpl currentAcl = (AclImpl)aclService.readAclById(oid);
 		currentAcl.setEntriesInheriting(acl.getIsEntriesInheriting());
@@ -165,10 +182,36 @@ public class PermissionServiceImpl implements PermissionService {
 				}
 				sid = new GrantedAuthoritySid(newAce.getPrincipal().getId());
 			}
-			if (!isDuplicate)
+			if (!isDuplicate) {
+                //TODO add user notification
 				currentAcl.insertAce(currentAcl.getEntries().size(), new CustomPermission(newAce.getMask()), sid, true);
+                if (sid instanceof PrincipalSid) {
+                    AppUser user = userRepository.findOne(((PrincipalSid) sid).getPrincipal());
+                    UserNotification notification = new UserNotification();
+                    notification.setAppUser(user);
+                    notification.setType("permission");
+                    String link = "";
+                    String objType="";
+                    String objName = "";
+                    if (entity instanceof Experiment) {
+                        link = "#!study/"+entity.getId()+"/overview";
+                        objType = "study";
+                        objName=((Experiment)entity).getName();
+                    }
+                    else if (entity instanceof GWASResult) {
+                        link = "#!gwasViewer;id="+entity.getId();
+                        objType = "GWAS-result";
+                        objName=((GWASResult)entity).getName();
+                    }
+
+                    String notificationText = "<b>%s</b> shared a <a href=\"%s\">%s (%s)</a> with you";
+                    notification.setText(String.format(notificationText, owner.getFirstname() + " "+owner.getLastname(), link, objType, objName));
+                    notifications.add(notification);
+                }
+            }
 		}
 		aclService.updateAcl(currentAcl);
+        return notifications;
 	}
 
     @Override

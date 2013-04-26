@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,12 +52,35 @@ public class ClientComService implements MessageCallback {
         session2UserMap.put(username,sessionId);
     }
 
-    public static void pushBroadcastNotification()   {
+    public static void pushBroadcastNotification(String... usernames)   {
         try  {
-            MessageBuilder.createMessage("BroadcastReceiver")
-                    .signalling()
-                    .noErrorHandling()
-                    .sendNowWith(dispatcher);
+            List<String> sessionIds = Lists.newArrayList();
+            if (usernames != null && usernames.length > 0) {
+                for (int i =0;i<usernames.length;i++) {
+                    if (!session2UserMap.containsKey(usernames[i])) {
+                        sessionIds.addAll(session2UserMap.get(usernames[i]));
+                    }
+                }
+            }
+            if (sessionIds.size() == 0) {
+                MessageBuilder.createMessage("BroadcastReceiver")
+                        .signalling()
+                        .noErrorHandling()
+                        .sendNowWith(dispatcher);
+            }
+            else  {
+                for (String sessionId:sessionIds) {
+                    try {
+                        MessageBuilder.createMessage("BroadcastReceiver")
+                                .signalling()
+                                .with(MessageParts.SessionID,sessionId)
+                                .noErrorHandling()
+                                .sendNowWith(dispatcher);
+                    }
+                    catch (Exception e) {}
+                }
+            }
+
         }
         catch (Exception e ){
         }

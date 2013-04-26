@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadStudyEvent;
+import com.gmi.nordborglab.browser.client.events.LoadUserNotificationEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
 import com.gmi.nordborglab.browser.client.util.Base64Encoder;
 import com.gmi.nordborglab.browser.shared.proxy.*;
@@ -21,6 +22,7 @@ import org.jboss.errai.bus.client.framework.MessageBus;
 import org.jboss.errai.bus.client.framework.RequestDispatcher;
 
 import java.util.Date;
+import java.util.List;
 
 
 public class CurrentUser{
@@ -117,8 +119,7 @@ public class CurrentUser{
         messageBus.subscribe("BroadcastReceiver", new MessageCallback() {
             @Override
             public void callback(Message message) {
-                eventBus.fireEvent(new DisplayNotificationEvent("Broadcast message",null,true,DisplayNotificationEvent.LEVEL_MESSAGE,DisplayNotificationEvent.DURATION_NORMAL));
-                refreshNotifications();
+                eventBus.fireEvent(new LoadUserNotificationEvent());
             }
         });
 
@@ -135,18 +136,13 @@ public class CurrentUser{
                         }
                     });
                 }
-                refreshNotifications();
-
-            }
+                eventBus.fireEvent(new LoadUserNotificationEvent()); }
         });
         MessageBuilder.createMessage("ClientComService")
                 .noErrorHandling()
                 .sendNowWith(dispatcher);
     }
 
-    private void refreshNotifications() {
-
-    }
 
     public void updateNotificationCheckDate() {
         Date date = new Date();
