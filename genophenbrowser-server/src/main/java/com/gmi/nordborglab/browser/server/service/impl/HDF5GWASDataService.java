@@ -95,6 +95,7 @@ public class HDF5GWASDataService  implements GWASDataService {
 		GWASReader gwasReader = new HDF5GWASReader(GWAS_STUDY_FOLDER);
         GWASData gwasData = gwasReader.readAll(studyId+".hdf5",2500D);
         gwasData.sortByPosition();
+        gwasData = addAnnotation(gwasData);
 		return gwasData;
 	}
 
