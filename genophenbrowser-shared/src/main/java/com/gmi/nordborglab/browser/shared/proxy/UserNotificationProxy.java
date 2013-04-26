@@ -22,6 +22,5 @@ public interface UserNotificationProxy extends EntityProxy{
     public Date getCreateDate();
 
     boolean isRead();
-
-    void setIsRead(boolean isRead);
+    void setRead(boolean isRead);
 }
