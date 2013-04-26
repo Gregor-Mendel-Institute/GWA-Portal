@@ -208,15 +208,15 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
                 jobLabelType = LabelType.SUCCESS;
                 showProgress = false;
             }
-            else if (job.getStatus().equalsIgnoreCase("Queued")) {
-                jobLabelType = LabelType.IMPORTANT;
-                showProgress = true;
-                progresBarColor = ProgressBarBase.Color.DANGER;
-            }
-            else if (job.getStatus().equalsIgnoreCase("Running")) {
+            else if (job.getStatus().equalsIgnoreCase("Pending")) {
                 jobLabelType = LabelType.WARNING;
                 showProgress = true;
                 progresBarColor = ProgressBarBase.Color.WARNING;
+            }
+            else if (job.getStatus().equalsIgnoreCase("Running")) {
+                jobLabelType = LabelType.INFO;
+                showProgress = true;
+                progresBarColor = ProgressBarBase.Color.INFO;
             }
             else if (job.getStatus().equalsIgnoreCase("Error")) {
                 jobLabelType = LabelType.IMPORTANT;
