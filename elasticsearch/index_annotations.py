@@ -13,13 +13,12 @@ import StringIO
 import codecs
 
 
-elasticsearch_server = 'http://browser-testing.gmi.oeaw.ac.at:9200'
 index = 'annot_chr%s'
 
 bulk_index_count = 1000
 
-def _indexDocument(document,index,type,id,parent_id=None,routing=None):
-    url = '%s/%s/%s/%s' % (elasticsearch_server,index.lower(),type,id)
+def _indexDocument(elasticsearch_host,document,index,type,id,parent_id=None,routing=None):
+    url = '%s/%s/%s/%s' % (elasticsearch_host,index.lower(),type,id)
     if parent_id is not None:
         url=url+"?parent=%s" % parent_id
     elif routing is not None:
@@ -31,8 +30,8 @@ def _indexDocument(document,index,type,id,parent_id=None,routing=None):
     else: 
         raise Exception(str(req.text))
 
-def _updateDocument(document,index,type,id):
-    url = '%s/%s/%s/%s/_update' % (elasticsearch_server,index.lower(),type,id)
+def _updateDocument(elasticsearch_host,document,index,type,id):
+    url = '%s/%s/%s/%s/_update' % (elasticsearch_host,index.lower(),type,id)
     document_to_update = {'doc':document}
     req = requests.post(url,data=json.dumps(document_to_update,encoding='cp1252'))
     if req.status_code in [200,201,202]:
@@ -40,8 +39,8 @@ def _updateDocument(document,index,type,id):
     else: 
         raise Exception(str(req.text)) 
 
-def _bulkIndexDocuments(documents,type):
-    url = '%s/_bulk' % elasticsearch_server
+def _bulkIndexDocuments(elasticsearch_host,documents,type):
+    url = '%s/_bulk' % elasticsearch_host
     payload = ''
     for document in documents:
         bulk_index = index % document["chr"]
@@ -55,7 +54,7 @@ def _bulkIndexDocuments(documents,type):
     else:  
         raise Exception(str(req.text))
 
-def _indexGenes(gene_annotation_file):
+def _indexGenes(elasticsearch_host,gene_annotation_file):
     if gene_annotation_file is None:
         return
     genes = cPickle.load(open(gene_annotation_file,'r'))
@@ -63,7 +62,7 @@ def _indexGenes(gene_annotation_file):
     for id,gene in genes.iteritems():
         document = _getDocumentFromGene(gene)
         try:
-            retval = _indexDocument(document,index % document['chr'],'gene',document['name'])
+            retval = _indexDocument(elasticsearch_host,document,index % document['chr'],'gene',document['name'])
             if retval is None or retval['ok'] != True:
                 raise Exception(str(retval))    
         except Exception, err:
@@ -134,7 +133,7 @@ def _getIsoForms(gene):
             isoforms.append(isoform)
     return isoforms
 
-def _indexSNPS(snps_annotation_file):
+def _indexSNPS(elasticsearch_host,snps_annotation_file):
     if snps_annotation_file is None:
         return
     failed_snps = []
@@ -147,7 +146,7 @@ def _indexSNPS(snps_annotation_file):
                 document = _getDocumentFromSNP(row)
                 documents.append(document)
                 if len(documents) == bulk_index_count:
-                    status = _bulkIndexDocuments(documents,'snps') 
+                    status = _bulkIndexDocuments(elasticsearch_host,documents,'snps') 
                     documents = []
                     for document_status in status['items']: 
                         if document_status['index']['ok'] != True:
@@ -156,7 +155,7 @@ def _indexSNPS(snps_annotation_file):
         raise err
     return failed_snps
 
-def _indexOntologies(ontology_file):
+def _indexOntologies(elasticsearch_host,ontology_file):
     if ontology_file is None:
         return
     failed_ontologies = []
@@ -172,7 +171,7 @@ def _indexOntologies(ontology_file):
                         if key in updated_ontologies:
                             continue
                         chr = key[2].lower()
-                        retval = _updateDocument(document,index % chr,'gene',key)
+                        retval = _updateDocument(elasticsearch_host,document,index % chr,'gene',key)
                         updated_ontologies[key] = True
                         if retval is None or retval['ok'] != True:
                             raise Exception(str(retval))    
@@ -221,10 +220,10 @@ def _getDocumentFromSNP(snp):
     
 
 
-def indexData(gene_annotation_filename=None,snp_annotation_filename =None,ontology_filename=None):
-    failed_genes = _indexGenes(gene_annotation_filename)
-    failed_snps = _indexSNPS(snp_annotation_filename)
-    failed_ontologies= _indexOntologies(ontology_filename)
+def indexData(elasticsearch_host,gene_annotation_filename=None,snp_annotation_filename =None,ontology_filename=None):
+    failed_genes = _indexGenes(elasticsearch_host,gene_annotation_filename)
+    failed_snps = _indexSNPS(elasticsearch_host,snp_annotation_filename)
+    failed_ontologies= _indexOntologies(elasticsearch_host,ontology_filename)
     if (failed_genes is not None):
         print "======== FAILED GENES ==========="
         if len(failed_genes) == 0:
@@ -249,14 +248,22 @@ def indexData(gene_annotation_filename=None,snp_annotation_filename =None,ontolo
 
 
 if __name__ == '__main__':
-    usage = "usage: %prog [options] "
+    usage = """usage: %prog [options] 
+examples: 
+  python index_annotations.py -g /net/gmi.oeaw.ac.at/gwasapp/gwas-web/genome_annotation.pickled -e http://elasticsearch.gmi.oeaw.ac.at:9200 
+  python index_annotations.py -s ~/Projects/annotations/SNPs/chr1.annotation -e http://elasticsearch.gmi.oeaw.ac.at:9200
+  python index_annotations.py -o ~/Projects/annotations/SNPs/chr1.annotation -e http://elasticsearch.gmi.oeaw.ac.at:9200
+"""
     parser = OptionParser(usage=usage)
     parser.add_option("-g", "--gene_annotation_file", dest="gene_annotation_filename",help="the gene annotation filename ", metavar="FILE")
     parser.add_option("-s", "--snp_annotation_file", dest="snp_annotation_filename",help="the snp annotation filename", metavar="FILE")
     parser.add_option("-o", "--ontology_file",dest="ontology_filename",help="the ontology filename",metavar="FILE")
+    parser.add_option("-e", "--elasticsearch_host",dest="elasticsearch_host",help="the host where elasticsearch is running")
     (options, args) = parser.parse_args()
     if not options.gene_annotation_filename and not options.snp_annotation_filename and not options.ontology_filename:
          parser.error("you have to specify an snp_annotation_file or a gene_annotation_file")
+    elif not options.elasticsearch_host:
+         parser.error("you must specify the elasticsearch host")
     else:
-        indexData(options.gene_annotation_filename,options.snp_annotation_filename,options.ontology_filename)
+        indexData(options.elasticsearch_host,options.gene_annotation_filename,options.snp_annotation_filename,options.ontology_filename)
     parser.destroy()
