@@ -89,7 +89,7 @@ public interface MainResources extends ClientBundle{
     @Source("images/thaliana.png")
     ImageResource getThalianaImage();
 
-    @Source("images/thaliana.png")
+    @Source("images/lyrata.png")
     ImageResource getLyrataImage();
 
 	@Source("style.css")
