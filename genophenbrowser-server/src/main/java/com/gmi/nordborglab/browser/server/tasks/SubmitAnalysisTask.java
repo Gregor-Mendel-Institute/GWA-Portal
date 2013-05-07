@@ -10,6 +10,7 @@ import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.UserService;
 import com.google.common.collect.Lists;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -168,7 +169,7 @@ public class SubmitAnalysisTask {
         }
         catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
+            throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
     }
 
@@ -178,6 +179,8 @@ public class SubmitAnalysisTask {
             Map<String,Object> payload = om.readValue(message,Map.class);
             Long studyJobId = Long.parseLong(payload.get("studyjobid").toString());
             StudyJob studyJob = studyJobRepository.findOne(studyJobId);
+            if (studyJob == null)
+                return;
             String status = (String)payload.get("status");
             studyJob.setTaskid(null);
             if (!studyJob.getStatus().equalsIgnoreCase(status)) {
@@ -214,7 +217,7 @@ public class SubmitAnalysisTask {
         }
         catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
+            throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
     }
 
