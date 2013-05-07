@@ -301,7 +301,7 @@
 							targetHistoryToken="{nameTokens.getHome}">Genotype</g:InlineHyperlink>
 					</li>
 					<li class="{style.userItem}" id="userMenuItem">
-						<g:Anchor ui:field="userLink" addStyleNames="{style.login_menu}">
+						<g:Anchor ui:field="userLink" addStyleNames="{style.login_menu}" href="">
                             <span style="position: absolute;left: 15px;">
                                 <span class="{style.login_icon}">&#128100;</span>
                                 <span class="{style.notify_bubble} animated" ui:field="notifyBubble"></span>

@@ -149,7 +149,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
 		this.user = user;
         $(userLink).unbind("mouseenter mouseleave");
 		if (user == null) {
-			userLink.setHref(null);
+			userLink.setHref("");
             loginTextLb.setInnerText("Log In");
 			//userLink.setText("Log In");
             arrorIcon.getStyle().setDisplay(Display.NONE);
@@ -157,7 +157,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
 
 		}
 		else {
-			userLink.setHref(null);
+			userLink.setHref("");
 			//userLink.setHTML("My Account<span class=\""+resources.style().arrow_down()+"\" />");
             loginTextLb.setInnerText("My Account");
             arrorIcon.getStyle().setDisplay(Display.INLINE);
@@ -255,6 +255,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
 			PlaceRequest request = placeManager.getCurrentPlaceRequest();
 			Window.Location.assign("login?url=" +placeManager.buildHistoryToken(request));
 		}
+        e.preventDefault();
 	}
 
     private void clearNotificationTable() {
