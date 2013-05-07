@@ -17,6 +17,5 @@ import java.util.List;
  */
 public interface GWASResultRepository extends JpaRepository<GWASResult,Long> {
 
-    @Query("SELECT g FROM GWASResult g WHERE g.appUser.username LIKE :username")
-    List<GWASResult> findAllByUsername(@Param("username") String username);
+    List<GWASResult> findAllByAppUserUsername(String username);
 }

@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
-import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.data.GWASReader;
 import com.gmi.nordborglab.browser.server.data.csv.CSVGWASReader;
@@ -15,7 +14,6 @@ import com.gmi.nordborglab.browser.server.repository.GWASResultRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
-import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
@@ -154,7 +152,7 @@ public class HDF5GWASDataService  implements GWASDataService {
 
     @Override
     public List<GWASResult> findAllGWASResults() {
-        //List<GWASResult> gwasResults = gwasResultRepository.findAllByUsername(SecurityUtil.getUsername());
+        //List<GWASResult> gwasResults = gwasResultRepository.findAllByAppUserUsername(SecurityUtil.getUsername());
         List<GWASResult> gwasResultsToFilter = gwasResultRepository.findAll();
         final ImmutableList<Permission> permissions = ImmutableList.of(CustomPermission.READ, CustomPermission.EDIT, CustomPermission.ADMINISTRATION);
         Sid sid = new PrincipalSid(SecurityUtil.getAuthentication());
@@ -206,7 +204,7 @@ public class HDF5GWASDataService  implements GWASDataService {
             file.delete();
         }
         gwasResultRepository.delete(gwasResult);
-        List<GWASResult> gwasResults = gwasResultRepository.findAllByUsername(SecurityUtil.getUsername());
+        List<GWASResult> gwasResults = gwasResultRepository.findAllByAppUserUsername(SecurityUtil.getUsername());
         return gwasResults;
     }
 

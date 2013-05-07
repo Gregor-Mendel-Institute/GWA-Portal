@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.server.repository;
 
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
-import com.gmi.nordborglab.browser.server.domain.germplasm.Generation;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import org.junit.Test;
@@ -64,7 +63,7 @@ public class GWASResultRepositoryTest extends BaseTest {
 
     @Test
     public void testFindAllByUsername() {
-        List<GWASResult> gwasResults = repository.findAllByUsername("john");
+        List<GWASResult> gwasResults = repository.findAllByAppUserUsername("john");
         assertNotNull(gwasResults);
         assertEquals(1,gwasResults.size());
         assertEquals("john",gwasResults.get(0).getAppUser().getUsername());
