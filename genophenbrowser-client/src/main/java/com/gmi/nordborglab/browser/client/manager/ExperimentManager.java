@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.manager;
 
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PublicationPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
@@ -37,5 +38,9 @@ public class ExperimentManager extends RequestFactoryManager<ExperimentRequest>{
 
     public void findAllWithAccess(Receiver<List<ExperimentProxy>> receiver, Integer permission) {
         rf.experimentRequest().findAllByAcl(permission).fire(receiver);
+    }
+
+    public void findAllPublications(Receiver<PublicationPageProxy> receiver,int start, int size) {
+        rf.experimentRequest().getPublications(start,size).fire(receiver);
     }
 }

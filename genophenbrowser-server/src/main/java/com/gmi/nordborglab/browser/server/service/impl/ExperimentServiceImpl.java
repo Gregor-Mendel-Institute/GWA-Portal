@@ -1,13 +1,16 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import com.gmi.nordborglab.browser.server.domain.pages.PublicationPage;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
+import com.google.common.collect.Sets;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -129,6 +132,27 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
             return experiment;
         experiment.addPublication(existing);
         return experiment;
+    }
+
+    @Override
+    public PublicationPage getPublications(int start, int size) {
+        PageRequest pageRequest = new PageRequest(start/size, size);
+        Page<Publication> page = publicationRepository.findAll(pageRequest);
+        return new PublicationPage(page.getContent(), pageRequest,
+                page.getTotalElements());
+    }
+
+    @Override
+    public Publication findOnePublication(Long id) {
+        return publicationRepository.findOne(id);
+    }
+
+    @Override
+    public Set<Experiment> findExperimentsByPublication(Long id) {
+        Publication publication = publicationRepository.findOne(id);
+        // INFO neccessary because umodifiable list
+        Set<Experiment> experiments = Sets.newCopyOnWriteArraySet(publication.getExperiments());
+        return experiments;
     }
 
     private Experiment setPermissionAndOwner(Experiment experiment) {

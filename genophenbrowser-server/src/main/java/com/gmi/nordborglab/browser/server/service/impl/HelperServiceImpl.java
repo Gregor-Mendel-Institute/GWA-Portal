@@ -9,6 +9,7 @@ import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.cdv.Transformation;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TransformationData;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.math.Transformations;
 import com.gmi.nordborglab.browser.server.repository.*;
@@ -127,6 +128,9 @@ public class HelperServiceImpl implements HelperService {
 	
 	@Resource
 	private StudyRepository studyRepository;
+
+    @Resource
+    private PublicationRepository publicationRepository;
 	
 
 	@Override
@@ -179,6 +183,10 @@ public class HelperServiceImpl implements HelperService {
 			breadcrumbs.add(new BreadcrumbItem(passport.getId(),passport.getAccename(),"passport"));
 			breadcrumbs.add(new BreadcrumbItem(stock.getId(),stock.getId().toString(),"stock"));
 		}
+        else if (object.equalsIgnoreCase("publication")) {
+            Publication  publication = publicationRepository.findOne(id);
+            breadcrumbs.add(new BreadcrumbItem(publication.getId(),publication.getFirstAuthor()+" - " + publication.getTitle(),"publication"));
+        }
 		return breadcrumbs;
 	}
 

@@ -12,7 +12,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.pages.PublicationPage;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
+import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.google.common.collect.Iterables;
 import org.junit.After;
@@ -52,6 +54,9 @@ public class ExperimentServiceTest extends BaseTest {
 	
 	@Resource 
 	private ExperimentRepository repository;
+
+    @Resource
+    private PublicationRepository publicationRepository;
 	
 	@Resource
 	private MutableAclService aclService;
@@ -217,7 +222,16 @@ public class ExperimentServiceTest extends BaseTest {
         assertEquals("TEST",pubToCheck.getDOI());
         assertEquals("TEST",pubToCheck.getFirstAuthor());
 	}
-	
+
+    @Test
+    public void testgetPublications() {
+        SecurityUtils.setAnonymousUser();
+        long count = publicationRepository.count();
+        PublicationPage page = service.getPublications(1,5);
+        assertNotNull(page);
+        assertEquals(5, page.getContent().size());
+        assertEquals(count, page.getTotalElements());
+    }
 
 	private void createTestUser(String role) {
 		AppUser appUser = new AppUser("test@test.at");
@@ -235,4 +249,5 @@ public class ExperimentServiceTest extends BaseTest {
 		userRepository.save(appUser);
 		SecurityUtils.makeActiveUser(SecurityUtils.TEST_USERNAME, SecurityUtils.TEST_PASSWORD,grantedAuthorities);
 	}
+
 }

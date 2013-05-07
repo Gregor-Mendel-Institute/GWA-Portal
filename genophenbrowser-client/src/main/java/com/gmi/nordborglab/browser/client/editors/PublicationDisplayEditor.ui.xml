@@ -1,0 +1,78 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:style>
+        .container {
+            float: left;
+            max-width: 800px;
+            min-width: 191px;
+            white-space: normal;
+            width: 100%;
+            word-wrap: break-word;
+        }
+        .row {
+            margin: 0;
+            padding: 10px 0;
+            text-align: left;
+        }
+        .label {
+            font-size: 15px;
+            font-weight: normal;
+            line-height: 1.2em;
+            margin-bottom: 0;
+            text-align: right;
+            vertical-align: top;
+            width: 90px;
+            display:inline-block;
+        }
+
+
+        .value {
+            padding: 0 0 0 13px;
+            vertical-align: top;
+            line-height: 1.39em;
+            display:inline-block;
+            width:280px;
+        }
+    </ui:style>
+    <g:HTMLPanel>
+        <div class="{style.container}">
+            <div class="{style.row}">
+                <div class="{style.label}">Author</div>
+                <g:Label ui:field="firstAuthor" addStyleNames="{style.value}"/>
+            </div>
+            <div class="{style.row}">
+                <div class="{style.label}">Title</div>
+                <g:Label ui:field="title" addStyleNames="{style.value}"/>
+            </div>
+            <div class="{style.row}">
+                <div class="{style.label}">Date</div>
+                <g:DateLabel ui:field="pubDate" addStyleNames="{style.value}"/>
+            </div>
+            <div class="{style.row}">
+                <div class="{style.label}">Journal</div>
+                <g:Label ui:field="journal" addStyleNames="{style.value}"/>
+            </div>
+            <div class="{style.row}">
+                <div class="{style.label}">Issue:</div>
+                <g:Label ui:field="issue" addStyleNames="{style.value}"/>
+            </div>
+            <div class="{style.row}">
+                <div class="{style.label}">Volume:</div>
+                <g:Label ui:field="volume" addStyleNames="{style.value}"/>
+            </div>
+            <div class="{style.row}">
+                <div class="{style.label}">Page:</div>
+                <g:Label ui:field="page" addStyleNames="{style.value}"/>
+            </div>
+            <div class="{style.row}">
+                <div class="{style.label}">DOI:</div>
+                <g:Label ui:field="DOI" addStyleNames="{style.value}"/>
+            </div>
+            <div class="{style.row}">
+                <div class="{style.label}">URL:</div>
+                <g:Label ui:field="URL" addStyleNames="{style.value}"/>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder> 

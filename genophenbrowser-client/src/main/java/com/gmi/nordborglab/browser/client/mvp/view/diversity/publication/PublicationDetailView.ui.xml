@@ -1,0 +1,162 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
+             ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+             ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+             ui:generateLocales='default'>
+
+    <ui:with field="mainRes"
+             type="com.gmi.nordborglab.browser.client.resources.MainResources" />
+
+
+    <ui:style>
+        .container {
+            padding: 19px 19px;
+        }
+
+        .actionRow {
+            float: right;
+        }
+
+        .subheader {
+            border-bottom: 1px solid #cdcdcd;
+            margin-bottom: 5px;
+        }
+
+        .subheader h1 {
+            font-size: 15px;
+            line-height: 34px;
+            margin-bottom: 0px;
+            color: #808080;
+        }
+
+        .subheader_container {
+            margin-left: 10px;
+            margin-top: 10px;
+        }
+
+        .progressBar {
+            margin-bottom: 0px !important;
+            display: inline-block;
+            width: 100px;
+            margin-left: 25px;
+        }
+
+        .job_table {
+
+        }
+
+        .job_table td {
+            padding: 3px 0;
+            vertical-align: middle;
+        }
+
+        .job_action_container {
+            float: right;
+            width: auto;
+            margin-top: 10px;
+        }
+
+        .job_actions {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            border: 1px solid #ccc;
+            color: #808185;
+            display: block;
+            float: right;
+            font-size: 13px;
+            margin-right: 5px;
+            padding: 2px 4px 4px;
+            text-decoration: none;
+        }
+
+        .actionDropDown {
+
+        }
+
+        .actionDropDown >  a {
+            margin-top: 0px !important;
+            margin-bottom: 0px !important;
+        }
+
+        .actionDropDownContainer {
+            margin-bottom: 0px;
+            margin-left: 150px;
+        }
+
+        .statusLabel {
+            margin-top:6px;
+            float:left;
+        }
+        @external gwt-TabLayoutPanelTab;
+        .gwt-TabLayoutPanelTab {
+            color: #06C !important;
+            background: white !important;
+        }
+
+        .gwt-TabLayoutPanelTab:hover {
+            color: #ffffff !important;
+            background-color: #0088cc !important;
+        }
+
+        .gwt-TabLayoutPanelTab-selected {
+            color: #555 !important;
+            background-color: white;
+            font-weight: normal !important;
+        }
+
+        @external .gwt-TabLayoutPanelTabs;
+        .gwt-TabLayoutPanelTabs {
+            background: white !important;
+            border-bottom: 1px solid #DDD !important;
+        }
+
+        @external .gwt-TabLayoutPanelTab-selected;
+        .gwt-TabLayoutPanelTab-selected {
+            margin-bottom: -1px;
+            color: #555 !important;
+            background-color: white;
+            border: 1px solid #DDD;
+            border-bottom-color: transparent;
+        }
+
+    </ui:style>
+
+                <g:LayoutPanel>
+                    <g:layer left="0" top="0" bottom="0" width="30em">
+                        <g:LayoutPanel>
+                            <g:layer top="5px" height="40px" left="0" right="0">
+                                <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                                    <div class="{style.actionRow}">
+                                    </div>
+                                </g:HTMLPanel>
+                            </g:layer>
+                            <g:layer top="47px" bottom="0" left="0" right="0">
+                                <g:FlowPanel>
+                                   <ed:PublicationDisplayEditor ui:field="publicationDisplayEditor" />
+                                </g:FlowPanel>
+                            </g:layer>
+                        </g:LayoutPanel>
+                    </g:layer>
+                    <g:layer left="31em" top="0" bottom="0" right="0">
+                        <g:TabLayoutPanel barUnit="PX" barHeight="38"  animationDuration="500">
+                        <g:tab>
+                            <g:header>Experiments</g:header>
+                            <g:LayoutPanel>
+                                <g:layer top="0" left="0" right="0" bottom="30px">
+                                    <c:DataGrid ui:field="experimentDataGrid" />
+                                </g:layer>
+                                <g:layer bottom="0" left="0" right="0" height="30px">
+                                    <gui:CustomPager ui:field="experimentPager" />
+                                </g:layer>
+                            </g:LayoutPanel>
+                        </g:tab>
+                    </g:TabLayoutPanel>
+                    </g:layer>
+                </g:LayoutPanel>
+
+</ui:UiBinder>

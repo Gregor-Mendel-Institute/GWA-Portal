@@ -8,11 +8,13 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.Ex
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.PhenotypeListPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.OntologyOverviewPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.TraitOntologyPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.ObsUnitPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.StudyListPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.PublicationDetailPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.PublicationOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASViewerPresenter;
@@ -74,7 +76,9 @@ public interface ClientGinjector extends Ginjector{
 	AsyncProvider<StockDetailPresenter> getStockDetailPresenter();
 	AsyncProvider<PhenotypeOverviewPresenter> getPhenotypeOverviewPresenter();
 	AsyncProvider<StudyOverviewPresenter> getStudyOverviewPresenter();
-	AsyncProvider<OntologyOverviewPresenter> getOntologyOverviewPresenter();
+	AsyncProvider<TraitOntologyPresenter> getOntologyOverviewPresenter();
     AsyncProvider<BasicStudyWizardPresenter> getBasicStudyWizardPresenter();
     AsyncProvider<GWASViewerPresenter> getGWASViewerPresenter();
+    AsyncProvider<PublicationOverviewPresenter> getPublicationOverviewPresenter();
+    AsyncProvider<PublicationDetailPresenter> getPublicationDetailPresenter();
 }
