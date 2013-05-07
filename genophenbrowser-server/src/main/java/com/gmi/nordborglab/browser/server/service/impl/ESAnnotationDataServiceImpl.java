@@ -65,7 +65,7 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService{
             try {
                 itemResponse = iterator.next();
                 snpAnnot.setAnnotation(itemResponse.getResponse().getFields().get("annotation").getValue().toString());
-                snpAnnot.setInGene((Integer)itemResponse.getResponse().getFields().get("inGene").getValue()==1);
+                snpAnnot.setInGene((Boolean)itemResponse.getResponse().getFields().get("inGene").getValue());
             }
             catch (Exception e) {
                 String test="test";

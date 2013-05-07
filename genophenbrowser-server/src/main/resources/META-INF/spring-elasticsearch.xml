@@ -15,9 +15,10 @@
      class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
      <property name="esNodes">
        <list>
-         <value>browser-testing.gmi.oeaw.ac.at:9300</value>
+         <value>${ELASTICSEARCH.host}</value>
        </list>
      </property>
+      <property name="settingsFile" value="META-INF/es_${spring.profiles.active}.properties" />
 </bean>
 
 </beans>
