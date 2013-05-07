@@ -33,11 +33,6 @@
 		<intercept-url pattern="/admin" access="hasRole('ROLE_ADMIN')"/>
 		<form-login authentication-failure-url="/login?login_error=true"
 		default-target-url="/" />
-		
-		<!-- <form-login login-page="/login" 
-			authentication-failure-url="/login/failure" 
-			default-target-url="/"/>
-		 -->
 		<openid-login login-page="/login" user-service-ref="openIdUserService"
 	               authentication-failure-url="/login?login_error=true"
 	               default-target-url="/" >
