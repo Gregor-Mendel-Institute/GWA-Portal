@@ -24,8 +24,10 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.Ex
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.PhenotypeListPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.OntologyOverviewPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.TraitOntologyPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.*;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.PublicationDetailPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.PublicationOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASPlotPresenterWidget;
@@ -50,7 +52,10 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.Experim
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentsOverviewTabView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentsOverviewView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.PhenotypeListView;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.ontology.TraitOntologyView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.*;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.publication.PublicationDetailView;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.publication.PublicationOverviewView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyGWASPlotView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyTabView;
@@ -91,7 +96,6 @@ import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDe
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.stock.StockDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.main.SearchView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyOverviewView;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.ontology.OntologyOverviewView;
 import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.framework.MessageBus;
 import org.jboss.errai.bus.client.framework.RequestDispatcher;
@@ -250,10 +254,18 @@ public class ClientModule extends AbstractPresenterModule {
 				StudyOverviewPresenter.MyView.class, StudyOverviewView.class,
 				StudyOverviewPresenter.MyProxy.class);
 
-		bindPresenter(OntologyOverviewPresenter.class,
-				OntologyOverviewPresenter.MyView.class,
-				OntologyOverviewView.class,
-				OntologyOverviewPresenter.MyProxy.class);
+		bindPresenter(TraitOntologyPresenter.class,
+				TraitOntologyPresenter.MyView.class,
+				TraitOntologyView.class,
+				TraitOntologyPresenter.MyProxy.class);
+
+        bindPresenter(PublicationOverviewPresenter.class,
+                PublicationOverviewPresenter.MyView.class, PublicationOverviewView.class,
+                PublicationOverviewPresenter.MyProxy.class);
+
+        bindPresenter(PublicationDetailPresenter.class,
+                PublicationDetailPresenter.MyView.class, PublicationDetailView.class,
+                PublicationDetailPresenter.MyProxy.class);
 
         bindPresenter(GWASViewerPresenter.class,GWASViewerPresenter.MyView.class, GWASViewerView.class,GWASViewerPresenter.MyProxy.class);
         bindPresenterWidget(GWASPlotPresenterWidget.class,GWASPlotPresenterWidget.MyView.class,GWASPlotView.class);

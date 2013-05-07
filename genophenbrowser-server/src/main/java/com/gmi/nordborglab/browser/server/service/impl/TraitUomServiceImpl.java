@@ -16,6 +16,9 @@ import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.service.HelperService;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.jpaontology.model.Term;
+import com.gmi.nordborglab.jpaontology.model.Term2Term;
 import com.google.common.collect.*;
 import org.elasticsearch.client.Client;
 import org.springframework.data.domain.PageRequest;
@@ -368,7 +371,46 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         return traitUom.getId();
     }
 
+    @Override
+    public List<TraitUom> findAllByOntology(String type, String acc, boolean checkChilds) {
+        List<TraitUom> traits = null;
+        List<String> ontologyTerms = getOntologyList(acc,checkChilds);
+        if ("trait".equalsIgnoreCase(type)) {
+             traits = traitUomRepository.findAllByToAccessionIn(ontologyTerms);
+        }
+        else if ("environment".equalsIgnoreCase(type)) {
+            traits = traitUomRepository.findAllByEoAccessionIn(ontologyTerms);
+        }
+        else {
+            throw new RuntimeException(type + " Type unknown");
+        }
+        for (TraitUom trait:traits) {
+            if (trait.getToAccession() != null) {
+                trait.setTraitOntologyTerm(termRepository.findByAcc(trait.getToAccession()));
+            }
+        }
+        return traits;
+    }
 
+
+    private List<String> getOntologyList(String acc,boolean checkChilds) {
+        List<String> list = Lists.newArrayList(acc);
+        if (checkChilds) {
+            Term term = termRepository.findByAcc(acc);
+            addChildOntologies(term,list);
+        }
+        return list;
+    }
+
+    private void addChildOntologies(Term term,List<String> list) {
+        if (term == null) {
+            return;
+        }
+        list.add(term.getAcc());
+        for (Term2Term term2Term:term.getChilds()) {
+            addChildOntologies(term2Term.getChild(),list);
+        }
+    }
 
     private List<StatisticType> getStatisticTypesFromString(List<String> valueHeader) {
         //TODO cache it

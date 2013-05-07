@@ -24,4 +24,6 @@ public interface PhenotypeRequest extends RequestContext{
     Request<List<PhenotypeProxy>> findPhenotypesByExperimentAndAcl(Long experimentId, int permission);
 
     Request<Long> savePhenotypeUploadData(Long experimentId,PhenotypeUploadDataProxy data);
+
+    Request<List<PhenotypeProxy>> findAllByOntology(String type, String acc,boolean checkChilds);
 }

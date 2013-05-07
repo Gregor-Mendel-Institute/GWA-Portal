@@ -3,6 +3,8 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity;
 import java.util.List;
 
 import com.gmi.nordborglab.browser.client.events.GWASResultLoadedEvent;
+import com.gmi.nordborglab.browser.client.events.OntologyLoadedEvent;
+import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.gwtplatform.mvp.client.View;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
@@ -85,6 +87,22 @@ public class DiversityPresenter extends
                 }
             }
         }));
+        registerHandler(OntologyLoadedEvent.register(getEventBus(), new OntologyLoadedEvent.Handler() {
+            @Override
+            public void onOntologyLoaded(OntologyLoadedEvent event) {
+                if (placeManager.getCurrentPlaceRequest().matchesNameToken(NameTokens.traitontology)) {
+                    getView().clearBreadcrumbs(1);
+                    TermProxy term = event.getTerm();
+                    PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.traitontology);
+                    String subTitle = "Trait";
+                    if (term.getTermType().equalsIgnoreCase("plant_trait_ontology")) {
+                        request = request.with("ontology","trait");
+                    }
+                    getView().setBreadcrumbs(0, subTitle, placeManager.buildHistoryToken(request));
+                    getView().setBreadcrumbs(1, term.getName()+" ("+term.getAcc()+")",placeManager.buildHistoryToken(request.with("id",term.getAcc())));
+                }
+            }
+        }));
 	}
 	
 	@Override 
@@ -139,7 +157,7 @@ public class DiversityPresenter extends
 			subItem = null;
 			getView().setActiveMenuItem(MENU_ITEM.STUDY, request);
 		}
-		else if (request.matchesNameToken(NameTokens.ontologyoverview)) {
+		else if (request.matchesNameToken(NameTokens.traitontology)) {
 			getView().clearBreadcrumbs(0);
 			type="ontology";
 			title="Ontologies";
@@ -163,6 +181,19 @@ public class DiversityPresenter extends
             getView().setActiveMenuItem(MENU_ITEM.TOOLS,request);
             getView().clearBreadcrumbs(0);
         }
+        else if (request.matchesNameToken(NameTokens.publications)) {
+            getView().clearBreadcrumbs(0);
+            title = "Publications";
+            type="publications";
+            subItem = null;
+            getView().setActiveMenuItem(MENU_ITEM.PUBLICATION,request);
+        }
+        else if (request.matchesNameToken((NameTokens.publication))) {
+            title = "Publication";
+            type="publication";
+            subItem = null;
+            getView().setActiveMenuItem(MENU_ITEM.PUBLICATION,request);
+        }
 		getView().setTitle(title);
 		Long id = null;
 		try {
@@ -178,7 +209,8 @@ public class DiversityPresenter extends
 			@Override
 			public void onSuccess(List<BreadcrumbItemProxy> response) {
 				getView().clearBreadcrumbs(response.size());
-				getView().setBreadcrumbs(0, "ALL", placeManager.buildHistoryToken(new PlaceRequest(NameTokens.experiments)));
+				//TODO publications doen't work this way.
+                getView().setBreadcrumbs(0, "ALL", placeManager.buildHistoryToken(new PlaceRequest(NameTokens.experiments)));
 				for (int i=0;i<response.size();i++) {
 					BreadcrumbItemProxy item = response.get(i);
 					String nameToken = null;
@@ -190,6 +222,8 @@ public class DiversityPresenter extends
 						nameToken = NameTokens.study ;
 					else if (item.getType().equals("studywizard")) 
 						nameToken = NameTokens.studywizard;
+                    else if (item.getType().equals("publication"))
+                        nameToken = NameTokens.publication;
 					PlaceRequest request = new ParameterizedPlaceRequest(nameToken).with("id", item.getId().toString());
 					getView().setBreadcrumbs(i+1, item.getText(),placeManager.buildHistoryToken(request));
 				}

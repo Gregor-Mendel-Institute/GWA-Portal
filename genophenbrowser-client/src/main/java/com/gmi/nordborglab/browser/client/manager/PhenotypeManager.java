@@ -53,4 +53,8 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
         PhenotypeRequest ctx = rf.phenotypeRequest();
         ctx.savePhenotypeUploadData(experimentId,data).fire(receiver);
     }
+
+    public void findAllByOntology(Receiver<List<PhenotypeProxy>> receiver,String type, String acc, boolean checkChilds) {
+        getContext().findAllByOntology(type,acc,checkChilds).with("traitOntologyTerm","experiment").fire(receiver);
+    }
 }

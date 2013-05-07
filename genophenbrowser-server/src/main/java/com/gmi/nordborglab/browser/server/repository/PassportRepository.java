@@ -12,10 +12,10 @@ import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
 
 public interface PassportRepository extends JpaRepository<Passport, Long>, QueryDslPredicateExecutor<Passport>  {
 
-	@Query("SELECT uom.to_accession,COUNT(p) from Passport p JOIN p.stocks as s JOIN s.obsUnits as o JOIN o.traits as t  JOIN t.traitUom as uom  WHERE p.id = :passportId  GROUP BY uom.to_accession ORDER BY COUNT(p)")
+	@Query("SELECT uom.toAccession,COUNT(p) from Passport p JOIN p.stocks as s JOIN s.obsUnits as o JOIN o.traits as t  JOIN t.traitUom as uom  WHERE p.id = :passportId  GROUP BY uom.toAccession ORDER BY COUNT(p)")
 	List<Object[]> countPassportsPerTraitOntology(@Param("passportId") Long passportId);
 	
-	@Query("SELECT uom.eo_accession,COUNT(p) from Passport p JOIN p.stocks as s JOIN s.obsUnits as o JOIN o.traits as t  JOIN t.traitUom as uom  WHERE p.id = :passportId  GROUP BY uom.eo_accession ORDER BY COUNT(p)")
+	@Query("SELECT uom.eoAccession,COUNT(p) from Passport p JOIN p.stocks as s JOIN s.obsUnits as o JOIN o.traits as t  JOIN t.traitUom as uom  WHERE p.id = :passportId  GROUP BY uom.eoAccession ORDER BY COUNT(p)")
 	List<Object[]> countPassportsPerEnvironmentOntology(@Param("passportId") Long passportId);
 
 	@Query("SELECT st,COUNT(p) from Passport p JOIN p.stocks as s JOIN s.obsUnits as o JOIN o.traits as t  JOIN t.statisticType as st WHERE p.id = :passportId  GROUP BY st.id ORDER BY COUNT(p)")

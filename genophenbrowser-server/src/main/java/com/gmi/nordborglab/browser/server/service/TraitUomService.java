@@ -3,7 +3,9 @@ package com.gmi.nordborglab.browser.server.service;
 import java.util.List;
 
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage;
@@ -27,4 +29,7 @@ public interface TraitUomService {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     Long savePhenotypeUploadData(Long experimentId,PhenotypeUploadData data);
+
+    @PostFilter("hasPermission(filterObject,'READ')")
+    List<TraitUom> findAllByOntology(String type,String acc,boolean checkChilds);
 }

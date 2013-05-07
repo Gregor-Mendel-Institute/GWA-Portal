@@ -1,0 +1,97 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'
+    xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+    xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
+    xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+	ui:generateLocales='default'>
+
+    <ui:with field="mainRes"
+             type="com.gmi.nordborglab.browser.client.resources.MainResources" />
+
+    <ui:style>
+        @external gwt-TabLayoutPanelTab;
+        .gwt-TabLayoutPanelTab {
+            color: #06C !important;
+            background: white !important;
+        }
+
+        .gwt-TabLayoutPanelTab:hover {
+            color: #ffffff !important;
+            background-color: #0088cc !important;
+        }
+
+        .gwt-TabLayoutPanelTab-selected {
+            color: #555 !important;
+            background-color: white;
+            font-weight: normal !important;
+        }
+
+        @external .gwt-TabLayoutPanelTabs;
+        .gwt-TabLayoutPanelTabs {
+            background: white !important;
+            border-bottom: 1px solid #DDD !important;
+        }
+
+        @external .gwt-TabLayoutPanelTab-selected;
+        .gwt-TabLayoutPanelTab-selected {
+            margin-bottom: -1px;
+            color: #555 !important;
+            background-color: white;
+            border: 1px solid #DDD;
+            border-bottom-color: transparent;
+        }
+
+        .ontologyCategory {
+            font-weight: bold;
+        }
+
+        .navTreeContainer {
+
+        }
+    </ui:style>
+
+	<g:LayoutPanel>
+           <g:layer left="0" width="30em">
+               <g:LayoutPanel>
+                   <g:layer top="5px" height="40px" left="0" right="0">
+                       <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                               <g:InlineLabel ui:field="ontologyCategory" addStyleNames="{style.ontologyCategory}"></g:InlineLabel>
+                       </g:HTMLPanel>
+                   </g:layer>
+                   <g:layer top="40px" bottom="0">
+                    <g:ScrollPanel ui:field="navTreeContainer" addStyleNames="{style.navTreeContainer}">
+                   </g:ScrollPanel>
+               </g:layer>
+               </g:LayoutPanel>
+           </g:layer>
+           <g:layer left="30em" right="0">
+               <g:TabLayoutPanel barUnit="PX" barHeight="38"  animationDuration="500" ui:field="tabPanel">
+                   <g:tab>
+                       <g:header>Info</g:header>
+                       <ed:OntologyDisplayEditor ui:field="ontologyEditor" />
+                   </g:tab>
+               <g:tab>
+                   <g:customHeader>
+                      <g:Label ui:field="phenotypeTabHeader">Phenotypes</g:Label>
+                   </g:customHeader>
+                   <g:LayoutPanel>
+                       <g:layer top="0" left="0" right="0" bottom="30px">
+                           <c:DataGrid ui:field="phenotypeDataGrid" />
+                       </g:layer>
+                       <g:layer bottom="0" left="0" right="0" height="30px">
+                           <gui:CustomPager ui:field="phenotypePager" />
+                       </g:layer>
+                   </g:LayoutPanel>
+               </g:tab>
+                   <g:tab>
+                       <g:header>Graph</g:header>
+                       <g:HTMLPanel>Graph</g:HTMLPanel>
+                   </g:tab>
+               </g:TabLayoutPanel>
+           </g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder>

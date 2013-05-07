@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.shared.proxy.ontology;
 
+import java.util.List;
 import java.util.Set;
 
 import com.google.web.bindery.requestfactory.shared.EntityProxy;
@@ -20,4 +21,8 @@ public interface TermProxy extends EntityProxy {
 	
 	public Set<Term2TermProxy> getParents();
 	public Set<Term2TermProxy> getChilds();
+
+    public int getChildCount();
+
+    List<Integer> getPathToRoot();
 }

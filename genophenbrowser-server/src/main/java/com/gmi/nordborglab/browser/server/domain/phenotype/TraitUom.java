@@ -39,8 +39,10 @@ public class TraitUom extends BaseEntity {
 
 	private String local_trait_name;
 	private String trait_protocol;
-	private String to_accession;
-	private String eo_accession;
+    @Column(name="to_accession")
+	private String toAccession;
+    @Column(name="eo_accession")
+	private String eoAccession;
 	
 	@Transient 
 	private Experiment experiment;
@@ -111,16 +113,16 @@ public class TraitUom extends BaseEntity {
 		this.trait_protocol = traitProtocol;
 	}
 	public String getToAccession() {
-		return to_accession;
+		return toAccession;
 	}
 	public void setToAccession(String toAccession) {
-		this.to_accession = toAccession;
+		this.toAccession = toAccession;
 	}
 	public String getEoAccession() {
-		return eo_accession;
+		return eoAccession;
 	}
 	public void setEoAccession(String eoAccession) {
-		this.eo_accession = eoAccession;
+		this.eoAccession = eoAccession;
 	}
 
 	public CustomAccessControlEntry getUserPermission() {

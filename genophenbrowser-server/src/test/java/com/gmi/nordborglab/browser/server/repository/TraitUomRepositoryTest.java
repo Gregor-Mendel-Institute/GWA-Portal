@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.springframework.data.domain.Sort;
 
@@ -146,4 +147,18 @@ public class TraitUomRepositoryTest extends BaseTest {
 		assertEquals("wrong study", 1,((Study)trait[0]).getId().longValue());
 		assertEquals("wrong trait", 1,((TraitUom)trait[1]).getId().longValue());
 	}
+
+    @Test
+    public void testFindAllByToAccession() {
+        List<TraitUom> traitUoms = repository.findAllByToAccessionIn(Lists.newArrayList("TO:0000344","TO:0000253"));
+        assertNotNull(traitUoms);
+        assertEquals(5, traitUoms.size());
+    }
+
+    @Test
+    public void testFindAllByEoAccession() {
+        List<TraitUom> traitUoms = repository.findAllByToAccessionIn(Lists.newArrayList("1"));
+        assertNotNull(traitUoms);
+        assertEquals(22,traitUoms.size());
+    }
 }

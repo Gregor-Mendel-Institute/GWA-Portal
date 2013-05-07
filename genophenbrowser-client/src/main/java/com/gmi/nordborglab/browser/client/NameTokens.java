@@ -20,10 +20,12 @@ public class NameTokens {
 	public static final String stock = "!stock/{id}/overview";
 	public static final String phenotypeoverview = "!phenotypes";
 	public static final String studyoverview = "!analysisoverview";
-	public static final String ontologyoverview = "!ontologyoverview";
+	//TODO can't use {id} because of updateHistoryToken causes exception
+    public static final String traitontology = "!ontology/{ontology}";
     public static final String gwasViewer="!gwasViewer";
     public static final String basicstudywizard ="!analysiswizard";
     public static final String publications = "!publications";
+    public static final String publication ="!publication/{id}/overview";
 
 
     public static String getHome() {
@@ -99,8 +101,8 @@ public class NameTokens {
 		return studyoverview;
 	}
 
-	public static String getOntologyoverview() {
-		return ontologyoverview;
+	public static String getTraitontology() {
+		return traitontology;
 	}
 
     public static String getBasicstudywizard() {
@@ -114,5 +116,13 @@ public class NameTokens {
 
     public static String getPublications() {
         return publications;
+    }
+
+    public static String getPublication() {
+        return publication;
+    }
+
+    public static String getGwasViewer() {
+        return gwasViewer;
     }
 }

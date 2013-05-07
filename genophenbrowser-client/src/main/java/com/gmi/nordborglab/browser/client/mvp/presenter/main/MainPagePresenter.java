@@ -135,7 +135,7 @@ public class MainPagePresenter extends
 			request.matchesNameToken(NameTokens.studygwas) ||
 			request.matchesNameToken(NameTokens.studyoverview) ||
 			request.matchesNameToken(NameTokens.phenotypeoverview) ||
-			request.matchesNameToken(NameTokens.ontologyoverview) ||
+			request.matchesNameToken(NameTokens.traitontology) ||
             request.matchesNameToken(NameTokens.gwasViewer)
 			)
 			menu = MENU.DIVERSITY;

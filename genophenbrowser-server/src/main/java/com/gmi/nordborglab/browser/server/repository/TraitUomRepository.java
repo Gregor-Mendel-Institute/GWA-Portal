@@ -44,5 +44,9 @@ public interface TraitUomRepository extends JpaRepository<TraitUom, Long> {
 	
 	@Query("SELECT s,uom FROM TraitUom uom join uom.traits as t JOIN t.studies as s WHERE s IN (:studies) group by s,uom")
 	public List<Object[]> findAllByStudiesGrouped(@Param("studies") List<Study> studies); 
-	
+
+
+    public List<TraitUom> findAllByToAccessionIn(List<String> acc);
+
+    public List<TraitUom> findAllByEoAccessionIn(List<String> acc);
 }

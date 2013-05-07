@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+    <ui:with field="name" type="java.lang.String" />
+    <ui:with field="count" type="java.lang.String" />
+    <ui:with field="relationship" type="java.lang.String" />
+    <ui:with field="relationshipClass" type="java.lang.String" />
+
+    <ui:style type="com.gmi.nordborglab.browser.client.ui.cells.OntologyCell.MyStyle">
+        .relationship {
+            padding: 0 4px !important;
+            font-size:80%;
+        }
+
+    </ui:style>
+
+
+    <div>
+        <ui:text from="{name}" /> (<ui:text from="{count}" />) <span class="{style.relationship} {relationshipClass}"><ui:text from="{relationship}" /></span>
+    </div>
+</ui:UiBinder>

@@ -6,6 +6,8 @@ import com.github.gwtbootstrap.client.ui.AccordionGroup;
 import com.github.gwtbootstrap.client.ui.base.DivWidget;
 import com.github.gwtbootstrap.client.ui.base.ListItem;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
+import com.gmi.nordborglab.browser.client.NameTokens;
+import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.google.common.collect.ImmutableMap;
 import com.google.gwt.resources.client.CssResource;
@@ -44,6 +46,10 @@ public class DiversityView extends ViewImpl implements
 	@UiField SimpleLayoutPanel searchContainer;
     @UiField
     AccordionGroup publicationsAccGroup;
+    @UiField
+    InlineHyperlink traitOntologyLink;
+    @UiField
+    InlineHyperlink environOntologyLink;
     private ImmutableMap<MENU_ITEM, AccordionGroup> menuItems;
 	private MENU_ITEM isOpenMenuItem;
 	
@@ -69,6 +75,9 @@ public class DiversityView extends ViewImpl implements
                 .put(MENU_ITEM.PUBLICATION,publicationsAccGroup)
                 .put(MENU_ITEM.TOOLS,toolsAccGroup)
                 .build();
+        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.traitontology);
+        traitOntologyLink.setTargetHistoryToken(placeManager.buildHistoryToken(request.with("ontology","trait")));
+        environOntologyLink.setTargetHistoryToken(placeManager.buildHistoryToken(request.with("ontology","environment")));
 	}
 
 	@Override

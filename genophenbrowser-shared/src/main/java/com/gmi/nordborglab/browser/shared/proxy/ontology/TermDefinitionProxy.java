@@ -2,9 +2,10 @@ package com.gmi.nordborglab.browser.shared.proxy.ontology;
 
 import com.google.web.bindery.requestfactory.shared.EntityProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
+import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
-@ProxyForName(value="com.gmi.nordborglab.jpaontology.model.TermDefinition",locator="com.gmi.nordborglab.browser.server.service.SpringOntologyEntitiyLocator")
-public interface TermDefinitionProxy extends EntityProxy {
+@ProxyForName(value="com.gmi.nordborglab.jpaontology.model.TermDefinition")
+public interface TermDefinitionProxy extends ValueProxy {
 
 	
 	public String getTermDefinition();
