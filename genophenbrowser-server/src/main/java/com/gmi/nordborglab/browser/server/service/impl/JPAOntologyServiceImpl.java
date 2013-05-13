@@ -1,6 +1,6 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
-import com.gmi.nordborglab.browser.server.service.OntologyService;
+import com.gmi.nordborglab.browser.server.service.JPAOntologyService;
 import com.gmi.nordborglab.jpaontology.model.Term;
 import com.gmi.nordborglab.jpaontology.model.Term2Term;
 import com.gmi.nordborglab.jpaontology.repository.Term2TermRepository;
@@ -25,7 +25,7 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class OntologyServiceImpl implements OntologyService{
+public class JPAOntologyServiceImpl implements JPAOntologyService {
     private final static String TO_ROOT="TO:0000387";
     private final static String EO_ROOT="EO:0007359";
 

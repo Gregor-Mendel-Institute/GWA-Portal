@@ -164,7 +164,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
 		if (trait.getId() == null)
 			throw new RuntimeException("use create method for adding new traits");
 		trait = traitUomRepository.save(trait);
-//		if (trait.getId() == null) {
+//		if (trait.getNodeId() == null) {
 //			CumulativePermission permission = new CumulativePermission();
 //			permission.set(BasePermission.ADMINISTRATION);
 //			addPermission(experiment, new PrincipalSid(SecurityUtil.getUsername()),

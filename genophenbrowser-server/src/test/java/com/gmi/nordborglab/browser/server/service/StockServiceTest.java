@@ -41,6 +41,6 @@ public class StockServiceTest extends BaseTest {
 //		assertNotNull("No stocks found",stocks);
 //		assertEquals("wrong number of stocks",1,stocks.size());
 //		Stock stock = stocks.get(0);
-//		assertEquals("wrong associated passport",1,stock.getPassport().getId().longValue());
+//		assertEquals("wrong associated passport",1,stock.getPassport().getNodeId().longValue());
 //	}
 }

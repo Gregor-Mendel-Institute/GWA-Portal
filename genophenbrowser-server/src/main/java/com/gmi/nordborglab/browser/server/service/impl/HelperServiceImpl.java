@@ -204,14 +204,14 @@ public class HelperServiceImpl implements HelperService {
 		unitOfMeasures.add(unitOfMeasureProxy);
 		for (UnitOfMeasure unitOfMeasure:unitOfMeasureValues) {
 			unitOfMeasureProxy = helperFactory.unitOfMeasure().as();
-			unitOfMeasureProxy.setId(unitOfMeasure.getId());
+			unitOfMeasureProxy.setId(unitOfMeasure.getNodeId());
 			unitOfMeasureProxy.setUnitType(unitOfMeasure.getUnitType());
 			unitOfMeasures.add(unitOfMeasureProxy);
 		}
 		//bean.setUnitOfMeasureList(unitOfMeasures);
 		for (StatisticType statisticType:statisticTypeValues) {
 			StatisticTypeProxy statisticTypeProxy = helperFactory.statisticType().as();
-			statisticTypeProxy.setId(statisticType.getId());
+			statisticTypeProxy.setId(statisticType.getNodeId());
 			statisticTypeProxy.setStatType(statisticType.getStatType());
 			statisticTypes.add(statisticTypeProxy);
 		}

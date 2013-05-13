@@ -14,7 +14,7 @@ import java.util.List;
  */
 
 
-public interface OntologyService {
+public interface JPAOntologyService {
 
     public Term findOne(Integer id);
     public Term2Term findOneTerm2Term(Integer id);

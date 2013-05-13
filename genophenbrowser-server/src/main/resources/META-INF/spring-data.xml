@@ -4,6 +4,7 @@
 	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:p="http://www.springframework.org/schema/p" 
 	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+    xmlns:neo4j="http://www.springframework.org/schema/data/neo4j"
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop"
@@ -17,7 +18,9 @@
       http://www.springframework.org/schema/util
       http://www.springframework.org/schema/util/spring-util-3.1.xsd
       http://www.springframework.org/schema/aop 
-      http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+      http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+      http://www.springframework.org/schema/data/neo4j
+      http://www.springframework.org/schema/data/neo4j/spring-neo4j.xsd">
 
 	<jpa:repositories base-package="com.gmi.nordborglab.browser.server.repository" entity-manager-factory-ref="entityManagerFactory" />
 	<jpa:repositories base-package="com.gmi.nordborglab.jpaontology.repository" entity-manager-factory-ref="entityManagerFactoryOntology" />
@@ -105,6 +108,17 @@
 		<property name="username" value="${database.username}" />
 		<property name="password" value="${database.password}" />
 	</bean>
+
+    <neo4j:config graphDatabaseService="graphDatabaseService"/>
+    <bean id="graphDatabaseService"
+          class="org.springframework.data.neo4j.rest.SpringRestGraphDatabase">
+        <constructor-arg index="0" value="${neo4j.host}" />
+    </bean>
+    <bean id="typeRepresentationStrategyFactory" class="org.springframework.data.neo4j.support.typerepresentation.TypeRepresentationStrategyFactory">
+        <constructor-arg index="0" ref="graphDatabaseService"/>
+        <constructor-arg index="1" value="Noop"/>
+    </bean>
+    <neo4j:repositories base-package="com.gmi.nordborglab.browser.server.repository.ontology" />
 
 </beans>
 

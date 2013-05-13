@@ -17,4 +17,6 @@ public interface CustomRequestFactory extends RequestFactory{
 	SearchRequest searchRequest();
     GWASDataRequest gwasDataRequest();
     OntologyRequest ontologyRequest();
+
+    GraphOntologyRequest graphOntologyRequest();
 }

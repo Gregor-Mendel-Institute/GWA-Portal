@@ -4,18 +4,18 @@ import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.editors.OntologyDisplayEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.OntologyUiHandlers;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.OntologyTreeViewModel;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.GraphOntologyTreeViewModel;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.TraitOntologyPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.PhenotypeListDataGridColumns;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
+import com.gmi.nordborglab.browser.client.ui.cells.GraphOntologyCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
-import com.gmi.nordborglab.browser.client.ui.cells.OntologyCell;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ontology.GraphTerm2TermProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ontology.GraphTermProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.Term2TermProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
-import com.google.common.collect.Iterables;
-import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.query.client.GQuery;
@@ -29,13 +29,11 @@ import com.google.gwt.user.cellview.client.TreeNode;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
-import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
-import com.gwtplatform.mvp.client.ViewImpl;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -67,18 +65,18 @@ public class TraitOntologyView extends ViewWithUiHandlers<OntologyUiHandlers> im
     Label phenotypeTabHeader;
 
 
-    private SingleSelectionModel<Term2TermProxy> selectionModel = new SingleSelectionModel<Term2TermProxy>();
-    private OntologyDataProvider dataProvider = new OntologyDataProvider() {
+    private SingleSelectionModel<GraphTerm2TermProxy> selectionModel = new SingleSelectionModel<GraphTerm2TermProxy>();
+    private GraphOntologyDataProvider dataProvider = new GraphOntologyDataProvider() {
 
         @Override
-        public void refreshWithChildTerms(HasData<Term2TermProxy> display, Term2TermProxy term) {
+        public void refreshWithChildTerms(HasData<GraphTerm2TermProxy> display, GraphTerm2TermProxy term) {
             getUiHandlers().refreshWithChildTerms(display,term);
         }
     };
     private final CellTree.BasicResources cellTreeResources;
     private final OntologyDisplayDriver ontologyDisplayDriver;
     private final PlaceManager placeManager;
-    private final OntologyCell ontologyCell;
+    private final GraphOntologyCell ontologyCell;
     private CellTree navTree;
     private TermProxy selectedTerm = null;
 
@@ -88,6 +86,11 @@ public class TraitOntologyView extends ViewWithUiHandlers<OntologyUiHandlers> im
         public void refreshWithChildTerms(HasData<Term2TermProxy> display,Term2TermProxy term);
     }
 
+    public interface GraphOntologyDataProvider  {
+        public void refreshWithChildTerms(HasData<GraphTerm2TermProxy> display,GraphTerm2TermProxy term);
+    }
+
+
     public interface Binder extends UiBinder<Widget, TraitOntologyView> {
 	}
 
@@ -95,7 +98,7 @@ public class TraitOntologyView extends ViewWithUiHandlers<OntologyUiHandlers> im
 	public TraitOntologyView(final Binder binder, final CustomDataGridResources dataGridResources,
                              final CellTree.BasicResources cellTreeResources,final OntologyDisplayDriver ontologyDisplayDriver,
                              final PlaceManager placeManager,
-                             final OntologyCell ontologyCell) {
+                             final GraphOntologyCell ontologyCell) {
         this.cellTreeResources = cellTreeResources;
         this.ontologyCell = ontologyCell;
         this.ontologyDisplayDriver = ontologyDisplayDriver;
@@ -155,15 +158,15 @@ public class TraitOntologyView extends ViewWithUiHandlers<OntologyUiHandlers> im
 	}
 
     @Override
-    public void initNavigationTree(TermProxy term) {
+    public void initNavigationTree() {
         navTreeContainer.clear();
-        navTree = new CellTree(new OntologyTreeViewModel(selectionModel,dataProvider,ontologyCell),null,cellTreeResources);
+        navTree = new CellTree(new GraphOntologyTreeViewModel(selectionModel,dataProvider,ontologyCell),null,cellTreeResources);
         navTreeContainer.add(navTree);
 
     }
 
     @Override
-    public void setRootOntology(TermProxy term) {
+    public void setRootOntology(GraphTermProxy term) {
         ontologyCategory.setText(term.getName());
     }
 
@@ -189,7 +192,7 @@ public class TraitOntologyView extends ViewWithUiHandlers<OntologyUiHandlers> im
     }
 
     @Override
-    public void openNavTreeAndSelectItem(final TermProxy term) {
+    public void openNavTreeAndSelectItem(final GraphTermProxy term) {
         if (term == null && selectionModel.getSelectedObject() != null) {
             selectionModel.setSelected(selectionModel.getSelectedObject(),false);
             return;
@@ -205,12 +208,12 @@ public class TraitOntologyView extends ViewWithUiHandlers<OntologyUiHandlers> im
         });
     }
 
-    private void selectTreeItem(TreeNode node,int index,List<Integer> path) {
+    private void selectTreeItem(TreeNode node,int index,List<Long> path) {
         if (node == null)
             return;
         for (int i=0;i<node.getChildCount();i++) {
-            Term2TermProxy term2Term = (Term2TermProxy) node.getChildValue(i);
-            if (path.size() > index && term2Term.getId().equals(path.get(index))) {
+            GraphTerm2TermProxy term2Term = (GraphTerm2TermProxy) node.getChildValue(i);
+            if (path.size() > index && term2Term.getNodeId().equals(path.get(index))) {
                 index++;
                 if (index == path.size()) {
                     selectionModel.setSelected(term2Term,true);

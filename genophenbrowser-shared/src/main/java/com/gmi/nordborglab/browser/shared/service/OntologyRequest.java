@@ -16,7 +16,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 
-@ServiceName(value="com.gmi.nordborglab.browser.server.service.OntologyService",locator="com.gmi.nordborglab.browser.server.service.SpringServiceLocator")
+@ServiceName(value="com.gmi.nordborglab.browser.server.service.JPAOntologyService",locator="com.gmi.nordborglab.browser.server.service.SpringServiceLocator")
 public interface OntologyRequest extends RequestContext{
     Request<TermProxy> findOne(Integer id);
 
