@@ -18,6 +18,9 @@ import com.google.common.collect.Iterables;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.query.client.GQuery;
+import com.google.gwt.user.client.Command;
+import static com.google.gwt.query.client.GQuery.$;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellTree;
 import com.google.gwt.user.cellview.client.Column;
@@ -211,11 +214,23 @@ public class TraitOntologyView extends ViewWithUiHandlers<OntologyUiHandlers> im
                 index++;
                 if (index == path.size()) {
                     selectionModel.setSelected(term2Term,true);
+                    scrollIntoView();
                     return;
                 }
                 selectTreeItem(node.setChildOpen(i,true,true),index,path);
             }
         }
+    }
+
+    private void scrollIntoView() {
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override
+            public void execute() {
+                GQuery query = $("."+((CellTree.Style)cellTreeResources.cellTreeStyle()).cellTreeSelectedItem());
+                query.scrollIntoView();
+            }
+        });
+
     }
 
 }
