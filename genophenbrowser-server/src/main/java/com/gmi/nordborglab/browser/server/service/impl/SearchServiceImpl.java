@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.search.*;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.client.Client;
@@ -12,12 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
-import com.gmi.nordborglab.browser.server.search.ExperimentSearchProcessor;
-import com.gmi.nordborglab.browser.server.search.PassportSearchProcessor;
-import com.gmi.nordborglab.browser.server.search.PhenotypeSearchProcessor;
-import com.gmi.nordborglab.browser.server.search.StockSearchProcessor;
-import com.gmi.nordborglab.browser.server.search.StudySearchProcessor;
-import com.gmi.nordborglab.browser.server.search.TaxonomySearchProcessor;
 import com.gmi.nordborglab.browser.server.service.SearchService;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
@@ -30,6 +25,7 @@ public class SearchServiceImpl implements SearchService {
 	protected Client client;
 
 	public static String INDEX_NAME = "gdpdm";
+    public static String ONTOLOGY_INDEX_NAME = "ontologies";
 
 	@Override
 	public List<SearchFacetPage> searchByTerm(String term, CATEGORY category,
@@ -45,6 +41,10 @@ public class SearchServiceImpl implements SearchService {
 					term);
 			StudySearchProcessor studyProcessor = new StudySearchProcessor(term);
 
+            OntologySearchProcessor ontologySearchProcessor = new OntologySearchProcessor(term);
+
+            PublicationSearchProcessor publicationSearchProcessor = new PublicationSearchProcessor(term);
+
 			requestBuilder.add(experimentProcessor.getSearchBuilder(client
 					.prepareSearch(INDEX_NAME)));
 
@@ -53,6 +53,12 @@ public class SearchServiceImpl implements SearchService {
 
 			requestBuilder.add(studyProcessor.getSearchBuilder(client
 					.prepareSearch(INDEX_NAME)));
+
+            requestBuilder.add(ontologySearchProcessor.getSearchBuilder(client
+                    .prepareSearch(ONTOLOGY_INDEX_NAME)));
+
+            requestBuilder.add(publicationSearchProcessor.getSearchBuilder(client
+                    .prepareSearch(INDEX_NAME)));
 
 			MultiSearchResponse response = requestBuilder.execute().actionGet();
 
@@ -74,7 +80,16 @@ public class SearchServiceImpl implements SearchService {
 			if (facetPage != null)
 				searchResults.add(facetPage);
 
-			
+            // Get results from ontologies
+            facetPage = ontologySearchProcessor.extractSearchFacetPage(response.getResponses()[3].getResponse());
+            if (facetPage != null)
+                searchResults.add(facetPage);
+
+            // Get results from publications
+            facetPage = publicationSearchProcessor.extractSearchFacetPage(response.getResponses()[4].getResponse());
+            if (facetPage != null)
+                searchResults.add(facetPage);
+
 		} else if (category == CATEGORY.GERMPLASM) {
 			TaxonomySearchProcessor taxonomySearchProcessor = new TaxonomySearchProcessor(term);
 			PassportSearchProcessor passportSearchProcessor = new PassportSearchProcessor(term);
@@ -88,6 +103,7 @@ public class SearchServiceImpl implements SearchService {
 			
 			requestBuilder.add(stockSearchProcessor.getSearchBuilder(client
 					.prepareSearch(INDEX_NAME)));
+
 			
 			MultiSearchResponse response = requestBuilder.execute().actionGet();
 

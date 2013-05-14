@@ -108,13 +108,26 @@ public class SearchPresenter extends PresenterWidget<SearchPresenter.MyView> imp
 				nameToken = NameTokens.study;
 				break;
 			case ONTOLOGY:
-				nameToken = null;
+				nameToken = NameTokens.traitontology;
 				break;
+            case PUBLICATION:
+                nameToken = NameTokens.publication;
 		}
 		if (nameToken == null)
 			return;
 		
 		PlaceRequest request = new ParameterizedPlaceRequest(nameToken).with("id", searchSuggestion.getId());
+
+        //TODO refactor
+        switch (searchSuggestion.getCategory()) {
+            case ONTOLOGY:
+                String ontologyType = "trait";
+                if (searchSuggestion.getId().substring(0,2).equalsIgnoreCase("EO")) {
+                    ontologyType="environment";
+                }
+                request.with("ontology",ontologyType);
+                break;
+        }
 		placeManager.revealPlace(request);
 	}
 }
