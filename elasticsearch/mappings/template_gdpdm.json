@@ -147,6 +147,32 @@
         }
       }
     },
+    "publication": {
+        "properties": {
+          "title": {
+            "type": "multi_field",
+            "fields": {
+              "title": {
+                "type": "string",
+                "boost": 2
+              },
+              "partial": {
+                "type": "string",
+                "boost": 1.5,
+                "index_analyzer": "my_ngram"
+              }
+            }
+          },
+          "doi":{"type":"string","index":"not_analyzed"},
+          "volume":{"type":"string","index":"not_analyzed"},
+          "url":{"type":"string","index":"not_analyzed"},
+	  "issue":{"type":"string","index":"not_analyzed"},
+	  "page":{"type":"string","index":"not_analyzed"},
+          "journal":{"type":"string"},
+          "author":{"type":"string"},
+          "pubdate":{"type":"date"}
+        }
+    },
     "user": {
       "properties":{
          "username":{"type":"string","index":"not_analyzed"},

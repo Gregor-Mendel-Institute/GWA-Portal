@@ -58,6 +58,26 @@ curl -XPUT $1/_river/gdpdm_study_river/_meta -d "{
 
 echo "\n"
 
+curl -XPUT $1/_river/gdpdm_publication_river/_meta -d "{
+    \"type\" : \"jdbc\",
+    \"jdbc\" : {
+        \"strategy\":\"simple\",
+        \"driver\" : \"org.postgresql.Driver\",
+        \"url\" : \"jdbc:postgresql://$db_host:5432/GDPDM\",
+        \"user\" : \"$db_user\",
+        \"password\" : \"$db_password\",
+        \"sql\" : \"SELECT id as _id,doi ,volume ,url,issue ,page ,journal ,title,author,pubdate  FROM util.publications\"
+    },
+    \"index\":{
+       \"index\":\"$index\",
+       \"type\":\"publication\"
+    }
+}"
+
+
+
+echo "\n"
+
 curl -XPUT $1/_river/gdpdm_user_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
