@@ -16,50 +16,54 @@ import com.google.common.collect.Maps;
 import com.google.common.primitives.Floats;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 
-public class HDF5GWASReader implements GWASReader{
-	
-	private final String dataFolder;
-	private static String pValueGroup ="/pvalues/";
-	
-	public HDF5GWASReader(String dataFolder) {
-		this.dataFolder = dataFolder;
-	}
+public class HDF5GWASReader implements GWASReader {
 
-	@Override
-	public ChrGWAData readForChr(String file,String chr, Double limit) {
-		IHDF5Reader reader = getReader(file);
-		ChrGWAData data = getForChr(reader, chr, limit);
-		reader.close();
-		return data;
-	}
+    private final String dataFolder;
+    private static String pValueGroup = "/pvalues/";
 
-	@Override
-	public GWASData readAll(String file,Double limit) {
-		IHDF5Reader reader = getReader(file);
+    public HDF5GWASReader(String dataFolder) {
+        this.dataFolder = dataFolder;
+    }
+
+    @Override
+    public ChrGWAData readForChr(String file, String chr, Double limit) {
+        IHDF5Reader reader = getReader(file);
+        ChrGWAData data = getForChr(reader, chr, limit);
+        reader.close();
+        return data;
+    }
+
+    @Override
+    public GWASData readAll(String file, Double limit) {
+        IHDF5Reader reader = getReader(file);
         GWASData gwasData;
-		Map<String,ChrGWAData> data = readAll(reader,limit);
+        Map<String, ChrGWAData> data = readAll(reader, limit);
         long numberOfSNPs = 0;
-        if (reader.hasAttribute(pValueGroup,"numberOfSNPs")) {
-            numberOfSNPs = reader.getLongAttribute(pValueGroup,"numberOfSNPs");
+        if (reader.hasAttribute(pValueGroup, "numberOfSNPs")) {
+            numberOfSNPs = reader.getLongAttribute(pValueGroup, "numberOfSNPs");
         }
         double bonferroniScore = 6;
-        if (reader.hasAttribute(pValueGroup,"bonferroniScore")) {
-            bonferroniScore = reader.getDoubleAttribute(pValueGroup,"bonferroniScore");
+        if (reader.hasAttribute(pValueGroup, "bonferroniScore")) {
+            bonferroniScore = reader.getDoubleAttribute(pValueGroup, "bonferroniScore");
+        } else if (reader.hasAttribute(pValueGroup, "bonferroni_threshold")) {
+            bonferroniScore = reader.getDoubleAttribute(pValueGroup, "bonferroni_threshold");
         }
         float maxScore = 10;
-        if (reader.hasAttribute(pValueGroup,"maxScore")) {
-            maxScore = reader.getFloatAttribute(pValueGroup,"maxScore");
+        if (reader.hasAttribute(pValueGroup, "maxScore")) {
+            maxScore = reader.getFloatAttribute(pValueGroup, "maxScore");
+        } else if (reader.hasAttribute(pValueGroup, "max_score")) {
+            maxScore = reader.getFloatAttribute(pValueGroup, "max_score");
         }
-        gwasData = new GWASData(data,numberOfSNPs,bonferroniScore,maxScore);
+        gwasData = new GWASData(data, numberOfSNPs, bonferroniScore, maxScore);
         reader.close();
-		return gwasData;
-	}
+        return gwasData;
+    }
 
-    protected Map<String,ChrGWAData> readAll(IHDF5Reader reader,Double limit) {
+    protected Map<String, ChrGWAData> readAll(IHDF5Reader reader, Double limit) {
         List<String> members = reader.getGroupMembers(pValueGroup);
-        Map<String,ChrGWAData> data = new LinkedHashMap<String, ChrGWAData>();
-        for (String chr:members) {
-            data.put(chr,getForChr(reader,chr,limit));
+        Map<String, ChrGWAData> data = new LinkedHashMap<String, ChrGWAData>();
+        for (String chr : members) {
+            data.put(chr, getForChr(reader, chr, limit));
         }
         return data;
     }
@@ -77,13 +81,13 @@ public class HDF5GWASReader implements GWASReader{
             List<String> groupMembers = reader.getGroupMembers(pValueGroup);
             if (groupMembers.size() != 5)
                 throw new Exception("pValue group must have exactly 5 sub-groups");
-            for (String chr:groupMembers) {
+            for (String chr : groupMembers) {
                 String positionDataSet = pValueGroup + chr + "/positions";
                 String scoresDataSet = pValueGroup + chr + "/scores";
                 if (!reader.isDataSet(positionDataSet))
-                    throw new Exception("no positions dataset found under "+pValueGroup+chr);
+                    throw new Exception("no positions dataset found under " + pValueGroup + chr);
                 if (!reader.isDataSet(scoresDataSet))
-                    throw new Exception("No scores dataset found under" + pValueGroup +chr);
+                    throw new Exception("No scores dataset found under" + pValueGroup + chr);
                 HDF5DataSetInformation infoPos = reader.getDataSetInformation(positionDataSet);
                 HDF5DataSetInformation infoScores = reader.getDataSetInformation(scoresDataSet);
                 if (infoPos.getNumberOfElements() == 0 && infoScores.getNumberOfElements() != infoPos.getNumberOfElements())
@@ -93,35 +97,33 @@ public class HDF5GWASReader implements GWASReader{
                 if (infoScores.getTypeInformation().getDataClass() != HDF5DataClass.FLOAT)
                     throw new Exception("Scores must be of type float");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw e;
-        }
-        finally {
+        } finally {
             if (reader != null)
                 reader.close();
         }
     }
 
     @Override
-    public Map<String,ChrGWAData> parseGWASDataFromFile(File originalFile) throws Exception {
-       IHDF5Reader reader = null;
-       Map<String,ChrGWAData> newDataMap = Maps.newHashMap();
-       try {
-           reader = getReader(originalFile);
-           Map<String,ChrGWAData> data = readAll(reader,null);
-           for (Map.Entry<String,ChrGWAData> entry:data.entrySet()) {
-               ChrGWAData newChrGWAData = ChrGWAData.sortAndConvertToScores(entry.getValue());
-               newDataMap.put(entry.getKey(), newChrGWAData);
-           }
+    public Map<String, ChrGWAData> parseGWASDataFromFile(File originalFile) throws Exception {
+        IHDF5Reader reader = null;
+        Map<String, ChrGWAData> newDataMap = Maps.newHashMap();
+        try {
+            reader = getReader(originalFile);
+            Map<String, ChrGWAData> data = readAll(reader, null);
+            for (Map.Entry<String, ChrGWAData> entry : data.entrySet()) {
+                ChrGWAData newChrGWAData = ChrGWAData.sortAndConvertToScores(entry.getValue());
+                newDataMap.put(entry.getKey(), newChrGWAData);
+            }
 
-       }catch (Exception e) {
-           throw e;
-       }
-       finally {
-           if (reader != null)
-               reader.close();
-       }
-       return newDataMap;
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (reader != null)
+                reader.close();
+        }
+        return newDataMap;
     }
 
     @Override
@@ -132,92 +134,89 @@ public class HDF5GWASReader implements GWASReader{
             writer.createGroup(pValueGroup);
             long numberOfSnps = 0;
             float maxScore = 0;
-            for (Map.Entry<String,ChrGWAData> entry:data.entrySet()) {
+            for (Map.Entry<String, ChrGWAData> entry : data.entrySet()) {
                 String chr = entry.getKey();
                 ChrGWAData chrGWAData = entry.getValue();
                 String positionDataSet = pValueGroup + chr + "/positions";
                 String scoresDataSet = pValueGroup + chr + "/scores";
-                String macsDataSet = pValueGroup + chr  + "/macs";
-                String mafsDataSet = pValueGroup + chr  + "/mafs";
-                String gveDataSet = pValueGroup + chr  + "/GVEs";
-                writer.createGroup(pValueGroup+chr);
+                String macsDataSet = pValueGroup + chr + "/macs";
+                String mafsDataSet = pValueGroup + chr + "/mafs";
+                String gveDataSet = pValueGroup + chr + "/GVEs";
+                writer.createGroup(pValueGroup + chr);
                 writer.writeFloatArray(scoresDataSet, chrGWAData.getPvalues());
                 writer.writeIntArray(positionDataSet, chrGWAData.getPositions());
                 if (chrGWAData.getMacs() != null) {
-                    writer.writeIntArray(macsDataSet,chrGWAData.getMacs());
+                    writer.writeIntArray(macsDataSet, chrGWAData.getMacs());
                 }
                 if (chrGWAData.getMafs() != null) {
-                    writer.writeFloatArray(mafsDataSet,chrGWAData.getMafs());
+                    writer.writeFloatArray(mafsDataSet, chrGWAData.getMafs());
                 }
                 if (chrGWAData.getGVEs() != null) {
-                    writer.writeFloatArray(gveDataSet,chrGWAData.getGVEs());
+                    writer.writeFloatArray(gveDataSet, chrGWAData.getGVEs());
                 }
-                numberOfSnps+= chrGWAData.getPositions().length;
+                numberOfSnps += chrGWAData.getPositions().length;
                 if (chrGWAData.getPvalues()[0] > maxScore)
                     maxScore = chrGWAData.getPvalues()[0];
             }
-            writer.setLongAttribute(pValueGroup,"numberOfSNPs",numberOfSnps);
+            writer.setLongAttribute(pValueGroup, "numberOfSNPs", numberOfSnps);
             //TODO calculate benjamini hochberg
             writer.setDoubleAttribute(pValueGroup, "bonferroniScore", -Math.log10(0.05 / numberOfSnps));
-            writer.setFloatAttribute(pValueGroup,"maxScore",maxScore);
+            writer.setFloatAttribute(pValueGroup, "maxScore", maxScore);
             writer.flush();
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw e;
-        }
-        finally {
+        } finally {
             if (writer != null)
                 writer.close();
         }
     }
 
 
-    protected ChrGWAData getForChr(IHDF5Reader reader,String chr,Double limit) {
-		int[] positions = null;
-		float[] scores = null;
+    protected ChrGWAData getForChr(IHDF5Reader reader, String chr, Double limit) {
+        int[] positions = null;
+        float[] scores = null;
         int[] macs = null;
         float[] mafs = null;
         float[] GVEs = null;
-		String path = pValueGroup+chr;
-		HDF5DataSetInformation info = reader.getDataSetInformation(path+"/positions");
-		Double fraction = null;
-		if (limit != null) 
-			  fraction = limit > info.getNumberOfElements() ? info.getNumberOfElements() : limit;
-		if (fraction == null) {
-			positions = reader.readIntArray(path+"/positions");
-			scores = reader.readFloatArray(path+"/scores");
-            if (reader.isDataSet(path+"/macs")) {
-                macs = reader.readIntArray(path+"/macs");
+        String path = pValueGroup + chr;
+        HDF5DataSetInformation info = reader.getDataSetInformation(path + "/positions");
+        Double fraction = null;
+        if (limit != null)
+            fraction = limit > info.getNumberOfElements() ? info.getNumberOfElements() : limit;
+        if (fraction == null) {
+            positions = reader.readIntArray(path + "/positions");
+            scores = reader.readFloatArray(path + "/scores");
+            if (reader.isDataSet(path + "/macs")) {
+                macs = reader.readIntArray(path + "/macs");
             }
-            if (reader.isDataSet(path+"/mafs")) {
-                mafs = reader.readFloatArray(path+"/mafs");
+            if (reader.isDataSet(path + "/mafs")) {
+                mafs = reader.readFloatArray(path + "/mafs");
             }
-            if (reader.isDataSet(path+"/GVEs")) {
-                GVEs = reader.readFloatArray(path+"/GVEs");
+            if (reader.isDataSet(path + "/GVEs")) {
+                GVEs = reader.readFloatArray(path + "/GVEs");
             }
-		}
-		else
-		{
-			positions  = reader.readIntArrayBlock(path+"/positions",fraction.intValue(),0);
-			scores = reader.readFloatArrayBlock(path+"/scores",fraction.intValue(),0);
-            if (reader.isDataSet(path+"/macs")) {
-                macs = reader.readIntArrayBlock(path+"/macs",fraction.intValue(),0);
+        } else {
+            positions = reader.readIntArrayBlock(path + "/positions", fraction.intValue(), 0);
+            scores = reader.readFloatArrayBlock(path + "/scores", fraction.intValue(), 0);
+            if (reader.isDataSet(path + "/macs")) {
+                macs = reader.readIntArrayBlock(path + "/macs", fraction.intValue(), 0);
             }
-            if (reader.isDataSet(path+"/mafs")) {
-                mafs = reader.readFloatArrayBlock(path+"/mafs",fraction.intValue(),0);
+            if (reader.isDataSet(path + "/mafs")) {
+                mafs = reader.readFloatArrayBlock(path + "/mafs", fraction.intValue(), 0);
             }
-            if (reader.isDataSet(path+"/GVEs")) {
-                GVEs = reader.readFloatArrayBlock(path+"/GVEs",fraction.intValue(),0);
+            if (reader.isDataSet(path + "/GVEs")) {
+                GVEs = reader.readFloatArrayBlock(path + "/GVEs", fraction.intValue(), 0);
             }
-		}
-		ChrGWAData chrData = new ChrGWAData(positions, scores, macs,mafs,GVEs,chr);
-		return chrData;
-	}
-	
-	protected IHDF5Reader getReader(String file) {
-		IHDF5Reader reader = HDF5Factory.openForReading(dataFolder+"/"+file);
-		return reader;
-	}
+        }
+        ChrGWAData chrData = new ChrGWAData(positions, scores, macs, mafs, GVEs, chr);
+        return chrData;
+    }
+
+    protected IHDF5Reader getReader(String file) {
+        IHDF5Reader reader = HDF5Factory.openForReading(dataFolder + "/" + file);
+        return reader;
+    }
 
     protected IHDF5Reader getReader(File file) {
         IHDF5Reader reader = HDF5Factory.openForReading(file);
