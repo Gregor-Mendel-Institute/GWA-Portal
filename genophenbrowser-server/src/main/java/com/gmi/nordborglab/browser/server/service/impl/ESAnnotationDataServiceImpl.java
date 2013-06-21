@@ -3,24 +3,19 @@ package com.gmi.nordborglab.browser.server.service.impl;
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
-import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
-import com.gmi.nordborglab.browser.server.search.ExperimentSearchProcessor;
-import com.gmi.nordborglab.browser.server.search.PhenotypeSearchProcessor;
-import com.gmi.nordborglab.browser.server.search.StudySearchProcessor;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
-import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
-import com.google.common.collect.Lists;
+import com.google.visualization.datasource.datatable.DataTable;
 import org.elasticsearch.action.get.*;
-import org.elasticsearch.action.search.MultiSearchRequestBuilder;
-import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.rest.action.get.RestMultiGetAction;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,13 +25,16 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 
+@Primary
 @Service("ES")
-public class ESAnnotationDataServiceImpl implements AnnotationDataService{
+public class ESAnnotationDataServiceImpl implements AnnotationDataService {
 
+
+    private static Pattern geneIdPattern = Pattern.compile("AT([1-5]{1})G\\d+");
 
     @Resource
     protected Client client;
-    private static String INDEX_PREFIX="annot_%s";
+    private static String INDEX_PREFIX = "annot_%s";
 
     @Override
     public List<Gene> getGenes(String chr, Long start, Long end, boolean isFeatures) {
@@ -49,30 +47,50 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService{
     }
 
     @Override
-    public List<SNPAnnot> getSNPAnnotations(String chr,int[] positions) {
+    public List<SNPAnnot> getSNPAnnotations(String chr, int[] positions) {
         List<SNPAnnot> annotations = new ArrayList<SNPAnnot>();
 
         MultiGetRequestBuilder requestBuilder = client.prepareMultiGet();
-        for (int i =0;i<positions.length;i++) {
-            requestBuilder.add(new MultiGetRequest.Item(String.format(INDEX_PREFIX,chr),"snps",String.valueOf(positions[i])).fields("annotation","inGene"));
+        for (int i = 0; i < positions.length; i++) {
+            requestBuilder.add(new MultiGetRequest.Item(String.format(INDEX_PREFIX, chr), "snps", String.valueOf(positions[i])).fields("annotation", "inGene"));
         }
         MultiGetResponse response = requestBuilder.execute().actionGet();
         Iterator<MultiGetItemResponse> iterator = response.iterator();
-        MultiGetItemResponse itemResponse =null;
-        int failed =0;
+        MultiGetItemResponse itemResponse = null;
+        int failed = 0;
         while (iterator.hasNext()) {
             SNPAnnot snpAnnot = new SNPAnnot();
             try {
                 itemResponse = iterator.next();
                 snpAnnot.setAnnotation(itemResponse.getResponse().getFields().get("annotation").getValue().toString());
-                snpAnnot.setInGene((Boolean)itemResponse.getResponse().getFields().get("inGene").getValue());
-            }
-            catch (Exception e) {
-                String test="test";
-                failed = failed +1 ;
+                snpAnnot.setInGene((Boolean) itemResponse.getResponse().getFields().get("inGene").getValue());
+            } catch (Exception e) {
+                String test = "test";
+                failed = failed + 1;
             }
             annotations.add(snpAnnot);
         }
         return annotations;
+    }
+
+    @Override
+    public Gene getGeneById(String id) {
+        Matcher matcher = geneIdPattern.matcher(id);
+        Gene gene = null;
+        if (matcher.matches()) {
+            String chr = "chr" + matcher.group(1);
+            GetRequestBuilder builder = client.prepareGet(String.format(INDEX_PREFIX, chr), "gene", id).setFields("name", "chr", "start_pos", "end_pos", "annotation", "strand");
+            GetResponse response = builder.execute().actionGet();
+            if (response != null) {
+                //TODO fix long int boolean stuff
+                gene = new Gene(Long.valueOf((Integer) response.getField("start_pos").getValue()), Long.valueOf((Integer) response.getField("end_pos").getValue()), ((Boolean) response.getField("strand").getValue() ? 1 : 0), (String) response.getField("name").getValue(), null);
+            }
+        }
+        return gene;
+    }
+
+    @Override
+    public DataTable getGenomeStatData(String stats, String chr) {
+        throw new RuntimeException("Not implemented");
     }
 }

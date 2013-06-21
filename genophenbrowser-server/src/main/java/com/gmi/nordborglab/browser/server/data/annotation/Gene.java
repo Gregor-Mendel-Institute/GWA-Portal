@@ -21,7 +21,7 @@ public class Gene {
     private final String name;
     private final List<GeneFeature> features;
 
-    public Gene(long start, long end, int strand,String name, List<GeneFeature> features) {
+    public Gene(long start, long end, int strand, String name, List<GeneFeature> features) {
         this.start = start;
         this.end = end;
         this.name = name;
@@ -48,5 +48,12 @@ public class Gene {
 
     public List<GeneFeature> getFeatures() {
         return features;
+    }
+
+    public String getChr() {
+        if (name != null && name.length() >= 3) {
+            return name.substring(2, 3);
+        }
+        return null;
     }
 }

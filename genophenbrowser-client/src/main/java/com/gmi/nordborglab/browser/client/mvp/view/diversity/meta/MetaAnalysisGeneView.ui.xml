@@ -1,0 +1,116 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:gview="urn:import:at.gmi.nordborglab.widgets.geneviewer.client"
+             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
+             ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+             ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+             ui:generateLocales='default'>
+
+    <ui:with field="mainRes"
+             type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
+
+    <ui:style>
+        .geneControlContainer {
+            padding-left: 15px;
+        }
+
+        .tableContainer {
+            min-height: 500px;
+        }
+
+        .slider {
+            background-color: black;
+            height: 2px;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            position: relative;
+            top: -1px;
+            z-index: 1;
+            width: 11px;
+            height: 11px;
+
+            -webkit-border-radius: 40px;
+            -moz-border-radius: 40px;
+            border-radius: 40px;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ebf1f6), color-stop(50%, #abd3ee), color-stop(51%, #89c3eb), color-stop(100%, #d5ebfb));
+        }
+
+        .sliderContainer {
+            float: right;
+            margin-right: 50px;
+            line-height: 35px;
+        }
+
+        .searchContainer {
+            float: left;
+        }
+
+        .geneContainer {
+            border: solid 1px #ccc;
+            padding: 5px;
+        }
+
+        .searchForGeneLb {
+            line-height: 184px;
+            text-align: center;
+            color: #ccc;
+            z-index: 9999999;
+        }
+
+    </ui:style>
+
+    <g:LayoutPanel>
+        <g:layer top="10" height="50px">
+            <g:HTMLPanel addStyleNames="{style.geneControlContainer}">
+                <div class="{style.searchContainer}">
+                    <b:InputAddOn prependIcon="SEARCH">
+                        <b:Typeahead ui:field="searchGeneTa">
+                            <b:TextBox placeholder="search for a gene" ui:field="searchGeneTb"/>
+                        </b:Typeahead>
+                    </b:InputAddOn>
+                </div>
+                <div class="{style.sliderContainer}">
+                    <span ui:field="lowerLimitLb"></span>
+                    <g:TextBox ui:field="lowerLimitTb" width="150px" addStyleNames="{style.slider}"></g:TextBox>
+                    <span ui:field="geneLb" class="{style.geneContainer}"></span>
+                    <g:TextBox ui:field="upperLimitTb" width="150px" addStyleNames="{style.slider}"></g:TextBox>
+                    <span ui:field="upperLimitLb"></span>
+                </div>
+                <hr style="clear:both;"/>
+            </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="60px" bottom="0">
+            <!--<g:ScrollPanel>-->
+            <g:LayoutPanel ui:field="contentPanel">
+                <g:layer top="0" height="300px">
+                    <gview:GeneViewer ui:field="geneViewer" width="100%"/>
+                </g:layer>
+                <g:layer top="0" height="184px">
+                    <g:HTMLPanel ui:field="searchForGeneLb">
+                        <h1 class="{style.searchForGeneLb}">Search for a gene</h1>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="300px" bottom="0">
+                    <g:LayoutPanel addStyleNames="{style.tableContainer}" ui:field="tableContainer">
+                        <g:layer top="0" height="100px">
+                            <g:HTMLPanel>Filter</g:HTMLPanel>
+                        </g:layer>
+                        <g:layer top="100px" bottom="30px">
+                            <c:DataGrid ui:field="dataGrid"/>
+                        </g:layer>
+                        <g:layer bottom="0" height="30px">
+                            <gui:CustomPager ui:field="pager"/>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+            </g:LayoutPanel>
+            <!-- </g:ScrollPanel>-->
+        </g:layer>
+    </g:LayoutPanel>
+</ui:UiBinder>

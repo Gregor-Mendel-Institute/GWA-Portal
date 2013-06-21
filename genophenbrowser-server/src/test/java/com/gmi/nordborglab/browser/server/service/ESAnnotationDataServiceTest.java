@@ -1,23 +1,17 @@
 package com.gmi.nordborglab.browser.server.service;
 
+import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
-import com.gmi.nordborglab.browser.server.repository.UserRepository;
-import com.gmi.nordborglab.browser.server.service.ExperimentService;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.acls.model.MutableAclService;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import javax.annotation.Resource;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,12 +37,23 @@ public class ESAnnotationDataServiceTest extends BaseTest {
 
     @Test
     public void testGetSNPAnnotations() {
-        int[] positions = {4900,5599,5731};
-        List<SNPAnnot> annotations = annotationDataService.getSNPAnnotations("chr1",positions);
+        int[] positions = {4900, 5599, 5731};
+        List<SNPAnnot> annotations = annotationDataService.getSNPAnnotations("chr1", positions);
         assertNotNull(annotations);
-        assertEquals(positions.length,annotations.size());
-        assertEquals(annotations.get(0).getAnnotation(),"S");
-        assertEquals(annotations.get(1).getAnnotation(),"NS");
-        assertEquals(annotations.get(2).getAnnotation(),"*");
+        assertEquals(positions.length, annotations.size());
+        assertEquals(annotations.get(0).getAnnotation(), "S");
+        assertEquals(annotations.get(1).getAnnotation(), "NS");
+        assertEquals(annotations.get(2).getAnnotation(), "*");
     }
+
+    @Test
+    public void testGetGeneById() {
+        Gene gene = annotationDataService.getGeneById("AT2G01028");
+        assertNotNull(gene);
+        assertEquals("AT2G01028", gene.getName());
+        assertEquals(23971, gene.getStart());
+        assertEquals(26923, gene.getEnd());
+        assertEquals(0, gene.getStrand());
+    }
+
 }

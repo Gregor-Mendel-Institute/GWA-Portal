@@ -16,6 +16,8 @@ public class SNPAnnot {
     protected String ref;
     protected String lyr;
     protected String annotation;
+    protected String gene;
+
 
     public SNPAnnot() {
     }
@@ -74,5 +76,14 @@ public class SNPAnnot {
 
     public void setAnnotation(String annotation) {
         this.annotation = annotation;
+    }
+
+
+    public String getGene() {
+        return gene;
+    }
+
+    public void setGene(String gene) {
+        this.gene = gene;
     }
 }

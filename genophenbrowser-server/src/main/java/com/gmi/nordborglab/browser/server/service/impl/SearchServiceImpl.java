@@ -1,58 +1,61 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
 import com.gmi.nordborglab.browser.server.search.*;
+import com.gmi.nordborglab.browser.server.service.SearchService;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
-import com.gmi.nordborglab.browser.server.service.SearchService;
-import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
-import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 public class SearchServiceImpl implements SearchService {
 
-	@Resource
-	protected Client client;
+    @Resource
+    protected Client client;
 
-	public static String INDEX_NAME = "gdpdm";
+    public static String INDEX_NAME = "gdpdm";
     public static String ONTOLOGY_INDEX_NAME = "ontologies";
+    public static String[] GENE_INDEX_NAME = {"annot_chr1", "annot_chr2", "annot_chr3", "annot_chr4", "annot_chr5"};
 
-	@Override
-	public List<SearchFacetPage> searchByTerm(String term, CATEGORY category,
-			SUB_CATEGORY subCategory) {
-		List<SearchFacetPage> searchResults = new ArrayList<SearchFacetPage>();
-		SearchFacetPage facetPage = null;
-		MultiSearchRequestBuilder requestBuilder = client.prepareMultiSearch();
+    @Override
+    public List<SearchFacetPage> searchByTerm(String term, CATEGORY category,
+                                              SUB_CATEGORY subCategory) {
+        List<SearchFacetPage> searchResults = new ArrayList<SearchFacetPage>();
+        SearchFacetPage facetPage = null;
+        MultiSearchRequestBuilder requestBuilder = client.prepareMultiSearch();
 
-		if (category == CATEGORY.DIVERSITY) {
-			ExperimentSearchProcessor experimentProcessor = new ExperimentSearchProcessor(
-					term);
-			PhenotypeSearchProcessor phenotypeProcessor = new PhenotypeSearchProcessor(
-					term);
-			StudySearchProcessor studyProcessor = new StudySearchProcessor(term);
+        if (category == CATEGORY.DIVERSITY) {
+            ExperimentSearchProcessor experimentProcessor = new ExperimentSearchProcessor(
+                    term);
+            PhenotypeSearchProcessor phenotypeProcessor = new PhenotypeSearchProcessor(
+                    term);
+            StudySearchProcessor studyProcessor = new StudySearchProcessor(term);
 
             OntologySearchProcessor ontologySearchProcessor = new OntologySearchProcessor(term);
 
             PublicationSearchProcessor publicationSearchProcessor = new PublicationSearchProcessor(term);
 
-			requestBuilder.add(experimentProcessor.getSearchBuilder(client
-					.prepareSearch(INDEX_NAME)));
+            GeneSearchProcessor geneSearchprocessor = new GeneSearchProcessor(term);
 
-			requestBuilder.add(phenotypeProcessor.getSearchBuilder(client
-					.prepareSearch(INDEX_NAME)));
+            requestBuilder.add(experimentProcessor.getSearchBuilder(client
+                    .prepareSearch(INDEX_NAME)));
 
-			requestBuilder.add(studyProcessor.getSearchBuilder(client
-					.prepareSearch(INDEX_NAME)));
+            requestBuilder.add(phenotypeProcessor.getSearchBuilder(client
+                    .prepareSearch(INDEX_NAME)));
+
+            requestBuilder.add(studyProcessor.getSearchBuilder(client
+                    .prepareSearch(INDEX_NAME)));
 
             requestBuilder.add(ontologySearchProcessor.getSearchBuilder(client
                     .prepareSearch(ONTOLOGY_INDEX_NAME)));
@@ -60,25 +63,27 @@ public class SearchServiceImpl implements SearchService {
             requestBuilder.add(publicationSearchProcessor.getSearchBuilder(client
                     .prepareSearch(INDEX_NAME)));
 
-			MultiSearchResponse response = requestBuilder.execute().actionGet();
+            requestBuilder.add(geneSearchprocessor.getSearchBuilder(client.prepareSearch(GENE_INDEX_NAME)));
 
-			// Get results from experiment
-			facetPage = experimentProcessor.extractSearchFacetPage(response
-					.getResponses()[0].getResponse());
-			if (facetPage != null)
-				searchResults.add(facetPage);
+            MultiSearchResponse response = requestBuilder.execute().actionGet();
 
-			// Get results from phenotype
-			facetPage = phenotypeProcessor.extractSearchFacetPage(response
-					.getResponses()[1].getResponse());
-			if (facetPage != null)
-				searchResults.add(facetPage);
+            // Get results from experiment
+            facetPage = experimentProcessor.extractSearchFacetPage(response
+                    .getResponses()[0].getResponse());
+            if (facetPage != null)
+                searchResults.add(facetPage);
 
-			// Get results from study
-			facetPage = studyProcessor.extractSearchFacetPage(response
-					.getResponses()[2].getResponse());
-			if (facetPage != null)
-				searchResults.add(facetPage);
+            // Get results from phenotype
+            facetPage = phenotypeProcessor.extractSearchFacetPage(response
+                    .getResponses()[1].getResponse());
+            if (facetPage != null)
+                searchResults.add(facetPage);
+
+            // Get results from study
+            facetPage = studyProcessor.extractSearchFacetPage(response
+                    .getResponses()[2].getResponse());
+            if (facetPage != null)
+                searchResults.add(facetPage);
 
             // Get results from ontologies
             facetPage = ontologySearchProcessor.extractSearchFacetPage(response.getResponses()[3].getResponse());
@@ -90,42 +95,59 @@ public class SearchServiceImpl implements SearchService {
             if (facetPage != null)
                 searchResults.add(facetPage);
 
-		} else if (category == CATEGORY.GERMPLASM) {
-			TaxonomySearchProcessor taxonomySearchProcessor = new TaxonomySearchProcessor(term);
-			PassportSearchProcessor passportSearchProcessor = new PassportSearchProcessor(term);
-			StockSearchProcessor stockSearchProcessor = new StockSearchProcessor(term);
-			
-			requestBuilder.add(taxonomySearchProcessor.getSearchBuilder(client
-					.prepareSearch(INDEX_NAME)));
-			
-			requestBuilder.add(passportSearchProcessor.getSearchBuilder(client
-					.prepareSearch(INDEX_NAME)));
-			
-			requestBuilder.add(stockSearchProcessor.getSearchBuilder(client
-					.prepareSearch(INDEX_NAME)));
+            // Get resutls from gene
+            facetPage = geneSearchprocessor.extractSearchFacetPage(response.getResponses()[5].getResponse());
+            if (facetPage != null)
+                searchResults.add(facetPage);
 
-			
-			MultiSearchResponse response = requestBuilder.execute().actionGet();
+        } else if (category == CATEGORY.GERMPLASM) {
+            TaxonomySearchProcessor taxonomySearchProcessor = new TaxonomySearchProcessor(term);
+            PassportSearchProcessor passportSearchProcessor = new PassportSearchProcessor(term);
+            StockSearchProcessor stockSearchProcessor = new StockSearchProcessor(term);
 
-			// Get results from experiment
-			facetPage = taxonomySearchProcessor.extractSearchFacetPage(response
-					.getResponses()[0].getResponse());
-			if (facetPage != null)
-				searchResults.add(facetPage);
+            requestBuilder.add(taxonomySearchProcessor.getSearchBuilder(client
+                    .prepareSearch(INDEX_NAME)));
 
-			// Get results from phenotype
-			facetPage = passportSearchProcessor.extractSearchFacetPage(response
-					.getResponses()[1].getResponse());
-			if (facetPage != null)
-				searchResults.add(facetPage);
+            requestBuilder.add(passportSearchProcessor.getSearchBuilder(client
+                    .prepareSearch(INDEX_NAME)));
 
-			// Get results from study
-			facetPage = stockSearchProcessor.extractSearchFacetPage(response
-					.getResponses()[2].getResponse());
-			if (facetPage != null)
-				searchResults.add(facetPage);
-		}
+            requestBuilder.add(stockSearchProcessor.getSearchBuilder(client
+                    .prepareSearch(INDEX_NAME)));
 
-		return searchResults;
-	}
+
+            MultiSearchResponse response = requestBuilder.execute().actionGet();
+
+            // Get results from experiment
+            facetPage = taxonomySearchProcessor.extractSearchFacetPage(response
+                    .getResponses()[0].getResponse());
+            if (facetPage != null)
+                searchResults.add(facetPage);
+
+            // Get results from phenotype
+            facetPage = passportSearchProcessor.extractSearchFacetPage(response
+                    .getResponses()[1].getResponse());
+            if (facetPage != null)
+                searchResults.add(facetPage);
+
+            // Get results from study
+            facetPage = stockSearchProcessor.extractSearchFacetPage(response
+                    .getResponses()[2].getResponse());
+            if (facetPage != null)
+                searchResults.add(facetPage);
+        }
+
+        return searchResults;
+    }
+
+    @Override
+    public SearchFacetPage searchGeneByTerm(String term) {
+
+        SearchFacetPage facetPage = null;
+        GeneSearchProcessor processor = new GeneSearchProcessor(term);
+        SearchRequestBuilder builder = client.prepareSearch("annot_chr1", "annot_chr2", "annot_chr3", "annot_chr4", "annot_chr5");
+        builder = processor.getSearchBuilder(builder);
+        SearchResponse response = builder.execute().actionGet();
+        facetPage = processor.extractSearchFacetPage(response);
+        return facetPage;
+    }
 }

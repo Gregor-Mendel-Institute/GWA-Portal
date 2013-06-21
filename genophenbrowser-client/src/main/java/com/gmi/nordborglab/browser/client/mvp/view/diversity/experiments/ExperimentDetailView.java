@@ -9,13 +9,15 @@ import com.gmi.nordborglab.browser.client.editors.ExperimentEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter.State;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASViewerPresenter;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.PhaseAnimation;
 import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
+import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
@@ -38,34 +40,43 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 
 public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiHandlers> implements
-		ExperimentDetailPresenter.MyView {
+        ExperimentDetailPresenter.MyView {
 
-	private final Widget widget;
+    private final Widget widget;
 
-	public interface Binder extends UiBinder<Widget, ExperimentDetailView> {
-	}
-	
-	public interface ExperimentEditDriver extends RequestFactoryEditorDriver<ExperimentProxy, ExperimentEditEditor> {}
-	public interface ExperimentDisplayDriver extends RequestFactoryEditorDriver<ExperimentProxy, ExperimentDisplayEditor> {}
-	
-	@UiField ExperimentEditEditor experimentEditEditor;
-	@UiField ExperimentDisplayEditor experimentDisplayEditor;
-	@UiField ToggleButton edit;
-	@UiField ToggleButton save;
-	@UiField Anchor cancel;
-	@UiField Anchor delete;
+    public interface Binder extends UiBinder<Widget, ExperimentDetailView> {
+    }
+
+    public interface ExperimentEditDriver extends RequestFactoryEditorDriver<ExperimentProxy, ExperimentEditEditor> {
+    }
+
+    public interface ExperimentDisplayDriver extends RequestFactoryEditorDriver<ExperimentProxy, ExperimentDisplayEditor> {
+    }
+
+    @UiField
+    ExperimentEditEditor experimentEditEditor;
+    @UiField
+    ExperimentDisplayEditor experimentDisplayEditor;
+    @UiField
+    ToggleButton edit;
+    @UiField
+    ToggleButton save;
+    @UiField
+    Anchor cancel;
+    @UiField
+    Anchor delete;
     @UiField
     ToggleButton share;
-    @UiField(provided=true)
+    @UiField(provided = true)
     ResponsiveDataGrid publicationDataGrid;
     @UiField
     TextBox doiTb;
     @UiField
     Form addDOIForm;
     private final ExperimentEditDriver experimentEditDriver;
-	private final ExperimentDisplayDriver experimentDisplayDriver;
-	private State state = State.DISPLAYING;
-	private final MainResources resources;
+    private final ExperimentDisplayDriver experimentDisplayDriver;
+    private State state = State.DISPLAYING;
+    private final MainResources resources;
     private Modal permissionPopUp = new Modal(true);
     private boolean layoutScheduled = false;
     private final Scheduler.ScheduledCommand layoutCmd = new Scheduler.ScheduledCommand() {
@@ -78,30 +89,30 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 
     public static class ResponsiveDataGrid extends DataGrid<PublicationProxy> {
 
-        private final Column<PublicationProxy,String> citationColumn;
-        private final Column<PublicationProxy,String> authorColumn;
-        private final Column<PublicationProxy,String> titleColumn;
-        private final Column<PublicationProxy,String> yearColumn;
-        private final Column<PublicationProxy,String> journalColumn;
-        private final Column<PublicationProxy,String[]> doiColumn;
+        private final Column<PublicationProxy, String> citationColumn;
+        private final Column<PublicationProxy, String> authorColumn;
+        private final Column<PublicationProxy, String> titleColumn;
+        private final Column<PublicationProxy, String> yearColumn;
+        private final Column<PublicationProxy, String> journalColumn;
+        private final Column<PublicationProxy, HyperlinkPlaceManagerColumn.HyperlinkParam> doiColumn;
         private final IdentityColumn<PublicationProxy> actionColumn;
         private Boolean isCompact;
         private boolean showAction = true;
 
 
-        public ResponsiveDataGrid(int pageSize, Resources resources,ActionCell.Delegate<PublicationProxy> actionDelegate) {
-            super(pageSize, resources,new EntityProxyKeyProvider<PublicationProxy>());
+        public ResponsiveDataGrid(int pageSize, Resources resources, ActionCell.Delegate<PublicationProxy> actionDelegate) {
+            super(pageSize, resources, new EntityProxyKeyProvider<PublicationProxy>());
             citationColumn = new Column<PublicationProxy, String>(new TextCell()) {
                 @Override
                 public String getValue(PublicationProxy object) {
                     StringBuilder builder = new StringBuilder();
-                    builder.append(object.getFirstAuthor()+" ("+object.getPubDate().getYear()+"). ");
-                    builder.append(object.getTitle()+". ");
-                    builder.append(object.getJournal()+", ");
+                    builder.append(object.getFirstAuthor() + " (" + object.getPubDate().getYear() + "). ");
+                    builder.append(object.getTitle() + ". ");
+                    builder.append(object.getJournal() + ", ");
                     builder.append(object.getVolume());
-                    builder.append("("+object.getIssue()+"), ");
-                    builder.append(object.getPage()+". ");
-                    builder.append("doi:"+object.getDOI());
+                    builder.append("(" + object.getIssue() + "), ");
+                    builder.append(object.getPage() + ". ");
+                    builder.append("doi:" + object.getDOI());
                     return builder.toString();
                 }
             };
@@ -129,16 +140,13 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
                     return object.getJournal();
                 }
             };
-            doiColumn = new Column<PublicationProxy, String[]>(new HyperlinkCell(true)) {
+            doiColumn = new Column<PublicationProxy, HyperlinkPlaceManagerColumn.HyperlinkParam>(new HyperlinkCell()) {
                 @Override
-                public String[] getValue(PublicationProxy object) {
-                    String[] retvalue = new String[2];
-                    retvalue[1] = object.getDOI();
-                    retvalue[0] = object.getURL();
-                    return retvalue;
+                public HyperlinkPlaceManagerColumn.HyperlinkParam getValue(PublicationProxy object) {
+                    return new HyperlinkPlaceManagerColumn.HyperlinkParam(object.getDOI(), object.getURL());
                 }
             };
-            actionColumn = new IdentityColumn<PublicationProxy>(new EntypoIconActionCell<PublicationProxy>("&#59177;",actionDelegate)) {
+            actionColumn = new IdentityColumn<PublicationProxy>(new EntypoIconActionCell<PublicationProxy>("&#59177;", actionDelegate)) {
 
                 @Override
                 public PublicationProxy getValue(PublicationProxy object) {
@@ -146,50 +154,49 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
                 }
             };
             //initColumns();
-           // updateColumns();
+            // updateColumns();
         }
 
 
         private void initColumns() {
-            addColumn(citationColumn,"Citation");
-            addColumn(authorColumn,"Author");
-            addColumn(titleColumn,"Title");
-            addColumn(yearColumn,"Year");
-            addColumn(journalColumn,"Journal");
-            addColumn(doiColumn,"DOI");
+            addColumn(citationColumn, "Citation");
+            addColumn(authorColumn, "Author");
+            addColumn(titleColumn, "Title");
+            addColumn(yearColumn, "Year");
+            addColumn(journalColumn, "Journal");
+            addColumn(doiColumn, "DOI");
             addColumn(actionColumn);
 
         }
 
         private void updateColumns() {
             int columnCount = getColumnCount();
-            for (int i =columnCount-1;i>=0;i--) {
+            for (int i = columnCount - 1; i >= 0; i--) {
                 removeColumn(i);
             }
             removeUnusedColGroups();
-            if (isCompact)  {
-                addColumn(citationColumn,"Citation");
+            if (isCompact) {
+                addColumn(citationColumn, "Citation");
                 clearColumnWidth(0);
                 if (showAction) {
                     addColumn(actionColumn);
-                    setColumnWidth(1,"40px");
+                    setColumnWidth(1, "40px");
                 }
 
-            }
-            else {
-                addColumn(authorColumn,"Author");
+            } else {
+                addColumn(authorColumn, "Author");
                 addColumn(titleColumn, "Title");
-                addColumn(yearColumn,"Year");
-                addColumn(journalColumn,"Journal");
-                addColumn(doiColumn,"DOI");
-                setColumnWidth(0,"100px");
+                addColumn(yearColumn, "Year");
+                addColumn(journalColumn, "Journal");
+                addColumn(doiColumn, "DOI");
+                setColumnWidth(0, "100px");
                 clearColumnWidth(1);
-                setColumnWidth(2,"60px");
-                setColumnWidth(3,"80px");
+                setColumnWidth(2, "60px");
+                setColumnWidth(3, "80px");
                 clearColumnWidth(4);
                 if (showAction) {
                     addColumn(actionColumn);
-                    setColumnWidth(5,"40px");
+                    setColumnWidth(5, "40px");
                 }
             }
         }
@@ -199,7 +206,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
             return getColumnCount();
         }
 
-       private void removeUnusedColGroups() {
+        private void removeUnusedColGroups() {
             int columnCount = getColumnCount();
             NodeList<Element> colGroups = getElement().getElementsByTagName("colgroup");
 
@@ -207,7 +214,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
                 Element colGroupEle = colGroups.getItem(i);
                 NodeList<Element> colList = colGroupEle.getElementsByTagName("col");
 
-                for (int j = colList.getLength()-1;j>=0; j--) {
+                for (int j = colList.getLength() - 1; j >= 0; j--) {
                     colGroupEle.removeChild(colList.getItem(j));
                 }
             }
@@ -235,35 +242,33 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         }
 
 
-
-
     }
 
-	@Inject
-	public ExperimentDetailView(final Binder binder,
-			final ExperimentEditDriver experimentEditDriver,
-			final ExperimentDisplayDriver experimentDisplayDriver,
-			final MainResources resources,
-            final CustomDataGridResources customDataGridResources) {
-		this.resources = resources;
-        publicationDataGrid = new ResponsiveDataGrid(50,customDataGridResources,new ActionCell.Delegate<PublicationProxy>() {
+    @Inject
+    public ExperimentDetailView(final Binder binder,
+                                final ExperimentEditDriver experimentEditDriver,
+                                final ExperimentDisplayDriver experimentDisplayDriver,
+                                final MainResources resources,
+                                final CustomDataGridResources customDataGridResources) {
+        this.resources = resources;
+        publicationDataGrid = new ResponsiveDataGrid(50, customDataGridResources, new ActionCell.Delegate<PublicationProxy>() {
             @Override
             public void execute(PublicationProxy object) {
                 getUiHandlers().onDeletePublication(object);
             }
         });
-		widget = binder.createAndBindUi(this);
-		this.experimentEditDriver = experimentEditDriver;
-		this.experimentDisplayDriver = experimentDisplayDriver;
-		this.experimentDisplayDriver.initialize(experimentDisplayEditor);
-		this.experimentEditDriver.initialize(experimentEditEditor);
+        widget = binder.createAndBindUi(this);
+        this.experimentEditDriver = experimentEditDriver;
+        this.experimentDisplayDriver = experimentDisplayDriver;
+        this.experimentDisplayDriver.initialize(experimentDisplayEditor);
+        this.experimentEditDriver.initialize(experimentEditEditor);
         permissionPopUp.setBackdrop(BackdropType.STATIC);
         permissionPopUp.setTitle("Permissions");
         permissionPopUp.setMaxHeigth("700px");
         permissionPopUp.setCloseVisible(false);
         permissionPopUp.setKeyboard(false);
         //initDataGrid();
-	}
+    }
 
     private void initDataGrid() {
 
@@ -274,36 +279,33 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
             public String getValue(PublicationProxy object) {
                 return object.getFirstAuthor();
             }
-        },"Author");
+        }, "Author");
 
         publicationDataGrid.addColumn(new Column<PublicationProxy, String>(new TextCell()) {
             @Override
             public String getValue(PublicationProxy object) {
                 return object.getTitle();
             }
-        },"Title");
+        }, "Title");
 
         publicationDataGrid.addColumn(new Column<PublicationProxy, String>(new TextCell()) {
             @Override
             public String getValue(PublicationProxy object) {
                 return String.valueOf(object.getPubDate().getYear());
             }
-        },"Year");
+        }, "Year");
         publicationDataGrid.addColumn(new Column<PublicationProxy, String>(new TextCell()) {
             @Override
             public String getValue(PublicationProxy object) {
                 return object.getJournal();
             }
-        },"Journal");
-        publicationDataGrid.addColumn(new Column<PublicationProxy, String[]>(new HyperlinkCell(true)) {
+        }, "Journal");
+        publicationDataGrid.addColumn(new Column<PublicationProxy, HyperlinkPlaceManagerColumn.HyperlinkParam>(new HyperlinkCell(true)) {
             @Override
-            public String[] getValue(PublicationProxy object) {
-                String[] retvalue = new String[2];
-                retvalue[1] = object.getDOI();
-                retvalue[0] = object.getURL();
-                return retvalue;
+            public HyperlinkPlaceManagerColumn.HyperlinkParam getValue(PublicationProxy object) {
+                return new HyperlinkPlaceManagerColumn.HyperlinkParam(object.getDOI(), object.getURL());
             }
-        },"Doi");
+        }, "Doi");
         publicationDataGrid.addColumn(new IdentityColumn<PublicationProxy>(new EntypoIconActionCell<PublicationProxy>("&#59177;", new ActionCell.Delegate<PublicationProxy>() {
             @Override
             public void execute(PublicationProxy object) {
@@ -314,56 +316,52 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
             public PublicationProxy getValue(PublicationProxy object) {
                 return object;
             }
-        },"");
-        publicationDataGrid.setColumnWidth(0,"100px");
-        publicationDataGrid.setColumnWidth(2,"60px");
-        publicationDataGrid.setColumnWidth(3,"80px");
-        publicationDataGrid.setColumnWidth(5,"40px");
+        }, "");
+        publicationDataGrid.setColumnWidth(0, "100px");
+        publicationDataGrid.setColumnWidth(2, "60px");
+        publicationDataGrid.setColumnWidth(3, "80px");
+        publicationDataGrid.setColumnWidth(5, "40px");
     }
 
     @Override
-	public Widget asWidget() {
-		return widget;
-	}
+    public Widget asWidget() {
+        return widget;
+    }
 
-	@Override
-	public ExperimentEditDriver getExperimentEditDriver() {
-		return experimentEditDriver;
-	}
+    @Override
+    public ExperimentEditDriver getExperimentEditDriver() {
+        return experimentEditDriver;
+    }
 
     @Override
     public void setInSlot(Object slot, Widget content) {
         if (slot == ExperimentDetailPresenter.TYPE_SetPermissionContent) {
             permissionPopUp.add(content);
-        }
-        else {
+        } else {
             super.setInSlot(slot, content);
         }
     }
 
 
-
-
-
-	@Override
-	public void setState(State state,int permission) {
-		this.state = state;
-		experimentDisplayEditor.setVisible(state == State.DISPLAYING);
-		experimentEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-		edit.setVisible(state == State.DISPLAYING && 
-				(permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-		save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-		cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-		delete.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+    @Override
+    public void setState(State state, int permission) {
+        this.state = state;
+        experimentDisplayEditor.setVisible(state == State.DISPLAYING);
+        experimentEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+        edit.setVisible(state == State.DISPLAYING &&
+                (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+        save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+        cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+        delete.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
         share.setVisible((permission & AccessControlEntryProxy.ADMINISTRATION) == AccessControlEntryProxy.ADMINISTRATION);
-        addDOIForm.setVisible(state == State.DISPLAYING &&  (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        publicationDataGrid.setShowAction((state == State.DISPLAYING &&  (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT));
-	}
+        addDOIForm.setVisible(state == State.DISPLAYING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+        publicationDataGrid.setShowAction((state == State.DISPLAYING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT));
+    }
 
-	@Override
-	public State getState() {
-		return state;
-	}
+    @Override
+    public State getState() {
+        return state;
+    }
 
     @Override
     public void showPermissionPanel(boolean show) {
@@ -379,38 +377,38 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     }
 
     @Override
-	public ExperimentDisplayDriver getExperimentDisplayDriver() {
-		return experimentDisplayDriver;
-	}
-	
-	@UiHandler("edit")
-	public void onEdit(ClickEvent e) {
-		if (state == State.DISPLAYING) {
-			getUiHandlers().onEdit();
-		}
-	}
-	
-	@UiHandler("delete")
-	public void onDelete(ClickEvent e) {
-		if (state == State.EDITING) {
-			if (Window.confirm("Do you really want to delete the Experiment?")) 
-				getUiHandlers().onDelete();
-		}
-	}
-	
-	@UiHandler("save") 
-	public void onSave(ClickEvent e) {
-		if (state == State.EDITING) {
-			getUiHandlers().onSave();
-		}
-	}
-	
-	@UiHandler("cancel") 
-	public void onCancel(ClickEvent e) {
-		if (state == State.EDITING) {
-			getUiHandlers().onCancel();
-		}
-	}
+    public ExperimentDisplayDriver getExperimentDisplayDriver() {
+        return experimentDisplayDriver;
+    }
+
+    @UiHandler("edit")
+    public void onEdit(ClickEvent e) {
+        if (state == State.DISPLAYING) {
+            getUiHandlers().onEdit();
+        }
+    }
+
+    @UiHandler("delete")
+    public void onDelete(ClickEvent e) {
+        if (state == State.EDITING) {
+            if (Window.confirm("Do you really want to delete the Experiment?"))
+                getUiHandlers().onDelete();
+        }
+    }
+
+    @UiHandler("save")
+    public void onSave(ClickEvent e) {
+        if (state == State.EDITING) {
+            getUiHandlers().onSave();
+        }
+    }
+
+    @UiHandler("cancel")
+    public void onCancel(ClickEvent e) {
+        if (state == State.EDITING) {
+            getUiHandlers().onCancel();
+        }
+    }
 
     @UiHandler("share")
     public void onClickShareBtn(ClickEvent e) {
@@ -438,7 +436,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 
     @Override
     public void phaseInPublication(PublicationProxy publication, ProvidesKey<PublicationProxy> providesKey) {
-        (new PhaseAnimation.DataGridPhaseAnimation<PublicationProxy>(publicationDataGrid,publication,providesKey)).run();
+        (new PhaseAnimation.DataGridPhaseAnimation<PublicationProxy>(publicationDataGrid, publication, providesKey)).run();
     }
 
     @Override
