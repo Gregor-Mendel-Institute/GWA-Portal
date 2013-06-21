@@ -1,11 +1,8 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
-import java.util.Date;
-import java.util.List;
-
-import com.github.gwtbootstrap.client.ui.base.ProgressBarBase;
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
+import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.ProgressBarCell;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
@@ -19,112 +16,112 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 
+import java.util.Date;
+import java.util.List;
+
 public interface StudyListDataGridColumns {
-	
-public static class NameColumn extends Column<StudyProxy,String[]> {
-		
-		private final PlaceManager placeManager;
-		private final PlaceRequest placeRequest;
-		
 
-		public NameColumn(final PlaceManager placeManager,final PlaceRequest placeRequest) {
-			super(new HyperlinkCell());
-			this.placeManager = placeManager;
-			this.placeRequest = placeRequest;
-		}
+    public static class NameColumn extends HyperlinkPlaceManagerColumn<StudyProxy> {
 
-		@Override
-		public String[] getValue(StudyProxy object) {
-			String[] hyperlink = new String[2];
-			hyperlink[HyperlinkCell.LINK_INDEX] = "#"+placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()));
-			hyperlink[HyperlinkCell.URL_INDEX] = object.getName();
-			return hyperlink;
-		}
-		
-	}
+        private final PlaceRequest placeRequest;
 
-	public static class ProducerColumn extends Column<StudyProxy,String> {
 
-		public ProducerColumn() {
-			super(new TextCell());
-		}
+        public NameColumn(final PlaceManager placeManager, final PlaceRequest placeRequest) {
+            super(new HyperlinkCell(), placeManager);
+            this.placeRequest = placeRequest;
+        }
 
-		@Override
-		public String getValue(StudyProxy object) {
-			return object.getProducer();
-		}
-		
-	}
-	
-	public static class StudyDateColumn extends Column<StudyProxy,Date> {
+        @Override
+        public HyperlinkParam getValue(StudyProxy object) {
+            String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()));
+            String name = object.getName();
+            return new HyperlinkParam(name, url);
+        }
 
-		public StudyDateColumn() {
-			super(new DateCell());
-		}
+    }
 
-		@Override
-		public Date getValue(StudyProxy object) {
-			return object.getStudyDate();
-		}
-		
-	}
-	
-	public static class AlleleAssayColumn extends Column<StudyProxy,String> {
+    public static class ProducerColumn extends Column<StudyProxy, String> {
 
-		public AlleleAssayColumn() {
-			super(new TextCell());
-		}
+        public ProducerColumn() {
+            super(new TextCell());
+        }
 
-		@Override
-		public String getValue(StudyProxy object) {
-			String assay = null;
-			if (object.getAlleleAssay()!=null)
-				assay = object.getAlleleAssay().getName();
-			return assay;
-		}
-		
-	}
-	
-	public static class ProtocolColumn extends Column<StudyProxy,String> {
+        @Override
+        public String getValue(StudyProxy object) {
+            return object.getProducer();
+        }
 
-		public ProtocolColumn() {
-			super(new TextCell());
-		}
+    }
 
-		@Override
-		public String getValue(StudyProxy object) {
-			if (object.getProtocol() == null)
-				return null;
-			return object.getProtocol().getAnalysisMethod();
-		}
-		
-	}
-	
-	public static class PhenotypeColumn extends TextColumn<StudyProxy> {
-		@Override
-		public String getValue(StudyProxy object) {
-			String phenotype = null;
-			if (object.getPhenotype() != null)
-				phenotype = object.getPhenotype().getLocalTraitName();
-			return phenotype;
-		}
-	}
-	
-	public static class ExperimentColumn extends TextColumn<StudyProxy> {
-		@Override
-		public String getValue(StudyProxy object) {
-			String experiment = null;
-			if (object.getPhenotype().getExperiment() != null)
-				experiment  = object.getPhenotype().getExperiment().getName();
-			return experiment;
-		}
-	}
+    public static class StudyDateColumn extends Column<StudyProxy, Date> {
 
-    public static class ProgressCell implements HasCell<StudyJobProxy,Number> {
+        public StudyDateColumn() {
+            super(new DateCell());
+        }
+
+        @Override
+        public Date getValue(StudyProxy object) {
+            return object.getStudyDate();
+        }
+
+    }
+
+    public static class AlleleAssayColumn extends Column<StudyProxy, String> {
+
+        public AlleleAssayColumn() {
+            super(new TextCell());
+        }
+
+        @Override
+        public String getValue(StudyProxy object) {
+            String assay = null;
+            if (object.getAlleleAssay() != null)
+                assay = object.getAlleleAssay().getName();
+            return assay;
+        }
+
+    }
+
+    public static class ProtocolColumn extends Column<StudyProxy, String> {
+
+        public ProtocolColumn() {
+            super(new TextCell());
+        }
+
+        @Override
+        public String getValue(StudyProxy object) {
+            if (object.getProtocol() == null)
+                return null;
+            return object.getProtocol().getAnalysisMethod();
+        }
+
+    }
+
+    public static class PhenotypeColumn extends TextColumn<StudyProxy> {
+        @Override
+        public String getValue(StudyProxy object) {
+            String phenotype = null;
+            if (object.getPhenotype() != null)
+                phenotype = object.getPhenotype().getLocalTraitName();
+            return phenotype;
+        }
+    }
+
+    public static class ExperimentColumn extends TextColumn<StudyProxy> {
+        @Override
+        public String getValue(StudyProxy object) {
+            String experiment = null;
+            if (object.getPhenotype().getExperiment() != null)
+                experiment = object.getPhenotype().getExperiment().getName();
+            return experiment;
+        }
+    }
+
+    public static class ProgressCell implements HasCell<StudyJobProxy, Number> {
 
         @Override
         public Cell<Number> getCell() {
-            return new ProgressBarCell(true,true, null);
+            return new ProgressBarCell(true, true, null);
         }
 
         @Override
@@ -136,15 +133,13 @@ public static class NameColumn extends Column<StudyProxy,String[]> {
         public Number getValue(StudyJobProxy object) {
             if (object != null) {
                 return object.getProgress();
-            }
-            else
-            {
+            } else {
                 return null;
             }
         }
     }
 
-    public static class StatusCell implements HasCell<StudyJobProxy,String> {
+    public static class StatusCell implements HasCell<StudyJobProxy, String> {
 
         @Override
         public Cell<String> getCell() {
@@ -158,8 +153,8 @@ public static class NameColumn extends Column<StudyProxy,String[]> {
 
         @Override
         public String getValue(StudyJobProxy object) {
-            if (object != null ){
-               return object.getStatus();
+            if (object != null) {
+                return object.getStatus();
             }
             return null;
         }
@@ -169,8 +164,9 @@ public static class NameColumn extends Column<StudyProxy,String[]> {
 
         public interface Template extends SafeHtmlTemplates {
             @Template("<div class=\"label {0}\">{1}</div>")
-            SafeHtml statustext(String cssClass,String label);
+            SafeHtml statustext(String cssClass, String label);
         }
+
         private static Template template = GWT.create(Template.class);
 
         @Override
@@ -181,17 +177,14 @@ public static class NameColumn extends Column<StudyProxy,String[]> {
             }
             if (value.equalsIgnoreCase("Finished")) {
                 className = LabelType.SUCCESS.get();
-            }
-            else  if (value.equalsIgnoreCase("Running")) {
+            } else if (value.equalsIgnoreCase("Running")) {
                 className = LabelType.WARNING.get();
-            }
-            else if (value.equalsIgnoreCase("Queued")) {
+            } else if (value.equalsIgnoreCase("Queued")) {
+                className = LabelType.IMPORTANT.get();
+            } else if (value.equalsIgnoreCase("Error")) {
                 className = LabelType.IMPORTANT.get();
             }
-            else if (value.equalsIgnoreCase("Error")) {
-                className = LabelType.IMPORTANT.get();
-            }
-            sb.append(template.statustext(className,value));
+            sb.append(template.statustext(className, value));
         }
     }
 
@@ -207,16 +200,16 @@ public static class NameColumn extends Column<StudyProxy,String[]> {
             final Cell<X> cell = hasCell.getCell();
             sb.appendHtmlConstant("<div style=\"display:inline-block;margin-right:20px;\">");
             if (!(cell instanceof ProgressBarCell && value != null && (value.getStatus().equalsIgnoreCase("Finished") || value.getStatus().equalsIgnoreCase("Error")))) {
-                cell.render(context,hasCell.getValue(value),sb);
+                cell.render(context, hasCell.getValue(value), sb);
             }
             sb.appendHtmlConstant("</div>");
         }
     }
 
 
-    public static class StatusColumn extends Column<StudyProxy,StudyJobProxy> {
+    public static class StatusColumn extends Column<StudyProxy, StudyJobProxy> {
 
-        public StatusColumn(List<HasCell<StudyJobProxy,?>> cells) {
+        public StatusColumn(List<HasCell<StudyJobProxy, ?>> cells) {
             super(new StatusCompositeCell(cells));
         }
 
