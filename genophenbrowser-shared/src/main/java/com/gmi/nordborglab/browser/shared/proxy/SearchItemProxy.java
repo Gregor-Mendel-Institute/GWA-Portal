@@ -5,14 +5,19 @@ import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
 @ProxyForName("com.gmi.nordborglab.browser.server.domain.SearchItem")
 public interface SearchItemProxy extends ValueProxy {
-	
-	public static enum CATEGORY {DIVERSITY,GERMPLASM,GENOTYPE}
-	public static enum SUB_CATEGORY {EXPERIMENT,PHENOTYPE,STUDY,ONTOLOGY,PASSPORT,STOCK, PUBLICATION, TAXONOMY}
 
-	public String getId();
-	public String getDisplayText();
-	public String getReplacementText();
-	public SUB_CATEGORY getSubCategory();
-	public CATEGORY getCategory();
-	
+    public static enum CATEGORY {DIVERSITY, GERMPLASM, GENOTYPE}
+
+    public static enum SUB_CATEGORY {EXPERIMENT, PHENOTYPE, STUDY, ONTOLOGY, PASSPORT, STOCK, PUBLICATION, TAXONOMY, GENE}
+
+    public String getId();
+
+    public String getDisplayText();
+
+    public String getReplacementText();
+
+    public SUB_CATEGORY getSubCategory();
+
+    public CATEGORY getCategory();
+
 }

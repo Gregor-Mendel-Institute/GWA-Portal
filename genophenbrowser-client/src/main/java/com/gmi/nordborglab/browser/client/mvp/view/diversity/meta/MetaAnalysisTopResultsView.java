@@ -1,0 +1,318 @@
+package com.gmi.nordborglab.browser.client.mvp.view.diversity.meta;
+
+import com.gmi.nordborglab.browser.client.mvp.handlers.MetaAnalysisTopResultsUiHandlers;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisTopResultsPresenter;
+import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
+import com.gmi.nordborglab.browser.client.ui.CustomPager;
+import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.Maps;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.cellview.client.IdentityColumn;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.visualization.client.visualizations.corechart.Options;
+import com.google.inject.Inject;
+import com.googlecode.gwt.charts.client.ColumnType;
+import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.Selection;
+import com.googlecode.gwt.charts.client.corechart.PieChart;
+import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
+import com.googlecode.gwt.charts.client.event.ReadyEvent;
+import com.googlecode.gwt.charts.client.event.ReadyHandler;
+import com.googlecode.gwt.charts.client.event.SelectEvent;
+import com.googlecode.gwt.charts.client.options.Animation;
+import com.googlecode.gwt.charts.client.options.Slice;
+import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import com.gwtplatform.mvp.client.proxy.PlaceManager;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: uemit.seren
+ * Date: 11.06.13
+ * Time: 15:49
+ * To change this template use File | Settings | File Templates.
+ */
+public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisTopResultsUiHandlers> implements
+        MetaAnalysisTopResultsPresenter.MyView {
+
+    interface Binder extends UiBinder<Widget, MetaAnalysisTopResultsView> {
+    }
+
+    private final Widget widget;
+    @UiField
+    SimpleLayoutPanel chartContainer1;
+    @UiField
+    SimpleLayoutPanel chartContainer2;
+    @UiField
+    SimpleLayoutPanel chartContainer3;
+    @UiField
+    SimpleLayoutPanel chartContainer4;
+    @UiField
+    PieChart chrPieChart;
+    @UiField
+    PieChart inGenePieChart;
+    @UiField
+    PieChart overFDRPieChart;
+    @UiField
+    PieChart annotationPieChart;
+    @UiField(provided = true)
+    DataGrid<MetaSNPAnalysisProxy> dataGrid;
+    @UiField
+    CustomPager pager;
+
+    BiMap<MetaAnalysisTopResultsPresenter.STATS, PieChart> stats2Chart;
+    Map<MetaAnalysisTopResultsPresenter.STATS, DataTable> stats2DataTable;
+    Map<MetaAnalysisTopResultsPresenter.STATS, JsArray<Selection>> stats2Selection;
+
+    private List<MetaAnalysisTopResultsPresenter.STATS> chartsToUpdate;
+    private boolean layoutScheduled = false;
+    private final PlaceManager placeManger;
+
+    private final Scheduler.ScheduledCommand layoutCmd = new Scheduler.ScheduledCommand() {
+        public void execute() {
+            layoutScheduled = false;
+            forceLayout();
+        }
+    };
+    private PieSclice greySliceOption = PieSclice.create();
+    //private DataTable emptyDataTable;
+
+    //WORKAROUND because chart doesN't have the setter
+    public static class PieSclice extends Slice {
+
+        public static PieSclice create() {
+            return createObject().cast();
+        }
+
+        protected PieSclice() {
+        }
+
+        public final native void setColor(String color)/*-{
+            this.color = color;
+        }-*/;
+
+        public final native void setTextStyle(String textStyle)/*-{
+            this.textStyle = textStyle;
+        }-*/;
+    }
+
+    public class ChartSelectHandler extends com.googlecode.gwt.charts.client.event.SelectHandler {
+
+        private final MetaAnalysisTopResultsPresenter.STATS stat;
+
+        public ChartSelectHandler(MetaAnalysisTopResultsPresenter.STATS stat) {
+            this.stat = stat;
+        }
+
+        @Override
+        public void onSelect(SelectEvent selectEvent) {
+            PieChart chart = stats2Chart.get(stat);
+            JsArray<Selection> selections = chart.getSelection();
+            greyOutSlices(stat, selections);
+            Integer row = null;
+            if (selections.length() > 0) {
+                row = selections.get(0).getRow();
+            }
+            getUiHandlers().onChangeSelections(stat, row);
+        }
+    }
+
+    public class ChartReadyHandler extends ReadyHandler {
+
+        private final MetaAnalysisTopResultsPresenter.STATS stat;
+
+        public ChartReadyHandler(MetaAnalysisTopResultsPresenter.STATS stat) {
+            this.stat = stat;
+        }
+
+        @Override
+        public void onReady(ReadyEvent readyEvent) {
+            final JsArray<Selection> selections = stats2Selection.get(stat);
+            PieChart chart = stats2Chart.get(stat);
+            if (selections != null && selections.length() != 0) {
+                chart.setSelection(selections);
+            }
+        }
+    }
+
+    @Inject
+    public MetaAnalysisTopResultsView(Binder binder, final PlaceManager placeManger,
+                                      final CustomDataGridResources customDataGridResources) {
+        this.placeManger = placeManger;
+        dataGrid = new DataGrid<MetaSNPAnalysisProxy>(20, customDataGridResources);
+        stats2DataTable = Maps.newHashMap();
+        stats2Selection = Maps.newHashMap();
+        greySliceOption.setColor("#eee");
+        initDataGrid();
+        widget = binder.createAndBindUi(this);
+        stats2Chart = ImmutableBiMap.<MetaAnalysisTopResultsPresenter.STATS, PieChart>builder().put(MetaAnalysisTopResultsPresenter.STATS.CHR, chrPieChart)
+                .put(MetaAnalysisTopResultsPresenter.STATS.INGENE, inGenePieChart).put(MetaAnalysisTopResultsPresenter.STATS.OVERFDR, overFDRPieChart)
+                .put(MetaAnalysisTopResultsPresenter.STATS.ANNOTATION, annotationPieChart).build();
+        initChartHandlers();
+        pager.setDisplay(dataGrid);
+    }
+
+    private void initDataGrid() {
+        dataGrid.setWidth("100%");
+        dataGrid.setEmptyTableWidget(new Label("No Records found"));
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.AnalysisColumn(placeManger), "Analysis");
+
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.PhenotypeColumn(placeManger), "Phenotype");
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.StudyColumn(placeManger), "Study");
+
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.GenotypeColumn(), "Genotype");
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.MethodColumn(), "Method");
+        dataGrid.addColumn(new IdentityColumn<MetaSNPAnalysisProxy>(new MetaAnalysisGeneView.ScoreCell()), "pVal");
+
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.SNPColumn(), "SNP");
+
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.GeneColumn(placeManger), "Gene");
+    }
+
+    private void initChartHandlers() {
+        for (Map.Entry<MetaAnalysisTopResultsPresenter.STATS, PieChart> entry : stats2Chart.entrySet()) {
+            PieChart chart = entry.getValue();
+            MetaAnalysisTopResultsPresenter.STATS stat = entry.getKey();
+            chart.addSelectHandler(new ChartSelectHandler(stat));
+            chart.addReadyHandler(new ChartReadyHandler(stat));
+        }
+    }
+
+
+    private void greyOutSlices(MetaAnalysisTopResultsPresenter.STATS stat, JsArray<Selection> selections) {
+        stats2Selection.put(stat, selections);
+        PieChart pieChart = stats2Chart.get(stat);
+        PieChartOptions options = getPieOptions(getTitleFromStat(stat), false);
+        DataTable dataTable = stats2DataTable.get(stat);
+        JsArray<Slice> sliceOptions = getGreySlicesFromSelection(dataTable, selections);
+        options.setSlices(sliceOptions);
+        pieChart.draw(dataTable, options);
+    }
+
+    private JsArray<Slice> getGreySlicesFromSelection(DataTable dataTable, JsArray<Selection> selections) {
+        JsArray<Slice> options = Slice.createArray().cast();
+        //Options options = Options.create();
+        if (selections.length() == 0) {
+            return options;
+        }
+        for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
+            PieSclice sliceOption = PieSclice.create();
+            if (i != selections.get(0).getRow()) {
+                sliceOption = greySliceOption;
+            }
+            options.push(sliceOption);
+        }
+        return options;
+    }
+
+    private DataTable createEmptyDataTable(String term) {
+        DataTable dataTable = DataTable.create();
+        dataTable.addColumn(ColumnType.STRING, "stats");
+        dataTable.addColumn(ColumnType.NUMBER, "count");
+        dataTable.addRows(1);
+        dataTable.setValue(0, 0, term);
+        dataTable.setValue(0, 1, 1);
+        return dataTable;
+    }
+
+    @Override
+    public Widget asWidget() {
+        return widget;
+    }
+
+
+    private PieChartOptions getPieOptions(String title, boolean isBlank) {
+        PieChartOptions options = PieChartOptions.create();
+        options.setTitle(title);
+        if (isBlank) {
+            options.setColors("#eee");
+        }
+        Animation animation = Animation.create();
+        Options animationOptions = Options.create();
+        return options;
+    }
+
+    @Override
+    public void setStatsData(DataTable dataTable, MetaAnalysisTopResultsPresenter.STATS stat) {
+        stats2DataTable.put(stat, dataTable);
+    }
+
+    @Override
+    public void scheduleLayout() {
+        if (widget.isAttached() && !layoutScheduled) {
+            layoutScheduled = true;
+            Scheduler.get().scheduleDeferred(layoutCmd);
+        }
+    }
+
+    @Override
+    public void resetSelection(List<MetaAnalysisTopResultsPresenter.STATS> stats) {
+        if (stats == null) {
+            for (PieChart chart : stats2Chart.values()) {
+                chart.setSelection(null);
+            }
+            stats2Selection.clear();
+        } else {
+            for (MetaAnalysisTopResultsPresenter.STATS stat : stats) {
+                PieChart chart = stats2Chart.get(stat);
+                chart.setSelection(null);
+                stats2Selection.put(stat, null);
+            }
+        }
+
+    }
+
+    @Override
+    public HasData<MetaSNPAnalysisProxy> getDisplay() {
+        return dataGrid;
+    }
+
+    private void forceLayout() {
+        if (!widget.isAttached() || !widget.isVisible())
+            return;
+        drawCharts();
+    }
+
+    private void drawCharts() {
+        for (Map.Entry<MetaAnalysisTopResultsPresenter.STATS, PieChart> entry : stats2Chart.entrySet()) {
+            if (stats2DataTable.containsKey(entry.getKey())) {
+                JsArray<Selection> selections = stats2Selection.get(entry.getKey());
+                if (selections == null || selections.length() == 0) {
+                    PieChart chart = entry.getValue();
+                    entry.getValue().draw(stats2DataTable.get(entry.getKey()), getPieOptions(getTitleFromStat(entry.getKey()), false));
+                }
+            }
+        }
+    }
+
+    private String getTitleFromStat(MetaAnalysisTopResultsPresenter.STATS stat) {
+        String title = "";
+        switch (stat) {
+            case CHR:
+                title = "Chromosomes";
+                break;
+            case INGENE:
+                title = "SNP region";
+                break;
+            case OVERFDR:
+                title = "SNP FDR";
+                break;
+            case ANNOTATION:
+                title = "SNP annotation";
+                break;
+        }
+        return title;
+    }
+
+}

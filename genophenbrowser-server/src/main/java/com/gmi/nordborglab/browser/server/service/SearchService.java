@@ -1,12 +1,14 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import java.util.List;
-
 import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 
+import java.util.List;
+
 public interface SearchService {
 
-	public List<SearchFacetPage> searchByTerm(String term,CATEGORY category,SUB_CATEGORY subCategory);
+    public List<SearchFacetPage> searchByTerm(String term, CATEGORY category, SUB_CATEGORY subCategory);
+
+    public SearchFacetPage searchGeneByTerm(String term);
 }

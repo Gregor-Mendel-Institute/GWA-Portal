@@ -18,6 +18,7 @@ import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
+import com.gmi.nordborglab.browser.server.tasks.SubmitAnalysisTask;
 import com.google.common.base.Predicate;
 import com.google.common.collect.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,60 +43,66 @@ import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
-public class HDF5GWASDataService  implements GWASDataService {
+public class HDF5GWASDataService implements GWASDataService {
 
-    private @Value("${GWAS.study.folder}") String GWAS_STUDY_FOLDER;
-    private @Value("${GWAS.viewer.dest_folder}") String GWAS_VIEWER_FOLDER;
+    private
+    @Value("${GWAS.study.folder}")
+    String GWAS_STUDY_FOLDER;
+    private
+    @Value("${GWAS.viewer.dest_folder}")
+    String GWAS_VIEWER_FOLDER;
 
     @Value("${java.io.tmpdir}")
     private String TEMP_FOLDER;
 
     @Resource
+    protected SubmitAnalysisTask submitAnalysisTask;
+
+    @Resource
     protected StudyRepository studyRepository;
 
-	@Resource
-	protected TraitUomRepository traitUomRepository;
+    @Resource
+    protected TraitUomRepository traitUomRepository;
 
     @Resource
     protected GWASResultRepository gwasResultRepository;
 
     @Resource
     protected UserRepository userRepository;
-	
-	@Resource
-	protected MutableAclService aclService;
 
-	@Resource
-	protected RoleHierarchy roleHierarchy;
+    @Resource
+    protected MutableAclService aclService;
 
-    @Resource(name="ES")
+    @Resource
+    protected RoleHierarchy roleHierarchy;
+
+    @Resource(name = "ES")
     protected AnnotationDataService annotationDataService;
-	
-	protected GWASReader gwasReader;
 
-    private static List<String> csvMimeTypes = Lists.newArrayList("text/csv","application/csv","application/excel","application/vnd.ms-excel","application/vnd.msexcel");
-	
-	@Override
-	public GWASData getGWASDataByStudyId(Long studyId) {
-		TraitUom trait = traitUomRepository.findByStudyId(studyId);
-		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-		final ImmutableList<Permission> permissions = ImmutableList
-				.of(CustomPermission.READ);
-		ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,trait.getId());
-		Acl acl = aclService.readAclById(oid, authorities);
-		try {
-			if (!acl.isGranted(permissions, authorities, false)) 
-				throw new AccessDeniedException("not allowed");
-		}
-		catch (NotFoundException e) {
-			throw new AccessDeniedException("not allowed");
-		}
-		GWASReader gwasReader = new HDF5GWASReader(GWAS_STUDY_FOLDER);
-        GWASData gwasData = gwasReader.readAll(studyId+".hdf5",2500D);
+    protected GWASReader gwasReader;
+
+    private static List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel");
+
+    @Override
+    public GWASData getGWASDataByStudyId(Long studyId) {
+        TraitUom trait = traitUomRepository.findByStudyId(studyId);
+        final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
+        final ImmutableList<Permission> permissions = ImmutableList
+                .of(CustomPermission.READ);
+        ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class, trait.getId());
+        Acl acl = aclService.readAclById(oid, authorities);
+        try {
+            if (!acl.isGranted(permissions, authorities, false))
+                throw new AccessDeniedException("not allowed");
+        } catch (NotFoundException e) {
+            throw new AccessDeniedException("not allowed");
+        }
+        GWASReader gwasReader = new HDF5GWASReader(GWAS_STUDY_FOLDER);
+        GWASData gwasData = gwasReader.readAll(studyId + ".hdf5", 2500D);
         gwasData.sortByPosition();
         gwasData = addAnnotation(gwasData);
-		return gwasData;
-	}
+        return gwasData;
+    }
 
     @Override
     public GWASData getGWASDataByViewerId(Long gwasResultId) {
@@ -103,17 +110,16 @@ public class HDF5GWASDataService  implements GWASDataService {
         final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
         final ImmutableList<Permission> permissions = ImmutableList
                 .of(CustomPermission.READ);
-        ObjectIdentity oid = new ObjectIdentityImpl(GWASResult.class,gwasResult.getId());
+        ObjectIdentity oid = new ObjectIdentityImpl(GWASResult.class, gwasResult.getId());
         Acl acl = aclService.readAclById(oid, authorities);
         try {
             if (!acl.isGranted(permissions, authorities, false))
                 throw new AccessDeniedException("not allowed");
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             throw new AccessDeniedException("not allowed");
         }
         GWASReader gwasReader = new HDF5GWASReader(GWAS_VIEWER_FOLDER);
-        GWASData gwasData = gwasReader.readAll(gwasResultId+".hdf5", 2500D);
+        GWASData gwasData = gwasReader.readAll(gwasResultId + ".hdf5", 2500D);
         gwasData.sortByPosition();
         gwasData = addAnnotation(gwasData);
         return gwasData;
@@ -129,22 +135,20 @@ public class HDF5GWASDataService  implements GWASDataService {
         gwasResult.setAppUser(appUser);
         HDF5GWASReader gwasWriter = new HDF5GWASReader("");
         try {
-            Map<String,ChrGWAData> data = getGWASDataFromUploadFile(file);
-            gwasResult = updateStats(gwasResult,data);
+            Map<String, ChrGWAData> data = getGWASDataFromUploadFile(file);
+            gwasResult = updateStats(gwasResult, data);
             gwasResult = gwasResultRepository.save(gwasResult);
             CumulativePermission fullPermission = new CumulativePermission();
             fullPermission.set(CustomPermission.ADMINISTRATION).set(CustomPermission.EDIT).set(CustomPermission.READ);
             addPermission(gwasResult, new GrantedAuthoritySid("ROLE_ANONYMOUS"), new CustomPermission(0));
-            addPermission(gwasResult, new PrincipalSid(SecurityUtil.getUsername()),fullPermission);
-            addPermission(gwasResult,new GrantedAuthoritySid("ROLE_ADMIN"),fullPermission);
-            File targetFile = new File(GWAS_VIEWER_FOLDER +gwasResult.getId()+".hdf5");
-            gwasWriter.saveGWASDataToFile(data,targetFile);
+            addPermission(gwasResult, new PrincipalSid(SecurityUtil.getUsername()), fullPermission);
+            addPermission(gwasResult, new GrantedAuthoritySid("ROLE_ADMIN"), fullPermission);
+            File targetFile = new File(GWAS_VIEWER_FOLDER + gwasResult.getId() + ".hdf5");
+            gwasWriter.saveGWASDataToFile(data, targetFile);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new IOException(e.getMessage());
-        }
-        finally  {
+        } finally {
 
         }
         return gwasResult;
@@ -158,9 +162,9 @@ public class HDF5GWASDataService  implements GWASDataService {
         Sid sid = new PrincipalSid(SecurityUtil.getAuthentication());
         final List<Sid> authorities = ImmutableList.of(sid);
         FluentIterable<GWASResult> gwasResults = FluentIterable.from(gwasResultsToFilter);
-        if (gwasResults .size() > 0) {
-            final ImmutableBiMap<GWASResult,ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(gwasResults.toList()).inverse();
-            final ImmutableMap<ObjectIdentity,Acl> acls = ImmutableMap.copyOf(aclService.readAclsById(identities.values().asList(), authorities));
+        if (gwasResults.size() > 0) {
+            final ImmutableBiMap<GWASResult, ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(gwasResults.toList()).inverse();
+            final ImmutableMap<ObjectIdentity, Acl> acls = ImmutableMap.copyOf(aclService.readAclsById(identities.values().asList(), authorities));
 
             Predicate<GWASResult> predicate = new Predicate<GWASResult>() {
 
@@ -173,7 +177,7 @@ public class HDF5GWASDataService  implements GWASDataService {
                         try {
                             if (acl.isGranted(permissions, authorities, false))
                                 flag = true;
-                        }catch (NotFoundException e) {
+                        } catch (NotFoundException e) {
 
                         }
                     }
@@ -191,15 +195,13 @@ public class HDF5GWASDataService  implements GWASDataService {
     }
 
 
-
-
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public List<GWASResult> delete(GWASResult gwasResult) {
 
-        ObjectIdentity oid = new ObjectIdentityImpl(GWASResult.class,gwasResult.getId());
-        aclService.deleteAcl(oid,true);
-        File file = new File(GWAS_VIEWER_FOLDER +gwasResult.getId()+".hdf5");
+        ObjectIdentity oid = new ObjectIdentityImpl(GWASResult.class, gwasResult.getId());
+        aclService.deleteAcl(oid, true);
+        File file = new File(GWAS_VIEWER_FOLDER + gwasResult.getId() + ".hdf5");
         if (file.exists()) {
             file.delete();
         }
@@ -223,21 +225,20 @@ public class HDF5GWASDataService  implements GWASDataService {
         TraitUom trait = Iterables.get(study.getTraits(), 0).getTraitUom();
         final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
         final ImmutableList<Permission> permissions = ImmutableList
-                .of(CustomPermission.EDIT,CustomPermission.ADMINISTRATION);
-        ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,trait.getId());
+                .of(CustomPermission.EDIT, CustomPermission.ADMINISTRATION);
+        ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class, trait.getId());
         Acl acl = aclService.readAclById(oid, authorities);
         try {
             if (!acl.isGranted(permissions, authorities, false))
                 throw new AccessDeniedException("not allowed");
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             throw new AccessDeniedException("not allowed");
         }
         HDF5GWASReader gwasWriter = new HDF5GWASReader("");
         try {
-            Map<String,ChrGWAData> data = getGWASDataFromUploadFile(file);
-            File targetFile = new File(GWAS_STUDY_FOLDER +studyId+".hdf5");
-            gwasWriter.saveGWASDataToFile(data,targetFile);
+            Map<String, ChrGWAData> data = getGWASDataFromUploadFile(file);
+            File targetFile = new File(GWAS_STUDY_FOLDER + studyId + ".hdf5");
+            gwasWriter.saveGWASDataToFile(data, targetFile);
             StudyJob studyJob = study.getJob();
             if (studyJob == null) {
                 studyJob = new StudyJob();
@@ -249,21 +250,20 @@ public class HDF5GWASDataService  implements GWASDataService {
             studyJob.setTask("Uploaded");
             studyJob.setModificationDate(new Date());
             studyRepository.save(study);
+            submitAnalysisTask.submitAnalysisForTopSNPs(study);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new IOException(e.getMessage());
-        }
-        finally  {
+        } finally {
 
         }
         return study;
     }
 
-    private GWASResult updateStats(GWASResult gwasResult,Map<String,ChrGWAData> data) {
+    private GWASResult updateStats(GWASResult gwasResult, Map<String, ChrGWAData> data) {
         float maxScore = 0;
         int numberOfSNPs = 0;
-        for (Map.Entry<String,ChrGWAData> entry:data.entrySet()) {
+        for (Map.Entry<String, ChrGWAData> entry : data.entrySet()) {
             ChrGWAData chrGWAData = entry.getValue();
             if (maxScore < chrGWAData.getPvalues()[0]) {
                 maxScore = chrGWAData.getPvalues()[0];
@@ -277,7 +277,7 @@ public class HDF5GWASDataService  implements GWASDataService {
 
     @Transactional(readOnly = false)
     private void addPermission(GWASResult gwasResult, Sid recipient,
-                              Permission permission) {
+                               Permission permission) {
         MutableAcl acl;
         ObjectIdentity oid = new ObjectIdentityImpl(GWASResult.class,
                 gwasResult.getId());
@@ -292,37 +292,34 @@ public class HDF5GWASDataService  implements GWASDataService {
     }
 
     private GWASData addAnnotation(GWASData data) {
-        for (Map.Entry<String,ChrGWAData> dataEntry : data.getChrGWASData().entrySet()) {
+        for (Map.Entry<String, ChrGWAData> dataEntry : data.getChrGWASData().entrySet()) {
             ChrGWAData chrData = dataEntry.getValue();
-            chrData.setSnpAnnotations(annotationDataService.getSNPAnnotations(dataEntry.getKey().toLowerCase(),chrData.getPositions()));
+            chrData.setSnpAnnotations(annotationDataService.getSNPAnnotations(dataEntry.getKey().toLowerCase(), chrData.getPositions()));
         }
         return data;
     }
 
-    private Map<String,ChrGWAData> getGWASDataFromUploadFile(CommonsMultipartFile file) throws Exception {
-        Map<String,ChrGWAData> data =null;
+    private Map<String, ChrGWAData> getGWASDataFromUploadFile(CommonsMultipartFile file) throws Exception {
+        Map<String, ChrGWAData> data = null;
         if (file.isEmpty())
             throw new RuntimeException("File is empty");
         if (!file.getContentType().trim().equalsIgnoreCase("application/x-hdf") && !(csvMimeTypes.contains(file.getContentType().trim()))) {
-            throw new IOException("Content Type "+ file.getContentType()+ " not supported");
+            throw new IOException("Content Type " + file.getContentType() + " not supported");
         }
-        File tempFile = new File(TEMP_FOLDER +"/"+UUID.randomUUID().toString());
+        File tempFile = new File(TEMP_FOLDER + "/" + UUID.randomUUID().toString());
         try {
             file.transferTo(tempFile);
-            GWASReader  gwasReader = null;
+            GWASReader gwasReader = null;
             if (file.getContentType().trim().equalsIgnoreCase("application/x-hdf")) {
                 gwasReader = new HDF5GWASReader("");
-            }
-            else  {
+            } else {
                 gwasReader = new CSVGWASReader();
             }
             gwasReader.isValidGWASFile(tempFile);
             data = gwasReader.parseGWASDataFromFile(tempFile);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw e;
-        }
-        finally {
+        } finally {
             if (tempFile != null)
                 tempFile.delete();
         }

@@ -2,19 +2,18 @@ package com.gmi.nordborglab.browser.server.tasks;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.errai.ClientComService;
 import com.gmi.nordborglab.browser.server.repository.StudyJobRepository;
 import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
-import com.gmi.nordborglab.browser.server.security.SecurityUtil;
-import com.gmi.nordborglab.browser.server.service.UserService;
 import com.google.common.collect.Lists;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -55,8 +54,8 @@ public class SubmitAnalysisTask {
     private String CELERY_ROUTING_KEY;
 
     private static final String GWAS_CHECK_TASK = "gmihpcworkflows.hpc_tasks.check_saga_job";
-
-    private static final String GWAS_TASK ="gmihpcworkflows.hpc_tasks.start_saga";
+    private static final String GWAS_TASK = "gmihpcworkflows.hpc_tasks.start_saga";
+    private static final String GWAS_TOP_SNPS_TASK = "gmihpcworkflows.hpc_tasks.index_top_study_snps";
 
 
     @Scheduled(fixedDelay = 60000)
@@ -64,13 +63,12 @@ public class SubmitAnalysisTask {
     public synchronized void submitGWASJobs() {
         try {
             List<StudyJob> studyJobs = studyJobRepository.findByStatusInAndTaskidIsNull("Waiting");
-            for (StudyJob studyJob:studyJobs) {
-                submitCeleryTask(studyJob);
+            for (StudyJob studyJob : studyJobs) {
+                submitStudyJob(studyJob);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             //TODO send an email.
-             String test="test";
+            String test = "test";
         }
     }
 
@@ -80,76 +78,80 @@ public class SubmitAnalysisTask {
     public synchronized void checkGWASJobs() {
         try {
             List<StudyJob> studyJobs = studyJobRepository.findByStatusInAndTaskidIsNull("Pending", "Running");
-            for (StudyJob studyJob:studyJobs) {
-                submitCeleryTask(studyJob);
+            for (StudyJob studyJob : studyJobs) {
+                submitStudyJob(studyJob);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             //TODO send an email.
-            String test="test";
+            String test = "test";
         }
     }
 
 
-    private void submitCeleryTask(StudyJob studyJob) {
-        MessageProperties messageProperties = new MessageProperties();
+    private void submitStudyJob(StudyJob studyJob) {
+
         if (studyJob.getTaskid() != null || studyJob.getStatus() == null)
             return;
         CeleryTask task = null;
         if (studyJob.getStatus().equalsIgnoreCase("Waiting")) {
             task = getCeleryTaskForJob(studyJob);
-        }
-        else if (studyJob.getStatus().equalsIgnoreCase("Pending") || studyJob.getStatus().equalsIgnoreCase("Running")) {
+        } else if (studyJob.getStatus().equalsIgnoreCase("Pending") || studyJob.getStatus().equalsIgnoreCase("Running")) {
             task = getCeleryTaskForCheckJob(studyJob);
         }
+        if (task == null)
+            return;
+        submitCeleryTask(task);
+        studyJob.setTaskid(task.getId());
+        studyJobRepository.save(studyJob);
+    }
+
+    private void submitCeleryTask(CeleryTask task) {
+        MessageProperties messageProperties = new MessageProperties();
         if (task == null)
             return;
         String payload = "";
         try {
             payload = om.writeValueAsString(task);
-        }
-        catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             throw new RuntimeException("Could not serialize task");
         }
         messageProperties.setContentEncoding("utf-8");
         messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
-        amqpTemplate.send(CELERY_EXCHANGE,CELERY_ROUTING_KEY,new Message(payload.getBytes(),messageProperties));
-        studyJob.setTaskid(task.getId());
-        studyJobRepository.save(studyJob);
+        amqpTemplate.send(CELERY_EXCHANGE, CELERY_ROUTING_KEY, new Message(payload.getBytes(), messageProperties));
     }
 
+
     private CeleryTask getCeleryTaskForCheckJob(StudyJob studyJob) {
-        String taskId =  UUID.randomUUID().toString();
+        String taskId = UUID.randomUUID().toString();
         List<Object> args = Lists.newArrayList();
         try {
-            Map<String,Object> payload = om.readValue(studyJob.getPayload().getBytes(),Map.class);
+            Map<String, Object> payload = om.readValue(studyJob.getPayload().getBytes(), Map.class);
             args.add(studyJob.getStudy().getId());
             args.add(studyJob.getId());
             args.add(payload.get("saga_job_id"));
             args.add(payload.get("sge_job_id"));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
             //TODO email
         }
 
-        return new CeleryTask(taskId,GWAS_CHECK_TASK,args);
+        return new CeleryTask(taskId, GWAS_CHECK_TASK, args);
     }
 
-     private CeleryTask getCeleryTaskForJob(StudyJob studyJob) {
-         String taskId =  UUID.randomUUID().toString();
-         List<Object> args = Lists.newArrayList();
-         args.add(studyJob.getStudy().getId());
-         args.add(studyJob.getId());
-         return new CeleryTask(taskId,GWAS_TASK,args);
-     }
+    private CeleryTask getCeleryTaskForJob(StudyJob studyJob) {
+        String taskId = UUID.randomUUID().toString();
+        List<Object> args = Lists.newArrayList();
+        args.add(studyJob.getStudy().getId());
+        args.add(studyJob.getId());
+        return new CeleryTask(taskId, GWAS_TASK, args);
+    }
 
     @Transactional(readOnly = false)
     public void onUpdateJobId(byte[] message) {
         try {
-            Map<String,Object> payload = om.readValue(message,Map.class);
+            Map<String, Object> payload = om.readValue(message, Map.class);
             Long studyJobId = Long.parseLong(payload.get("studyjobid").toString());
             StudyJob studyJob = studyJobRepository.findOne(studyJobId);
             if (studyJob == null) {
@@ -164,24 +166,23 @@ public class SubmitAnalysisTask {
             if (studyJob.getAppUser() != null) {
                 UserNotification notification = getUserNotificationFromStudyJob(studyJob);
                 userNotificationRepository.save(notification);
-                ClientComService.pushUserNotification(studyJob.getAppUser().getUsername(),studyJob.getAppUser().getEmail(),"gwasjob",studyJob.getStudy().getId());
+                ClientComService.pushUserNotification(studyJob.getAppUser().getUsername(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
     }
 
     @Transactional(readOnly = false)
-    public void onUpdateJobStatus(byte [] message) {
+    public void onUpdateJobStatus(byte[] message) {
         try {
-            Map<String,Object> payload = om.readValue(message,Map.class);
+            Map<String, Object> payload = om.readValue(message, Map.class);
             Long studyJobId = Long.parseLong(payload.get("studyjobid").toString());
             StudyJob studyJob = studyJobRepository.findOne(studyJobId);
             if (studyJob == null)
                 return;
-            String status = (String)payload.get("status");
+            String status = (String) payload.get("status");
             studyJob.setTaskid(null);
             if (!studyJob.getStatus().equalsIgnoreCase(status)) {
                 studyJob.setModificationDate(new Date());
@@ -189,19 +190,17 @@ public class SubmitAnalysisTask {
                     studyJob.setPayload(null);
                     studyJob.setStatus("Finished");
                     studyJob.setTask("Finished on HPC cluster");
-                     studyJob.setProgress(100);
-                }
-                else if ("Pending".equalsIgnoreCase(status)) {
+                    studyJob.setProgress(100);
+                    submitAnalysisForTopSNPs(studyJob.getStudy());
+                } else if ("Pending".equalsIgnoreCase(status)) {
                     studyJob.setStatus("Pending");
                     studyJob.setTask("Queued on the HPC");
                     studyJob.setProgress(10);
-                }
-                else if ("Running".equalsIgnoreCase(status)) {
+                } else if ("Running".equalsIgnoreCase(status)) {
                     studyJob.setStatus("Running");
                     studyJob.setTask("Running on the HPC");
                     studyJob.setProgress(30);
-                }
-                else if ("Failed".equalsIgnoreCase(status)) {
+                } else if ("Failed".equalsIgnoreCase(status)) {
                     studyJob.setStatus("Error");
                     studyJob.setTask("HPC job failed");
                 }
@@ -210,32 +209,38 @@ public class SubmitAnalysisTask {
                 if (studyJob.getAppUser() != null) {
                     UserNotification notification = getUserNotificationFromStudyJob(studyJob);
                     userNotificationRepository.save(notification);
-                    ClientComService.pushUserNotification(studyJob.getAppUser().getUsername(),studyJob.getAppUser().getEmail(),"gwasjob",studyJob.getStudy().getId());
+                    ClientComService.pushUserNotification(studyJob.getAppUser().getUsername(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
                 }
             }
             studyJobRepository.save(studyJob);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
+    }
+
+    public void submitAnalysisForTopSNPs(Study study) {
+        TraitUom traitUom = study.getPhenotype();
+        List<Object> args = Lists.newArrayList();
+        args.add(study.getId());
+        args.add(traitUom.getId());
+        CeleryTask task = new CeleryTask(UUID.randomUUID().toString(), GWAS_TOP_SNPS_TASK, args);
+        submitCeleryTask(task);
     }
 
     private static String getBadgeFromStatus(String status) {
         String badge = "";
         if ("Pending".equalsIgnoreCase(status)) {
             badge = "warning";
-        }else if ("Failed".equalsIgnoreCase(status) || "Error".equalsIgnoreCase(status)) {
-            badge="important";
-        }
-        else if ("Running".equalsIgnoreCase(status)) {
+        } else if ("Failed".equalsIgnoreCase(status) || "Error".equalsIgnoreCase(status)) {
+            badge = "important";
+        } else if ("Running".equalsIgnoreCase(status)) {
             badge = "info";
-        }
-        else if ("Done".equalsIgnoreCase(status) || "Finished".equalsIgnoreCase(status)) {
+        } else if ("Done".equalsIgnoreCase(status) || "Finished".equalsIgnoreCase(status)) {
             badge = "success";
         }
         if (!badge.isEmpty())
-            badge = "badge-"+badge;
+            badge = "badge-" + badge;
         return badge;
     }
 
@@ -245,7 +250,7 @@ public class SubmitAnalysisTask {
         notification.setType("gwasjob");
         String badge = getBadgeFromStatus(studyJob.getStatus());
         String notificationText = "State of <a href=\"#!analysis/%s/overview\">GWAS-Job (%s)</a> on HPC cluster changed to <span class=\"badge %s\">%s</span>";
-        notification.setText(String.format(notificationText,studyJob.getStudy().getId(),studyJob.getStudy().getName(),badge,studyJob.getStatus()));
+        notification.setText(String.format(notificationText, studyJob.getStudy().getId(), studyJob.getStudy().getName(), badge, studyJob.getStatus()));
         return notification;
     }
 }
