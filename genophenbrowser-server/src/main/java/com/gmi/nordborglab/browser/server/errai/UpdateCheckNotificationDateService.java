@@ -30,8 +30,8 @@ public class UpdateCheckNotificationDateService implements MessageCallback {
             ApplicationContext ctx = AppContextManager.getContext();
             userRepository = ctx.getBean(UserRepository.class);
         }
-        AppUser appUser = userRepository.findOne(SecurityUtil.getUsername());
-        appUser.setNotificationCheckDate(message.get(Date.class,MessageParts.Value));
+        AppUser appUser = userRepository.findOne(Long.parseLong(SecurityUtil.getUsername()));
+        appUser.setNotificationCheckDate(message.get(Date.class, MessageParts.Value));
         userRepository.save(appUser);
     }
 

@@ -18,16 +18,16 @@ import java.util.Map;
  */
 
 @Entity
-@Table(name="study_job",schema="util")
-@AttributeOverride(name="id", column=@Column(name="id"))
-@SequenceGenerator(name="idSequence", sequenceName="util.study_job_id_seq")
-public class StudyJob extends BaseEntity{
+@Table(name = "study_job", schema = "util")
+@AttributeOverride(name = "id", column = @Column(name = "id"))
+@SequenceGenerator(name = "idSequence", sequenceName = "util.study_job_id_seq")
+public class StudyJob extends BaseEntity {
 
     public StudyJob() {
     }
 
-    @OneToOne(fetch = FetchType.LAZY,cascade={CascadeType.PERSIST,CascadeType.MERGE},optional =true)
-    @JoinColumn(name = "div_study_id",nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = true)
+    @JoinColumn(name = "div_study_id", nullable = false)
     private Study study;
 
     private String status;
@@ -36,11 +36,11 @@ public class StudyJob extends BaseEntity{
 
     private Integer progress;
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="create_date")
+    @Column(name = "create_date")
     private Date createDate;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="modification_date")
+    @Column(name = "modification_date")
     private Date modificationDate;
 
     private String taskid;
@@ -48,7 +48,7 @@ public class StudyJob extends BaseEntity{
     private String payload;
 
     @ManyToOne()
-    @JoinColumn(name="username")
+    @JoinColumn(name = "user_id")
     private AppUser appUser;
 
 

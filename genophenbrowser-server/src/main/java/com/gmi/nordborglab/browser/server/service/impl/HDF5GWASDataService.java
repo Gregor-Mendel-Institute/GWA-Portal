@@ -129,7 +129,7 @@ public class HDF5GWASDataService implements GWASDataService {
     @Transactional(readOnly = false)
     public GWASResult uploadGWASResult(CommonsMultipartFile file) throws IOException {
 
-        AppUser appUser = userRepository.findOne(SecurityUtil.getUsername());
+        AppUser appUser = userRepository.findOne(Long.parseLong(SecurityUtil.getUsername()));
         GWASResult gwasResult = new GWASResult();
         gwasResult.setName(file.getOriginalFilename());
         gwasResult.setAppUser(appUser);

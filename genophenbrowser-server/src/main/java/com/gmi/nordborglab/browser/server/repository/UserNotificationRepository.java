@@ -12,8 +12,8 @@ import java.util.List;
  * Time: 6:45 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface UserNotificationRepository extends JpaRepository<UserNotification,Long>{
+public interface UserNotificationRepository extends JpaRepository<UserNotification, Long> {
 
 
-    List<UserNotification> findByAppUserUsernameLikeOrAppUserIsNullOrderByIdDesc(String username);
+    List<UserNotification> findByAppUserIdOrAppUserIsNullOrderByIdDesc(Long id);
 }

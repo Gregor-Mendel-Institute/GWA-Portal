@@ -54,15 +54,14 @@ import org.supercsv.util.CsvContext;
 @Service
 @Transactional(readOnly = true)
 public class HelperServiceImpl implements HelperService {
-	
-	private static HelperFactory helperFactory = AutoBeanFactorySource.create(HelperFactory.class);
 
+    private static HelperFactory helperFactory = AutoBeanFactorySource.create(HelperFactory.class);
 
 
     private static class ParsePhenotypeValue extends CellProcessorAdaptor {
 
         public static enum PHENOTYPE_VALUE_TYPES {
-            MEASURE,MEAN,STD,VARIANCE,MODE,MEDIAN,COUNT;
+            MEASURE, MEAN, STD, VARIANCE, MODE, MEDIAN, COUNT;
         }
 
         private ParsePhenotypeValue() {
@@ -75,124 +74,115 @@ public class HelperServiceImpl implements HelperService {
 
         @Override
         public Object execute(Object value, CsvContext context) {
-            validateInputNotNull(value,context);
-            for (PHENOTYPE_VALUE_TYPES type:PHENOTYPE_VALUE_TYPES.values()) {
+            validateInputNotNull(value, context);
+            for (PHENOTYPE_VALUE_TYPES type : PHENOTYPE_VALUE_TYPES.values()) {
                 if (type.name().equalsIgnoreCase(value.toString())) {
-                    return next.execute(value,context);
+                    return next.execute(value, context);
                 }
             }
-            throw new SuperCsvCellProcessorException(String.format("Could not parse '%s' as a phenotype value type",value),context,this);
+            throw new SuperCsvCellProcessorException(String.format("Could not parse '%s' as a phenotype value type", value), context, this);
         }
     }
-
 
 
     @Resource
     private UserRepository userRepository;
 
-	@Resource
-	private ExperimentRepository experimentRepository;
+    @Resource
+    private ExperimentRepository experimentRepository;
 
     @Resource
     private UserNotificationRepository userNotificationRepository;
-	
-	@Resource
-	private StockRepository stockRepository;
-	
-	@Resource
-	private TaxonomyRepository taxonomRepository;
-	
-	@Resource
-	private PassportRepository passportRepository;
-	
-	@Resource
-	private SampstatRepository sampstatRepository;
-	
-	@Resource
-	private AlleleAssayRepository alleleAssayRepository;
-	
-	@Resource
-	private StudyProtocolRepository studyProtocolRepository;
-	
-	@Resource
-	private UnitOfMeasureRepository unitOfMeasureRepository;
-	
-	@Resource
-	private StatisticTypeRepository statisticTypeRepository;
+
+    @Resource
+    private StockRepository stockRepository;
+
+    @Resource
+    private TaxonomyRepository taxonomRepository;
+
+    @Resource
+    private PassportRepository passportRepository;
+
+    @Resource
+    private SampstatRepository sampstatRepository;
+
+    @Resource
+    private AlleleAssayRepository alleleAssayRepository;
+
+    @Resource
+    private StudyProtocolRepository studyProtocolRepository;
+
+    @Resource
+    private UnitOfMeasureRepository unitOfMeasureRepository;
+
+    @Resource
+    private StatisticTypeRepository statisticTypeRepository;
 
     @Resource
     private TransformationRepository transformationRepository;
-	
-	@Resource
-	private TraitUomRepository traitUomRepository;
-	
-	@Resource
-	private StudyRepository studyRepository;
+
+    @Resource
+    private TraitUomRepository traitUomRepository;
+
+    @Resource
+    private StudyRepository studyRepository;
 
     @Resource
     private PublicationRepository publicationRepository;
-	
 
-	@Override
-	public List<BreadcrumbItem> getBreadcrumbs(Long id, String object) {
-		List<BreadcrumbItem> breadcrumbs = new ArrayList<BreadcrumbItem>();
-		if (object.equals("experiment") || object.equals("phenotypes")) {
-			Experiment exp = experimentRepository.findOne(id);
-			breadcrumbs.add(new BreadcrumbItem(exp.getId(),exp.getName(),"experiment"));
-		}
-		else if (object.equals("phenotype")) {
-			Experiment exp = experimentRepository.findByPhenotypeId(id);
-			TraitUom traitUom = traitUomRepository.findOne(id);
-		    breadcrumbs.add(new BreadcrumbItem(exp.getId(),exp.getName(),"experiment"));
-		    breadcrumbs.add(new BreadcrumbItem(traitUom.getId(),traitUom.getLocalTraitName(),"phenotype"));
-		}
-		else if (object.equals("study")) {
-			Study study = studyRepository.findOne(id);
-			TraitUom trait = Iterables.get(study.getTraits(),0).getTraitUom();
-			Experiment exp = Iterables.get(study.getTraits(),0).getObsUnit().getExperiment();
-			breadcrumbs.add(new BreadcrumbItem(exp.getId(),exp.getName(),"experiment"));
-		    breadcrumbs.add(new BreadcrumbItem(trait.getId(),trait.getLocalTraitName(),"phenotype"));
-		    breadcrumbs.add(new BreadcrumbItem(study.getId(),study.getName(),"study"));
-		}
-		else if (object.equals("studywizard")) {
-			Experiment exp = experimentRepository.findByPhenotypeId(id);
-			TraitUom trait = traitUomRepository.findOne(id);
-			breadcrumbs.add(new BreadcrumbItem(exp.getId(),exp.getName(),"experiment"));
-		    breadcrumbs.add(new BreadcrumbItem(trait.getId(),trait.getLocalTraitName(),"phenotype"));
-		    breadcrumbs.add(new BreadcrumbItem(trait.getId(),"New Study","studywizard"));
-		}
-		else if (object.equals("taxonomy") ) {
-			Taxonomy tax = taxonomRepository.findOne(id);
-			breadcrumbs.add(new BreadcrumbItem(tax.getId(),tax.getGenus()+" "+tax.getSpecies(),"taxonomy"));
-		}
-		else if (object.equals("passports")) {
-			Taxonomy tax = taxonomRepository.findOne(id);
-			breadcrumbs.add(new BreadcrumbItem(tax.getId(),tax.getGenus()+" "+tax.getSpecies(),"passports"));
-		}
-		else if (object.equals("passport")) {
-			Passport passport = passportRepository.findOne(id);
-			Taxonomy taxonomy = passport.getTaxonomy();
-			breadcrumbs.add(new BreadcrumbItem(taxonomy.getId(),taxonomy.getGenus()+" "+taxonomy.getSpecies(),"taxonomy"));
-			breadcrumbs.add(new BreadcrumbItem(passport.getId(),passport.getAccename(),"passport"));
-		}
-		else if (object.equals("stock")) {
-			Stock stock = stockRepository.findOne(id);
-			Passport passport  = stock.getPassport();
-			Taxonomy taxonomy = passport.getTaxonomy();
-			breadcrumbs.add(new BreadcrumbItem(taxonomy.getId(),taxonomy.getGenus()+" "+taxonomy.getSpecies(),"taxonomy"));
-			breadcrumbs.add(new BreadcrumbItem(passport.getId(),passport.getAccename(),"passport"));
-			breadcrumbs.add(new BreadcrumbItem(stock.getId(),stock.getId().toString(),"stock"));
-		}
-        else if (object.equalsIgnoreCase("publication")) {
-            Publication  publication = publicationRepository.findOne(id);
-            breadcrumbs.add(new BreadcrumbItem(publication.getId(),publication.getFirstAuthor()+" - " + publication.getTitle(),"publication"));
+
+    @Override
+    public List<BreadcrumbItem> getBreadcrumbs(Long id, String object) {
+        List<BreadcrumbItem> breadcrumbs = new ArrayList<BreadcrumbItem>();
+        if (object.equals("experiment") || object.equals("phenotypes")) {
+            Experiment exp = experimentRepository.findOne(id);
+            breadcrumbs.add(new BreadcrumbItem(exp.getId(), exp.getName(), "experiment"));
+        } else if (object.equals("phenotype")) {
+            Experiment exp = experimentRepository.findByPhenotypeId(id);
+            TraitUom traitUom = traitUomRepository.findOne(id);
+            breadcrumbs.add(new BreadcrumbItem(exp.getId(), exp.getName(), "experiment"));
+            breadcrumbs.add(new BreadcrumbItem(traitUom.getId(), traitUom.getLocalTraitName(), "phenotype"));
+        } else if (object.equals("study")) {
+            Study study = studyRepository.findOne(id);
+            TraitUom trait = Iterables.get(study.getTraits(), 0).getTraitUom();
+            Experiment exp = Iterables.get(study.getTraits(), 0).getObsUnit().getExperiment();
+            breadcrumbs.add(new BreadcrumbItem(exp.getId(), exp.getName(), "experiment"));
+            breadcrumbs.add(new BreadcrumbItem(trait.getId(), trait.getLocalTraitName(), "phenotype"));
+            breadcrumbs.add(new BreadcrumbItem(study.getId(), study.getName(), "study"));
+        } else if (object.equals("studywizard")) {
+            Experiment exp = experimentRepository.findByPhenotypeId(id);
+            TraitUom trait = traitUomRepository.findOne(id);
+            breadcrumbs.add(new BreadcrumbItem(exp.getId(), exp.getName(), "experiment"));
+            breadcrumbs.add(new BreadcrumbItem(trait.getId(), trait.getLocalTraitName(), "phenotype"));
+            breadcrumbs.add(new BreadcrumbItem(trait.getId(), "New Study", "studywizard"));
+        } else if (object.equals("taxonomy")) {
+            Taxonomy tax = taxonomRepository.findOne(id);
+            breadcrumbs.add(new BreadcrumbItem(tax.getId(), tax.getGenus() + " " + tax.getSpecies(), "taxonomy"));
+        } else if (object.equals("passports")) {
+            Taxonomy tax = taxonomRepository.findOne(id);
+            breadcrumbs.add(new BreadcrumbItem(tax.getId(), tax.getGenus() + " " + tax.getSpecies(), "passports"));
+        } else if (object.equals("passport")) {
+            Passport passport = passportRepository.findOne(id);
+            Taxonomy taxonomy = passport.getTaxonomy();
+            breadcrumbs.add(new BreadcrumbItem(taxonomy.getId(), taxonomy.getGenus() + " " + taxonomy.getSpecies(), "taxonomy"));
+            breadcrumbs.add(new BreadcrumbItem(passport.getId(), passport.getAccename(), "passport"));
+        } else if (object.equals("stock")) {
+            Stock stock = stockRepository.findOne(id);
+            Passport passport = stock.getPassport();
+            Taxonomy taxonomy = passport.getTaxonomy();
+            breadcrumbs.add(new BreadcrumbItem(taxonomy.getId(), taxonomy.getGenus() + " " + taxonomy.getSpecies(), "taxonomy"));
+            breadcrumbs.add(new BreadcrumbItem(passport.getId(), passport.getAccename(), "passport"));
+            breadcrumbs.add(new BreadcrumbItem(stock.getId(), stock.getId().toString(), "stock"));
+        } else if (object.equalsIgnoreCase("publication")) {
+            Publication publication = publicationRepository.findOne(id);
+            breadcrumbs.add(new BreadcrumbItem(publication.getId(), publication.getFirstAuthor() + " - " + publication.getTitle(), "publication"));
         }
-		return breadcrumbs;
-	}
+        return breadcrumbs;
+    }
 
 
 	/*@Override
-	public String getAppData() {
+    public String getAppData() {
 		List<UnitOfMeasure> unitOfMeasureValues = unitOfMeasureRepository.findAll();
 		List<StatisticType> statisticTypeValues = statisticTypeRepository.findAll();
 		String json;
@@ -225,36 +215,34 @@ public class HelperServiceImpl implements HelperService {
 	}*/
 
 
-
-
-	@Override
-	public AppData getAppData() {
-		List<UnitOfMeasure> unitOfMeasureValues = unitOfMeasureRepository.findAll();
-		List<StatisticType> statisticTypeValues = statisticTypeRepository.findAll();
-		List<AlleleAssay> alleleAssayValues = alleleAssayRepository.findAll();
-		List<StudyProtocol> studyProtocolValues = studyProtocolRepository.findAll();
-		List<Sampstat> sampStatValues = sampstatRepository.findAll();
+    @Override
+    public AppData getAppData() {
+        List<UnitOfMeasure> unitOfMeasureValues = unitOfMeasureRepository.findAll();
+        List<StatisticType> statisticTypeValues = statisticTypeRepository.findAll();
+        List<AlleleAssay> alleleAssayValues = alleleAssayRepository.findAll();
+        List<StudyProtocol> studyProtocolValues = studyProtocolRepository.findAll();
+        List<Sampstat> sampStatValues = sampstatRepository.findAll();
         List<Transformation> transformationValues = transformationRepository.findAll();
         List<UserNotification> userNotifications = getUserNotifications(10);
 
-		AppData appData = new AppData();
-		appData.setStatisticTypeList(statisticTypeValues);
-		appData.setUnitOfMeasureList(unitOfMeasureValues);
-		appData.setAlleleAssayList(alleleAssayValues);
-		appData.setStudyProtocolList(studyProtocolValues);
-		appData.setSampStatList(sampStatValues);
+        AppData appData = new AppData();
+        appData.setStatisticTypeList(statisticTypeValues);
+        appData.setUnitOfMeasureList(unitOfMeasureValues);
+        appData.setAlleleAssayList(alleleAssayValues);
+        appData.setStudyProtocolList(studyProtocolValues);
+        appData.setSampStatList(sampStatValues);
         appData.setTransformationList(transformationValues);
         appData.setUserNotificationList(userNotifications);
 
-		return appData;
-	}
+        return appData;
+    }
 
     @Override
     public PhenotypeUploadData getPhenotypeUploadData(byte[] csvData) throws IOException {
         PhenotypeUploadData data = new PhenotypeUploadData();
         ICsvListReader metaInformationReader = null;
         ICsvListReader valueHeaderReader = null;
-        ICsvListReader  valueReader = null;
+        ICsvListReader valueReader = null;
         boolean hasMetaInfo = false;
         try {
             metaInformationReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
@@ -265,15 +253,13 @@ public class HelperServiceImpl implements HelperService {
                 final Map<String, String> metaInfo = getMetaInformationFromHeader(metaHeader);
                 updatePhenotypeUploadDataWithMetaInformation(data, metaInfo);
                 valueHeader = metaInformationReader.getHeader(false);
-            }
-            else {
+            } else {
                 valueHeader = metaHeader;
             }
 
 
-
             final int columnCount = valueHeader.length;
-            data.setValueHeader(Arrays.asList(valueHeader).subList(1,valueHeader.length));
+            data.setValueHeader(Arrays.asList(valueHeader).subList(1, valueHeader.length));
 
             CellProcessor[] valueHeaderCellProccessors = createValueHeaderCellProcessors(columnCount);
             CellProcessor[] valueCellProcessors = createValueCellProcessors(columnCount);
@@ -289,21 +275,18 @@ public class HelperServiceImpl implements HelperService {
             valueReader.getHeader(false);
 
             List<String> phenotypeValues = null;
-            while ((phenotypeValues= valueReader.read())!=null) {
+            while ((phenotypeValues = valueReader.read()) != null) {
                 PhenotypeUploadValue value = parseAndCheckPhenotypeValue(phenotypeValues);
                 if (value != null)
                     data.addPhenotypeValue(value);
             }
             data.sortByErrors();
 
-        }
-        catch (SuperCsvCellProcessorException e) {
-            data.setErrorMessage(String.format("Error parsing header. '%s'",e.getMessage()));
-        }
-        catch (Exception e) {
+        } catch (SuperCsvCellProcessorException e) {
+            data.setErrorMessage(String.format("Error parsing header. '%s'", e.getMessage()));
+        } catch (Exception e) {
             data.setErrorMessage("General error reading csv file");
-        }
-        finally {
+        } finally {
             if (metaInformationReader != null)
                 metaInformationReader.close();
         }
@@ -314,26 +297,32 @@ public class HelperServiceImpl implements HelperService {
     @Override
     public List<TransformationData> calculateTransformations(List<Double> values) {
         List<TransformationData> transformations = Lists.newArrayList();
-        transformations.add(new TransformationData(TransformationDataProxy.TYPE.LOG,Transformations.logTransform(values)));
-        transformations.add(new TransformationData(TransformationDataProxy.TYPE.SQRT,Transformations.sqrtTransform(values)));
-        transformations.add(new TransformationData(TransformationDataProxy.TYPE.BOXCOX,Transformations.boxCoxTransform(values)));
+        transformations.add(new TransformationData(TransformationDataProxy.TYPE.LOG, Transformations.logTransform(values)));
+        transformations.add(new TransformationData(TransformationDataProxy.TYPE.SQRT, Transformations.sqrtTransform(values)));
+        transformations.add(new TransformationData(TransformationDataProxy.TYPE.BOXCOX, Transformations.boxCoxTransform(values)));
         return transformations;
     }
 
     @Override
     public List<UserNotification> getUserNotifications(Integer limit) {
-        AppUser appUser = userRepository.findOne(SecurityUtil.getUsername());
+        AppUser appUser = null;
+        try {
+            appUser = userRepository.findOne(Long.parseLong(SecurityUtil.getUsername()));
+        } catch (Exception e) {
+
+        }
+
         if (appUser == null)
             return null;
-        List<UserNotification> notifications = userNotificationRepository.findByAppUserUsernameLikeOrAppUserIsNullOrderByIdDesc(SecurityUtil.getUsername());
-        return filterUserNotifications(notifications,appUser.getNotificationCheckDate(),limit);
+        List<UserNotification> notifications = userNotificationRepository.findByAppUserIdOrAppUserIsNullOrderByIdDesc(Long.parseLong(SecurityUtil.getUsername()));
+        return filterUserNotifications(notifications, appUser.getNotificationCheckDate(), limit);
     }
 
-    private static List<UserNotification> filterUserNotifications(List<UserNotification> notifications, Date modificationCheckDate,Integer limit) {
+    private static List<UserNotification> filterUserNotifications(List<UserNotification> notifications, Date modificationCheckDate, Integer limit) {
         List<UserNotification> recentNotifications = Lists.newArrayList();
-        for (int i = 0;i<notifications.size();i++) {
+        for (int i = 0; i < notifications.size(); i++) {
             UserNotification notification = notifications.get(i);
-            if (!notification.isRead(modificationCheckDate) || limit == null || (limit != null && limit >recentNotifications.size())) {
+            if (!notification.isRead(modificationCheckDate) || limit == null || (limit != null && limit > recentNotifications.size())) {
                 recentNotifications.add(notification);
             }
         }
@@ -344,10 +333,10 @@ public class HelperServiceImpl implements HelperService {
     private PhenotypeUploadValue parseAndCheckPhenotypeValue(List<String> phenotypeValues) {
         boolean hasError = false;
         boolean isIdKnown = false;
-        PhenotypeUploadValue parsedValue = new PhenotypeUploadValue() ;
+        PhenotypeUploadValue parsedValue = new PhenotypeUploadValue();
         try {
             String sourceId = phenotypeValues.get(0);
-            parsedValue.setValues(phenotypeValues.subList(1,phenotypeValues.size()));
+            parsedValue.setValues(phenotypeValues.subList(1, phenotypeValues.size()));
             parsedValue.setSourceId(sourceId);
             Long id = Long.parseLong(sourceId);
             Long passportId = null;
@@ -359,8 +348,7 @@ public class HelperServiceImpl implements HelperService {
                 isIdKnown = true;
                 accessionName = passport.getAccename();
 
-            }
-            else if (stockRepository.exists(id)) {
+            } else if (stockRepository.exists(id)) {
                 Stock stock = stockRepository.findOne(id);
                 stockId = id;
                 isIdKnown = true;
@@ -370,8 +358,7 @@ public class HelperServiceImpl implements HelperService {
             parsedValue.setAccessionName(accessionName);
             parsedValue.setStockId(stockId);
             parsedValue.setPassportId(passportId);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             hasError = true;
         }
         parsedValue.setParseError(hasError);
@@ -393,11 +380,11 @@ public class HelperServiceImpl implements HelperService {
             data.setEnvironmentOntology(metaInfo.get("environmentontology"));
     }
 
-    private static Map<String,String> getMetaInformationFromHeader(String[] header) {
-        Map<String,String> metaInfo = new HashMap<String,String>();
-        for (int i = 1;i<header.length;i++) {
+    private static Map<String, String> getMetaInformationFromHeader(String[] header) {
+        Map<String, String> metaInfo = new HashMap<String, String>();
+        for (int i = 1; i < header.length; i++) {
             String[] metaSplit = header[i].split("=");
-            metaInfo.put(metaSplit[0].toLowerCase(),metaSplit[1]);
+            metaInfo.put(metaSplit[0].toLowerCase(), metaSplit[1]);
         }
         return metaInfo;
     }
@@ -406,7 +393,7 @@ public class HelperServiceImpl implements HelperService {
         StringCellProcessor valueHeaderCell = new NotNull(new ParsePhenotypeValue());
         CellProcessor[] processors = new CellProcessor[valueColumns];
         processors[0] = null;
-        for (int i=1;i<valueColumns;i++) {
+        for (int i = 1; i < valueColumns; i++) {
             processors[i] = valueHeaderCell;
         }
         return processors;
@@ -416,7 +403,7 @@ public class HelperServiceImpl implements HelperService {
         StringCellProcessor valueCell = new NotNull(new ParseDouble());
         CellProcessor[] processors = new CellProcessor[valueColumns];
         processors[0] = new NotNull(new ParseLong());
-        for (int i=1;i<valueColumns;i++) {
+        for (int i = 1; i < valueColumns; i++) {
             processors[i] = valueCell;
         }
         //TODO properly implement parse issues on the backend.
@@ -426,7 +413,7 @@ public class HelperServiceImpl implements HelperService {
 
     private UnitOfMeasure getUnitOfMeasureFromText(String text) {
         List<UnitOfMeasure> unitOfmeasures = unitOfMeasureRepository.findAll();
-        for (UnitOfMeasure unitOfMeasure:unitOfmeasures) {
+        for (UnitOfMeasure unitOfMeasure : unitOfmeasures) {
             if (unitOfMeasure.getUnitType().equalsIgnoreCase(text))
                 return unitOfMeasure;
         }

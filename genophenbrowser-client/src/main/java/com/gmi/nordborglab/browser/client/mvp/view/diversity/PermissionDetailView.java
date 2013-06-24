@@ -31,10 +31,12 @@ import com.watopi.chosen.client.gwt.ChosenListBox;
 public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandlers> implements
         PermissionDetailPresenter.MyView {
 
-	private final Widget widget;
-	
-	@UiField(provided=true) PermissionEditor permissionEditor;
-	@UiField(provided=true) ChosenListBox usersSearchBox;
+    private final Widget widget;
+
+    @UiField(provided = true)
+    PermissionEditor permissionEditor;
+    @UiField(provided = true)
+    ChosenListBox usersSearchBox;
     @UiField
     TextBox shareUrlTb;
     @UiField
@@ -55,38 +57,39 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
     Button cancelBtn;
     @UiField
     Button doneBtn;
-    @UiField(provided=true)
+    @UiField(provided = true)
     CellWidget<AccessControlEntryProxy> newPermissionDd;
-    private final Map<String,Boolean> selectedUsers = new HashMap<String,Boolean>();
+    private final Map<String, Boolean> selectedUsers = new HashMap<String, Boolean>();
 
     private final PermissionEditDriver permissionEditDriver;
 
-	public interface Binder extends UiBinder<Widget, PermissionDetailView> {
-	}
-	public interface PermissionEditDriver extends RequestFactoryEditorDriver<CustomAclProxy, PermissionEditor> {}
-	
+    public interface Binder extends UiBinder<Widget, PermissionDetailView> {
+    }
 
-	@Inject
-	public PermissionDetailView(final Binder binder, 
-			final PermissionEditDriver permissionEditDriver,
-            final PermissionEditor permissionEditor, final PermissionSelectionCell permissionSelectionCell
-			) {
+    public interface PermissionEditDriver extends RequestFactoryEditorDriver<CustomAclProxy, PermissionEditor> {
+    }
+
+
+    @Inject
+    public PermissionDetailView(final Binder binder,
+                                final PermissionEditDriver permissionEditDriver,
+                                final PermissionEditor permissionEditor, final PermissionSelectionCell permissionSelectionCell
+    ) {
         this.newPermissionDd = new CellWidget<AccessControlEntryProxy>(permissionSelectionCell);
         this.permissionEditor = permissionEditor;
         ChosenOptions options = new ChosenOptions();
         options.setSingleBackstrokeDelete(true);
         options.setNoResultsText("No user found");
-        usersSearchBox = new ChosenListBox(true,options);
-		widget = binder.createAndBindUi(this);
-		this.permissionEditDriver = permissionEditDriver;
-		this.permissionEditDriver.initialize(permissionEditor);
+        usersSearchBox = new ChosenListBox(true, options);
+        widget = binder.createAndBindUi(this);
+        this.permissionEditDriver = permissionEditDriver;
+        this.permissionEditDriver.initialize(permissionEditor);
         usersSearchBox.addChosenChangeHandler(new ChosenChangeEvent.ChosenChangeHandler() {
             @Override
             public void onChange(ChosenChangeEvent chosenChangeEvent) {
                 if (chosenChangeEvent.isSelection()) {
-                    selectedUsers.put(chosenChangeEvent.getValue(),true);
-                }
-                else {
+                    selectedUsers.put(chosenChangeEvent.getValue(), true);
+                } else {
                     selectedUsers.remove(chosenChangeEvent.getValue());
                 }
                 updateUserSearchPanel();
@@ -102,7 +105,7 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
         permissionEditor.setFieldUpdater(new FieldUpdater<AccessControlEntryProxy, AccessControlEntryProxy>() {
             @Override
             public void update(int index, AccessControlEntryProxy object, AccessControlEntryProxy value) {
-                 getUiHandlers().onUpdatePermission(value);
+                getUiHandlers().onUpdatePermission(value);
             }
         });
         addUserBtnPanel.setVisible(false);
@@ -114,28 +117,27 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
         if (selectedUsers.size() == 0) {
             addUserBtnPanel.setVisible(false);
             newPermissionDd.setVisible(false);
-        }
-        else {
+        } else {
             newPermissionDd.setVisible(true);
             addUserBtnPanel.setVisible(true);
         }
     }
 
     @Override
-	public Widget asWidget() {
-		return widget;
-	}
-	
-	@Override
-	public PermissionEditDriver getEditDriver() {
-		return permissionEditDriver;
-	}
-	
+    public Widget asWidget() {
+        return widget;
+    }
 
-	@Override
-	public List<AccessControlEntryProxy> getPermissionList() {
-		return permissionEditor.getPermissionList();
-	}
+    @Override
+    public PermissionEditDriver getEditDriver() {
+        return permissionEditDriver;
+    }
+
+
+    @Override
+    public List<AccessControlEntryProxy> getPermissionList() {
+        return permissionEditor.getPermissionList();
+    }
 
     @Override
     public void setShareUrl(String shareUrl) {
@@ -150,8 +152,8 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
     @Override
     public void setAvailableUsersToSearch(List<AppUserProxy> users) {
         usersSearchBox.clear();
-        for (AppUserProxy user: users) {
-            usersSearchBox.addItem(getFullnameFromUser(user),user.getUsername());
+        for (AppUserProxy user : users) {
+            usersSearchBox.addItem(getFullnameFromUser(user), user.getId().toString());
         }
     }
 
@@ -164,7 +166,7 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
 
     @Override
     public void setAccessControlEntryPlaceHolder(AccessControlEntryProxy newPermission) {
-        newPermissionDd.setValue(newPermission,false,true);
+        newPermissionDd.setValue(newPermission, false, true);
         newPermissionDd.redraw();
     }
 
@@ -177,13 +179,13 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
 
 
     private static String getFullnameFromUser(AppUserProxy user) {
-        return user.getFirstname() + " "+user.getLastname() + " ("+user.getEmail()+")";
+        return user.getFirstname() + " " + user.getLastname() + " (" + user.getEmail() + ")";
     }
 
     @Override
-	public void addPermission(AccessControlEntryProxy permission) {
-		permissionEditor.addPermission(permission);
-	}
+    public void addPermission(AccessControlEntryProxy permission) {
+        permissionEditor.addPermission(permission);
+    }
 
 
     @UiHandler("cancelUserBtn")
