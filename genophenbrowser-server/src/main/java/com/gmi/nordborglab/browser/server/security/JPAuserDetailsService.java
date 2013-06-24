@@ -15,22 +15,21 @@ import com.gmi.nordborglab.browser.server.repository.UserRepository;
 @Transactional(readOnly = true)
 public class JPAuserDetailsService implements UserDetailsService {
 
-	@Resource
-	private UserRepository userRepository;
-	
+    @Resource
+    private UserRepository userRepository;
 
-	
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		try {
-			AppUser appUser = userRepository.findOne(username);
-			if (appUser == null) {
-				throw new UsernameNotFoundException(username+ " not found");
-			}
 
-			return SecurityUtil.getUserFromAppUser(appUser);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        try {
+            AppUser appUser = userRepository.findByUsername(username);
+            if (appUser == null) {
+                throw new UsernameNotFoundException(username + " not found");
+            }
 
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+            return SecurityUtil.getUserFromAppUser(appUser);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

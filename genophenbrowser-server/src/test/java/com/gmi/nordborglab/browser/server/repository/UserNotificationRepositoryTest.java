@@ -28,7 +28,7 @@ public class UserNotificationRepositoryTest extends BaseTest {
     public void testFindById() {
         UserNotification actual = repository.findOne(50L);
         assertNotNull("did not find expected entity", actual);
-        assertEquals((double)50L, (double)actual.getId(),0L);
+        assertEquals((double) 50L, (double) actual.getId(), 0L);
     }
 
     @Test
@@ -44,20 +44,19 @@ public class UserNotificationRepositoryTest extends BaseTest {
         created.setType("test");
         created.setText("test");
         UserNotification actual = repository.save(created);
-        assertNotNull("create did not work",actual);
-        assertNotNull("couldn't generate id",actual.getId());
-        assertEquals("test",actual.getType());
-        assertEquals("test",actual.getText());
+        assertNotNull("create did not work", actual);
+        assertNotNull("couldn't generate id", actual.getId());
+        assertEquals("test", actual.getType());
+        assertEquals("test", actual.getText());
     }
 
     @Test
     public void findByAppUserInOrderByIdDesc() {
-        String username = "https://www.google.com/accounts/o8/id?id=AItOawn5aKepFg22wNwGSBK-PeCOk7Of-VoAOCM";
-        List<UserNotification> notifications = repository.findByAppUserUsernameLikeOrAppUserIsNullOrderByIdDesc(username);
+        Long id = 16L;
+        List<UserNotification> notifications = repository.findByAppUserIdOrAppUserIsNullOrderByIdDesc(id);
         assertNotNull(notifications);
-        assertEquals(14,notifications.size());
+        assertEquals(14, notifications.size());
     }
-
 
 
 }

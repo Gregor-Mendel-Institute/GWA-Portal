@@ -8,39 +8,41 @@ import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 @Entity
-@Table(schema="acl",name="authorities")
-public class Authority  {
-	
-	
-	@EmbeddedId
-	private AuthorityPK id;
+@Table(schema = "acl", name = "authorities")
+public class Authority {
 
-	
-	@MapsId("username")
-	@JoinColumn(name="username")
-	@ManyToOne() private AppUser user;
-	
+
+    @EmbeddedId
+    private AuthorityPK id;
+
+
+    @MapsId("id")
+    @JoinColumn(name = "user_id")
+    @ManyToOne()
+    private AppUser user;
+
 
     public Authority() {
-    	this.id = new AuthorityPK();
+        this.id = new AuthorityPK();
     }
-    
-    public Authority(AppUser user,String authority) {
-    	this.id = new AuthorityPK(user.getUsername(),authority);
+
+    public Authority(AppUser user, String authority) {
+        this.id = new AuthorityPK(user.getId(), authority);
     }
 
     public String getAuthority() {
         return id.getAuthority();
     }
+
     public void setAuthority(String authority) {
-    	this.id.setAuthority(authority);
+        this.id.setAuthority(authority);
     }
-    
+
     public AppUser getUser() {
-    	return user;
+        return user;
     }
-    
+
     public void setUser(AppUser user) {
-    	this.user = user;
+        this.user = user;
     }
 }

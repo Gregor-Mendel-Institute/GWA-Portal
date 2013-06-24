@@ -14,23 +14,23 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name="user_notification",schema="util")
-@AttributeOverride(name="id", column=@Column(name="id"))
-@SequenceGenerator(name="idSequence", sequenceName="util.user_notification_id_seq")
-public class UserNotification extends BaseEntity{
+@Table(name = "user_notification", schema = "util")
+@AttributeOverride(name = "id", column = @Column(name = "id"))
+@SequenceGenerator(name = "idSequence", sequenceName = "util.user_notification_id_seq")
+public class UserNotification extends BaseEntity {
 
     private String type;
 
     private String text;
 
-    @Column(name="create_date")
+    @Column(name = "create_date")
     private Date createDate = new Date();
 
     @Transient
     private boolean isRead = false;
 
     @ManyToOne()
-    @JoinColumn(name="username")
+    @JoinColumn(name = "user_id")
     private AppUser appUser;
 
     public UserNotification() {
@@ -72,8 +72,7 @@ public class UserNotification extends BaseEntity{
     public boolean isRead(Date lastCheckDate) {
         if (lastCheckDate != null && lastCheckDate.getTime() > createDate.getTime()) {
             isRead = true;
-        }
-        else {
+        } else {
             isRead = false;
         }
         return isRead;

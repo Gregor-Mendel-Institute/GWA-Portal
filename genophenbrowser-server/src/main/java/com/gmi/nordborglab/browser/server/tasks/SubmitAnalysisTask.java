@@ -166,7 +166,7 @@ public class SubmitAnalysisTask {
             if (studyJob.getAppUser() != null) {
                 UserNotification notification = getUserNotificationFromStudyJob(studyJob);
                 userNotificationRepository.save(notification);
-                ClientComService.pushUserNotification(studyJob.getAppUser().getUsername(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
+                ClientComService.pushUserNotification(studyJob.getAppUser().getId().toString(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -209,7 +209,7 @@ public class SubmitAnalysisTask {
                 if (studyJob.getAppUser() != null) {
                     UserNotification notification = getUserNotificationFromStudyJob(studyJob);
                     userNotificationRepository.save(notification);
-                    ClientComService.pushUserNotification(studyJob.getAppUser().getUsername(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
+                    ClientComService.pushUserNotification(studyJob.getAppUser().getId().toString(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
                 }
             }
             studyJobRepository.save(studyJob);

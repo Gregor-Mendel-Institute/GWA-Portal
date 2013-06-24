@@ -32,7 +32,7 @@ public class GWASResultRepositoryTest extends BaseTest {
     public void testFindById() {
         GWASResult actual = repository.findOne(1L);
         assertNotNull("did not find expected entity", actual);
-        assertEquals((double)1L, (double)actual.getId(),0L);
+        assertEquals((double) 1L, (double) actual.getId(), 0L);
     }
 
     @Test
@@ -45,19 +45,19 @@ public class GWASResultRepositoryTest extends BaseTest {
     @Test
     public void testCreate() {
         GWASResult created = new GWASResult();
-        AppUser user = userRepository.findOne("john");
+        AppUser user = userRepository.findOne(1L);
         created.setName("TEST");
         created.setType("TEST");
         created.setComments("TEST");
         created.setAppUser(user);
         GWASResult actual = repository.save(created);
-        assertNotNull("create did not work",actual);
-        assertNotNull("couldn't generate id",actual.getId());
-        assertEquals("Common name is correct", "TEST",actual.getName());
-        assertEquals("TEST",actual.getType());
-        assertEquals("TEST",actual.getComments());
+        assertNotNull("create did not work", actual);
+        assertNotNull("couldn't generate id", actual.getId());
+        assertEquals("Common name is correct", "TEST", actual.getName());
+        assertEquals("TEST", actual.getType());
+        assertEquals("TEST", actual.getComments());
         assertNotNull(actual.getAppUser());
-        assertEquals("john",actual.getAppUser().getUsername());
+        assertEquals("john", actual.getAppUser().getUsername());
 
     }
 
@@ -65,8 +65,8 @@ public class GWASResultRepositoryTest extends BaseTest {
     public void testFindAllByUsername() {
         List<GWASResult> gwasResults = repository.findAllByAppUserUsername("john");
         assertNotNull(gwasResults);
-        assertEquals(1,gwasResults.size());
-        assertEquals("john",gwasResults.get(0).getAppUser().getUsername());
+        assertEquals(1, gwasResults.size());
+        assertEquals("john", gwasResults.get(0).getAppUser().getUsername());
     }
 
 

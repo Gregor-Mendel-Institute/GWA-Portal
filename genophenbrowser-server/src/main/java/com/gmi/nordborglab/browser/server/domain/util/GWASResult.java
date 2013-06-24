@@ -14,10 +14,10 @@ import javax.persistence.*;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name="gwas_results",schema="util")
-@AttributeOverride(name="id", column=@Column(name="id"))
-@SequenceGenerator(name="idSequence", sequenceName="util.gwas_results_id_seq")
-public class GWASResult extends SecureEntity  {
+@Table(name = "gwas_results", schema = "util")
+@AttributeOverride(name = "id", column = @Column(name = "id"))
+@SequenceGenerator(name = "idSequence", sequenceName = "util.gwas_results_id_seq")
+public class GWASResult extends SecureEntity {
 
     private String name;
 
@@ -25,7 +25,7 @@ public class GWASResult extends SecureEntity  {
     private String comments;
 
     @ManyToOne()
-    @JoinColumn(name="username")
+    @JoinColumn(name = "user_id")
     private AppUser appUser;
     private float maxScore;
     private int numberOfSNPs;

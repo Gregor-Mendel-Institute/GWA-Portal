@@ -23,12 +23,12 @@ import com.gmi.nordborglab.browser.server.service.DuplicateRegistrationException
 import com.gmi.nordborglab.browser.server.service.UserService;
 
 @Service("userService")
-@Transactional(readOnly=true)
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
 
-	@Resource
-	private UserRepository userRepository;
+    @Resource
+    private UserRepository userRepository;
 
     @Resource
     private UserNotificationRepository userNotificationRepository;
@@ -37,36 +37,33 @@ public class UserServiceImpl implements UserService {
     private AclSidRepository aclSidRepository;
 
 
-	
-	@Override
-	@Transactional(readOnly=false)
-	public void registerUserIfValid(Registration registration,
-			boolean userIsValid) throws DuplicateRegistrationException {
-		if (userRepository.findOne(registration.getEmail())!= null || userRepository.findByEmail(registration.getEmail())!=null) {
-			throw new DuplicateRegistrationException();
-		}
-		if (userIsValid) {
-			Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-			
-			AppUser appUser = new AppUser(registration.getEmail());
-			appUser.setEmail(registration.getEmail());
-			appUser.setFirstname(registration.getFirstname());
-			appUser.setLastname(registration.getLastname());
-			appUser.setOpenidUser(false);
-			appUser.setPassword(encoder.encodePassword(registration.getPassword(),null));
-			List<Authority> authorities = new ArrayList<Authority>();
-			Authority authority = new Authority();
-			authority.setAuthority(SecurityUtil.DEFAULT_AUTHORITY);
-			authorities.add(authority);
-			appUser.setAuthorities(authorities);
-			userRepository.save(appUser);
+    @Override
+    @Transactional(readOnly = false)
+    public void registerUserIfValid(Registration registration,
+                                    boolean userIsValid) throws DuplicateRegistrationException {
+        if (userRepository.findByEmail(registration.getEmail()) != null) {
+            throw new DuplicateRegistrationException();
+        }
+        if (userIsValid) {
+            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+
+            AppUser appUser = new AppUser(registration.getEmail());
+            appUser.setEmail(registration.getEmail());
+            appUser.setFirstname(registration.getFirstname());
+            appUser.setLastname(registration.getLastname());
+            appUser.setOpenidUser(false);
+            appUser.setPassword(encoder.encodePassword(registration.getPassword(), null));
+            List<Authority> authorities = new ArrayList<Authority>();
+            Authority authority = new Authority();
+            authority.setAuthority(SecurityUtil.DEFAULT_AUTHORITY);
+            authorities.add(authority);
+            appUser.setAuthorities(authorities);
+            userRepository.save(appUser);
             //FIXME workaround because exception is thrown when AclSid doesnt exist and first time permission is added
-            AclSid aclSid = new AclSid(true,appUser.getUsername());
+            AclSid aclSid = new AclSid(true, appUser.getId().toString());
             aclSidRepository.save(aclSid);
-		}
-	}
-
-
+        }
+    }
 
 
 }

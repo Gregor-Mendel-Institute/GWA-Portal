@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
 
 import com.gmi.nordborglab.browser.server.domain.acl.AclSid;
 import com.gmi.nordborglab.browser.server.repository.AclSidRepository;
@@ -20,99 +21,110 @@ import com.gmi.nordborglab.browser.server.domain.acl.Authority;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
 
 public class OpenIdUserDetailsService implements UserDetailsService,
-		AuthenticationUserDetailsService<OpenIDAuthenticationToken> {
+        AuthenticationUserDetailsService<OpenIDAuthenticationToken> {
 
-	@Resource
-	protected UserRepository userRepository;
+    @Resource
+    protected UserRepository userRepository;
+
+    @Resource
+    protected EntityManager entityManager;
 
     @Resource
     protected AclSidRepository aclSidRepository;
 
-	
-	// private final Map<String,CustomUserDetails> registeredUsers = new
-	// HashMap<String, CustomUserDetails>();
-	
 
-	@Override
-	public UserDetails loadUserByUsername(String id)
-			throws UsernameNotFoundException {
+    // private final Map<String,CustomUserDetails> registeredUsers = new
+    // HashMap<String, CustomUserDetails>();
 
-		AppUser appUser = userRepository.findOne(id);
 
-		if (appUser == null) {
-			throw new UsernameNotFoundException(id);
-		}
-		
-		return SecurityUtil.getUserFromAppUser(appUser);
-	}
+    @Override
+    public UserDetails loadUserByUsername(String id)
+            throws UsernameNotFoundException {
 
-	@Override
-	@Transactional
-	public UserDetails loadUserDetails(OpenIDAuthenticationToken token) {
-		String id = token.getIdentityUrl();
+        AppUser appUser = userRepository.findOne(Long.parseLong(id));
 
-		AppUser appUser = userRepository.findOne(id);
+        if (appUser == null) {
+            throw new UsernameNotFoundException(id);
+        }
 
-		if (appUser != null) {
-			return SecurityUtil.getUserFromAppUser(appUser);
-		}
+        return SecurityUtil.getUserFromAppUser(appUser);
+    }
 
-		String email = null;
-		String firstName = null;
-		String lastName = null;
-		String fullName = null;
+    @Override
+    @Transactional
+    public UserDetails loadUserDetails(OpenIDAuthenticationToken token) {
+        String id = token.getIdentityUrl();
 
-		List<OpenIDAttribute> attributes = token.getAttributes();
+        AppUser appUser = userRepository.findByUsername(id);
+        if (appUser != null) {
+            return SecurityUtil.getUserFromAppUser(appUser);
+        }
 
-		for (OpenIDAttribute attribute : attributes) {
-			if (attribute.getName().equals("email")) {
-				email = attribute.getValues().get(0);
-			}
+        String email = null;
+        String firstName = null;
+        String lastName = null;
+        String fullName = null;
 
-			if (attribute.getName().equals("firstname")) {
-				firstName = attribute.getValues().get(0);
-			}
+        List<OpenIDAttribute> attributes = token.getAttributes();
 
-			if (attribute.getName().equals("lastname")) {
-				lastName = attribute.getValues().get(0);
-			}
+        for (OpenIDAttribute attribute : attributes) {
+            if (attribute.getName().equals("email")) {
+                email = attribute.getValues().get(0);
+            }
 
-			if (attribute.getName().equals("fullname")) {
-				fullName = attribute.getValues().get(0);
-			}
-		}
+            if (attribute.getName().equals("firstname")) {
+                firstName = attribute.getValues().get(0);
+            }
 
-		if (fullName == null) {
-			StringBuilder fullNameBldr = new StringBuilder();
+            if (attribute.getName().equals("lastname")) {
+                lastName = attribute.getValues().get(0);
+            }
 
-			if (firstName != null) {
-				fullNameBldr.append(firstName);
-			}
+            if (attribute.getName().equals("fullname")) {
+                fullName = attribute.getValues().get(0);
+            }
+        }
 
-			if (lastName != null) {
-				fullNameBldr.append(" ").append(lastName);
-			}
-			fullName = fullNameBldr.toString();
-		}
-		appUser = new AppUser(id);
-		appUser.setEmail(email);
-		appUser.setPassword("unused");
-		appUser.setFirstname(firstName);
-		appUser.setLastname(lastName);
-		appUser.setOpenidUser(true);
-		List<Authority> authorities = new ArrayList<Authority>();
-		Authority authority = new Authority();
-		authority.setAuthority(SecurityUtil.DEFAULT_AUTHORITY);
-		authorities.add(authority);
-		appUser.setAuthorities(authorities);
-		userRepository.save(appUser);
+        if (fullName == null) {
+            StringBuilder fullNameBldr = new StringBuilder();
+
+            if (firstName != null) {
+                fullNameBldr.append(firstName);
+            }
+
+            if (lastName != null) {
+                fullNameBldr.append(" ").append(lastName);
+            }
+            fullName = fullNameBldr.toString();
+        }
+        //FIXME check if there is one with the email address because server hoist changed
+        if (appUser == null) {
+            appUser = userRepository.findByEmail(email);
+            if (appUser != null && appUser.openidUser()) {
+                appUser.setUsername(id);
+                userRepository.save(appUser);
+                return SecurityUtil.getUserFromAppUser(appUser);
+            }
+        }
+        appUser = new AppUser(id);
+        appUser.setEmail(email);
+        appUser.setPassword("unused");
+        appUser.setFirstname(firstName);
+        appUser.setLastname(lastName);
+        appUser.setOpenidUser(true);
+        List<Authority> authorities = new ArrayList<Authority>();
+        Authority authority = new Authority();
+        authority.setAuthority(SecurityUtil.DEFAULT_AUTHORITY);
+        authorities.add(authority);
+        appUser.setAuthorities(authorities);
+        userRepository.save(appUser);
 
         //FIXME WORKAROUND for  http://forum.springsource.org/showthread.php?55490-ACL-Transaction-must-be-running
         AclSid sid = aclSidRepository.findBySid(appUser.getUsername());
-		if (sid == null) {
-            sid = new AclSid(true,appUser.getUsername());
+        if (sid == null) {
+            sid = new AclSid(true, appUser.getUsername());
             aclSidRepository.save(sid);
         }
-		return SecurityUtil.getUserFromAppUser(appUser);
-	}
+        return SecurityUtil.getUserFromAppUser(appUser);
+    }
 }

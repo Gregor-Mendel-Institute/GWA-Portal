@@ -40,175 +40,172 @@ public class CdvServiceImpl implements CdvService {
     @Resource
     protected UserRepository userRepository;
 
-	@Resource
-	protected StudyRepository studyRepository;
-	
-	@Resource
-	protected TraitUomRepository traitUomRepository;
-	
-	@Resource
-	protected TraitRepository traitRepository;
+    @Resource
+    protected StudyRepository studyRepository;
 
-	@Resource
-	protected RoleHierarchy roleHierarchy;
+    @Resource
+    protected TraitUomRepository traitUomRepository;
+
+    @Resource
+    protected TraitRepository traitRepository;
+
+    @Resource
+    protected RoleHierarchy roleHierarchy;
 
     @Resource
     protected AlleleAssayRepository alleleAssayRepository;
-	
-	@Resource
-	protected MutableAclService aclService;
 
-	
-	@Override
-	public StudyPage findStudiesByPhenotypeId(Long id, int start, int size) {
-		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-		final ImmutableList<Permission> permissions = ImmutableList
-				.of(CustomPermission.READ);
-		ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,id);
-		Acl acl = aclService.readAclById(oid, authorities);
-		try {
-			if (!acl.isGranted(permissions, authorities, false)) 
-				throw new AccessDeniedException("not allowed");
-		}
-		catch (NotFoundException e) {
-			throw new AccessDeniedException("not allowed");
-		}
-		if (start > 0)
-			start = start/size;
-		PageRequest pageRequest = new PageRequest(start, size);
-		Page<Study> studyPage = studyRepository.findByPhenotypeId(id,
-				pageRequest);
+    @Resource
+    protected MutableAclService aclService;
+
+
+    @Override
+    public StudyPage findStudiesByPhenotypeId(Long id, int start, int size) {
+        final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
+        final ImmutableList<Permission> permissions = ImmutableList
+                .of(CustomPermission.READ);
+        ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class, id);
+        Acl acl = aclService.readAclById(oid, authorities);
+        try {
+            if (!acl.isGranted(permissions, authorities, false))
+                throw new AccessDeniedException("not allowed");
+        } catch (NotFoundException e) {
+            throw new AccessDeniedException("not allowed");
+        }
+        if (start > 0)
+            start = start / size;
+        PageRequest pageRequest = new PageRequest(start, size);
+        Page<Study> studyPage = studyRepository.findByPhenotypeId(id,
+                pageRequest);
         StudyPage page = new StudyPage(studyPage.getContent(), pageRequest,
-				studyPage.getTotalElements());
-		return page;
-	}
+                studyPage.getTotalElements());
+        return page;
+    }
 
 
-	@Override
-	public Study findStudy(Long id) {
-		Study study = studyRepository.findOne(id);
-		study = checkStudyPermissions(study, CustomPermission.READ);
-		return study;
-	}
+    @Override
+    public Study findStudy(Long id) {
+        Study study = studyRepository.findOne(id);
+        study = checkStudyPermissions(study, CustomPermission.READ);
+        return study;
+    }
 
 
-	@Override
-	@Transactional(readOnly = false)
-	public Study saveStudy(Study study) {
+    @Override
+    @Transactional(readOnly = false)
+    public Study saveStudy(Study study) {
         study = checkStudyPermissions(study, CustomPermission.EDIT);
         CustomUser user = SecurityUtil.getUserFromContext();
         if (user != null)
             study.setProducer(user.getFullName());
         if (study.getJob() != null && study.getJob().getAppUser() == null) {
-            AppUser appUser = userRepository.findOne(SecurityUtil.getUsername());
+            AppUser appUser = userRepository.findOne(Long.parseLong(SecurityUtil.getUsername()));
             study.getJob().setAppUser(appUser);
         }
-		study = studyRepository.save(study);
-		return study;
-	}
+        study = studyRepository.save(study);
+        return study;
+    }
 
 
-	@Override
-	public List<Study> findStudiesByPassportId(Long passportId) {
-		Sort sort = new Sort("id");
-		ImmutableList<Study> studies = filterStudiesByAcl(studyRepository.findAllByPassportId(passportId,sort)).toImmutableList();
-		return studies;
-	}
-	
-	private FluentIterable<Study> filterStudiesByAcl(List<Study> studiesToFilter) {
-		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-		final ImmutableList<Permission> permissions = ImmutableList.of(CustomPermission.READ);
-		FluentIterable<Study> studies = FluentIterable.from(studiesToFilter);
-		if (studies.size() > 0) {
-			List<Object[]> studyTraits = traitUomRepository.findAllByStudiesGrouped(studiesToFilter);
-			ImmutableListMultimap<TraitUom, Object[]> studyTraitMap = Multimaps.index(studyTraits, new Function<Object[],TraitUom>() {
+    @Override
+    public List<Study> findStudiesByPassportId(Long passportId) {
+        Sort sort = new Sort("id");
+        ImmutableList<Study> studies = filterStudiesByAcl(studyRepository.findAllByPassportId(passportId, sort)).toImmutableList();
+        return studies;
+    }
 
-				@Override
-				@Nullable
-				public TraitUom apply(@Nullable Object[] input) {
-					return (TraitUom)input[1];
-				}
-			});
-			//ImmutableList<TraitUom> traits =  ImmutableList.copyOf(traitUomRepository.findAllByStudies(studiesToFilter));
-			ImmutableSet<TraitUom> traits = studyTraitMap.keySet();
-			final ImmutableBiMap<TraitUom,ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(traits.asList()).inverse();
-			final ImmutableMap<ObjectIdentity,Acl> acls = ImmutableMap.copyOf(aclService.readAclsById(identities.values().asList(), authorities));
-			
-			Predicate<Map.Entry<TraitUom, Object[]>> predicate = new Predicate<Map.Entry<TraitUom, Object[]>>() {
+    private FluentIterable<Study> filterStudiesByAcl(List<Study> studiesToFilter) {
+        final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
+        final ImmutableList<Permission> permissions = ImmutableList.of(CustomPermission.READ);
+        FluentIterable<Study> studies = FluentIterable.from(studiesToFilter);
+        if (studies.size() > 0) {
+            List<Object[]> studyTraits = traitUomRepository.findAllByStudiesGrouped(studiesToFilter);
+            ImmutableListMultimap<TraitUom, Object[]> studyTraitMap = Multimaps.index(studyTraits, new Function<Object[], TraitUom>() {
 
-				@Override
-				public boolean apply(Map.Entry<TraitUom, Object[]> entry) {
-					boolean flag = false;
-					ObjectIdentity identity = identities.get(entry.getKey());
-					if (acls.containsKey(identity)) {
-						Acl acl = acls.get(identity);
-						try {
+                @Override
+                @Nullable
+                public TraitUom apply(@Nullable Object[] input) {
+                    return (TraitUom) input[1];
+                }
+            });
+            //ImmutableList<TraitUom> traits =  ImmutableList.copyOf(traitUomRepository.findAllByStudies(studiesToFilter));
+            ImmutableSet<TraitUom> traits = studyTraitMap.keySet();
+            final ImmutableBiMap<TraitUom, ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(traits.asList()).inverse();
+            final ImmutableMap<ObjectIdentity, Acl> acls = ImmutableMap.copyOf(aclService.readAclsById(identities.values().asList(), authorities));
+
+            Predicate<Map.Entry<TraitUom, Object[]>> predicate = new Predicate<Map.Entry<TraitUom, Object[]>>() {
+
+                @Override
+                public boolean apply(Map.Entry<TraitUom, Object[]> entry) {
+                    boolean flag = false;
+                    ObjectIdentity identity = identities.get(entry.getKey());
+                    if (acls.containsKey(identity)) {
+                        Acl acl = acls.get(identity);
+                        try {
                             if (acl.isGranted(permissions, authorities, false))
-							    flag = true;
-                        }
-                        catch (NotFoundException ex) {
+                                flag = true;
+                        } catch (NotFoundException ex) {
 
                         }
-					}
-					return flag;
-				}
-			};
-			Multimap<TraitUom,Object[]> filteredStudyTraitMap = Multimaps.filterEntries(studyTraitMap,predicate);
-			studies = FluentIterable.from(Collections2.transform(filteredStudyTraitMap.values(),new Function<Object[], Study>() {
+                    }
+                    return flag;
+                }
+            };
+            Multimap<TraitUom, Object[]> filteredStudyTraitMap = Multimaps.filterEntries(studyTraitMap, predicate);
+            studies = FluentIterable.from(Collections2.transform(filteredStudyTraitMap.values(), new Function<Object[], Study>() {
 
-				@Override
-				@Nullable
-				public Study apply(@Nullable Object[] input) {
-					Study study = null;
-					if (input != null) {
-						study = (Study)input[0];
-					}
-					return study;
-				}
-			
-			}));
-		}
-		
-		return studies;
-	}
+                @Override
+                @Nullable
+                public Study apply(@Nullable Object[] input) {
+                    Study study = null;
+                    if (input != null) {
+                        study = (Study) input[0];
+                    }
+                    return study;
+                }
 
+            }));
+        }
 
-	@Override
-	public StudyPage findAll(String name, String phenotype, String experiment,
-			Long alleleAssayId, Long studyProtocolId, int start, int size) {
-		StudyPage page;
-		int pageStart = 0;
-		if (start > 0)
-			pageStart = start/size;
-		PageRequest pageRequest = new PageRequest(start, size);
-		Sort sort = new Sort("id");
-		ImmutableList<Study> studies = filterStudiesByAcl(studyRepository.findAll(sort)).toList();
-		List<Study> partitionedStudies = Iterables.get(Iterables.partition(studies, size),pageStart);
-		int	totalElements = partitionedStudies.size();
-		if (totalElements > 0) {
-			page = new StudyPage(partitionedStudies, pageRequest,
-				totalElements);
-		}
-		else {
-			page = new StudyPage(partitionedStudies, pageRequest, 0);
-		}
-		return page;
-	}
+        return studies;
+    }
 
 
-	@Override
-	public List<Trait> findTraitValues(Long studyId) {
-		Study study = studyRepository.findOne(studyId);
-		study = checkStudyPermissions(study, CustomPermission.READ);
-		List<Trait> traits = traitRepository.findAllByStudiesId(studyId);
-		return traits;
-	}
+    @Override
+    public StudyPage findAll(String name, String phenotype, String experiment,
+                             Long alleleAssayId, Long studyProtocolId, int start, int size) {
+        StudyPage page;
+        int pageStart = 0;
+        if (start > 0)
+            pageStart = start / size;
+        PageRequest pageRequest = new PageRequest(start, size);
+        Sort sort = new Sort("id");
+        ImmutableList<Study> studies = filterStudiesByAcl(studyRepository.findAll(sort)).toList();
+        List<Study> partitionedStudies = Iterables.get(Iterables.partition(studies, size), pageStart);
+        int totalElements = partitionedStudies.size();
+        if (totalElements > 0) {
+            page = new StudyPage(partitionedStudies, pageRequest,
+                    totalElements);
+        } else {
+            page = new StudyPage(partitionedStudies, pageRequest, 0);
+        }
+        return page;
+    }
+
+
+    @Override
+    public List<Trait> findTraitValues(Long studyId) {
+        Study study = studyRepository.findOne(studyId);
+        study = checkStudyPermissions(study, CustomPermission.READ);
+        List<Trait> traits = traitRepository.findAllByStudiesId(studyId);
+        return traits;
+    }
 
     @Override
     public List<AlleleAssay> findAlleleAssaysWithStats(Long phenotypeId, Long statisticTypeId) {
         Long traitValuesCount = traitRepository.countNumberOfTraitValues(phenotypeId, statisticTypeId);
         List<AlleleAssay> alleleAssays = alleleAssayRepository.findAll();
-        for (AlleleAssay alleleAssay :alleleAssays) {
+        for (AlleleAssay alleleAssay : alleleAssays) {
             Long availableAllelesCount = alleleAssayRepository.countAvailableAlleles(phenotypeId, statisticTypeId, alleleAssay.getId());
             alleleAssay.setTraitValuesCount(traitValuesCount);
             alleleAssay.setAvailableAllelesCount(availableAllelesCount);
@@ -230,52 +227,50 @@ public class CdvServiceImpl implements CdvService {
         job.setCreateDate(new Date());
         job.setModificationDate(new Date());
         job.setTask("Waiting for workflow to start");
-        AppUser appUser = userRepository.findOne(SecurityUtil.getUsername());
+        AppUser appUser = userRepository.findOne(Long.parseLong(SecurityUtil.getUsername()));
         job.setAppUser(appUser);
         study.setJob(job);
         studyRepository.save(study);
         return study;
     }
 
-    private Study checkStudyPermissions(Study study,Permission permission) {
-		if (study.getTraits().size() == 0)
-			throw new RuntimeException("Study must have phenotypes assigned");
-		TraitUom trait = Iterables.get(study.getTraits(), 0).getTraitUom();
-		final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-		final ImmutableList<Permission> permissions = ImmutableList
-				.of(permission);
-		ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class,trait.getId());
-		Acl acl = aclService.readAclById(oid, authorities);
-		try {
-			if (!acl.isGranted(permissions, authorities, false)) 
-				throw new AccessDeniedException("not allowed");
-		}
-		catch (NotFoundException e) {
-			throw new AccessDeniedException("not allowed");
-		}
-		boolean isOwner = false;
-		for (Sid sid : authorities) {
-			if (sid.equals(acl.getOwner())) {
-				isOwner = true;
-				break;
-			}
-		}
-		AccessControlEntry ace = null;
-		if (acl.getEntries().size() > 0) {
-			 ace = acl.getEntries().get(0);
+    private Study checkStudyPermissions(Study study, Permission permission) {
+        if (study.getTraits().size() == 0)
+            throw new RuntimeException("Study must have phenotypes assigned");
+        TraitUom trait = Iterables.get(study.getTraits(), 0).getTraitUom();
+        final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
+        final ImmutableList<Permission> permissions = ImmutableList
+                .of(permission);
+        ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class, trait.getId());
+        Acl acl = aclService.readAclById(oid, authorities);
+        try {
+            if (!acl.isGranted(permissions, authorities, false))
+                throw new AccessDeniedException("not allowed");
+        } catch (NotFoundException e) {
+            throw new AccessDeniedException("not allowed");
         }
-		else if (acl.getParentAcl().getEntries().size() > 0) {
-			for (AccessControlEntry aceToCheck:acl.getParentAcl().getEntries()) {
+        boolean isOwner = false;
+        for (Sid sid : authorities) {
+            if (sid.equals(acl.getOwner())) {
+                isOwner = true;
+                break;
+            }
+        }
+        AccessControlEntry ace = null;
+        if (acl.getEntries().size() > 0) {
+            ace = acl.getEntries().get(0);
+        } else if (acl.getParentAcl().getEntries().size() > 0) {
+            for (AccessControlEntry aceToCheck : acl.getParentAcl().getEntries()) {
                 if (authorities.contains(aceToCheck.getSid())) {
                     ace = aceToCheck;
                     break;
                 }
             }
         }
-		study.setIsOwner(isOwner);
-		if (ace != null)
-			study.setUserPermission(new CustomAccessControlEntry((Long)ace.getId(),ace.getPermission().getMask(),ace.isGranting()));
-		return study;
-	}
+        study.setIsOwner(isOwner);
+        if (ace != null)
+            study.setUserPermission(new CustomAccessControlEntry((Long) ace.getId(), ace.getPermission().getMask(), ace.isGranting()));
+        return study;
+    }
 
 }
