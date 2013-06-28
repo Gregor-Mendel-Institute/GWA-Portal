@@ -223,7 +223,7 @@ public class SubmitAnalysisTask {
         TraitUom traitUom = study.getPhenotype();
         List<Object> args = Lists.newArrayList();
         args.add(study.getId());
-        args.add(traitUom.getId());
+        args.add(traitUom.getExperiment().getId());
         CeleryTask task = new CeleryTask(UUID.randomUUID().toString(), GWAS_TOP_SNPS_TASK, args);
         submitCeleryTask(task);
     }
