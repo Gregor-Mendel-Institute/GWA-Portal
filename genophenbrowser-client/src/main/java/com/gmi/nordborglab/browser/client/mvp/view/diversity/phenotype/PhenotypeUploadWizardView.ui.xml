@@ -68,8 +68,8 @@
     </ui:style>
     <g:LayoutPanel ui:field="uploadPhenotypePanel">
         <g:layer top="0" bottom="0">
-            <g:ScrollPanel>
-                <b:FluidContainer ui:field="phenotypeUploadPanel">
+            <g:ScrollPanel ui:field="phenotypeUploadPanel">
+                <b:FluidContainer>
                     <b:FluidRow>
                         <b:Column size="12">
                             <g:HTMLPanel>
