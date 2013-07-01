@@ -20,6 +20,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.taxonomy.Taxon
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.taxonomy.TaxonomyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.BasicStudyWizardPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.HomePresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.home.HomeTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.dashboard.DashboardPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
@@ -115,4 +116,6 @@ public interface ClientGinjector extends Ginjector {
     AsyncProvider<MetaAnalysisGenePresenter> getMetaAnalysisGenePresenter();
 
     AsyncProvider<MetaAnalysisTopResultsPresenter> getMetaAnalysisTopResultsPresenter();
+
+    Provider<HomeTabPresenter> getHomeTabPresenter();
 }

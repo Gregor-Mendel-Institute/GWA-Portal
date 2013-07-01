@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity;
 
+import com.eemi.gwt.tour.client.GwtTour;
+import com.eemi.gwt.tour.client.Tour;
 import com.github.gwtbootstrap.client.ui.AccordionGroup;
 import com.github.gwtbootstrap.client.ui.base.DivWidget;
 import com.github.gwtbootstrap.client.ui.base.ListItem;
@@ -13,6 +15,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
@@ -57,6 +60,7 @@ public class DiversityView extends ViewImpl implements
     AccordionGroup metaAnalysisAccGroup;
     private ImmutableMap<MENU_ITEM, AccordionGroup> menuItems;
     private MENU_ITEM isOpenMenuItem;
+    private final Tour welcomeTour;
 
     public interface MyStyle extends CssResource {
         String header_section_active();
@@ -70,9 +74,13 @@ public class DiversityView extends ViewImpl implements
     private final PlaceManager placeManager;
 
     @Inject
-    public DiversityView(final Binder binder, final PlaceManager placeManager) {
+    public DiversityView(final Binder binder, final PlaceManager placeManager, final @Named("welcome") Tour tour) {
         this.placeManager = placeManager;
+        this.welcomeTour = tour;
         widget = binder.createAndBindUi(this);
+        // for Tour
+        experimentAccGroup.getElement().setId("experimentAccGroup");
+        titleLabel.getElement().setId("breadcrumb");
         menuItems = ImmutableMap.<MENU_ITEM, AccordionGroup>builder()
                 .put(MENU_ITEM.EXPERIMENT, experimentAccGroup)
                 .put(MENU_ITEM.PHENOTYPE, phenotypeAccGroup)
@@ -161,6 +169,17 @@ public class DiversityView extends ViewImpl implements
                     isOpenMenuItem = menuItem;
                 }
             }
+        }
+    }
+
+    @Override
+    public void checkTour() {
+
+        //GwtTour.startTour(welcomeTour);
+        // TODO check state
+        try {
+            GwtTour.nextStep();
+        } catch (Exception e) {
         }
     }
 

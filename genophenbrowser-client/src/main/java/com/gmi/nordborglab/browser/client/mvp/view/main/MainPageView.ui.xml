@@ -290,7 +290,7 @@
     <g:DockLayoutPanel unit="EM" ui:field="mainContainer">
         <g:north size="3.423">
             <g:HTMLPanel addStyleNames="{style.navigation}">
-                <ul>
+                <ul id="topNav">
                     <li class="{style.current_page_item}">
                         <g:InlineHyperlink
                                 ui:field="homeLink" targetHistoryToken="{nameTokens.getHome}">Home

@@ -128,10 +128,17 @@
                             <b:AccordionGroup addStyleNames="{style.accordion_group_top}"
                                               ui:field="experimentAccGroup">
                                 <b:customTrigger>
-                                    <g:HTMLPanel addStyleNames="{style.header_section}">
-                                        <div class="{style.icon_header}">&#128255;</div>
-                                        <span>Studies</span>
-                                    </g:HTMLPanel>
+                                    <g:SimplePanel>
+                                        <b:Tooltip
+                                                text="Studies are the starting category. Studies are used to group one or more phenotypes together."
+                                                placement="BOTTOM">
+                                            <g:HTMLPanel addStyleNames="{style.header_section}">
+                                                <div class="{style.icon_header}">&#128255;</div>
+                                                <span>Studies</span>
+                                            </g:HTMLPanel>
+                                        </b:Tooltip>
+                                    </g:SimplePanel>
+
                                 </b:customTrigger>
                                 <base:UnorderedList addStyleNames="{style.submenu_container}">
                                     <base:ListItem addStyleNames="{style.submenu_item}">
@@ -143,10 +150,14 @@
                             </b:AccordionGroup>
                             <b:AccordionGroup ui:field="phenotypeAccGroup">
                                 <b:customTrigger>
-                                    <g:HTMLPanel addStyleNames="{style.header_section}">
-                                        <div class="{style.icon_header}">&#10002;</div>
-                                        <span>Phenotypes</span>
-                                    </g:HTMLPanel>
+                                    <g:SimplePanel>
+                                        <b:Tooltip text="Access personal and public phenotypes" placement="BOTTOM">
+                                            <g:HTMLPanel addStyleNames="{style.header_section}">
+                                                <div class="{style.icon_header}">&#10002;</div>
+                                                <span>Phenotypes</span>
+                                            </g:HTMLPanel>
+                                        </b:Tooltip>
+                                    </g:SimplePanel>
                                 </b:customTrigger>
                                 <base:UnorderedList addStyleNames="{style.submenu_container}">
                                     <base:ListItem addStyleNames="{style.submenu_item}">
@@ -157,10 +168,14 @@
                             </b:AccordionGroup>
                             <b:AccordionGroup ui:field="studyAccGroup">
                                 <b:customTrigger>
-                                    <g:HTMLPanel addStyleNames="{style.header_section}">
-                                        <div class="{style.icon_header}">&#128187;</div>
-                                        <span>Analysis</span>
-                                    </g:HTMLPanel>
+                                    <g:SimplePanel>
+                                        <b:Tooltip text="Access personal and public GWAS analyses" placement="BOTTOM">
+                                            <g:HTMLPanel addStyleNames="{style.header_section}">
+                                                <div class="{style.icon_header}">&#128187;</div>
+                                                <span>Analysis</span>
+                                            </g:HTMLPanel>
+                                        </b:Tooltip>
+                                    </g:SimplePanel>
                                 </b:customTrigger>
                                 <base:UnorderedList addStyleNames="{style.submenu_container}">
                                     <base:ListItem addStyleNames="{style.submenu_item}">
@@ -171,10 +186,15 @@
                             </b:AccordionGroup>
                             <b:AccordionGroup ui:field="ontologiesAccGroup">
                                 <b:customTrigger>
-                                    <g:HTMLPanel addStyleNames="{style.header_section}">
-                                        <div class="{style.icon_header}">&#128362;</div>
-                                        <span>Ontologies</span>
-                                    </g:HTMLPanel>
+                                    <g:SimplePanel>
+                                        <b:Tooltip text="Access various ontologies (trait, environment)"
+                                                   placement="BOTTOM">
+                                            <g:HTMLPanel addStyleNames="{style.header_section}">
+                                                <div class="{style.icon_header}">&#128362;</div>
+                                                <span>Ontologies</span>
+                                            </g:HTMLPanel>
+                                        </b:Tooltip>
+                                    </g:SimplePanel>
                                 </b:customTrigger>
                                 <base:UnorderedList addStyleNames="{style.submenu_container}">
                                     <base:ListItem addStyleNames="{style.submenu_item}">
@@ -189,10 +209,15 @@
                             </b:AccordionGroup>
                             <b:AccordionGroup ui:field="publicationsAccGroup">
                                 <b:customTrigger>
-                                    <g:HTMLPanel addStyleNames="{style.header_section}">
-                                        <div class="{style.icon_header}">&#128214;</div>
-                                        <span>Publications</span>
-                                    </g:HTMLPanel>
+                                    <g:SimplePanel>
+                                        <b:Tooltip text="Shows publications and related experiments and phenotypes"
+                                                   placement="BOTTOM">
+                                            <g:HTMLPanel addStyleNames="{style.header_section}">
+                                                <div class="{style.icon_header}">&#128214;</div>
+                                                <span>Publications</span>
+                                            </g:HTMLPanel>
+                                        </b:Tooltip>
+                                    </g:SimplePanel>
                                 </b:customTrigger>
                                 <base:UnorderedList addStyleNames="{style.submenu_container}">
                                     <base:ListItem addStyleNames="{style.submenu_item}">
@@ -203,10 +228,16 @@
                             </b:AccordionGroup>
                             <b:AccordionGroup ui:field="metaAnalysisAccGroup">
                                 <b:customTrigger>
-                                    <g:HTMLPanel addStyleNames="{style.header_section}">
-                                        <div class="{style.icon_header}">&#59254;</div>
-                                        <span>Meta-analysis</span>
-                                    </g:HTMLPanel>
+                                    <g:SimplePanel>
+                                        <b:Tooltip
+                                                text="Meta-analysis allows to view relation between genes and phenotypes"
+                                                placement="BOTTOM">
+                                            <g:HTMLPanel addStyleNames="{style.header_section}">
+                                                <div class="{style.icon_header}">&#59254;</div>
+                                                <span>Meta-analysis</span>
+                                            </g:HTMLPanel>
+                                        </b:Tooltip>
+                                    </g:SimplePanel>
                                 </b:customTrigger>
                                 <base:UnorderedList addStyleNames="{style.submenu_container}">
                                     <base:ListItem addStyleNames="{style.submenu_item}">
@@ -223,10 +254,14 @@
 
                             <b:AccordionGroup ui:field="toolsAccGroup">
                                 <b:customTrigger>
-                                    <g:HTMLPanel addStyleNames="{style.header_section}">
-                                        <div class="{style.icon_header}">&#9874;</div>
-                                        <span>Tools</span>
-                                    </g:HTMLPanel>
+                                    <g:SimplePanel>
+                                        <b:Tooltip text="Various tools for visualization" placement="BOTTOM">
+                                            <g:HTMLPanel addStyleNames="{style.header_section}">
+                                                <div class="{style.icon_header}">&#9874;</div>
+                                                <span>Tools</span>
+                                            </g:HTMLPanel>
+                                        </b:Tooltip>
+                                    </g:SimplePanel>
                                 </b:customTrigger>
                                 <base:UnorderedList addStyleNames="{style.submenu_container}">
                                     <base:ListItem addStyleNames="{style.submenu_item}">

@@ -83,7 +83,7 @@ public class ClientPlaceManager extends PlaceManagerImpl {
 
 
         if (currentUser.getAppData() == null) {
-            rf.helperRequest().getAppData().fire(receiver);
+            rf.helperRequest().getAppData().with("news.author").fire(receiver);
         } else {
             rfRunnalbe.run();
         }

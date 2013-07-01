@@ -20,44 +20,47 @@ import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 
 public class SearchView extends ViewWithUiHandlers<SearchUiHandlers> implements SearchPresenter.MyView {
 
-	private final Widget widget;
-	private int minCharSize = 3;
-	@UiField(provided=true) SuggestBox suggestBox;
+    private final Widget widget;
+    private int minCharSize = 3;
+    @UiField(provided = true)
+    SuggestBox suggestBox;
 
-	public interface Binder extends UiBinder<Widget, SearchView> {
-	}
+    public interface Binder extends UiBinder<Widget, SearchView> {
+    }
 
-	@Inject
-	public SearchView(final Binder binder) {
-		suggestBox = new SuggestBox(new SearchSuggestOracle() {
-			
-			@Override
-			public void requestSuggestions(Request request, Callback callback) {
-				if (request.getQuery().length() >=minCharSize)
-					getUiHandlers().onRequestSearch(request, callback);
-			}
-		},new TextBox(),new SearchSuggestDisplay());
-		widget = binder.createAndBindUi(this);
-		suggestBox.addSelectionHandler(new SelectionHandler<Suggestion>() {
+    @Inject
+    public SearchView(final Binder binder) {
+        suggestBox = new SuggestBox(new SearchSuggestOracle() {
 
-			@Override
-			public void onSelection(SelectionEvent<Suggestion> event) {
-				if (event.getSelectedItem() == null)
-					return;
-				SearchSuggestion searchSuggestion = (SearchSuggestion)event.getSelectedItem();
-				suggestBox.setText(null);
-				getUiHandlers().onNavigateToSuggestion(searchSuggestion);
-			}
-		});
-	}
+            @Override
+            public void requestSuggestions(Request request, Callback callback) {
+                if (request.getQuery().length() >= minCharSize)
+                    getUiHandlers().onRequestSearch(request, callback);
+            }
+        }, new TextBox(), new SearchSuggestDisplay());
+        widget = binder.createAndBindUi(this);
+        suggestBox.addSelectionHandler(new SelectionHandler<Suggestion>() {
 
-	@Override
-	public Widget asWidget() {
-		return widget;
-	}
+            @Override
+            public void onSelection(SelectionEvent<Suggestion> event) {
+                if (event.getSelectedItem() == null)
+                    return;
+                SearchSuggestion searchSuggestion = (SearchSuggestion) event.getSelectedItem();
+                suggestBox.setText(null);
+                getUiHandlers().onNavigateToSuggestion(searchSuggestion);
+            }
+        });
+        // for TOur
+        suggestBox.getElement().setId("globalSearchBox");
+    }
 
-	@Override
-	public void setMinCharSize(int minCharSize) {
-		this.minCharSize = minCharSize;
-	}
+    @Override
+    public Widget asWidget() {
+        return widget;
+    }
+
+    @Override
+    public void setMinCharSize(int minCharSize) {
+        this.minCharSize = minCharSize;
+    }
 }

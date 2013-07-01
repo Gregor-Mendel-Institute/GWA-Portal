@@ -2,9 +2,12 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity;
 
 import java.util.List;
 
+import com.eemi.gwt.tour.client.GwtTour;
+import com.eemi.gwt.tour.client.Tour;
 import com.gmi.nordborglab.browser.client.events.GWASResultLoadedEvent;
 import com.gmi.nordborglab.browser.client.events.OntologyLoadedEvent;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
+import com.google.inject.name.Named;
 import com.gwtplatform.mvp.client.View;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
@@ -43,6 +46,8 @@ public class DiversityPresenter extends
         void setTitle(String title);
 
         void setActiveMenuItem(MENU_ITEM menuItem, PlaceRequest request);
+
+        void checkTour();
     }
 
 
@@ -123,6 +128,7 @@ public class DiversityPresenter extends
 
         }
         setTitle();
+        getView().checkTour();
     }
 
     protected void setTitle() {
