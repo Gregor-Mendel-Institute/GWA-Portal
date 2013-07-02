@@ -9,34 +9,32 @@ import java.util.List;
 import java.util.Set;
 
 
-@ProxyForName(value="com.gmi.nordborglab.browser.server.domain.observation.Experiment", locator="com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
-public interface ExperimentProxy extends SecureEntityProxy{
-	
-	Long getId();
-	
-	AclExperimentIdentityProxy getAcl();
-	
-	//Set<ObsUnitProxy> getObsUnits();
-	
-	@NotNull
-    @Size(min=2)
-	String getName();
-	void setName(String name);
-	
-	String getDesign();
-	void setDesign(String design);
-	
-	void setOriginator(String originator);
-	String getOriginator();
-	
-	void setComments(String comments);
-	String getComments();
-	
-	boolean isOwner();
-	
-	AccessControlEntryProxy getUserPermission();
-	
-	int getNumberOfPhenotypes();
+@ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.observation.Experiment", locator = "com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
+public interface ExperimentProxy extends SecureEntityProxy {
+
+    Long getId();
+
+    //Set<ObsUnitProxy> getObsUnits();
+
+    @NotNull
+    @Size(min = 2)
+    String getName();
+
+    void setName(String name);
+
+    String getDesign();
+
+    void setDesign(String design);
+
+    void setOriginator(String originator);
+
+    String getOriginator();
+
+    void setComments(String comments);
+
+    String getComments();
+
+    int getNumberOfPhenotypes();
 
     Set<PublicationProxy> getPublications();
 }

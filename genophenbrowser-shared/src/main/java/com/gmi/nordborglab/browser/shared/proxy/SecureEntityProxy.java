@@ -11,6 +11,12 @@ import com.google.web.bindery.requestfactory.shared.ProxyForName;
  * To change this template use File | Settings | File Templates.
  */
 
-@ProxyForName(value="com.gmi.nordborglab.browser.server.domain.SecureEntity", locator="com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
-public interface SecureEntityProxy extends EntityProxy{
+@ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.SecureEntity", locator = "com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
+public interface SecureEntityProxy extends EntityProxy {
+
+    public boolean isPublic();
+
+    public boolean isOwner();
+
+    AccessControlEntryProxy getUserPermission();
 }

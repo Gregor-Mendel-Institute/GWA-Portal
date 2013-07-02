@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import com.gmi.nordborglab.browser.server.domain.pages.PublicationPage;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
+import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.google.common.collect.Sets;
 import org.springframework.data.domain.Page;
@@ -42,83 +43,72 @@ import sun.nio.cs.Surrogate;
 @Validated
 @Transactional(readOnly = true)
 public class ExperimentServiceImpl extends WebApplicationObjectSupport
-		implements ExperimentService {
+        implements ExperimentService {
 
-	@Resource
-	private ExperimentRepository experimentRepository;
+    @Resource
+    private ExperimentRepository experimentRepository;
 
     @Resource
     private PublicationRepository publicationRepository;
-	
-	@Resource 
-	private TraitUomService traitUomService;
 
-	@Resource
-	private MutableAclService aclService;
+    @Resource
+    private TraitUomService traitUomService;
 
-	@Resource
-	private RoleHierarchy roleHierarchy;
+    @Resource
+    private AclManager aclManager;
 
-	@Transactional(readOnly = false)
-	@Override
-	public Experiment save(@Valid Experiment experiment) {
+    @Resource
+    private RoleHierarchy roleHierarchy;
+
+    @Transactional(readOnly = false)
+    @Override
+    public Experiment save(@Valid Experiment experiment) {
         boolean isNewRecord = experiment.getId() == null;
-		experiment = experimentRepository.save(experiment);
-		if (isNewRecord) {
-			CumulativePermission permission = new CumulativePermission();
-			permission.set(CustomPermission.ADMINISTRATION);
+        experiment = experimentRepository.save(experiment);
+        if (isNewRecord) {
+            CumulativePermission permission = new CumulativePermission();
+            permission.set(CustomPermission.ADMINISTRATION);
             permission.set(CustomPermission.EDIT);
             permission.set(CustomPermission.READ);
-			addPermission(experiment, new PrincipalSid(SecurityUtil.getUsername()),
-				permission);
-            addPermission(experiment,new GrantedAuthoritySid("ROLE_ADMIN"),permission);
-		}
-		experiment = setPermissionAndOwner(experiment);
-		return experiment;
-	}
+            aclManager.addPermission(experiment, new PrincipalSid(SecurityUtil.getUsername()),
+                    permission, null);
+            aclManager.addPermission(experiment, new GrantedAuthoritySid("ROLE_ADMIN"), permission, null);
+        }
+        experiment = aclManager.setPermissionAndOwner(experiment);
+        return experiment;
+    }
 
-	public void addPermission(Experiment experiment, Sid recipient,
-			Permission permission) {
-		MutableAcl acl;
-		ObjectIdentity oid = new ObjectIdentityImpl(Experiment.class,
-				experiment.getId());
 
-		try {
-			acl = (MutableAcl) aclService.readAclById(oid);
-		} catch (NotFoundException nfe) {
-			acl = aclService.createAcl(oid);
-		}
-
-		acl.insertAce(acl.getEntries().size(), permission, recipient, true);
-		aclService.updateAcl(acl);
-		logger.debug("Added permission " + permission + " for Sid " + recipient
-				+ " Experiment " + experiment);
-	}
-
-	@Override
-	public ExperimentPage findByAcl(int start, int size) {
-		List<String> authorities = SecurityUtil.getAuthorities(roleHierarchy);
-		PageRequest pageRequest = new PageRequest(start/size, size);
-		Page<Experiment> page = experimentRepository.findByAcl(authorities,
+    @Override
+    public ExperimentPage findByAcl(int start, int size) {
+        List<String> authorities = SecurityUtil.getAuthorities(roleHierarchy);
+        PageRequest pageRequest = new PageRequest(start / size, size);
+        Page<Experiment> page = experimentRepository.findByAcl(authorities,
                 CustomPermission.READ.getMask(), pageRequest);
-		return new ExperimentPage(page.getContent(), pageRequest,
-				page.getTotalElements());
-	}
+        return new ExperimentPage(page.getContent(), pageRequest,
+                page.getTotalElements());
+    }
 
     @Override
     public List<Experiment> findAllByAcl(Integer permission) {
         List<String> authorities = SecurityUtil.getAuthorities(roleHierarchy);
         List<Experiment> experiments = experimentRepository.findAllByAcl(authorities,
                 permission);
+        for (Experiment experiment : experiments) {
+            experiment.setNumberOfPhenotypes(traitUomService.countPhenotypeByExperimentCount(experiment.getId()));
+        }
+        aclManager.setPermissionAndOwners(experiments);
         return experiments;
     }
 
+
     @Override
-	public Experiment findExperiment(Long id) {
-		Experiment experiment = experimentRepository.findOne(id);
-		experiment = setPermissionAndOwner(experiment);
-		return experiment;
-	}
+    public Experiment findExperiment(Long id) {
+        Experiment experiment = experimentRepository.findOne(id);
+        experiment = aclManager.setPermissionAndOwner(experiment);
+        experiment.setNumberOfPhenotypes(traitUomService.countPhenotypeByExperimentCount(experiment.getId()));
+        return experiment;
+    }
 
     @Transactional(readOnly = false)
     @Override
@@ -136,7 +126,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
     @Override
     public PublicationPage getPublications(int start, int size) {
-        PageRequest pageRequest = new PageRequest(start/size, size);
+        PageRequest pageRequest = new PageRequest(start / size, size);
         Page<Publication> page = publicationRepository.findAll(pageRequest);
         return new PublicationPage(page.getContent(), pageRequest,
                 page.getTotalElements());
@@ -154,28 +144,4 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
         Set<Experiment> experiments = Sets.newCopyOnWriteArraySet(publication.getExperiments());
         return experiments;
     }
-
-    private Experiment setPermissionAndOwner(Experiment experiment) {
-		List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-		ObjectIdentity oid = new ObjectIdentityImpl(Experiment.class,
-				experiment.getId());
-		Acl acl = aclService.readAclById(oid, authorities);
-		boolean isOwner = false;
-		for (Sid sid : authorities) {
-			if (sid.equals(acl.getOwner())) {
-				isOwner = true;
-				break;
-			}
-		}
-		for (AccessControlEntry ace: acl.getEntries()) {
-			if (authorities.contains(ace.getSid())) {
-				experiment.setUserPermission(new CustomAccessControlEntry((Long)ace.getId(),ace.getPermission().getMask(),ace.isGranting()));
-				break;
-			}
-		}
-		
-		experiment.setIsOwner(isOwner);
-		experiment.setNumberOfPhenotypes(traitUomService.countPhenotypeByExperimentCount(experiment.getId()));
-		return experiment;
-	}
 }

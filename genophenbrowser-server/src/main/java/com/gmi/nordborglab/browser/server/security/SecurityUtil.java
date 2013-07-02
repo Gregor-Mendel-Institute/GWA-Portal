@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.google.common.base.Function;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -127,15 +128,6 @@ public class SecurityUtil {
             authorities.add(auth.toString());
         }
         return authorities;
-    }
-
-    public static <T extends BaseEntity> ImmutableBiMap<ObjectIdentity, T> retrieveObjectIdentites(List<T> entities) {
-        Map<ObjectIdentity, T> identities = new HashMap<ObjectIdentity, T>();
-        for (T entity : entities) {
-            ObjectIdentity oid = new ObjectIdentityImpl(entity.getClass(), entity.getId());
-            identities.put(oid, entity);
-        }
-        return ImmutableBiMap.copyOf(identities);
     }
 
     public static List<Sid> getSids(RoleHierarchy roleHierarchy) {

@@ -11,45 +11,49 @@ import com.google.web.bindery.requestfactory.shared.ProxyForName;
 import javax.validation.constraints.NotNull;
 
 
-@ProxyForName(value="com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom", locator="com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
-public interface PhenotypeProxy extends EntityProxy{
+@ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom", locator = "com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
+public interface PhenotypeProxy extends SecureEntityProxy {
 
-	Long getId();
+    Long getId();
 
     @NotNull
-	UnitOfMeasureProxy getUnitOfMeasure();
-	
-	void setUnitOfMeasure(UnitOfMeasureProxy unitOfMeasure);
-	
-	Set<TraitProxy> getTraits();
-	
-	List<StatisticTypeProxy> getStatisticTypes();
+    UnitOfMeasureProxy getUnitOfMeasure();
+
+    void setUnitOfMeasure(UnitOfMeasureProxy unitOfMeasure);
+
+    Set<TraitProxy> getTraits();
+
+    List<StatisticTypeProxy> getStatisticTypes();
+
     List<Long> getStatisticTypeTraitCounts();
 
     @NotNull
-	String getLocalTraitName();
-	
-	void setLocalTraitName(String localTraitName);
+    String getLocalTraitName();
 
-	String getTraitProtocol();
-	void setTraitProtocol(String traitProtocol);
+    void setLocalTraitName(String localTraitName);
 
-	String getToAccession();
-	void setToAccession(String toAccession);
-	
-	TermProxy getTraitOntologyTerm();
-	
-	String getEoAccession();
-	void setEoAccession(String eoAccession);
+    String getTraitProtocol();
 
-	boolean isOwner();
-	
-	AccessControlEntryProxy getUserPermission();
+    void setTraitProtocol(String traitProtocol);
 
-	Long getNumberOfObsUnits();
+    String getToAccession();
 
-	Long getNumberOfStudies();
+    void setToAccession(String toAccession);
 
-	ExperimentProxy getExperiment();
+    TermProxy getTraitOntologyTerm();
+
+    String getEoAccession();
+
+    void setEoAccession(String eoAccession);
+
+    boolean isOwner();
+
+    AccessControlEntryProxy getUserPermission();
+
+    Long getNumberOfObsUnits();
+
+    Long getNumberOfStudies();
+
+    ExperimentProxy getExperiment();
 
 }
