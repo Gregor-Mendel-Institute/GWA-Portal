@@ -10,7 +10,7 @@ import com.google.gwt.user.cellview.client.CellList;
  * Time: 6:45 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface CardCellListResources extends CellList.Resources{
+public interface CardCellListResources extends CellList.Resources {
 
     public interface CardStyle extends CellList.Style {
         /**
@@ -42,6 +42,9 @@ public interface CardCellListResources extends CellList.Resources{
          * Applied to the widget.
          */
         String cellListWidget();
+
+        String selectedCard();
+
     }
 
 

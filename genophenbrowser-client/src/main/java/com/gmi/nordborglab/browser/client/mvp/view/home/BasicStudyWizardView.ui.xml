@@ -7,13 +7,13 @@
              xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
              xmlns:incubator="urn:import:com.github.gwtbootstrap.client.ui.incubator"
              xmlns:card="urn:import:com.gmi.nordborglab.browser.client.ui.card">
-    <ui:with field="bootstrap" type="com.github.gwtbootstrap.client.ui.constants.Constants" />
+    <ui:with field="bootstrap" type="com.github.gwtbootstrap.client.ui.constants.Constants"/>
 
     <ui:with field="mainRes"
-    type="com.gmi.nordborglab.browser.client.resources.MainResources" />
+             type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
 
 
-    <ui:style >
+    <ui:style>
         .experimentContainer {
             margin-left: 20px;
             margin-top: 20px;
@@ -31,7 +31,7 @@
 
         .cellList {
             margin-top: 10px;
-            margin-left:10px;
+            margin-left: 10px;
         }
 
         .transformationContainer {
@@ -39,7 +39,7 @@
         }
 
         .missingGenotypeTitle {
-            font-size:120%;
+            font-size: 120%;
             font-weight: bold;
             color: #333;
             border-bottom: 1px solid #ddd;
@@ -50,62 +50,73 @@
     </ui:style>
 
     <gui:WizardPanel ui:field="wizard" addStyleNames="{style.wizard}">
-    <gui:page title="Study">
-        <g:FlowPanel addStyleNames="{style.experimentContainer}">
-            <g:HTMLPanel>
-                <div class="alert alert-info">
-                    Select a study or <b:Button icon="PLUS"  ui:field="createExperimentBtn" type="SUCCESS">Create new experiment</b:Button>
-                </div>
-            </g:HTMLPanel>
-            <g:HTMLPanel ui:field="selectExperimentPanel">
-                <div>
-                    <h4>Available studies:</h4>
-                </div>
-                <div class="{style.selectExperimentContainer}">
-                   <g:FlowPanel ui:field="experimentsContainer" />
-                </div>
-            </g:HTMLPanel>
-            <b:Modal ui:field="createExperimentPanel" title="Create new experiment" backdrop="STATIC" keyboard="true" animation="true">
-                        <b:WellForm>
-                            <b:ControlLabel>Name</b:ControlLabel>
-                            <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT"><b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="experimentNameTb"></b:TextBox></b:Tooltip>
-                            <b:ControlLabel>Originator</b:ControlLabel>
-                            <b:Tooltip text='Originator of the study' trigger="FOCUS" placement="RIGHT"><b:TextBox placeholder="Originator" alternateSize="XLARGE"  ui:field="experimentOriginatorTb"></b:TextBox></b:Tooltip>
-                            <b:ControlLabel>Design</b:ControlLabel>
-                            <b:Tooltip text='Design of the study' trigger="FOCUS" placement="RIGHT"><b:TextArea placeholder="Design" visibleLines="8" alternateSize="XLARGE" ui:field="experimentDesignTb"></b:TextArea></b:Tooltip>
-                        </b:WellForm>
-                <b:ModalFooter>
-                    <b:Button icon="FILE" type="PRIMARY" ui:field="saveExperimentBtn">Save</b:Button>
-                </b:ModalFooter>
-            </b:Modal>
-        </g:FlowPanel>
-    </gui:page>
+        <gui:page title="Study">
+            <g:FlowPanel addStyleNames="{style.experimentContainer}">
+                <g:HTMLPanel>
+                    <div class="alert alert-info">
+                        <h4>Pick or create a study</h4>
+                    </div>
+                </g:HTMLPanel>
+                <g:HTMLPanel ui:field="selectExperimentPanel">
+                    <div>
+                        <h4>Available studies:</h4>
+                    </div>
+                    <div class="{style.selectExperimentContainer}">
+                        <g:FlowPanel ui:field="experimentsContainer"/>
+                    </div>
+                </g:HTMLPanel>
+                <b:Modal ui:field="createExperimentPanel" title="Create new experiment" backdrop="STATIC"
+                         keyboard="true" animation="true">
+                    <b:WellForm>
+                        <b:ControlLabel>Name</b:ControlLabel>
+                        <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT">
+                            <b:TextBox placeholder="Name" alternateSize="XLARGE"
+                                       ui:field="experimentNameTb"></b:TextBox>
+                        </b:Tooltip>
+                        <b:ControlLabel>Originator</b:ControlLabel>
+                        <b:Tooltip text='Originator of the study' trigger="FOCUS" placement="RIGHT">
+                            <b:TextBox placeholder="Originator" alternateSize="XLARGE"
+                                       ui:field="experimentOriginatorTb"></b:TextBox>
+                        </b:Tooltip>
+                        <b:ControlLabel>Design</b:ControlLabel>
+                        <b:Tooltip text='Design of the study' trigger="FOCUS" placement="RIGHT">
+                            <b:TextArea placeholder="Design" visibleLines="8" alternateSize="XLARGE"
+                                        ui:field="experimentDesignTb"></b:TextArea>
+                        </b:Tooltip>
+                    </b:WellForm>
+                    <b:ModalFooter>
+                        <b:Button icon="FILE" type="PRIMARY" ui:field="saveExperimentBtn">Save</b:Button>
+                    </b:ModalFooter>
+                </b:Modal>
+            </g:FlowPanel>
+        </gui:page>
         <gui:page title="Phenotype">
             <g:LayoutPanel ui:field="phenotypeContainterPanel">
                 <g:layer top="20px" height="70px" left="20px" right="0">
                     <g:HTMLPanel>
                         <div class="alert alert-info">
-                            Do you want to <b:Button type="LINK" ui:field="selectPhenotypeBtn">Select a phenotype</b:Button> or <b:Button ui:field="uploadPhenotypeBtn" type="PRIMARY">Upload phenotype</b:Button>
+                            <h4>Pick or upload a phenotype</h4>
                         </div>
                     </g:HTMLPanel>
                 </g:layer>
                 <g:layer top="90px" bottom="0" left="20px" right="0">
                     <g:LayoutPanel ui:field="selectPhenotypePanel">
                         <g:layer left="0" width="290px">
-                            <g:LayoutPanel >
+                            <g:LayoutPanel>
                                 <g:layer top="0" height="50px">
                                     <b:InputAddOn appendIcon="SEARCH">
-                                        <b:TextBox placeholder="Filter phenotypes" ui:field="phenotypeSearchBox"></b:TextBox>
+                                        <b:TextBox placeholder="Filter phenotypes"
+                                                   ui:field="phenotypeSearchBox"></b:TextBox>
                                     </b:InputAddOn>
                                 </g:layer>
                                 <g:layer top="50px" bottom="40px">
                                     <g:ScrollPanel>
-                                        <c:CellList ui:field="phenotypeList" addStyleNames="{style.cellList}" />
+                                        <c:CellList ui:field="phenotypeList" addStyleNames="{style.cellList}"/>
                                     </g:ScrollPanel>
                                 </g:layer>
                                 <g:layer bottom="0" height="40px">
                                     <g:HTMLPanel>
-                                        <g:InlineLabel ui:field="phenotypeCount" />
+                                        <g:InlineLabel ui:field="phenotypeCount"/>
                                     </g:HTMLPanel>
                                 </g:layer>
                             </g:LayoutPanel>
@@ -122,21 +133,21 @@
                                                          addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
                                                 <b:Tooltip text="Shows the phenotype distrubtion as a histogram">
                                                     <g:Button ui:field="phenotypeColumnChartBtn"
-                                                              addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}" />
+                                                              addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}"/>
                                                 </b:Tooltip>
                                             </g:HTMLPanel>
                                             <g:HTMLPanel ui:field="phenotypeMotionChartBtnContainer"
                                                          addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
                                                 <b:Tooltip text="Shows the phenotype values in a motionchart">
                                                     <g:Button ui:field="phenotypeMotionChartBtn"
-                                                              addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}" />
+                                                              addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}"/>
                                                 </b:Tooltip>
                                             </g:HTMLPanel>
                                             <g:HTMLPanel ui:field="phenotypeGeoChartBtnContainer"
                                                          addStyleNames="{mainRes.style.iconContainer}">
                                                 <b:Tooltip text="Shows the geographic distribution on a map">
                                                     <g:Button ui:field="phenotypeGeoChartBtn"
-                                                              addStyleNames="{mainRes.style.earth} {mainRes.style.iconItem}" />
+                                                              addStyleNames="{mainRes.style.earth} {mainRes.style.iconItem}"/>
                                                 </b:Tooltip>
                                             </g:HTMLPanel>
                                         </div>
@@ -144,133 +155,149 @@
                                     </g:HTMLPanel>
                                 </g:layer>
                                 <g:layer top="90px" bottom="0" left="0" right="0">
-                                    <g:SimpleLayoutPanel ui:field="phenotypeChartContainer" />
+                                    <g:SimpleLayoutPanel ui:field="phenotypeChartContainer"/>
                                 </g:layer>
                             </g:LayoutPanel>
                         </g:layer>
                     </g:LayoutPanel>
                 </g:layer>
-                <g:layer top="90px" bottom="0" left="20px" right="0">
-                    <g:SimpleLayoutPanel ui:field="phenotypeUploadPanel" />
-                </g:layer>
+                <!-- <g:layer top="90px" bottom="0" left="20px" right="0">
+                     <b:Modal ui:field="phenotypeUploadPopup" title="Upload phenotype" backdrop="STATIC" keyboard="true" animation="true">
+                         <g:SimpleLayoutPanel ui:field="phenotypeUploadPanel" />
+                         <b:ModalFooter>
+                             <b:Button icon="FILE" type="PRIMARY" ui:field="saveExperimentBtn">Save</b:Button>
+                         </b:ModalFooter>
+                     </b:Modal>
+                     <g:SimpleLayoutPanel ui:field="phenotypeUploadPanel">
+                     </g:SimpleLayoutPanel>
+                 </g:layer>-->
             </g:LayoutPanel>
         </gui:page>
         <gui:page title="Genotype">
-            <g:LayoutPanel >
-            <g:layer top="20px" height="70px" left="20px" right="0">
-                <g:HTMLPanel>
-                    <div class="alert alert-info">
-                       Select a genotype
-                    </div>
-                </g:HTMLPanel>
-            </g:layer>
-            <g:layer top="90px" bottom="0" left="20px" right="0">
-                <g:LayoutPanel >
-                    <g:layer left="0" width="290px">
-                        <g:LayoutPanel >
-                            <g:layer top="0px" bottom="0px">
-                                <g:ScrollPanel>
-                                    <c:CellList ui:field="genotypeList"  addStyleNames="{style.cellList}"/>
-                                </g:ScrollPanel>
-                            </g:layer>
-                        </g:LayoutPanel>
-                    </g:layer>
-                    <g:layer left="295px" right="0">
-                        <g:LayoutPanel>
-                            <g:layer top="0" height="40px">
-                               <g:HTMLPanel addStyleNames="{style.missingGenotypeTitle}">
-                                   <div >
-                                       MISSING GENOTYPES
-                                   </div>
-                               </g:HTMLPanel>
-                            </g:layer>
-                            <g:layer top="45px" bottom="70px">
-                                <c:DataGrid ui:field="missingGenotypesDataGrid" />
-                            </g:layer>
-                            <g:layer height="50px" bottom="0" >
-                                <gui:CustomPager ui:field="missingGenotypesPager" />
-                            </g:layer>
-                        </g:LayoutPanel>
-                    </g:layer>
-                </g:LayoutPanel>
-            </g:layer>
-            </g:LayoutPanel>
-        </gui:page>
-        <gui:page title="Transformation">
-            <g:LayoutPanel >
-            <g:layer top="20px" height="70px" left="20px" right="0">
-                <g:HTMLPanel>
-                    <div class="alert alert-info">
-                        Select a transformation
-                    </div>
-                </g:HTMLPanel>
-            </g:layer>
-            <g:layer top="90px" bottom="0" left="20px" right="0">
-                <g:LayoutPanel>
-                    <g:layer left="0" top="0" height="50%" width="50%">
-                        <card:TransformationCardPanel >
-                            <card:TransformationCard ui:field="noTransformationCard" addStyleNames="{style.transformationContainer}"/>
-                        </card:TransformationCardPanel>
-                    </g:layer>
-                    <g:layer top="0" height="50%" right="0" width="50%">
-                        <card:TransformationCardPanel>
-                            <card:TransformationCard ui:field="logTransformationCard" addStyleNames="{style.transformationContainer}" />
-                        </card:TransformationCardPanel>
-                    </g:layer>
-                    <g:layer height="50%" bottom="0" left="0" width="50%">
-                        <card:TransformationCardPanel>
-                            <card:TransformationCard ui:field="sqrtTransformationCard" addStyleNames="{style.transformationContainer}" />
-                        </card:TransformationCardPanel>
-                    </g:layer>
-                    <g:layer bottom="0" height="50%" right="0" width="50%">
-                        <card:TransformationCardPanel>
-                            <card:TransformationCard ui:field="boxCoxTransformationCard" addStyleNames="{style.transformationContainer}" />
-                        </card:TransformationCardPanel>
-                    </g:layer>
-                </g:LayoutPanel>
-            </g:layer>
-            </g:LayoutPanel>
-        </gui:page>
-            <gui:page title="Analysis">
-                <g:LayoutPanel >
+            <g:LayoutPanel>
                 <g:layer top="20px" height="70px" left="20px" right="0">
                     <g:HTMLPanel>
                         <div class="alert alert-info">
-                            Select a method
+                            <h4>Select a genotype</h4>
+                        </div>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="90px" bottom="0" left="20px" right="0">
+                    <g:LayoutPanel>
+                        <g:layer left="0" width="290px">
+                            <g:LayoutPanel>
+                                <g:layer top="0px" bottom="0px">
+                                    <g:ScrollPanel>
+                                        <c:CellList ui:field="genotypeList" addStyleNames="{style.cellList}"/>
+                                    </g:ScrollPanel>
+                                </g:layer>
+                            </g:LayoutPanel>
+                        </g:layer>
+                        <g:layer left="295px" right="0">
+                            <g:LayoutPanel>
+                                <g:layer top="0" height="40px">
+                                    <g:HTMLPanel addStyleNames="{style.missingGenotypeTitle}">
+                                        <div>
+                                            MISSING GENOTYPES
+                                        </div>
+                                    </g:HTMLPanel>
+                                </g:layer>
+                                <g:layer top="45px" bottom="70px">
+                                    <c:DataGrid ui:field="missingGenotypesDataGrid"/>
+                                </g:layer>
+                                <g:layer height="50px" bottom="0">
+                                    <gui:CustomPager ui:field="missingGenotypesPager"/>
+                                </g:layer>
+                            </g:LayoutPanel>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+            </g:LayoutPanel>
+        </gui:page>
+        <gui:page title="Transformation">
+            <g:LayoutPanel>
+                <g:layer top="20px" height="70px" left="20px" right="0">
+                    <g:HTMLPanel>
+                        <div class="alert alert-info">
+                            <h4>Select a transformation</h4>
+                        </div>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="90px" bottom="0" left="20px" right="0">
+                    <g:LayoutPanel>
+                        <g:layer left="0" top="0" height="50%" width="50%">
+                            <card:TransformationCardPanel>
+                                <card:TransformationCard ui:field="noTransformationCard"
+                                                         addStyleNames="{style.transformationContainer}"/>
+                            </card:TransformationCardPanel>
+                        </g:layer>
+                        <g:layer top="0" height="50%" right="0" width="50%">
+                            <card:TransformationCardPanel>
+                                <card:TransformationCard ui:field="logTransformationCard"
+                                                         addStyleNames="{style.transformationContainer}"/>
+                            </card:TransformationCardPanel>
+                        </g:layer>
+                        <g:layer height="50%" bottom="0" left="0" width="50%">
+                            <card:TransformationCardPanel>
+                                <card:TransformationCard ui:field="sqrtTransformationCard"
+                                                         addStyleNames="{style.transformationContainer}"/>
+                            </card:TransformationCardPanel>
+                        </g:layer>
+                        <g:layer bottom="0" height="50%" right="0" width="50%">
+                            <card:TransformationCardPanel>
+                                <card:TransformationCard ui:field="boxCoxTransformationCard"
+                                                         addStyleNames="{style.transformationContainer}"/>
+                            </card:TransformationCardPanel>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+            </g:LayoutPanel>
+        </gui:page>
+        <gui:page title="Analysis">
+            <g:LayoutPanel>
+                <g:layer top="20px" height="70px" left="20px" right="0">
+                    <g:HTMLPanel>
+                        <div class="alert alert-info">
+                            <h4>Select a GWAS method and analysis name</h4>
                         </div>
                     </g:HTMLPanel>
                 </g:layer>
                 <g:layer top="90px" bottom="0" left="20px" right="0">
                     <g:HTMLPanel>
                         <div>
-                           <b:ControlGroup ui:field="studyNameGroup">
-                               <b:ControlLabel>Study name</b:ControlLabel>
-                               <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT"><b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="studyNameTb"/></b:Tooltip>
-                           </b:ControlGroup>
-                                <b:Tooltip text='If checked a job for the selected analysis will be run on the GMI HPC cluster ' trigger="FOCUS" placement="RIGHT">
-                                    <b:CheckBox ui:field="studyJobCb">Create HPC Job</b:CheckBox>
+                            <b:ControlGroup ui:field="studyNameGroup">
+                                <b:ControlLabel>Analaysis name</b:ControlLabel>
+                                <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT">
+                                    <b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="studyNameTb"/>
                                 </b:Tooltip>
+                            </b:ControlGroup>
+                            <b:Tooltip
+                                    text='If checked a job for the selected analysis will be run on the GMI HPC cluster '
+                                    trigger="FOCUS" placement="RIGHT">
+                                <b:CheckBox ui:field="studyJobCb">Create HPC Job</b:CheckBox>
+                            </b:Tooltip>
                         </div>
-                                <div class="{style.selectExperimentContainer}">
-                                    <g:FlowPanel ui:field="methodContainer" />
-                         </div>
+                        <div class="{style.selectExperimentContainer}" id="method">
+                            <g:FlowPanel ui:field="methodContainer"/>
+                        </div>
                     </g:HTMLPanel>
                 </g:layer>
-                </g:LayoutPanel>
-            </gui:page>
+            </g:LayoutPanel>
+        </gui:page>
         <gui:page title="Summary">
-            <g:LayoutPanel >
+            <g:LayoutPanel>
                 <g:layer top="20px" height="70px" left="20px" right="0">
                     <g:HTMLPanel>
                         <div class="alert alert-info">
-                           Summary of new study "<span ui:field="studyTitleLb"/>"
+                            <h4>Summary of new study "<span ui:field="studyTitleLb"/>"
+                            </h4>
                         </div>
                     </g:HTMLPanel>
                 </g:layer>
                 <g:layer top="90px" bottom="0" left="20px" right="0">
                     <g:HTMLPanel>
                         <div class="{style.selectExperimentContainer}">
-                            <g:FlowPanel ui:field="summaryContainer" />
+                            <g:FlowPanel ui:field="summaryContainer"/>
                         </div>
                     </g:HTMLPanel>
                 </g:layer>

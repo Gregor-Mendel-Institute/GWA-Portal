@@ -137,6 +137,13 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     TableElement checkMetaTable;
     @UiField
     Button phenotypeFileBrowseBtn;
+    @UiField
+    Button createPhenotypeBtn;
+    @UiField
+    Button cancelPhenotypeBtn;
+    @UiField
+    HTMLPanel phenotypeFormPanel;
+
 
     private final PhenotypeDriver driver;
     private boolean multipleUpload = false;
@@ -179,6 +186,8 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         uploadPhenotypePanel.setWidgetVisible(phenotypeValuePanel, false);
         phenotypeValuePager.setDisplay(phenotypeValuesDataGrid);
         driver.initialize(phenotypeEditor);
+
+        phenotypeFormPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
     }
 
     private void initCellTable() {
@@ -467,7 +476,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     @Override
     public void showPhenotypeValuePanel(PhenotypeUploadDataProxy data) {
         resetUploadForm();
-        String message = "All phentoype values successfully parsed";
+        String message = "All phentoype values successfully parsed. Click \"Create\" to finish!";
         AlertType messageType = AlertType.SUCCESS;
         if (data.getErrorValueCount() > 0) {
             messageType = AlertType.ERROR;
@@ -525,6 +534,12 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     @Override
     public PhenotypeDriver getDriver() {
         return driver;
+    }
+
+    @Override
+    public void showActionButtns(boolean show) {
+        createPhenotypeBtn.setVisible(show);
+        cancelPhenotypeBtn.setVisible(show);
     }
 
 

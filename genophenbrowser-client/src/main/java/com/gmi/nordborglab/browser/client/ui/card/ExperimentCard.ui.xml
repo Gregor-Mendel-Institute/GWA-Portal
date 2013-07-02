@@ -23,8 +23,17 @@
             box-shadow: 0 2px 10px 2px #CDCECF;
             min-width: 260px;
             cursor: pointer;
-            box-sizing:border-box;
-            width:260px;
+            box-sizing: border-box;
+            width: 260px;
+        }
+
+        .card:hover {
+            border-color: #a5a5a5;
+            color: #444;
+            text-shadow: 0 1px 0 #fff;
+            -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, .25);
+            -moz-box-shadow: 0 0 3px rgba(0, 0, 0, .25);
+            box-shadow: 0 0 3px rgba(0, 0, 0, .25);
         }
 
         .card_selected {
@@ -71,44 +80,107 @@
             font-size: 80%;
             color: #666;
             margin-left: 5px;
-            height:20px;
+            height: 20px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .card_container {
-            margin-right:30px;
-            margin-bottom:20px;
-            float:left;
+            margin-right: 30px;
+            margin-bottom: 20px;
+            float: left;
+            position: relative;
         }
+
         .card_container:focus {
             -webkit-box-shadow: 0px 0px 5px 0px green !important;
             -moz-box-shadow: 0px 0px 5px 0px green !important;
             box-shadow: 0px 0px 5px 0px green !important;
-            outline:none;
+            outline: none;
         }
+
+        .icon {
+            font-size: 60px;
+        }
+
+        .newCardContainer {
+            color: #808080;
+            text-align: center;
+            padding: 20px; /* required so that they have the same height */
+        }
+
+        .icon_new {
+            position: absolute;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 16px;
+            top: 0;
+            right: 0;
+            color: #fff;
+            overflow: hidden;
+            height: 32px;
+            width: 32px;
+            text-shadow: none;
+            border-top-right-radius: 3px;
+            pointer-events: none;
+        }
+
+        .icon_new:before {
+            content: '';
+            display: inline-block;
+            border-right: 32px solid;
+            border-bottom: 32px solid transparent;
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-right-color: #aa433a;
+        }
+
+        .icon_text {
+            padding-top: 4px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .new_icon_icon {
+            right: 4px;
+            top: 3px;
+            position: absolute;
+        }
+
     </ui:style>
 
     <g:FocusPanel addStyleNames="{style.card_container}">
         <g:HTMLPanel>
-        <div class="{style.card}" ui:field="card">
-            <h4 class="{style.title}" ui:field="title"></h4>
-            <p class="{style.sub_title}" ui:field="subtitle"></p>
-            <ul class="unstyled">
-                <li>
-                    <span class="{style.stats_icon} ">&#10002;</span><span ui:field="phenotypeCountLabel"></span>
-                </li>
-
-                <li>
-                    <span class="{style.stats_icon} ">&#128214;</span><span ui:field="studyCountLabel"></span>
-                </li>
-            </ul>
-            <p>
-                <span clasS="label label-success" ui:field="permissionLabel">PUBLIC</span>
-                <b:Icon type="OK" addStyleNames="pull-right {style.empty_ok}" ui:field="selectIcon"/>
-            </p>
-        </div>
+            <div class="{style.card}" ui:field="card">
+                <g:HTMLPanel ui:field="cardContent" visible="false">
+                    <h4 class="{style.title}" ui:field="title"></h4>
+                    <p class="{style.sub_title}" ui:field="subtitle"></p>
+                    <ul class="unstyled">
+                        <li>
+                            <b:Tooltip text="Number of phenotypes" placement="RIGHT">
+                                <g:HTML>
+                                    <span class="{style.stats_icon} ">&#10002;</span>
+                                    <span ui:field="phenotypeCountLabel"></span>
+                                </g:HTML>
+                            </b:Tooltip>
+                        </li>
+                    </ul>
+                    <p>
+                        <span class="label label-success" ui:field="permissionLabel">PUBLIC</span>
+                        <b:Icon type="OK" addStyleNames="pull-right {style.empty_ok}" ui:field="selectIcon"/>
+                    </p>
+                </g:HTMLPanel>
+                <g:HTMLPanel ui:field="newCardContent" addStyleNames="{style.newCardContainer}">
+                    <i class="icon-file-alt {style.icon}"></i>
+                    <div class="{style.icon_text}">Create new study</div>
+                    <span class="{style.icon_new}">
+                        <i class="icon-plus {style.new_icon_icon}"></i>
+                    </span>
+                </g:HTMLPanel>
+            </div>
         </g:HTMLPanel>
     </g:FocusPanel>
 </ui:UiBinder>
