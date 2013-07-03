@@ -16,8 +16,11 @@ import java.util.List;
 
 public interface GWASDataService {
 
-	public GWASData getGWASDataByStudyId(Long studyId);
 
+    @PreAuthorize("hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
+    public GWASData getGWASDataByStudyId(Long studyId);
+
+    @PreAuthorize("hasPermission(#gwasResultId,'com.gmi.nordborglab.browser.server.domain.util.GWASResult','READ')")
     public GWASData getGWASDataByViewerId(Long gwasResultId);
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -29,12 +32,12 @@ public interface GWASDataService {
     @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.GWASResult','READ')")
     public GWASResult findOneGWASResult(Long id);
 
-    @PreAuthorize("hasRole('ROLE_USER') AND hasPermission(#gwasResult,'edit')")
+    @PreAuthorize("hasRole('ROLE_USER') AND hasPermission(#gwasResult,'EDIT')")
     public List<GWASResult> delete(GWASResult gwasResult);
 
-    @PreAuthorize("hasRole('ROLE_USER') AND hasPermission(#gwasResult,'edit')")
+    @PreAuthorize("hasRole('ROLE_USER')  AND hasPermission(#gwasResult,'EDIT')")
     public GWASResult save(GWASResult gwasResult);
 
-    @PreAuthorize("hasRole('ROLE_USER')")
-    Study uploadStudyGWASResult(Long studyId,CommonsMultipartFile file) throws IOException;
+    @PreAuthorize("hasRole('ROLE_USER') AND hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ') ")
+    Study uploadStudyGWASResult(Long studyId, CommonsMultipartFile file) throws IOException;
 }

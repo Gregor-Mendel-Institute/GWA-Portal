@@ -18,6 +18,16 @@
 
 }
 
+.cellListSelectedItem .selectedCard:before {
+    content: "\f00c" !important;
+    color: green !important;
+    font-weight: bold !important;
+}
+
+.selectedCard {
+
+}
+
 .cellListSelectedItem > div > div {
     -webkit-box-shadow: 0px 0px 5px 0px green !important;
     -moz-box-shadow: 0px 0px 5px 0px green !important;

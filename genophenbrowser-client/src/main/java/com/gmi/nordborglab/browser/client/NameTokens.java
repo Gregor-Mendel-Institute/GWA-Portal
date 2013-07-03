@@ -28,6 +28,8 @@ public class NameTokens {
     public static final String publication = "!publication/{id}/overview";
     public static final String metaAnalysisGenes = "!meta/genes";
     public static final String metaAnalysisTopResults = "!meta/topresults";
+    public static final String dashboard = "!dashboard";
+    public static final String news = "!news/{id}";
 
 
     public static String getHome() {

@@ -38,17 +38,18 @@ import java.util.Set;
  * Time: 12:45 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<PhenotypeUploadWizardPresenterWidget.MyView> implements PhenotypeUploadWizardUiHandlers{
+public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<PhenotypeUploadWizardPresenterWidget.MyView> implements PhenotypeUploadWizardUiHandlers {
 
     private ExperimentProxy experiment;
 
-    public interface MyView extends View,HasUiHandlers<PhenotypeUploadWizardUiHandlers> {
+    public interface MyView extends View, HasUiHandlers<PhenotypeUploadWizardUiHandlers> {
 
         void showPhenotypeValuePanel(PhenotypeUploadDataProxy data);
 
         void setUnitOfMeasureList(List<UnitOfMeasureProxy> unitOfMeasureList);
 
         HasData<PhenotypeUploadValueProxy> getPhenotypeValueDisplay();
+
         void addColumns(List<String> valueColumns);
 
         void showPhenotypeUploadPanel();
@@ -57,6 +58,8 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
         void showConstraintViolations();
 
         PhenotypeUploadWizardView.PhenotypeDriver getDriver();
+
+        void showActionButtns(boolean show);
     }
 
     protected PhenotypeUploadDataProxy data = null;
@@ -65,7 +68,7 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
     private final PhenotypeManager phenotypeManager;
     protected final ListDataProvider<PhenotypeUploadValueProxy> phentoypeValueDataProvider = new ListDataProvider<PhenotypeUploadValueProxy>();
 
-    protected final MyFactory appDataFactory ;
+    protected final MyFactory appDataFactory;
     protected PhenotypeRequest ctx;
     private final Validator validator;
 
@@ -83,6 +86,7 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
         phentoypeValueDataProvider.addDataDisplay(getView().getPhenotypeValueDisplay());
 
     }
+
     @Override
     public void onUploadFinished(String responseText) {
         ctx = phenotypeManager.getContext();
@@ -100,9 +104,9 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
         AutoBeanCodex.decodeInto(AutoBeanCodex.encode(receivedBean), newBean);
         data = newBean.as();
         List<PhenotypeUploadValueProxy> values = new ArrayList<PhenotypeUploadValueProxy>();
-        for (PhenotypeUploadValueProxy value: receivedBean.as().getPhenotypeUploadValues()) {
+        for (PhenotypeUploadValueProxy value : receivedBean.as().getPhenotypeUploadValues()) {
             AutoBean<PhenotypeUploadValueProxy> newValueBean = AutoBeanUtils.getAutoBean(ctx.create(PhenotypeUploadValueProxy.class));
-            AutoBeanCodex.decodeInto(AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(value)),newValueBean);
+            AutoBeanCodex.decodeInto(AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(value)), newValueBean);
             values.add(newValueBean.as());
         }
         data.setTraitUom(ctx.create(PhenotypeProxy.class));
@@ -116,11 +120,10 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
 
     private void showPhenotypeUploadData() {
         getView().showPhenotypeValuePanel(data);
-        getView().getDriver().edit(data.getTraitUom(),ctx);
+        getView().getDriver().edit(data.getTraitUom(), ctx);
         getView().addColumns(data.getValueHeader());
         phentoypeValueDataProvider.setList(data.getPhenotypeUploadValues());
     }
-
 
 
     @Override
@@ -139,7 +142,7 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
 
     @Override
     public void onCreate() {
-       savePhenotype();
+        savePhenotype();
     }
 
     @Override
@@ -152,12 +155,12 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
         //TODO switch to editor
 
         if (checkValidation()) {
-            fireEvent(new LoadingIndicatorEvent(true,"Saving..."));
+            fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
             ctx.savePhenotypeUploadData(experiment.getId(), data).fire(new Receiver<Long>() {
                 @Override
                 public void onFailure(ServerFailure error) {
                     fireEvent(new LoadingIndicatorEvent(false));
-                    fireEvent(new DisplayNotificationEvent("Phenotype upload",error.getMessage(),true,DisplayNotificationEvent.LEVEL_ERROR,DisplayNotificationEvent.DURATION_NORMAL));
+                    fireEvent(new DisplayNotificationEvent("Phenotype upload", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, DisplayNotificationEvent.DURATION_NORMAL));
                 }
 
                 @Override
@@ -170,6 +173,10 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
         }
     }
 
+    public void showActionButtns(boolean isShow) {
+        getView().showActionButtns(isShow);
+    }
+
     @Override
     protected void onBind() {
         super.onBind();    //To change body of overridden methods use File | Settings | File Templates.
@@ -180,7 +187,7 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
     private UnitOfMeasureProxy getUnitOfMeasureFromName(String name) {
         if (name == null)
             return null;
-        for (UnitOfMeasureProxy unitOfMeasure:currentUser.getAppData().getUnitOfMeasureList()) {
+        for (UnitOfMeasureProxy unitOfMeasure : currentUser.getAppData().getUnitOfMeasureList()) {
 
             if (unitOfMeasure != null && unitOfMeasure.getUnitType().equalsIgnoreCase(name)) {
                 return unitOfMeasure;
@@ -199,7 +206,7 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
     }
 
     public boolean checkUploadOk() {
-         return checkValidation();
+        return checkValidation();
     }
 
     private boolean checkValidation() {
@@ -211,8 +218,7 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
             getView().getDriver().setConstraintViolations(
                     violations);
             isOk = false;
-        }
-        else {
+        } else {
             isOk = true;
         }
         return isOk;

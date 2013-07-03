@@ -13,6 +13,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,20 +28,23 @@ public class ExperimentCard extends Composite {
 
     }
 
-    public interface MyStyle extends CssResource   {
+    public interface MyStyle extends CssResource {
         String card_selected();
 
         String ok();
+
         String empty_ok();
     }
+
     private static ExperimentCardUiBinder uiBinder = GWT.create(ExperimentCardUiBinder.class);
     protected ExperimentProxy experiment;
 
     @UiField
     SpanElement phenotypeCountLabel;
 
-    @UiField SpanElement studyCountLabel;
-    @UiField SpanElement permissionLabel;
+    //@UiField SpanElement studyCountLabel;
+    @UiField
+    SpanElement permissionLabel;
     @UiField
     Icon selectIcon;
     @UiField
@@ -49,31 +53,53 @@ public class ExperimentCard extends Composite {
     ParagraphElement subtitle;
     @UiField
     DivElement card;
-    @UiField MyStyle style;
+    @UiField
+    MyStyle style;
+    @UiField
+    HTMLPanel cardContent;
+    @UiField
+    HTMLPanel newCardContent;
     protected boolean isSelected;
+
     public ExperimentCard() {
         initWidget(uiBinder.createAndBindUi(this));
     }
 
 
     public void setExperiment(ExperimentProxy experiment) {
-        this.experiment=experiment;
+        this.experiment = experiment;
         updateView();
     }
 
     public HandlerRegistration addClickHandler(ClickHandler handler) {
-        return ((FocusPanel)getWidget()).addClickHandler(handler);
+        return ((FocusPanel) getWidget()).addClickHandler(handler);
     }
 
     private void updateView() {
-        if (experiment == null)
-            return;
-        title.setInnerText(experiment.getName());
-        subtitle.setInnerText(experiment.getOriginator());
-        phenotypeCountLabel.setInnerText(String.valueOf(experiment.getNumberOfPhenotypes()));
-        // TODO create getter for number of studies
-        studyCountLabel.setInnerText(String.valueOf(experiment.getNumberOfPhenotypes()));
-        updateSelected();
+
+        cardContent.setVisible(experiment != null);
+        newCardContent.setVisible(experiment == null);
+
+        if (experiment != null) {
+            cardContent.setVisible(true);
+            title.setInnerText(experiment.getName());
+            subtitle.setInnerText(experiment.getOriginator());
+            phenotypeCountLabel.setInnerText(String.valueOf(experiment.getNumberOfPhenotypes()));
+            updatePermission();
+            updateSelected();
+        }
+    }
+
+    private void updatePermission() {
+        if (experiment.isPublic()) {
+            permissionLabel.setInnerText("PUBLIC");
+            permissionLabel.removeClassName("label-warning");
+            permissionLabel.addClassName("label-success");
+        } else {
+            permissionLabel.setInnerText("PRIVATE");
+            permissionLabel.removeClassName("label-success");
+            permissionLabel.addClassName("label-warning");
+        }
     }
 
 
@@ -84,8 +110,7 @@ public class ExperimentCard extends Composite {
             selectIcon.addStyleName(style.ok());
             selectIcon.setType(IconType.OK);
 
-        }
-        else {
+        } else {
             card.removeClassName(style.card_selected());
             selectIcon.removeStyleName(style.ok());
             selectIcon.addStyleName(style.empty_ok());
@@ -107,9 +132,8 @@ public class ExperimentCard extends Composite {
     }
 
     public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
-        return ((FocusPanel)getWidget()).addKeyUpHandler(handler);
+        return ((FocusPanel) getWidget()).addKeyUpHandler(handler);
     }
-
 
 
 }

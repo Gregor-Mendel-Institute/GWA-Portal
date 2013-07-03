@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.gmi.nordborglab.browser.server.domain.SecureEntity;
+import com.google.common.base.Function;
+import org.elasticsearch.index.query.FilterBuilder;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
@@ -30,6 +33,8 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.vm.AutoBeanFactorySource;
 
+import javax.annotation.Nullable;
+
 public class SecurityUtil {
 
 
@@ -38,6 +43,19 @@ public class SecurityUtil {
     public static final String DEFAULT_AUTHORITY = "ROLE_USER";
 
     public static ImmutableSet<String> ALLOWED_AUTHORITIES = ImmutableSet.of("ROLE_ADMIN", "ROLE_USER", "ROLE_ANONYMOUS");
+
+    public static Function<Sid, String> sid2String = new Function<Sid, String>() {
+        @Nullable
+        @Override
+        public String apply(@Nullable Sid sid) {
+            if (sid instanceof PrincipalSid) {
+                return ((PrincipalSid) sid).getPrincipal();
+            } else if (sid instanceof GrantedAuthoritySid) {
+                return ((GrantedAuthoritySid) sid).getGrantedAuthority();
+            }
+            return null;
+        }
+    };
 
     public static Collection<? extends GrantedAuthority> getGrantedAuthorities(List<Authority> authorities) {
         Collection<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
@@ -110,15 +128,6 @@ public class SecurityUtil {
             authorities.add(auth.toString());
         }
         return authorities;
-    }
-
-    public static <T extends BaseEntity> ImmutableBiMap<ObjectIdentity, T> retrieveObjectIdentites(List<T> entities) {
-        Map<ObjectIdentity, T> identities = new HashMap<ObjectIdentity, T>();
-        for (T entity : entities) {
-            ObjectIdentity oid = new ObjectIdentityImpl(entity.getClass(), entity.getId());
-            identities.put(oid, entity);
-        }
-        return ImmutableBiMap.copyOf(identities);
     }
 
     public static List<Sid> getSids(RoleHierarchy roleHierarchy) {

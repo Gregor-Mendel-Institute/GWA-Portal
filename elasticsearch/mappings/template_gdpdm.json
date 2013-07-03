@@ -88,6 +88,30 @@
                             "type": "date"
                         }
                     }
+                },
+                "published": {
+                    "type": "date"
+                },
+                "created": {
+                    "type": "date"
+                },
+                "modified": {
+                    "type": "date"
+                },
+                "acl": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "permissions": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        }
+                    }
+                },
+                "owner": {
+                    "type": "integer"
                 }
             }
         },
@@ -127,6 +151,30 @@
                             "index": "not_analyzed"
                         }
                     }
+                },
+                "published": {
+                    "type": "date"
+                },
+                "created": {
+                    "type": "date"
+                },
+                "modified": {
+                    "type": "date"
+                },
+                "acl": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "permissions": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        }
+                    }
+                },
+                "owner": {
+                    "type": "integer"
                 }
             }
         },
@@ -164,58 +212,61 @@
                         }
                     }
                 },
-                "allele_assay": {
-                    "type": "object",
+                "published": {
+                    "type": "date"
+                },
+                "created": {
+                    "type": "date"
+                },
+                "modified": {
+                    "type": "date"
+                },
+                "acl": {
+                    "type": "nested",
                     "properties": {
                         "id": {
                             "type": "integer"
                         },
-                        "name": {
+                        "permissions": {
                             "type": "string",
-                            "boost": 1.5,
                             "index": "not_analyzed"
-                        },
-                        "producer": {
-                            "type": "string"
-                        },
-                        "comments": {
-                            "type": "string"
-                        },
-                        "assay_date": {
-                            "type": "date"
-                        },
-                        "scoring_tech_type": {
-                            "type": "object",
-                            "properties": {
-                                "scoring_tech_group": {
-                                    "type": "string",
-                                    "index": "not_analyzed"
-                                },
-                                "scoring_tech_type": {
-                                    "type": "string"
-                                }
-                            }
                         }
                     }
                 },
-                "top_snps": {
-                    "type": "nested",
-                    "properties": {
-                        "chr": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "position": {
-                            "type": "integer"
-                        },
-                        "score": {
-                            "type": "float"
-                        },
-                        "maf": {
-                            "type": "float"
-                        },
-                        "mac": {
-                            "type": "integer"
+                "owner": {
+                    "type": "integer"
+                }
+            },
+            "allele_assay": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string",
+                        "boost": 1.5,
+                        "index": "not_analyzed"
+                    },
+                    "producer": {
+                        "type": "string"
+                    },
+                    "comments": {
+                        "type": "string"
+                    },
+                    "assay_date": {
+                        "type": "date"
+                    },
+                    "scoring_tech_type": {
+                        "type": "object",
+                        "properties": {
+                            "scoring_tech_group": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            },
+                            "scoring_tech_type": {
+                                "type": "string"
+                            }
                         }
                     }
                 }

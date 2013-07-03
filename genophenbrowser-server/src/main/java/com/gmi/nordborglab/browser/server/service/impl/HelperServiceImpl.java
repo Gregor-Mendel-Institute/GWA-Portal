@@ -5,19 +5,39 @@ import java.util.*;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.cdv.Transformation;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TransformationData;
-import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.server.domain.stats.DateStatHistogram;
+import com.gmi.nordborglab.browser.server.domain.stats.DateStatHistogramFacet;
+import com.gmi.nordborglab.browser.server.domain.util.NewsItem;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.math.Transformations;
 import com.gmi.nordborglab.browser.server.repository.*;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
+import com.gmi.nordborglab.browser.server.security.EsAclManager;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
+import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
+import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramFacetProxy;
+import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
 import com.google.common.collect.Lists;
+import org.elasticsearch.action.search.MultiSearchRequestBuilder;
+import org.elasticsearch.action.search.MultiSearchResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.facet.FacetBuilder;
+import org.elasticsearch.search.facet.FacetBuilders;
+import org.elasticsearch.search.facet.Facets;
+import org.elasticsearch.search.facet.datehistogram.DateHistogramFacet;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +58,6 @@ import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.browser.shared.service.HelperFactory;
 import com.google.common.collect.Iterables;
 import com.google.web.bindery.autobean.vm.AutoBeanFactorySource;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.supercsv.cellprocessor.CellProcessorAdaptor;
 import org.supercsv.cellprocessor.ParseDouble;
 import org.supercsv.cellprocessor.ParseLong;
@@ -129,6 +148,15 @@ public class HelperServiceImpl implements HelperService {
 
     @Resource
     private PublicationRepository publicationRepository;
+
+    @Resource
+    private NewsRepository newsRepository;
+
+    @Resource
+    private Client client;
+
+    @Resource
+    protected EsAclManager esAclManager;
 
 
     @Override
@@ -224,6 +252,7 @@ public class HelperServiceImpl implements HelperService {
         List<Sampstat> sampStatValues = sampstatRepository.findAll();
         List<Transformation> transformationValues = transformationRepository.findAll();
         List<UserNotification> userNotifications = getUserNotifications(10);
+        Page<NewsItem> page = newsRepository.findAll(new PageRequest(0, 10));
 
         AppData appData = new AppData();
         appData.setStatisticTypeList(statisticTypeValues);
@@ -233,9 +262,11 @@ public class HelperServiceImpl implements HelperService {
         appData.setSampStatList(sampStatValues);
         appData.setTransformationList(transformationValues);
         appData.setUserNotificationList(userNotifications);
-
+        appData.setStats(getAppStats());
+        appData.setNews(page.getContent());
         return appData;
     }
+
 
     @Override
     public PhenotypeUploadData getPhenotypeUploadData(byte[] csvData) throws IOException {
@@ -418,6 +449,83 @@ public class HelperServiceImpl implements HelperService {
                 return unitOfMeasure;
         }
         return null;
+    }
+
+    @Override
+    public List<AppStat> getAppStats() {
+        List<AppStat> stats = Lists.newArrayList();
+        MultiSearchRequestBuilder requestBuilder = client.prepareMultiSearch();
+        // user count
+        requestBuilder.add(getStatsSearchBuilder().setTypes("user"));
+
+        FilterBuilder filter = esAclManager.getAclFilter(Lists.newArrayList("read"));
+        //  get studies
+        requestBuilder.add(getStatsSearchBuilder().setTypes("experiment").setFilter(filter));
+        requestBuilder.add(getStatsSearchBuilder().setTypes("phenotype").setFilter(filter));
+        requestBuilder.add(getStatsSearchBuilder().setTypes("study").setFilter(filter));
+        requestBuilder.add(getStatsSearchBuilder().setTypes("publication"));
+
+        MultiSearchResponse multiResponse = requestBuilder.execute().actionGet();
+
+        stats.add(new AppStat(AppStatProxy.STAT.USER, multiResponse.getResponses()[0].getResponse().getHits().getTotalHits()));
+        stats.add(new AppStat(AppStatProxy.STAT.STUDY, multiResponse.getResponses()[1].getResponse().getHits().getTotalHits()));
+        stats.add(new AppStat(AppStatProxy.STAT.PHENOTYPE, multiResponse.getResponses()[2].getResponse().getHits().getTotalHits()));
+        stats.add(new AppStat(AppStatProxy.STAT.ANALYSIS, multiResponse.getResponses()[3].getResponse().getHits().getTotalHits()));
+        stats.add(new AppStat(AppStatProxy.STAT.PUBLICATION, multiResponse.getResponses()[4].getResponse().getHits().getTotalHits()));
+        stats.add(new AppStat(AppStatProxy.STAT.ONTOLOGY, 2));
+        return stats;
+    }
+
+    private SearchRequestBuilder getStatsSearchBuilder() {
+        return client.prepareSearch(SearchServiceImpl.INDEX_NAME).setSearchType(SearchType.COUNT);
+    }
+
+    @Override
+    public List<DateStatHistogramFacet> findRecentTraitHistogram(DateStatHistogramProxy.INTERVAL interval) {
+        List<DateStatHistogramFacet> histogram = Lists.newArrayList();
+        FacetBuilder facet = FacetBuilders.dateHistogramFacet("recent").field("published").interval(interval.name().toLowerCase());
+        FilterBuilder filter = esAclManager.getAclFilter(Lists.newArrayList("read"));
+
+        MultiSearchRequestBuilder requestBuilder = client.prepareMultiSearch();
+
+        // experiments
+        requestBuilder.add(
+                client.prepareSearch(SearchServiceImpl.INDEX_NAME).setTypes("experiment")
+                        .addFacet(facet)
+                        .setQuery(QueryBuilders.constantScoreQuery(filter))
+                        .setSize(0)
+        );
+        //phenotypes
+        requestBuilder.add(
+                client.prepareSearch(SearchServiceImpl.INDEX_NAME).setTypes("phenotype")
+                        .addFacet(facet)
+                        .setQuery(QueryBuilders.constantScoreQuery(filter))
+                        .setSize(0)
+        );
+
+        //study
+        requestBuilder.add(
+                client.prepareSearch(SearchServiceImpl.INDEX_NAME).setTypes("study")
+                        .addFacet(facet)
+                        .setQuery(QueryBuilders.constantScoreQuery(filter))
+                        .setSize(0)
+        );
+
+        MultiSearchResponse multiResponse = requestBuilder.execute().actionGet();
+        histogram.add(new DateStatHistogramFacet(getHistogram(multiResponse.getResponses()[0].getResponse().getFacets(), interval), DateStatHistogramFacetProxy.TYPE.study));
+        histogram.add(new DateStatHistogramFacet(getHistogram(multiResponse.getResponses()[1].getResponse().getFacets(), interval), DateStatHistogramFacetProxy.TYPE.phenotype));
+        histogram.add(new DateStatHistogramFacet(getHistogram(multiResponse.getResponses()[2].getResponse().getFacets(), interval), DateStatHistogramFacetProxy.TYPE.analysis));
+        return histogram;
+    }
+
+
+    private List<DateStatHistogram> getHistogram(Facets facets, DateStatHistogramProxy.INTERVAL interval) {
+        DateHistogramFacet searchFacet = (DateHistogramFacet) facets.facetsAsMap().get("recent");
+        List<DateStatHistogram> dates = Lists.newArrayList();
+        for (DateHistogramFacet.Entry termEntry : searchFacet) {
+            dates.add(new DateStatHistogram(new Date(termEntry.getTime()), termEntry.getCount(), interval));
+        }
+        return dates;
     }
 
 }

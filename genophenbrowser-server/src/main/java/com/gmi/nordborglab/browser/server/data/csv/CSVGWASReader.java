@@ -37,11 +37,11 @@ import java.util.Map;
  */
 public class CSVGWASReader implements GWASReader {
 
-    private static CellProcessor[] headerCellProcessors = new CellProcessor[] {
-       new Equals("chr"),new Equals("pos"),new IsIncludedIn(new String[] {"score","pvalue"}),
-       new Optional(new Equals("maf")),
-       new Optional(new Equals("mac")),
-       new Optional(new Equals("GVE"))
+    private static CellProcessor[] headerCellProcessors = new CellProcessor[]{
+            new Equals("chr"), new Equals("pos"), new IsIncludedIn(new String[]{"score", "pvalue"}),
+            new Optional(new Equals("maf")),
+            new Optional(new Equals("mac")),
+            new Optional(new Equals("GVE"))
     };
 
     private static class ParseNAs extends CellProcessorAdaptor {
@@ -56,25 +56,24 @@ public class CSVGWASReader implements GWASReader {
         @Override
         public Object execute(Object value, CsvContext context) {
             validateInputNotNull(value, context);
-            if( value instanceof String && ((String) value).equalsIgnoreCase("NA")) {
+            if (value instanceof String && ((String) value).equalsIgnoreCase("NA")) {
                 return null;
             }
-            return next.execute(value,context);
+            return next.execute(value, context);
         }
 
     }
 
-    private static CellProcessor[] cellProcessors = new CellProcessor[] {
-       new ParseInt(),new ParseInt(),new ParseDouble(), new Optional(new ParseNAs(new ParseDouble())), new Optional(new ParseNAs(new ParseInt())), new Optional(new ParseNAs(new ParseDouble()))
+    private static CellProcessor[] cellProcessors = new CellProcessor[]{
+            new ParseInt(), new ParseInt(), new ParseDouble(), new Optional(new ParseNAs(new ParseDouble())), new Optional(new ParseNAs(new ParseInt())), new Optional(new ParseNAs(new ParseDouble()))
     };
-    private static String header[] = new String[] {"chr","pos","pval","maf","max"};
 
     public CSVGWASReader() {
     }
 
     @Override
     public ChrGWAData readForChr(String file, String chr, Double limit) {
-       throw new RuntimeException("Not supported");
+        throw new RuntimeException("Not supported");
     }
 
     @Override
@@ -90,11 +89,9 @@ public class CSVGWASReader implements GWASReader {
         try {
             reader.read(headerCellProcessors);
             reader.read(cellProcessors);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw e;
-        }
-        finally {
+        } finally {
             if (reader != null)
                 reader.close();
         }
@@ -104,7 +101,7 @@ public class CSVGWASReader implements GWASReader {
     public Map<String, ChrGWAData> parseGWASDataFromFile(File originalFile) throws Exception {
         ICsvListReader reader = new CsvListReader(new FileReader(originalFile), CsvPreference.STANDARD_PREFERENCE);
         try {
-            Map<String,ChrGWAData> data = Maps.newHashMap();
+            Map<String, ChrGWAData> data = Maps.newHashMap();
             reader.getHeader(true);
             List<Object> row = null;
             ChrGWAData chrGWAData = null;
@@ -115,38 +112,35 @@ public class CSVGWASReader implements GWASReader {
             List<Float> mafs = Lists.newArrayList();
             List<Float> GVEs = Lists.newArrayList();
             while ((row = reader.read(cellProcessors)) != null) {
-                if (chr != (Integer)row.get(0)) {
-                    String key = "Chr"+chr;
-                    chrGWAData = ChrGWAData.sortAndConvertToScores(new ChrGWAData(Ints.toArray(positions), Floats.toArray(pvalues), Ints.toArray(macs),Floats.toArray(mafs),Floats.toArray(GVEs),key));
+                if (chr != (Integer) row.get(0)) {
+                    String key = "Chr" + chr;
+                    chrGWAData = ChrGWAData.sortAndConvertToScores(new ChrGWAData(Ints.toArray(positions), Floats.toArray(pvalues), Ints.toArray(macs), Floats.toArray(mafs), Floats.toArray(GVEs), key));
                     data.put(key, chrGWAData);
                     positions.clear();
                     pvalues.clear();
-                    chr = (Integer)row.get(0);
-                }
-                else {
-                    positions.add((Integer)row.get(1));
-                    Double value = (Double)row.get(2);
-                    Float floatValue = (float)(double)value;
+                    chr = (Integer) row.get(0);
+                } else {
+                    positions.add((Integer) row.get(1));
+                    Double value = (Double) row.get(2);
+                    Float floatValue = (float) (double) value;
                     pvalues.add(floatValue);
-                    if (row.get(3) !=null) {
-                        mafs.add((float)(double)(Double)row.get(3));
+                    if (row.get(3) != null) {
+                        mafs.add((float) (double) (Double) row.get(3));
                     }
                     if (row.get(4) != null) {
-                        macs.add((Integer)row.get(4));
+                        macs.add((Integer) row.get(4));
                     }
                     if (row.get(5) != null) {
-                        GVEs.add((float)(double)(Double)row.get(5));
+                        GVEs.add((float) (double) (Double) row.get(5));
                     }
                 }
             }
-            String key = "Chr"+chr;
-            data.put(key,ChrGWAData.sortAndConvertToScores(new ChrGWAData(Ints.toArray(positions),Floats.toArray(pvalues),Ints.toArray(macs),Floats.toArray(mafs),Floats.toArray(GVEs),key)));
+            String key = "Chr" + chr;
+            data.put(key, ChrGWAData.sortAndConvertToScores(new ChrGWAData(Ints.toArray(positions), Floats.toArray(pvalues), Ints.toArray(macs), Floats.toArray(mafs), Floats.toArray(GVEs), key)));
             return data;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw e;
-        }
-        finally {
+        } finally {
             if (reader != null)
                 reader.close();
         }

@@ -14,6 +14,7 @@ import com.gmi.nordborglab.browser.server.repository.GWASResultRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
+import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
@@ -71,7 +72,7 @@ public class HDF5GWASDataService implements GWASDataService {
     protected UserRepository userRepository;
 
     @Resource
-    protected MutableAclService aclService;
+    protected AclManager aclManager;
 
     @Resource
     protected RoleHierarchy roleHierarchy;
@@ -86,17 +87,6 @@ public class HDF5GWASDataService implements GWASDataService {
     @Override
     public GWASData getGWASDataByStudyId(Long studyId) {
         TraitUom trait = traitUomRepository.findByStudyId(studyId);
-        final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-        final ImmutableList<Permission> permissions = ImmutableList
-                .of(CustomPermission.READ);
-        ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class, trait.getId());
-        Acl acl = aclService.readAclById(oid, authorities);
-        try {
-            if (!acl.isGranted(permissions, authorities, false))
-                throw new AccessDeniedException("not allowed");
-        } catch (NotFoundException e) {
-            throw new AccessDeniedException("not allowed");
-        }
         GWASReader gwasReader = new HDF5GWASReader(GWAS_STUDY_FOLDER);
         GWASData gwasData = gwasReader.readAll(studyId + ".hdf5", 2500D);
         gwasData.sortByPosition();
@@ -107,17 +97,6 @@ public class HDF5GWASDataService implements GWASDataService {
     @Override
     public GWASData getGWASDataByViewerId(Long gwasResultId) {
         GWASResult gwasResult = gwasResultRepository.findOne(gwasResultId);
-        final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-        final ImmutableList<Permission> permissions = ImmutableList
-                .of(CustomPermission.READ);
-        ObjectIdentity oid = new ObjectIdentityImpl(GWASResult.class, gwasResult.getId());
-        Acl acl = aclService.readAclById(oid, authorities);
-        try {
-            if (!acl.isGranted(permissions, authorities, false))
-                throw new AccessDeniedException("not allowed");
-        } catch (NotFoundException e) {
-            throw new AccessDeniedException("not allowed");
-        }
         GWASReader gwasReader = new HDF5GWASReader(GWAS_VIEWER_FOLDER);
         GWASData gwasData = gwasReader.readAll(gwasResultId + ".hdf5", 2500D);
         gwasData.sortByPosition();
@@ -140,9 +119,9 @@ public class HDF5GWASDataService implements GWASDataService {
             gwasResult = gwasResultRepository.save(gwasResult);
             CumulativePermission fullPermission = new CumulativePermission();
             fullPermission.set(CustomPermission.ADMINISTRATION).set(CustomPermission.EDIT).set(CustomPermission.READ);
-            addPermission(gwasResult, new GrantedAuthoritySid("ROLE_ANONYMOUS"), new CustomPermission(0));
-            addPermission(gwasResult, new PrincipalSid(SecurityUtil.getUsername()), fullPermission);
-            addPermission(gwasResult, new GrantedAuthoritySid("ROLE_ADMIN"), fullPermission);
+            aclManager.addPermission(gwasResult, new GrantedAuthoritySid("ROLE_ANONYMOUS"), new CustomPermission(0), null);
+            aclManager.addPermission(gwasResult, new PrincipalSid(SecurityUtil.getUsername()), fullPermission, null);
+            aclManager.addPermission(gwasResult, new GrantedAuthoritySid("ROLE_ADMIN"), fullPermission, null);
             File targetFile = new File(GWAS_VIEWER_FOLDER + gwasResult.getId() + ".hdf5");
             gwasWriter.saveGWASDataToFile(data, targetFile);
 
@@ -161,31 +140,7 @@ public class HDF5GWASDataService implements GWASDataService {
         final ImmutableList<Permission> permissions = ImmutableList.of(CustomPermission.READ, CustomPermission.EDIT, CustomPermission.ADMINISTRATION);
         Sid sid = new PrincipalSid(SecurityUtil.getAuthentication());
         final List<Sid> authorities = ImmutableList.of(sid);
-        FluentIterable<GWASResult> gwasResults = FluentIterable.from(gwasResultsToFilter);
-        if (gwasResults.size() > 0) {
-            final ImmutableBiMap<GWASResult, ObjectIdentity> identities = SecurityUtil.retrieveObjectIdentites(gwasResults.toList()).inverse();
-            final ImmutableMap<ObjectIdentity, Acl> acls = ImmutableMap.copyOf(aclService.readAclsById(identities.values().asList(), authorities));
-
-            Predicate<GWASResult> predicate = new Predicate<GWASResult>() {
-
-                @Override
-                public boolean apply(GWASResult gwasResult) {
-                    boolean flag = false;
-                    ObjectIdentity identity = identities.get(gwasResult);
-                    if (acls.containsKey(identity)) {
-                        Acl acl = acls.get(identity);
-                        try {
-                            if (acl.isGranted(permissions, authorities, false))
-                                flag = true;
-                        } catch (NotFoundException e) {
-
-                        }
-                    }
-                    return flag;
-                }
-            };
-            gwasResults = gwasResults.filter(predicate);
-        }
+        FluentIterable<GWASResult> gwasResults = aclManager.filterByAcl(gwasResultsToFilter, permissions, authorities);
         return gwasResults.toList();
     }
 
@@ -199,8 +154,7 @@ public class HDF5GWASDataService implements GWASDataService {
     @Transactional(readOnly = false)
     public List<GWASResult> delete(GWASResult gwasResult) {
 
-        ObjectIdentity oid = new ObjectIdentityImpl(GWASResult.class, gwasResult.getId());
-        aclService.deleteAcl(oid, true);
+        aclManager.deleteAcl(gwasResult);
         File file = new File(GWAS_VIEWER_FOLDER + gwasResult.getId() + ".hdf5");
         if (file.exists()) {
             file.delete();
@@ -223,17 +177,6 @@ public class HDF5GWASDataService implements GWASDataService {
         if (study.getTraits().size() == 0)
             throw new RuntimeException("Study must have phenotypes assigned");
         TraitUom trait = Iterables.get(study.getTraits(), 0).getTraitUom();
-        final List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-        final ImmutableList<Permission> permissions = ImmutableList
-                .of(CustomPermission.EDIT, CustomPermission.ADMINISTRATION);
-        ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class, trait.getId());
-        Acl acl = aclService.readAclById(oid, authorities);
-        try {
-            if (!acl.isGranted(permissions, authorities, false))
-                throw new AccessDeniedException("not allowed");
-        } catch (NotFoundException e) {
-            throw new AccessDeniedException("not allowed");
-        }
         HDF5GWASReader gwasWriter = new HDF5GWASReader("");
         try {
             Map<String, ChrGWAData> data = getGWASDataFromUploadFile(file);
@@ -275,21 +218,6 @@ public class HDF5GWASDataService implements GWASDataService {
         return gwasResult;
     }
 
-    @Transactional(readOnly = false)
-    private void addPermission(GWASResult gwasResult, Sid recipient,
-                               Permission permission) {
-        MutableAcl acl;
-        ObjectIdentity oid = new ObjectIdentityImpl(GWASResult.class,
-                gwasResult.getId());
-
-        try {
-            acl = (MutableAcl) aclService.readAclById(oid);
-        } catch (NotFoundException nfe) {
-            acl = aclService.createAcl(oid);
-        }
-        acl.insertAce(acl.getEntries().size(), permission, recipient, true);
-        aclService.updateAcl(acl);
-    }
 
     private GWASData addAnnotation(GWASData data) {
         for (Map.Entry<String, ChrGWAData> dataEntry : data.getChrGWASData().entrySet()) {

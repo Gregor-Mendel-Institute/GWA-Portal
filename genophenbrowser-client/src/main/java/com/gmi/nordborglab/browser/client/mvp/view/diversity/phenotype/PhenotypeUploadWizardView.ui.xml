@@ -68,8 +68,8 @@
     </ui:style>
     <g:LayoutPanel ui:field="uploadPhenotypePanel">
         <g:layer top="0" bottom="0">
-            <g:ScrollPanel>
-                <b:FluidContainer ui:field="phenotypeUploadPanel">
+            <g:ScrollPanel ui:field="phenotypeUploadPanel">
+                <b:FluidContainer>
                     <b:FluidRow>
                         <b:Column size="12">
                             <g:HTMLPanel>
@@ -115,7 +115,7 @@
                                     </tbody>
                                 </table>
                                 <h4>Upload</h4>
-                                <p>Use on of the methods below to upload a pvalue file:</p>
+                                <p>Use on of the methods below to upload a phenotype file:</p>
                             </g:HTMLPanel>
                         </b:Column>
                     </b:FluidRow>
@@ -191,7 +191,7 @@
         <g:layer top="0" bottom="0">
             <g:LayoutPanel ui:field="phenotypeValuePanel">
                 <g:layer left="0" width="320px">
-                    <g:HTMLPanel>
+                    <g:HTMLPanel ui:field="phenotypeFormPanel">
                         <div>
                             <b:WellForm ui:field="phenotypeForm">
                                 <b:ButtonGroup addStyleNames="{style.actionButtons}">

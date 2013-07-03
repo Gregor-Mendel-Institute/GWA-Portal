@@ -27,64 +27,64 @@ import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import java.util.List;
 
 public class StudyOverviewView extends ViewImpl implements
-		StudyOverviewPresenter.MyView {
+        StudyOverviewPresenter.MyView {
 
-	private final Widget widget;
+    private final Widget widget;
 
-	public interface Binder extends UiBinder<Widget, StudyOverviewView> {
-	}
-	
-	@UiField(provided = true)
-	DataGrid<StudyProxy> dataGrid;
-	@UiField
-	CustomPager pager;
-	private final PlaceManager placeManger;
+    public interface Binder extends UiBinder<Widget, StudyOverviewView> {
+    }
 
-	@Inject
-	public StudyOverviewView(final Binder binder,final PlaceManager placeManger,
-			final CustomDataGridResources dataGridResources) {
-		this.placeManger = placeManger;
-		dataGrid = new DataGrid<StudyProxy>(20,dataGridResources, new EntityProxyKeyProvider<StudyProxy>());
-		initGrid();
-		widget = binder.createAndBindUi(this);
-		pager.setDisplay(dataGrid);
-	}
+    @UiField(provided = true)
+    DataGrid<StudyProxy> dataGrid;
+    @UiField
+    CustomPager pager;
+    private final PlaceManager placeManger;
 
-	@Override
-	public Widget asWidget() {
-		return widget;
-	}
-	
-	private void initGrid() {
-		PlaceRequest request = new ParameterizedPlaceRequest(
-				NameTokens.study);
-		dataGrid.setWidth("100%");
-		dataGrid.setEmptyTableWidget(new Label("No Records found"));
-		
-		dataGrid.setEmptyTableWidget(new Label("No Records found"));
-		dataGrid.addColumn(new StudyListDataGridColumns.NameColumn(placeManger,request),"Name");
-		dataGrid.addColumn(new StudyListDataGridColumns.ExperimentColumn(),"Experiment");
-		dataGrid.addColumn(new StudyListDataGridColumns.PhenotypeColumn(),"Phenotype");
-		dataGrid.addColumn(new StudyListDataGridColumns.ProtocolColumn(),"Protocol");
-		dataGrid.addColumn(new StudyListDataGridColumns.AlleleAssayColumn(),"Genotype");
-		dataGrid.addColumn(new StudyListDataGridColumns.StudyDateColumn(),"Study date");
-        List<HasCell<StudyJobProxy,?>> cells = Lists.newArrayList();
+    @Inject
+    public StudyOverviewView(final Binder binder, final PlaceManager placeManger,
+                             final CustomDataGridResources dataGridResources) {
+        this.placeManger = placeManger;
+        dataGrid = new DataGrid<StudyProxy>(20, dataGridResources, new EntityProxyKeyProvider<StudyProxy>());
+        initGrid();
+        widget = binder.createAndBindUi(this);
+        pager.setDisplay(dataGrid);
+    }
+
+    @Override
+    public Widget asWidget() {
+        return widget;
+    }
+
+    private void initGrid() {
+        PlaceRequest request = new ParameterizedPlaceRequest(
+                NameTokens.study);
+        dataGrid.setWidth("100%");
+        dataGrid.setEmptyTableWidget(new Label("No Records found"));
+
+        dataGrid.setEmptyTableWidget(new Label("No Records found"));
+        dataGrid.addColumn(new StudyListDataGridColumns.NameColumn(placeManger, request), "Name");
+        dataGrid.addColumn(new StudyListDataGridColumns.ExperimentColumn(), "Study");
+        dataGrid.addColumn(new StudyListDataGridColumns.PhenotypeColumn(), "Phenotype");
+        dataGrid.addColumn(new StudyListDataGridColumns.ProtocolColumn(), "Protocol");
+        dataGrid.addColumn(new StudyListDataGridColumns.AlleleAssayColumn(), "Genotype");
+        dataGrid.addColumn(new StudyListDataGridColumns.StudyDateColumn(), "Study date");
+        List<HasCell<StudyJobProxy, ?>> cells = Lists.newArrayList();
         cells.add(new StudyListDataGridColumns.StatusCell());
         cells.add(new StudyListDataGridColumns.ProgressCell());
-        dataGrid.addColumn(new StudyListDataGridColumns.StatusColumn(cells),"Status");
-		dataGrid.setColumnWidth(0, 15, Unit.PCT);
-		dataGrid.setColumnWidth(1, 15, Unit.PCT);
-		dataGrid.setColumnWidth(2, 15, Unit.PCT);
-		dataGrid.setColumnWidth(3, 55, Unit.PX);
-		dataGrid.setColumnWidth(4, 150, Unit.PX);
-		dataGrid.setColumnWidth(5, 80, Unit.PX);
-        dataGrid.setColumnWidth(6,200,Unit.PX);
+        dataGrid.addColumn(new StudyListDataGridColumns.StatusColumn(cells), "Status");
+        dataGrid.setColumnWidth(0, 15, Unit.PCT);
+        dataGrid.setColumnWidth(1, 15, Unit.PCT);
+        dataGrid.setColumnWidth(2, 15, Unit.PCT);
+        dataGrid.setColumnWidth(3, 55, Unit.PX);
+        dataGrid.setColumnWidth(4, 150, Unit.PX);
+        dataGrid.setColumnWidth(5, 80, Unit.PX);
+        dataGrid.setColumnWidth(6, 200, Unit.PX);
 
 
-	}
-	
-	@Override
-	public HasData<StudyProxy> getDisplay() {
-		return dataGrid;
-	}
+    }
+
+    @Override
+    public HasData<StudyProxy> getDisplay() {
+        return dataGrid;
+    }
 }

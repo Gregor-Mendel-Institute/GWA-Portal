@@ -26,109 +26,130 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 
 public class WizardPanel extends ResizeComposite {
 
-	private static WizardPanelUiBinder uiBinder = GWT
-			.create(WizardPanelUiBinder.class);
+    private static WizardPanelUiBinder uiBinder = GWT
+            .create(WizardPanelUiBinder.class);
 
     interface WizardPanelUiBinder extends UiBinder<Widget, WizardPanel> {
     }
-	interface MyStyle extends CssResource {
+
+    interface MyStyle extends CssResource {
         String stepContainer();
+
         String stepContainer_item();
+
         String stepContainer_item_active();
+
+        String stepContainer_item_done();
+
         String arrow_container();
+
         String arrow_border();
+
         String arrow();
+
         String step_number();
+
         String step_title();
     }
-	@UiField MyStyle style;
-    @UiField FlowPanel stepContainer;
-    @UiField DeckLayoutPanel pageContainer;
-    @UiField Button nextBtn;
-    @UiField Button previousBtn;
-    @UiField Button cancelBtn;
-    @UiField HTMLPanel indicator;
-    @UiField MainResources mainRes;
+
+    @UiField
+    MyStyle style;
+    @UiField
+    FlowPanel stepContainer;
+    @UiField
+    DeckLayoutPanel pageContainer;
+    @UiField
+    Button nextBtn;
+    @UiField
+    Button previousBtn;
+    @UiField
+    Button cancelBtn;
+    @UiField
+    HTMLPanel indicator;
+    @UiField
+    MainResources mainRes;
     private Integer numberOfSteps = 0;
     private List<HTMLPanel> stepWidgets = new ArrayList<HTMLPanel>();
-	public WizardPanel() {
-		initWidget(uiBinder.createAndBindUi(this));
-		pageContainer.setAnimationDuration(1000);
-		pageContainer.setAnimationVertical(true);
-	}
 
-	@UiChild(tagname="page")
-	public void addPage(Widget page,String title) {
-		numberOfSteps = numberOfSteps +1;
-		HTMLPanel item = new HTMLPanel("");
-		if (numberOfSteps == 1)
-			item.setStylePrimaryName(style.stepContainer_item_active());
-		else
-			item.setStylePrimaryName(style.stepContainer_item());
-		Label stepNumber = new Label();
-		stepNumber.setText(numberOfSteps.toString());
-		stepNumber.setStylePrimaryName(style.step_number());
-		item.add(stepNumber);
-		Label stepTitle = new Label();
-		stepTitle.setText(title);
-		stepTitle.setStylePrimaryName(style.step_title());
-		item.add(stepTitle);
-	    stepContainer.add(item);
-	    pageContainer.add(page);
-	    pageContainer.showWidget(0);
-	    stepWidgets.add(item);
-	}
+    public WizardPanel() {
+        initWidget(uiBinder.createAndBindUi(this));
+        pageContainer.setAnimationDuration(1000);
+        pageContainer.setAnimationVertical(true);
+    }
 
-	public void nextStep() {
-		previousBtn.setVisible(true);
-		int visibleIndex = pageContainer.getVisibleWidgetIndex();
-		if (visibleIndex < pageContainer.getWidgetCount()-1)
-			pageContainer.showWidget(visibleIndex+1);
-		updateWizardControls();
-	}
+    @UiChild(tagname = "page")
+    public void addPage(Widget page, String title) {
+        numberOfSteps = numberOfSteps + 1;
+        HTMLPanel item = new HTMLPanel("");
+        if (numberOfSteps == 1)
+            item.setStylePrimaryName(style.stepContainer_item_active());
+        else
+            item.setStylePrimaryName(style.stepContainer_item());
+        Label stepNumber = new Label();
+        stepNumber.setText(numberOfSteps.toString());
+        stepNumber.setStylePrimaryName(style.step_number());
+        item.add(stepNumber);
+        Label stepTitle = new Label();
+        stepTitle.setText(title);
+        stepTitle.setStylePrimaryName(style.step_title());
+        item.add(stepTitle);
+        stepContainer.add(item);
+        pageContainer.add(page);
+        pageContainer.showWidget(0);
+        stepWidgets.add(item);
+    }
 
-	public void previousStep() {
-		int visibleIndex = pageContainer.getVisibleWidgetIndex();
-		if ( visibleIndex> 0)
-			pageContainer.showWidget(visibleIndex-1);
-		updateWizardControls();
-	}
+    public void nextStep() {
+        previousBtn.setVisible(true);
+        int visibleIndex = pageContainer.getVisibleWidgetIndex();
+        if (visibleIndex < pageContainer.getWidgetCount() - 1)
+            pageContainer.showWidget(visibleIndex + 1);
+        updateWizardControls();
+    }
 
-	private void updateWizardControls() {
-		int visibleIndex = pageContainer.getVisibleWidgetIndex();
-		if (visibleIndex+1 == pageContainer.getWidgetCount()) {
-			nextBtn.setText("Finish");
-			nextBtn.removeStyleName(mainRes.style().button_blue());
-			nextBtn.addStyleName(mainRes.style().button_red());
-		}
-        else {
+    public void previousStep() {
+        int visibleIndex = pageContainer.getVisibleWidgetIndex();
+        if (visibleIndex > 0)
+            pageContainer.showWidget(visibleIndex - 1);
+        updateWizardControls();
+    }
+
+    private void updateWizardControls() {
+        int visibleIndex = pageContainer.getVisibleWidgetIndex();
+        if (visibleIndex + 1 == pageContainer.getWidgetCount()) {
+            nextBtn.setText("Finish");
+            nextBtn.removeStyleName(mainRes.style().button_blue());
+            nextBtn.addStyleName(mainRes.style().button_red());
+        } else {
             nextBtn.setText("Next");
             nextBtn.removeStyleName(mainRes.style().button_red());
             nextBtn.addStyleName(mainRes.style().button_blue());
         }
-		if (visibleIndex == 0)
-			previousBtn.setVisible(false);
-		indicator.getElement().getStyle().setTop(40+visibleIndex*105,Style.Unit.PX);
-		for (int i =0;i<stepWidgets.size();i++) {
-			HTMLPanel step = stepWidgets.get(i);
-			if (i == visibleIndex)
-				step.setStylePrimaryName(style.stepContainer_item_active());
-			else
-				step.setStylePrimaryName(style.stepContainer_item());
-		}
-	}
+        if (visibleIndex == 0)
+            previousBtn.setVisible(false);
+        indicator.getElement().getStyle().setTop(30 + visibleIndex * 95, Style.Unit.PX);
+        for (int i = 0; i < stepWidgets.size(); i++) {
+            HTMLPanel step = stepWidgets.get(i);
+            if (i < visibleIndex)
+                step.setStylePrimaryName(style.stepContainer_item_done());
+            else if (i == visibleIndex)
+                step.setStylePrimaryName(style.stepContainer_item_active());
+            else
+                step.setStylePrimaryName(style.stepContainer_item());
+        }
+    }
 
-	public HandlerRegistration addNextButtonClickHandler(ClickHandler handler) {
-		return nextBtn.addClickHandler(handler);
-	}
+    public HandlerRegistration addNextButtonClickHandler(ClickHandler handler) {
+        return nextBtn.addClickHandler(handler);
+    }
 
-	public HandlerRegistration addPreviousButtonClickHandler(ClickHandler handler) {
-		return previousBtn.addClickHandler(handler);
-	}
+    public HandlerRegistration addPreviousButtonClickHandler(ClickHandler handler) {
+        return previousBtn.addClickHandler(handler);
+    }
 
-	public HandlerRegistration addCancelButtonClickHandler(ClickHandler handler) {
-		return cancelBtn.addClickHandler(handler);
-	}
+    public HandlerRegistration addCancelButtonClickHandler(ClickHandler handler) {
+        return cancelBtn.addClickHandler(handler);
+    }
 
     public void reset() {
         pageContainer.showWidget(0);

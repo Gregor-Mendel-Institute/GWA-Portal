@@ -37,122 +37,85 @@ import static org.junit.Assert.*;
 
 public class GWASDataServiceTest extends BaseTest {
 
-	@Resource
-	private GWASDataService gwasDataService;
+    @Resource
+    private GWASDataService gwasDataService;
 
     @Resource
     private GWASResultRepository gwasResultRepository;
 
 
-	@Resource
-	private MutableAclService aclService;
+    @Resource
+    private MutableAclService aclService;
 
-	@Before
-	public void setUp() {
-	}
+    @Before
+    public void setUp() {
+    }
 
-	@After
-	public void clearContext() {
-		SecurityUtils.clearContext();
-	}
-
-	@Test
-	public void testGetGWASDataByStudyId() {
-		SecurityUtils.setAnonymousUser();
-        GWASData gwasdata =gwasDataService.getGWASDataByStudyId(1L);
-        assertNotNull(gwasdata);
-		Map<String,ChrGWAData> map = gwasdata.getChrGWASData();
-        assertNotNull("nothing returned", map);
-		assertTrue("chromosome found",map.containsKey("chr1"));
-		ChrGWAData data = map.get("chr1");
-		assertNotNull("Positions are null",data.getPositions());
-		assertNotNull("pvalues are null",data.getPvalues());
-		assertEquals("Chr is incorred","chr1", data.getChr());
-		assertEquals("Size of positions is not equal to size of pvalues",data.getPositions().length,data.getPvalues().length);
-	}
+    @After
+    public void clearContext() {
+        SecurityUtils.clearContext();
+    }
 
     @Test
-    public void testDeleteGWASResult() {
-        Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
-        SecurityUtils.makeActiveUser("TEST", "TEST",adminAuthorities);
-        GWASResult gwasResult = gwasResultRepository.findOne(855L);
-        List<GWASResult> list = gwasDataService.delete(gwasResult);
-        assertEquals(0,list.size());
-        assertNull(gwasResultRepository.findOne(855L));
-    }
-
-    @Test(expected=AccessDeniedException.class)
-    public void testDeleteGWASResultAccessedDenied() {
+    public void testGetGWASDataByStudyId() {
         SecurityUtils.setAnonymousUser();
-        GWASResult gwasResult = gwasResultRepository.findOne(855L);
-        List<GWASResult> list = gwasDataService.delete(gwasResult);
+        GWASData gwasdata = gwasDataService.getGWASDataByStudyId(1L);
+        assertNotNull(gwasdata);
+        Map<String, ChrGWAData> map = gwasdata.getChrGWASData();
+        assertNotNull("nothing returned", map);
+        assertTrue("chromosome found", map.containsKey("chr1"));
+        ChrGWAData data = map.get("chr1");
+        assertNotNull("Positions are null", data.getPositions());
+        assertNotNull("pvalues are null", data.getPvalues());
+        assertEquals("Chr is incorred", "chr1", data.getChr());
+        assertEquals("Size of positions is not equal to size of pvalues", data.getPositions().length, data.getPvalues().length);
     }
-	
-	@Test(expected=AccessDeniedException.class)
-	public void testGetGWASDataByStudyIdAccessDenied() {
-		Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
-	    SecurityUtils.makeActiveUser("TEST", "TEST",adminAuthorities);
-		ObjectIdentity oid = new ObjectIdentityImpl(Experiment.class,1L);
-		List<Sid> authorities = Collections.singletonList((Sid)new GrantedAuthoritySid("ROLE_ANONYMOUS"));
-		MutableAcl acl = (MutableAcl)aclService.readAclById(oid, authorities);
-		
-		for (int i=0;i<acl.getEntries().size();i++) {
-			if (acl.getEntries().get(i).getSid().equals(authorities.get(0)))
-			{
-				acl.deleteAce(i);
-				break;
-			}
-		}
-		aclService.updateAcl(acl);
-		SecurityUtils.setAnonymousUser();
-		gwasDataService.getGWASDataByStudyId(1L);
-	}
 
 
     @Test
     public void testGetGWASDataByViewerId() {
         Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
-        SecurityUtils.makeActiveUser("TEST","TEST", adminAuthorities);
-        GWASData gwasData =gwasDataService.getGWASDataByViewerId(750L);
-        Map<String,ChrGWAData> map =  gwasData.getChrGWASData();
-        assertNotNull("nothing returned",map);
-        assertTrue("chromosome found",map.containsKey("chr1"));
-        ChrGWAData data = map.get("chr1");
-        assertNotNull("Positions are null",data.getPositions());
-        assertNotNull("pvalues are null",data.getPvalues());
-        assertEquals("Chr is incorred","chr1", data.getChr());
-        assertEquals("Size of positions is not equal to size of pvalues",data.getPositions().length,data.getPvalues().length);
+        SecurityUtils.makeActiveUser("TEST", "TEST", adminAuthorities);
+        GWASData gwasData = gwasDataService.getGWASDataByViewerId(400L);
+        Map<String, ChrGWAData> map = gwasData.getChrGWASData();
+        assertNotNull("nothing returned", map);
+        assertTrue("chromosome found", map.containsKey("Chr1"));
+        ChrGWAData data = map.get("Chr1");
+        assertNotNull("Positions are null", data.getPositions());
+        assertNotNull("pvalues are null", data.getPvalues());
+        assertEquals("Chr is incorred", "Chr1", data.getChr());
+        assertEquals("Size of positions is not equal to size of pvalues", data.getPositions().length, data.getPvalues().length);
     }
 
-    @Test(expected=AccessDeniedException.class)
+    @Test(expected = AccessDeniedException.class)
     public void testGetGWASDataByViewerIdAccessDenied() {
         SecurityUtils.setAnonymousUser();
         gwasDataService.getGWASDataByViewerId(750L);
     }
 
-    @Test(expected=AccessDeniedException.class)
+    @Test(expected = AccessDeniedException.class)
     public void testGWASUploadDataAccessionDeniedForAnonymousUser() {
         SecurityUtils.setAnonymousUser();
         try {
             gwasDataService.uploadGWASResult(null);
+        } catch (IOException e) {
         }
-        catch (IOException e) {}
     }
 
     @Test
     public void testFindOneGWASResult() {
         Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
-        SecurityUtils.makeActiveUser("TEST","TEST", adminAuthorities);
-        GWASResult result = gwasDataService.findOneGWASResult(901L);
+        SecurityUtils.makeActiveUser("TEST", "TEST", adminAuthorities);
+        GWASResult result = gwasDataService.findOneGWASResult(850L);
         assertNotNull(result);
-        assertEquals(901L,result.getId().longValue());
+        assertEquals(850L, result.getId().longValue());
 
     }
 
-    @Test(expected=AccessDeniedException.class)
+    @Test(expected = AccessDeniedException.class)
     public void testFindOneGWASResultAccessDenied() {
         SecurityUtils.setAnonymousUser();
-        GWASResult result = gwasDataService.findOneGWASResult(901L);
+        GWASResult result = gwasDataService.findOneGWASResult(850L);
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -165,11 +128,49 @@ public class GWASDataServiceTest extends BaseTest {
     @Test()
     public void testSave() {
         Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
-        SecurityUtils.makeActiveUser("TEST","TEST", adminAuthorities);
-        GWASResult actual = gwasDataService.findOneGWASResult(1100L);
+        SecurityUtils.makeActiveUser("TEST", "TEST", adminAuthorities);
+        GWASResult actual = gwasDataService.findOneGWASResult(850L);
         actual.setName("TEST");
         GWASResult updated = gwasDataService.save(actual);
         assertNotNull(updated);
-        assertEquals("TEST",updated.getName());
+        assertEquals("TEST", updated.getName());
     }
+
+
+    @Test(expected = AccessDeniedException.class)
+    public void testDeleteGWASResultAccessedDenied() {
+        SecurityUtils.setAnonymousUser();
+        GWASResult gwasResult = gwasResultRepository.findOne(855L);
+        List<GWASResult> list = gwasDataService.delete(gwasResult);
+    }
+
+    @Test
+    public void testDeleteGWASResult() {
+        Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
+        SecurityUtils.makeActiveUser("TEST", "TEST", adminAuthorities);
+        GWASResult gwasResult = gwasResultRepository.findOne(850L);
+        List<GWASResult> list = gwasDataService.delete(gwasResult);
+        assertEquals(0, list.size());
+        assertNull(gwasResultRepository.findOne(850L));
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testGetGWASDataByStudyIdAccessDenied() {
+        Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
+        SecurityUtils.makeActiveUser("TEST", "TEST", adminAuthorities);
+        ObjectIdentity oid = new ObjectIdentityImpl(Experiment.class, 1L);
+        List<Sid> authorities = Collections.singletonList((Sid) new GrantedAuthoritySid("ROLE_ANONYMOUS"));
+        MutableAcl acl = (MutableAcl) aclService.readAclById(oid, authorities);
+
+        for (int i = 0; i < acl.getEntries().size(); i++) {
+            if (acl.getEntries().get(i).getSid().equals(authorities.get(0))) {
+                acl.deleteAce(i);
+                break;
+            }
+        }
+        aclService.updateAcl(acl);
+        SecurityUtils.setAnonymousUser();
+        gwasDataService.getGWASDataByStudyId(1L);
+    }
+
 }
