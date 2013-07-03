@@ -83,6 +83,8 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
     @UiField
     SpanElement notifyBubble;
     @UiField
+    DivElement footerContentPanel;
+    @UiField
     HTMLPanel footerPanel;
     @UiField
     DockLayoutPanel mainContainer;
@@ -187,7 +189,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
         germplasmLink.getElement().getParentElement().setClassName("");
         genotypeLink.getElement().getParentElement().setClassName("");
         /*homeLink.removeStyleName(currentPageItemStyleName);
-		diversityLink.removeStyleName(style.current_page_item());
+        diversityLink.removeStyleName(style.current_page_item());
 		germplasmLink.removeStyleName(style.current_page_item());
 		genotypeLink.removeStyleName(style.current_page_item());*/
         InlineHyperlink currentLink = null;
@@ -214,7 +216,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
 
     private void showFooter(boolean showFooter) {
         mainContainer.setWidgetSize(footerPanel, showFooter ? 3.423 : 0.5);
-        footerPanel.setVisible(showFooter);
+        footerContentPanel.getStyle().setDisplay(showFooter ? Display.BLOCK : Display.NONE);
     }
 
     @Override

@@ -369,7 +369,7 @@
         </g:center>
         <g:south size="3.423">
             <g:HTMLPanel addStyleNames="{style.footer}" ui:field="footerPanel">
-                <div class="{style.footer_content}">
+                <div class="{style.footer_content}" ui:field="footerContentPanel">
                     <div class="{style.footer_items}">
                         @ 2012 GMI
                     </div>
