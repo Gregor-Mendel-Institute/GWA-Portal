@@ -1,22 +1,53 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-	xmlns:g='urn:import:com.google.gwt.user.client.ui'
-	xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
-	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
-	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
-	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
-	ui:generateLocales='default'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+             ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+             ui:generateLocales='default'>
 
-	<g:LayoutPanel>
-	    <g:layer top="5px" left="0" right="0" height="5em">
-	    	<g:HTMLPanel>Filter</g:HTMLPanel>
-	    </g:layer>
-		<g:layer top="5em" left="0" right="0" bottom="30px">
-			<c:DataGrid ui:field="dataGrid" />
-		</g:layer>
-		<g:layer bottom="0" left="0" right="0" height="30px">
-		   <gui:CustomPager ui:field="pager" />
-		</g:layer>
-	</g:LayoutPanel>
+
+    <ui:style>
+
+        .searchBox {
+            display: inline-block;
+            margin-top: 20px;
+            margin-right: 20px;
+        }
+
+        .navPills {
+            margin-top: 20px;
+            margin-left: 0.5em;
+        }
+
+    </ui:style>
+
+    <g:LayoutPanel>
+        <g:layer top="0" height="5em">
+            <g:HTMLPanel>
+                <div style="float:right;">
+                    <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
+                        <b:TextBox ui:field="searchBox" placeholder="Search..."></b:TextBox>
+                    </b:InputAddOn>
+                </div>
+                <div style="float:left;">
+                    <b:NavPills addStyleNames="{style.navPills}">
+                        <b:NavLink ui:field="navAll" active="true">All</b:NavLink>
+                        <b:NavLink ui:field="navPrivate">My studies</b:NavLink>
+                        <b:NavLink ui:field="navPublished">Published</b:NavLink>
+                        <b:NavLink ui:field="navRecent">Recent</b:NavLink>
+                    </b:NavPills>
+                </div>
+            </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="5em" left="0.5em" right="0" bottom="30px">
+            <c:DataGrid ui:field="dataGrid"/>
+        </g:layer>
+        <g:layer bottom="0" left="0.5em" right="0" height="30px">
+            <gui:CustomPager ui:field="pager"/>
+        </g:layer>
+    </g:LayoutPanel>
 </ui:UiBinder>

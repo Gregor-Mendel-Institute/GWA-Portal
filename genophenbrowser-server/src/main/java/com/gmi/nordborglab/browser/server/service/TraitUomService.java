@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,18 +20,23 @@ public interface TraitUomService {
     @PostAuthorize("hasPermission(returnObject,'READ')")
     TraitUom findPhenotype(Long id);
 
-    @PreAuthorize("hasRole('ROLE_USER') and (#trait.id != null and (hasPermission(#trait,'EDIT') or hasPermission(#trait,'ADMINISTRATION')))")
-    TraitUom save(TraitUom trait);
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#traitUom,'EDIT') or hasPermission(#traitUom,'ADMINISTRATION'))")
+    TraitUom save(TraitUom traitUom);
+
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#traitUom,'EDIT') or hasPermission(#traitUom,'ADMINISTRATION'))")
+    void delete(TraitUom traitUom);
+
 
     List<TraitUom> findPhenotypesByPassportId(Long passportId);
 
-    TraitUomPage findAll(String name, String experiment, String ontology, String protocol, int start, int size);
+    TraitUomPage findAll(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
 
     List<TraitUom> findPhenotypesByExperimentAndAcl(Long id, int permission);
 
-    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#experimentId,'com.gmi.nordborglab.browser.server.domain.observation.Experiment','EDIT') or hasPermission(#experimentId,'com.gmi.nordborglab.browser.server.domain.observation.Experiment','ADMINISTRATION')")
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#experimentId,'com.gmi.nordborglab.browser.server.domain.observation.Experiment','EDIT') or hasPermission(#experimentId,'com.gmi.nordborglab.browser.server.domain.observation.Experiment','ADMINISTRATION'))")
     Long savePhenotypeUploadData(Long experimentId, PhenotypeUploadData data);
 
     @PostFilter("hasPermission(filterObject,'READ')")
     List<TraitUom> findAllByOntology(String type, String acc, boolean checkChilds);
+
 }

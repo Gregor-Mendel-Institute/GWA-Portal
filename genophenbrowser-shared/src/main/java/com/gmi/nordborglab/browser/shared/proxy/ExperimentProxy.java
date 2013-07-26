@@ -5,6 +5,7 @@ import com.google.web.bindery.requestfactory.shared.ProxyForName;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -37,4 +38,10 @@ public interface ExperimentProxy extends SecureEntityProxy {
     int getNumberOfPhenotypes();
 
     Set<PublicationProxy> getPublications();
+
+    Date getCreated();
+
+    Date getModified();
+
+    Date getPublished();
 }

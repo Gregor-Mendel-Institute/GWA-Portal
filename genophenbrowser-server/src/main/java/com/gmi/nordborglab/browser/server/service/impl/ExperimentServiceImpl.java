@@ -1,17 +1,43 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import com.gmi.nordborglab.browser.server.data.es.ESFacet;
+import com.gmi.nordborglab.browser.server.data.es.ESTermsFacet;
 import com.gmi.nordborglab.browser.server.domain.pages.PublicationPage;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
-import com.gmi.nordborglab.browser.server.security.AclManager;
-import com.gmi.nordborglab.browser.server.security.CustomPermission;
+import com.gmi.nordborglab.browser.server.security.*;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentFactory.*;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.facet.FacetBuilder;
+import org.elasticsearch.search.facet.FacetBuilders;
+import org.elasticsearch.search.facet.Facets;
+import org.elasticsearch.search.facet.filter.FilterFacet;
+import org.elasticsearch.search.facet.terms.TermsFacet;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -33,11 +59,11 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.pages.ExperimentPage;
 import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
-import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
-import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.ExperimentService;
 import com.gmi.nordborglab.browser.server.service.TraitUomService;
 import sun.nio.cs.Surrogate;
+
+import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
 @Service
 @Validated
@@ -60,6 +86,16 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
     @Resource
     private RoleHierarchy roleHierarchy;
 
+    @Resource
+    private Client client;
+
+    @Resource
+    private EsAclManager esAclManager;
+
+    @Resource
+    PermissionFactory permissionFactory;
+
+
     @Transactional(readOnly = false)
     @Override
     public Experiment save(@Valid Experiment experiment) {
@@ -73,27 +109,165 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
             aclManager.addPermission(experiment, new PrincipalSid(SecurityUtil.getUsername()),
                     permission, null);
             aclManager.addPermission(experiment, new GrantedAuthoritySid("ROLE_ADMIN"), permission, null);
+            indexExperiment(experiment);
         }
         experiment = aclManager.setPermissionAndOwner(experiment);
         return experiment;
     }
 
+    @Override
+    @Transactional(readOnly = false)
+    public void delete(Experiment experiment) {
+        Long experimentId = experiment.getId();
+        aclManager.setPermissionAndOwner(experiment);
+        //check not public
+        if (experiment.isPublic()) {
+            throw new RuntimeException("Public studies can't be deleted");
+        }
+        List<TraitUom> traitUoms = traitUomService.findPhenotypesByPassportId(experiment.getId());
+        for (TraitUom traitUom : traitUoms) {
+            traitUomService.delete(traitUom);
+        }
+        experimentRepository.delete(experiment);
+        aclManager.deletePermissions(experiment, true);
+        deleteFromIndex(experimentId);
+    }
+
+    private void deleteFromIndex(Long experimentId) {
+
+    }
+
+    private void indexExperiment(Experiment experiment) {
+        try {
+            XContentBuilder builder = XContentFactory.jsonBuilder();
+
+            builder.startObject()
+                    .field("name", experiment.getName())
+                    .field("published", experiment.getPublished())
+                    .field("originator", experiment.getOriginator())
+                    .field("comments", experiment.getComments())
+                    .field("modified", experiment.getModified())
+                    .field("created", experiment.getCreated());
+            if (experiment.getPublications() != null && experiment.getPublications().size() > 0) {
+                builder.startArray("publication");
+                for (Publication publication : experiment.getPublications()) {
+                    getPublicationIndexBuilder(builder, publication);
+                }
+                builder.endArray();
+            }
+            esAclManager.addACLAndOwnerContent(builder, aclManager.getAcl(experiment));
+            builder.endObject();
+            String test = builder.string();
+
+            IndexRequestBuilder request = client.prepareIndex(esAclManager.getIndex(), "experiment", experiment.getId().toString())
+                    .setSource(builder);
+
+            request.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private XContentBuilder getPublicationIndexBuilder(XContentBuilder builder, Publication publication) {
+        try {
+            builder.startObject()
+                    .field("journal", publication.getJournal())
+                    .field("author", publication.getFirstAuthor())
+                    .field("title", publication.getTitle())
+                    .field("page", publication.getPage())
+                    .field("pubdate", publication.getPubDate())
+                    .field("issue", publication.getIssue())
+                    .field("volune", publication.getVolume())
+                    .field("url", publication.getURL())
+                    .field("doi", publication.getURL())
+                    .endObject();
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return builder;
+    }
+
 
     @Override
-    public ExperimentPage findByAcl(int start, int size) {
-        List<String> authorities = SecurityUtil.getAuthorities(roleHierarchy);
-        PageRequest pageRequest = new PageRequest(start / size, size);
-        Page<Experiment> page = experimentRepository.findByAcl(authorities,
-                CustomPermission.READ.getMask(), pageRequest);
-        return new ExperimentPage(page.getContent(), pageRequest,
-                page.getTotalElements());
+    public ExperimentPage findByAclAndFilter(ConstEnums.TABLE_FILTER filter, String searchString, int page, int size) {
+        SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
+        request.setSize(size).setFrom(page).setTypes("experiment").setNoFields();
+
+        if (searchString != null && !searchString.equalsIgnoreCase("")) {
+            request.setQuery(multiMatchQuery(searchString, "name^3.5", "name.partial^1.5", "originator", "design", "comments^0.5"));
+        }
+        FilterBuilder searchFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, false);
+        FilterBuilder privateFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), true, false);
+        FilterBuilder publicFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, true);
+
+        // set facets
+        request.addFacet(FacetBuilders.filterFacet(ConstEnums.TABLE_FILTER.ALL.name()).filter(searchFilter));
+        request.addFacet(FacetBuilders.filterFacet(ConstEnums.TABLE_FILTER.PRIVATE.name()).filter(privateFilter));
+        request.addFacet(FacetBuilders.filterFacet(ConstEnums.TABLE_FILTER.PUBLISHED.name()).filter(publicFilter));
+
+        switch (filter) {
+            case PRIVATE:
+                searchFilter = privateFilter;
+                break;
+            case PUBLISHED:
+                searchFilter = publicFilter;
+                break;
+            case RECENT:
+                request.addSort("modified", SortOrder.DESC);
+                break;
+            default:
+                if (searchString == null || searchString.isEmpty())
+                    request.addSort("name", SortOrder.ASC);
+        }
+        // set filter
+        request.setFilter(searchFilter);
+
+        SearchResponse response = request.execute().actionGet();
+        List<Long> idsToFetch = Lists.newArrayList();
+        for (SearchHit hit : response.getHits()) {
+            idsToFetch.add(Long.parseLong(hit.getId()));
+        }
+        List<Experiment> experiments = Lists.newArrayList();
+        //Neded because ids are not sorted
+        Map<Long, Experiment> id2Map = Maps.uniqueIndex(experimentRepository.findAll(idsToFetch), new Function<Experiment, Long>() {
+            @Nullable
+            @Override
+            public Long apply(@Nullable Experiment experiment) {
+                return experiment.getId();
+            }
+        });
+        for (Long id : idsToFetch) {
+            if (id2Map.containsKey(id)) {
+                experiments.add(id2Map.get(id));
+            }
+        }
+
+        //extract facets
+        Facets searchFacets = response.getFacets();
+        List<ESFacet> facets = Lists.newArrayList();
+
+        FilterFacet filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.TABLE_FILTER.ALL.name());
+        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.ALL.name(), 0, filterFacet.getCount(), 0, null));
+        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.RECENT.name(), 0, filterFacet.getCount(), 0, null));
+
+        filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.TABLE_FILTER.PRIVATE.name());
+        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.PRIVATE.name(), 0, filterFacet.getCount(), 0, null));
+
+        // get annotation
+        filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.TABLE_FILTER.PUBLISHED.name());
+        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.PUBLISHED.name(), 0, filterFacet.getCount(), 0, null));
+
+        aclManager.setPermissionAndOwners(experiments);
+        return new ExperimentPage(experiments, new PageRequest(page, size), response.getHits().getTotalHits(), facets);
     }
+
 
     @Override
     public List<Experiment> findAllByAcl(Integer permission) {
         List<String> authorities = SecurityUtil.getAuthorities(roleHierarchy);
-        List<Experiment> experiments = experimentRepository.findAllByAcl(authorities,
-                permission);
+        List<Experiment> experiments = experimentRepository.findAll();
+        experiments = aclManager.filterByAcl(experiments, Lists.newArrayList(permissionFactory.buildFromMask(permission))).toList();
         for (Experiment experiment : experiments) {
             experiment.setNumberOfPhenotypes(traitUomService.countPhenotypeByExperimentCount(experiment.getId()));
         }

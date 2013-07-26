@@ -1,17 +1,23 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
+import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
+import com.gmi.nordborglab.browser.client.ui.cells.LabelTypeCell;
 import com.gmi.nordborglab.browser.client.ui.cells.ProgressBarCell;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
+import com.google.common.collect.ImmutableMap;
 import com.google.gwt.cell.client.*;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.*;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
@@ -143,7 +149,13 @@ public interface StudyListDataGridColumns {
 
         @Override
         public Cell<String> getCell() {
-            return new StatusTextCell();
+            return new LabelTypeCell(
+                    ImmutableMap.<String, LabelType>builder()
+                            .put("Finished", LabelType.SUCCESS)
+                            .put("Running", LabelType.WARNING)
+                            .put("Queued", LabelType.IMPORTANT)
+                            .put("Error", LabelType.IMPORTANT).build()
+            );
         }
 
         @Override
@@ -156,37 +168,10 @@ public interface StudyListDataGridColumns {
             if (object != null) {
                 return object.getStatus();
             }
-            return null;
+            return "N/A";
         }
     }
 
-    public static class StatusTextCell extends AbstractCell<String> {
-
-        public interface Template extends SafeHtmlTemplates {
-            @Template("<div class=\"label {0}\">{1}</div>")
-            SafeHtml statustext(String cssClass, String label);
-        }
-
-        private static Template template = GWT.create(Template.class);
-
-        @Override
-        public void render(Context context, String value, SafeHtmlBuilder sb) {
-            String className = "";
-            if (value == null || value.equals("")) {
-                value = "N/A";
-            }
-            if (value.equalsIgnoreCase("Finished")) {
-                className = LabelType.SUCCESS.get();
-            } else if (value.equalsIgnoreCase("Running")) {
-                className = LabelType.WARNING.get();
-            } else if (value.equalsIgnoreCase("Queued")) {
-                className = LabelType.IMPORTANT.get();
-            } else if (value.equalsIgnoreCase("Error")) {
-                className = LabelType.IMPORTANT.get();
-            }
-            sb.append(template.statustext(className, value));
-        }
-    }
 
     public static class StatusCompositeCell extends CompositeCell<StudyJobProxy> {
 
@@ -216,6 +201,62 @@ public interface StudyListDataGridColumns {
         @Override
         public StudyJobProxy getValue(StudyProxy object) {
             return object.getJob();
+        }
+    }
+
+    public class TitleColumn extends IdentityColumn<StudyProxy> {
+        public TitleColumn(PlaceManager placeManager, PlaceRequest request) {
+            super(new TitleCell(request, placeManager));
+        }
+    }
+
+    public static class TitleCell extends AbstractCell<StudyProxy> {
+
+        interface Template extends SafeHtmlTemplates {
+
+            @SafeHtmlTemplates.Template("<div style=\"font-size:110%;\"><a href=\"{0}\">{1}</a></div><div style=\"font-size:90%;color:#777;\">{2}</div>")
+            SafeHtml cell(SafeUri link, SafeHtml name, SafeHtml subTitle);
+
+        }
+
+        private static Template templates = GWT.create(Template.class);
+
+        private final PlaceManager placeManager;
+        private PlaceRequest placeRequest;
+
+        public TitleCell(PlaceRequest placeRequest, PlaceManager placeManager) {
+            super();
+            this.placeManager = placeManager;
+            this.placeRequest = placeRequest;
+        }
+
+        @Override
+        public void render(Context context, StudyProxy value, SafeHtmlBuilder sb) {
+            if (value == null)
+                return;
+            placeRequest.with("id", value.getId().toString());
+            SafeUri link = UriUtils.fromTrustedString("#" + placeManager.buildHistoryToken(placeRequest));
+            SafeHtml name = SafeHtmlUtils.fromString(value.getName());
+            SafeHtmlBuilder builder = new SafeHtmlBuilder();
+            builder
+                    .append(SafeHtmlUtils.fromSafeConstant("created on "))
+                    .append(SafeHtmlUtils.fromString(DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_SHORT).format(value.getCreated())))
+                    .append(SafeHtmlUtils.fromSafeConstant(" by "))
+                    .append(SafeHtmlUtils.fromString(getCreator(value.getOwnerUser())));
+            sb.append(templates.cell(link, name, builder.toSafeHtml()));
+        }
+
+        private static String getCreator(AppUserProxy user) {
+            if (user == null)
+                return "";
+            StringBuilder builder = new StringBuilder();
+            if (user.getFirstname() != "")
+                builder.append(user.getFirstname());
+            builder.append(" ");
+            if (user.getLastname() != null)
+                builder.append(user.getLastname());
+            return builder.toString();
+
         }
     }
 

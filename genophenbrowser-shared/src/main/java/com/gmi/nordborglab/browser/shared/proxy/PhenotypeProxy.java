@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.shared.proxy;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,4 +57,9 @@ public interface PhenotypeProxy extends SecureEntityProxy {
 
     ExperimentProxy getExperiment();
 
+    Date getCreated();
+
+    Date getPublished();
+
+    Date getModified();
 }

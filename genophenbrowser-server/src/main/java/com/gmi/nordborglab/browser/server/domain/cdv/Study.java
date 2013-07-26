@@ -20,7 +20,7 @@ import com.google.common.collect.Iterables;
 @SequenceGenerator(name = "idSequence", sequenceName = "cdv.cdv_g2p_study_cdv_g2p_study_id_seq")
 public class Study extends SecureEntity {
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "studies")
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "studies")
     private Set<Trait> traits = new HashSet<Trait>();
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -35,7 +35,7 @@ public class Study extends SecureEntity {
     @JoinColumn(name = "cdv_phen_transformation_id", nullable = false)
     private Transformation transformation;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "study")
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "study")
     private StudyJob job;
 
     private String name;
@@ -43,6 +43,13 @@ public class Study extends SecureEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date study_date = new Date();
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created = new Date();
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date published;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modified = new Date();
 
 
     @Transient
@@ -162,5 +169,17 @@ public class Study extends SecureEntity {
     public void setJob(StudyJob job) {
         this.job = job;
         job.setStudy(this);
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public Date getPublished() {
+        return published;
+    }
+
+    public Date getModified() {
+        return modified;
     }
 }

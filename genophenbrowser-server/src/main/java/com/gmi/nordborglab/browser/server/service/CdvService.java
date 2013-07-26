@@ -4,6 +4,7 @@ import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -23,7 +24,7 @@ public interface CdvService {
     @PostFilter("hasPermission(filterObject,'READ')")
     public List<Study> findStudiesByPassportId(Long passportId);
 
-    public StudyPage findAll(String name, String phenotype, String experiment, Long alleleAssayId, Long stduyProtocolId, int start, int size);
+    public StudyPage findAll(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
 
     @PreAuthorize("hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
     public List<Trait> findTraitValues(Long studyId);
@@ -33,4 +34,6 @@ public interface CdvService {
     @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','EDIT') or hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','ADMINISTRATION'))")
     public Study createStudyJob(Long studyId);
 
+    @PreAuthorize("hasRole('ROLE_USER') and (#study.id == null or hasPermission(#study,'EDIT') or hasPermission(#study,'ADMINISTRATION'))")
+    public void delete(Study study);
 }
