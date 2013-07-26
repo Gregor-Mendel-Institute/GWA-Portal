@@ -266,7 +266,7 @@
                     <g:HTMLPanel>
                         <div>
                             <b:ControlGroup ui:field="studyNameGroup">
-                                <b:ControlLabel>Analaysis name</b:ControlLabel>
+                                <b:ControlLabel>Analysis name</b:ControlLabel>
                                 <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT">
                                     <b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="studyNameTb"/>
                                 </b:Tooltip>
