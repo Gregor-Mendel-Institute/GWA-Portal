@@ -148,7 +148,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     private final PhenotypeDriver driver;
     private boolean multipleUpload = false;
     private Map<File, Boolean> filesToUpload = Maps.newLinkedHashMap();
-    private static List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel");
+    private static List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
     private BiMap<File, Element> filesToRow = HashBiMap.create();
     private List<String> headerColumns = ImmutableList.of("accessionid", "MEAN", "MEASURE", "STD", "MODE", "COUNT", "VARIANCE", "MEDIAN");
     private File file = null;

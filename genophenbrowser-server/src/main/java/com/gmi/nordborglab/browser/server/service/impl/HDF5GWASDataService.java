@@ -82,7 +82,7 @@ public class HDF5GWASDataService implements GWASDataService {
 
     protected GWASReader gwasReader;
 
-    private static List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel");
+    private static List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
 
     @Override
     public GWASData getGWASDataByStudyId(Long studyId) {
