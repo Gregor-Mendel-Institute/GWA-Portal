@@ -9,7 +9,14 @@ import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.errai.ClientComService;
 import com.gmi.nordborglab.browser.server.repository.StudyJobRepository;
 import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
+import com.gmi.nordborglab.browser.server.security.EsAclManager;
+import com.gmi.nordborglab.browser.server.service.impl.SearchServiceImpl;
 import com.google.common.collect.Lists;
+import org.elasticsearch.action.count.CountRequestBuilder;
+import org.elasticsearch.action.count.CountResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
@@ -45,7 +52,13 @@ public class SubmitAnalysisTask {
     private UserNotificationRepository userNotificationRepository;
 
     @Resource
+    private Client client;
+
+    @Resource
     private AmqpTemplate amqpTemplate;
+
+    @Resource
+    private EsAclManager esAclManager;
 
     @Value("${AMQP.celery.exchange}")
     private String CELERY_EXCHANGE;
@@ -84,6 +97,31 @@ public class SubmitAnalysisTask {
         } catch (Exception e) {
             //TODO send an email.
             String test = "test";
+        }
+    }
+
+    @Scheduled(cron = "* 0 0  * * *")
+    @Transactional(readOnly = true)
+    public synchronized void checkMetaAnalysis() {
+        try {
+            List<StudyJob> studyJobs = studyJobRepository.findByStatusInAndTaskidIsNull("Finished");
+            for (StudyJob studyJob : studyJobs) {
+                checkAndSubmitMetaAnalysis(studyJob);
+            }
+        } catch (Exception e) {
+            //TODO send an email.
+            String test = "test";
+        }
+    }
+
+    private void checkAndSubmitMetaAnalysis(StudyJob job) {
+        if (!job.getStatus().equalsIgnoreCase("Finished"))
+            return;
+        CountRequestBuilder request = client.prepareCount(esAclManager.getIndex())
+                .setTypes("meta_analysis_snps").setQuery(QueryBuilders.termQuery("studyid", job.getStudy().getId()));
+        CountResponse response = request.execute().actionGet();
+        if (response.getCount() == 0) {
+            submitAnalysisForTopSNPs(job.getStudy());
         }
     }
 
