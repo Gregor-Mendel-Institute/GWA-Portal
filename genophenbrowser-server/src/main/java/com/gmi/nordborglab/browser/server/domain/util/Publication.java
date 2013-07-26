@@ -19,10 +19,10 @@ import java.util.Set;
  */
 
 @Entity
-@Table(name="publications",schema="util")
-@AttributeOverride(name="id", column=@Column(name="id"))
-@SequenceGenerator(name="idSequence", sequenceName="util.publications_id_seq")
-public class Publication extends BaseEntity{
+@Table(name = "publications", schema = "util")
+@AttributeOverride(name = "id", column = @Column(name = "id"))
+@SequenceGenerator(name = "idSequence", sequenceName = "util.publications_id_seq")
+public class Publication extends BaseEntity {
 
     private String doi;
     private String volume;
@@ -32,10 +32,13 @@ public class Publication extends BaseEntity{
     private String issue;
     private String author;
     private String page;
-    private Date pubdate;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade={CascadeType.PERSIST,CascadeType.MERGE},mappedBy="publications")
-    private Set<Experiment> experiments  = new HashSet<Experiment>();
+    private Date pubdate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created = new Date();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "publications")
+    private Set<Experiment> experiments = new HashSet<Experiment>();
 
     public String getDOI() {
         return doi;
@@ -115,5 +118,9 @@ public class Publication extends BaseEntity{
 
     public void addExperiment(Experiment experiment) {
         experiments.add(experiment);
+    }
+
+    public Date getCreated() {
+        return created;
     }
 }
