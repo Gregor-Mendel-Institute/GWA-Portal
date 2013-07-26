@@ -157,7 +157,7 @@ public class AclManager {
     }
 
     public <T extends SecureEntity> FluentIterable<T> filterByAcl(List<T> entities, final List<Permission> permissions) {
-        return filterByAcl(entities, ImmutableList.of(CustomPermission.READ), SecurityUtil.getSids(roleHierarchy));
+        return filterByAcl(entities, permissions, SecurityUtil.getSids(roleHierarchy));
     }
 
 
