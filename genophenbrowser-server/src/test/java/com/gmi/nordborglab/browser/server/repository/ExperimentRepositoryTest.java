@@ -20,104 +20,51 @@ import org.springframework.security.acls.domain.BasePermission;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 
-public class ExperimentRepositoryTest extends BaseTest{
-	
-	@Resource
-	protected ExperimentRepository repository;
-	
+public class ExperimentRepositoryTest extends BaseTest {
 
-	@Test
-	public void testFindById() {
-		Experiment actual = repository.findOne(1L);
-		assertNotNull("did not find expected entity", actual);
-		assertEquals((double)1L, (double)actual.getId(),0L);
-	}
-	
-	@Test
-	public void testDeleteById() {
-		repository.delete(1L);
-		Experiment deleted = repository.findOne(1L);
-		assertNull("delete did not work", deleted);
-	}
-	
-	@Test
-	public void testCreate() {
-		Experiment created = new Experiment();
-		created.setName("test");
-		Experiment actual = repository.save(created);
-		assertNotNull("create did not work",actual);
-		assertNotNull("couldn't generate id",actual.getId());
-		assertEquals("Common name is correct", "test",actual.getName());
-	}
+    @Resource
+    protected ExperimentRepository repository;
+
+
+    @Test
+    public void testFindById() {
+        Experiment actual = repository.findOne(1L);
+        assertNotNull("did not find expected entity", actual);
+        assertEquals((double) 1L, (double) actual.getId(), 0L);
+    }
+
+    @Test
+    public void testDeleteById() {
+        repository.delete(1L);
+        Experiment deleted = repository.findOne(1L);
+        assertNull("delete did not work", deleted);
+    }
+
+    @Test
+    public void testCreate() {
+        Experiment created = new Experiment();
+        created.setName("test");
+        Experiment actual = repository.save(created);
+        assertNotNull("create did not work", actual);
+        assertNotNull("couldn't generate id", actual.getId());
+        assertEquals("Common name is correct", "test", actual.getName());
+    }
 
     @Test(expected = ConstraintViolationException.class)
     public void testCreateConstraintViolation() {
         Experiment created = new Experiment();
         created.setName("");
         Experiment actual = repository.save(created);
-        String test="test";
+        String test = "test";
     }
-	
-	@Test
-	public void findByAdministrator() {
-		List<String> permissions = new ArrayList<String>();
-		permissions.add("ROLE_ADMIN");
-		permissions.add("ROLE_USER");
-		permissions.add("ROLE_ANONYMOUS");
-		Page<Experiment> page = repository.findByAcl(permissions,CustomPermission.READ.getMask(),new PageRequest(0, 5));
-		assertNotNull(page);
-		assertEquals(14, page.getTotalElements());
-		assertEquals(5,page.getContent().size());
-		assertEquals(0,page.getNumber());
-		assertEquals(5,page.getNumberOfElements());
-	}
-	
-	@Ignore
-	@Test
-	public void findByUserRole() {
-		List<String> permissions = new ArrayList<String>();
-		permissions.add("ROLE_USER");
-		permissions.add("ROLE_ANONYMOUS");
-		Page<Experiment> page = repository.findByAcl(permissions,CustomPermission.READ.getMask(),new PageRequest(0, 5));
-		assertNotNull(page);
-		assertEquals(2, page.getTotalElements());
-		assertEquals(2,page.getContent().size());
-		assertEquals(0,page.getNumber());
-		assertEquals(2,page.getNumberOfElements());
-		assertEquals(1, page.getContent().get(0).getId().intValue());
-		assertEquals(2, page.getContent().get(1).getId().intValue());
-	}
-	
-	@Ignore
-	@Test
-	public void findByAnonymousUser() {
-		List<String> permissions = new ArrayList<String>();
-		permissions.add("ROLE_ANONYMOUS");
-		Page<Experiment> page = repository.findByAcl(permissions,CustomPermission.READ.getMask(),new PageRequest(0, 5));
-		assertNotNull(page);
-		assertEquals(1, page.getTotalElements());
-		assertEquals(1,page.getContent().size());
-		assertEquals(0,page.getNumber());
-		assertEquals(1,page.getNumberOfElements());
-		assertEquals(3, page.getContent().get(0).getId().intValue());
-	}
-	
-	@Test
-	public void findExperimentByPhenotypeId() {
-		Experiment experiment = repository.findByPhenotypeId(1L);
-		assertNotNull(experiment);
-		assertEquals(new Long(1L),experiment.getId());
-	}
+
 
     @Test
-    public void findAllByAcl() {
-        List<String> permissions = new ArrayList<String>();
-        permissions.add("ROLE_ADMIN");
-        permissions.add("ROLE_USER");
-        permissions.add("ROLE_ANONYMOUS");
-        long count = repository.findAll().size();
-        long foundCount = repository.findAllByAcl(permissions, CustomPermission.EDIT.getMask()).size();
-        assertEquals(count,foundCount);
+    public void findExperimentByPhenotypeId() {
+        Experiment experiment = repository.findByPhenotypeId(1L);
+        assertNotNull(experiment);
+        assertEquals(new Long(1L), experiment.getId());
     }
+
 
 }

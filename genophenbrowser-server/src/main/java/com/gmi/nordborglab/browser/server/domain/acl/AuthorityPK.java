@@ -18,6 +18,8 @@ public class AuthorityPK implements Serializable {
 
     @Column(name = "user_id")
     private Long userId;
+
+    @Column(nullable = false, updatable = false)
     private String authority;
 
     public AuthorityPK() {

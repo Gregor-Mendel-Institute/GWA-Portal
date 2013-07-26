@@ -11,4 +11,6 @@ public interface AclSidRepository extends JpaRepository<AclSid, Long> {
     AclSid findBySid(String sid);
 
     List<AclSid> findAllBySidIn(Iterable<String> sids);
+
+    AclSid findAllBySid(String sid);
 }

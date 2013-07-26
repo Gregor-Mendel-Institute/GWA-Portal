@@ -1,11 +1,6 @@
 package com.gmi.nordborglab.browser.server.domain.acl;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(schema = "acl", name = "authorities")
@@ -16,9 +11,8 @@ public class Authority {
     private AuthorityPK id;
 
 
-    @MapsId("id")
-    @JoinColumn(name = "user_id")
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @MapsId("userId")
     private AppUser user;
 
 

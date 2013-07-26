@@ -3,18 +3,18 @@ package com.gmi.nordborglab.browser.server.domain.acl;
 import javax.persistence.*;
 
 @Entity
-@Table(name="acl_sid", schema="acl")
+@Table(name = "acl_sid", schema = "acl")
 @SequenceGenerator(name = "idSequence", sequenceName = "acl.acl_sid_id_seq")
 public class AclSid {
 
-	@Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="idSequence")
-	@Column(unique=true,nullable=false)
-	private Long id;
-	
-	private boolean principal;
-	@Column(unique=true)
-	private String sid;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idSequence")
+    @Column(unique = true, nullable = false)
+    private Long id;
+
+    private boolean principal;
+    @Column(unique = true)
+    private String sid;
 
     public AclSid() {
 
@@ -26,16 +26,16 @@ public class AclSid {
     }
 
     public Long getId() {
-		return id;
-	}
-	
-	public String getSid() {
-		return sid;
-	}
-	
-	public boolean getPrincipal() {
-		return principal;
-	}
-	
-	 
+        return id;
+    }
+
+    public String getSid() {
+        return sid;
+    }
+
+    public boolean getPrincipal() {
+        return principal;
+    }
+
+
 }
