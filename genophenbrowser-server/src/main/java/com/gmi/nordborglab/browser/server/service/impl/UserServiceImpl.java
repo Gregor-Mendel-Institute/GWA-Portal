@@ -52,12 +52,13 @@ public class UserServiceImpl implements UserService {
             appUser.setFirstname(registration.getFirstname());
             appUser.setLastname(registration.getLastname());
             appUser.setOpenidUser(false);
-            appUser.setPassword(encoder.encodePassword(registration.getPassword(), null));
             List<Authority> authorities = new ArrayList<Authority>();
             Authority authority = new Authority();
             authority.setAuthority(SecurityUtil.DEFAULT_AUTHORITY);
             authorities.add(authority);
-            appUser.setAuthorities(authorities);
+            appUser.setPassword("TEMPORARY");
+            userRepository.save(appUser);
+            appUser.setPassword(encoder.encodePassword(registration.getPassword(), appUser.getId().toString()));
             userRepository.save(appUser);
             //FIXME workaround because exception is thrown when AclSid doesnt exist and first time permission is added
             AclSid aclSid = new AclSid(true, appUser.getId().toString());
