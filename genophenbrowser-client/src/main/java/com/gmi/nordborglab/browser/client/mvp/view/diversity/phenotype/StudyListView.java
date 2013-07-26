@@ -28,70 +28,75 @@ import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import java.util.List;
 
 public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> implements
-		StudyListPresenter.MyView {
+        StudyListPresenter.MyView {
 
-	private final Widget widget;
+    private final Widget widget;
 
-	public interface Binder extends UiBinder<Widget, StudyListView> {
-	}
-	
-	public static ProvidesKey<StudyProxy> KEY_PROVIDER = new ProvidesKey<StudyProxy>() {
-		@Override
-		public Object getKey(StudyProxy item) {
-			if (item != null && item.getId() != null) {
-				return item.getId();
-			}
-			return null;
-		}
-	};
-	
-	@UiField(provided=true) DataGrid<StudyProxy> dataGrid;
-	@UiField CustomPager pager;
-	@UiField Button newStudyBtn;
-	
-	protected final PlaceManager placeManger;
+    public interface Binder extends UiBinder<Widget, StudyListView> {
+    }
 
-	@Inject
-	public StudyListView(final Binder binder, final PlaceManager placeManager, final CustomDataGridResources dataGridResources) {
-		this.placeManger = placeManager;
-		dataGrid = new DataGrid<StudyProxy>(20,dataGridResources,KEY_PROVIDER);
-		initCellTable();
-		widget = binder.createAndBindUi(this);
-	    pager.setDisplay(dataGrid);
-	}
+    public static ProvidesKey<StudyProxy> KEY_PROVIDER = new ProvidesKey<StudyProxy>() {
+        @Override
+        public Object getKey(StudyProxy item) {
+            if (item != null && item.getId() != null) {
+                return item.getId();
+            }
+            return null;
+        }
+    };
 
-	@Override
-	public Widget asWidget() {
-		return widget;
-	}
+    @UiField(provided = true)
+    DataGrid<StudyProxy> dataGrid;
+    @UiField
+    CustomPager pager;
+    @UiField
+    Button newStudyBtn;
 
-	@Override
-	public HasData<StudyProxy> getDisplay() {
-		return dataGrid;
-	}
-	
-	private void initCellTable() {
-		PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.study);
-		dataGrid.setEmptyTableWidget(new Label("No Records found"));
-		dataGrid.addColumn(new StudyListDataGridColumns.NameColumn(placeManger,request),"Name");
-		dataGrid.addColumn(new StudyListDataGridColumns.ProducerColumn(),"Producer");
-		dataGrid.addColumn(new StudyListDataGridColumns.ProtocolColumn(),"Protocol");
-		dataGrid.addColumn(new StudyListDataGridColumns.AlleleAssayColumn(),"Genotype");
-		dataGrid.addColumn(new StudyListDataGridColumns.StudyDateColumn(),"Study date");
-        List<HasCell<StudyJobProxy,?>> cells = Lists.newArrayList();
+    protected final PlaceManager placeManger;
+
+    @Inject
+    public StudyListView(final Binder binder, final PlaceManager placeManager, final CustomDataGridResources dataGridResources) {
+        this.placeManger = placeManager;
+        dataGrid = new DataGrid<StudyProxy>(20, dataGridResources, KEY_PROVIDER);
+        initCellTable();
+        widget = binder.createAndBindUi(this);
+        pager.setDisplay(dataGrid);
+    }
+
+    @Override
+    public Widget asWidget() {
+        return widget;
+    }
+
+    @Override
+    public HasData<StudyProxy> getDisplay() {
+        return dataGrid;
+    }
+
+    private void initCellTable() {
+        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.study);
+        dataGrid.setEmptyTableWidget(new Label("No Records found"));
+        dataGrid.addColumn(new StudyListDataGridColumns.NameColumn(placeManger, request), "Name");
+        dataGrid.addColumn(new StudyListDataGridColumns.ProducerColumn(), "Producer");
+        dataGrid.addColumn(new StudyListDataGridColumns.ProtocolColumn(), "Protocol");
+        dataGrid.addColumn(new StudyListDataGridColumns.AlleleAssayColumn(), "Genotype");
+        dataGrid.addColumn(new StudyListDataGridColumns.StudyDateColumn(), "Study date");
+        List<HasCell<StudyJobProxy, ?>> cells = Lists.newArrayList();
         cells.add(new StudyListDataGridColumns.StatusCell());
         cells.add(new StudyListDataGridColumns.ProgressCell());
-        dataGrid.addColumn(new StudyListDataGridColumns.StatusColumn(cells),"Status");
-	}
+        dataGrid.addColumn(new StudyListDataGridColumns.StatusColumn(cells), "Status");
+    }
 
-	@UiHandler("newStudyBtn")
-	public void onNewStudy(ClickEvent e) {
-		getUiHandlers().onNewStudy();
-	}
+    @UiHandler("newStudyBtn")
+    public void onNewStudy(ClickEvent e) {
+        getUiHandlers().onNewStudy();
+    }
 
-	@Override
-	public void showAddBtn(boolean showAdd) {
-		newStudyBtn.setVisible(showAdd);		
-	}
-	
+    @Override
+    public void showAddBtn(boolean showAdd) {
+        // TODO fix this
+        newStudyBtn.setVisible(false);
+        //newStudyBtn.setVisible(showAdd);
+    }
+
 }
