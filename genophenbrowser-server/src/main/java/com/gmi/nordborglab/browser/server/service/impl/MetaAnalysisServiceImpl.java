@@ -8,22 +8,22 @@ import com.gmi.nordborglab.browser.server.domain.meta.MetaAnalysisTopResultsCrit
 import com.gmi.nordborglab.browser.server.domain.meta.MetaSNPAnalysis;
 import com.gmi.nordborglab.browser.server.domain.pages.MetaSNPAnalysisPage;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
+import com.gmi.nordborglab.browser.server.security.EsAclManager;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.lucene.queryparser.xml.builders.RangeFilterBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.Facets;
+import org.elasticsearch.search.facet.range.RangeFacet;
 import org.elasticsearch.search.facet.terms.TermsFacet;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.PageRequest;
@@ -57,11 +57,14 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
     @Resource
     protected AnnotationDataService annotationDataService;
 
+    @Resource
+    protected EsAclManager esAclManager;
+
     @Override
     public List<MetaSNPAnalysis> findAllAnalysisForRegion(int start, int end, String chr) {
         List<MetaSNPAnalysis> metaSNPAnalysises = Lists.newArrayList();
         // GET all studyids
-        SearchRequestBuilder builder = client.prepareSearch(SearchServiceImpl.INDEX_NAME);
+        SearchRequestBuilder builder = client.prepareSearch(esAclManager.getIndex());
         FilterBuilder filter = FilterBuilders.hasChildFilter("meta_analysis_snps", FilterBuilders.boolFilter().
                 must(
                         FilterBuilders.numericRangeFilter("position").from(start).to(end),
@@ -92,7 +95,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
 
 
         // GET  all SNPs
-        builder = client.prepareSearch(SearchServiceImpl.INDEX_NAME);
+        builder = client.prepareSearch(esAclManager.getIndex());
         filter = FilterBuilders.
                 boolFilter().
                 must(
@@ -105,32 +108,44 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                         }).toArray(new String[]{})))
                         , FilterBuilders.numericRangeFilter("position").from(start).to(end),
                         FilterBuilders.termFilter("chr", chr));
-        builder.addSort("score", SortOrder.DESC).addFields("position", "macs", "mafs", "score", "overFDR", "studyid", "gene", "annotation", "inGene").setTypes("meta_analysis_snps").setQuery(QueryBuilders.constantScoreQuery(filter));
+        builder.addSort("score", SortOrder.DESC).addFields("position", "mac", "maf", "_parent", "score", "overFDR", "studyid", "gene", "annotation", "inGene").setTypes("meta_analysis_snps").setQuery(QueryBuilders.constantScoreQuery(filter));
         response = builder.execute().actionGet();
         for (SearchHit searchHit : response.getHits()) {
-            Map<String, SearchHitField> fields = searchHit.getFields();
-            Long studyId = (long) (Integer) fields.get("studyid").getValue();
-            Study study = studyCache.get(studyId);
-            SNPAnnot annot = new SNPAnnot();
-            annot.setPosition((Integer) fields.get("position").getValue());
-            annot.setChr(chr);
-            if (fields.containsKey("annotation")) {
-                annot.setAnnotation((String) fields.get("annotation").getValue());
-                annot.setInGene((Boolean) fields.get("inGene").getValue());
+            try {
+                Map<String, SearchHitField> fields = searchHit.getFields();
+                Long studyId = null;
+                if (fields.containsKey("studyid")) {
+                    studyId = (long) (Integer) fields.get("studyid").getValue();
+                } else {
+                    studyId = Long.valueOf((String) fields.get("_parent").getValue());
+                }
+                Study study = studyCache.get(studyId);
+                SNPAnnot annot = new SNPAnnot();
+                annot.setPosition((Integer) fields.get("position").getValue());
+                annot.setChr(chr);
+                if (fields.containsKey("annotation")) {
+                    annot.setAnnotation((String) fields.get("annotation").getValue());
+                    annot.setInGene((Boolean) fields.get("inGene").getValue());
+                }
+                MetaSNPAnalysis.Builder metaAnalysisBuilder = new MetaSNPAnalysis.Builder()
+                        .setAnalysisId(studyId)
+                        .setSnpAnnotation(annot)
+                        .setpValue((Double) fields.get("score").getValue())
+                        .setAnalysis(study.getName())
+                        .setPhenotype(study.getPhenotype().getLocalTraitName())
+                        .setStudy(study.getPhenotype().getExperiment().getName())
+                        .setMethod(study.getProtocol().getAnalysisMethod())
+                        .setGenotype(study.getAlleleAssay().getName())
+                        .setOverFDR((Boolean) fields.get("overFDR").getValue())
+                        .setPhenotypeId(study.getPhenotype().getId())
+                        .setStudyId(study.getPhenotype().getExperiment().getId())
+                        .setMac((Integer) fields.get("mac").getValue())
+                        .setMaf((Double) fields.get("maf").getValue());
+
+                metaSNPAnalysises.add(metaAnalysisBuilder.build());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            MetaSNPAnalysis.Builder metaAnalysisBuilder = new MetaSNPAnalysis.Builder()
-                    .setAnalysisId(studyId)
-                    .setSnpAnnotation(annot)
-                    .setpValue((Double) fields.get("score").getValue())
-                    .setAnalysis(study.getName())
-                    .setPhenotype(study.getPhenotype().getLocalTraitName())
-                    .setStudy(study.getPhenotype().getExperiment().getName())
-                    .setMethod(study.getProtocol().getAnalysisMethod())
-                    .setGenotype(study.getAlleleAssay().getName())
-                    .setOverFDR((Boolean) fields.get("overFDR").getValue())
-                    .setPhenotypeId(study.getPhenotype().getId())
-                    .setStudyId(study.getPhenotype().getExperiment().getId());
-            metaSNPAnalysises.add(metaAnalysisBuilder.build());
         }
         return metaSNPAnalysises;
     }
@@ -139,10 +154,17 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
     @Override
     public List<ESFacet> findMetaStats(MetaAnalysisTopResultsCriteria criteria) {
         List<ESFacet> facets = Lists.newArrayList();
-        SearchRequestBuilder builder = client.prepareSearch(SearchServiceImpl.INDEX_NAME);
+        //TODO acl filter
+
+        SearchRequestBuilder builder = client.prepareSearch(esAclManager.getIndex());
         builder.addFacet(FacetBuilders.termsFacet("chr").field("chr").size(5).order(TermsFacet.ComparatorType.TERM))
+                .addFacet(FacetBuilders.rangeFacet("maf").field("maf").field("maf")
+                        .addUnboundedFrom(0.01)
+                        .addRange(0.01, 0.05)
+                        .addRange(0.05, 0.1)
+                        .addUnboundedTo(0.1))
                 .addFacet(FacetBuilders.termsFacet("inGene").field("inGene").size(2))
-                .addFacet(FacetBuilders.termsFacet("overFDR").field("overFDR").size(2))
+                        //.addFacet(FacetBuilders.termsFacet("overFDR").field("overFDR").size(2))
                 .addFacet(FacetBuilders.termsFacet("annotation").field("annotation").size(5));
         FilterBuilder filter = getFilterFromCriteria(criteria);
         if (filter == null) {
@@ -153,9 +175,27 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         builder.setSize(0);
         SearchResponse response = builder.execute().actionGet();
         Facets searchFacets = response.getFacets();
+
+
+        // get maf facet
+        RangeFacet mafFacet = (RangeFacet) searchFacets.facetsAsMap().get("maf");
+        List<ESTermsFacet> terms = Lists.newArrayList();
+        for (RangeFacet.Entry rangeEntry : mafFacet) {
+            String range = "";
+            if (rangeEntry.getFrom() == Double.NEGATIVE_INFINITY) {
+                range = "< " + rangeEntry.getTo() * 100 + "%";
+            } else if (rangeEntry.getTo() == Double.POSITIVE_INFINITY) {
+                range = "> " + rangeEntry.getFrom() * 100 + "%";
+            } else {
+                range = String.format("%s - %s", rangeEntry.getFrom() * 100, rangeEntry.getTo() * 100 + "%");
+            }
+            terms.add(new ESTermsFacet(range, rangeEntry.getCount()));
+        }
+        facets.add(new ESFacet("maf", 0, 0, 0, terms));
+
         // get chr facet
         TermsFacet searchFacet = (TermsFacet) searchFacets.facetsAsMap().get("chr");
-        List<ESTermsFacet> terms = Lists.newArrayList();
+        terms = Lists.newArrayList();
         for (TermsFacet.Entry termEntry : searchFacet) {
             terms.add(new ESTermsFacet(String.format("Chr%s", termEntry.getTerm().string()), termEntry.getCount()));
         }
@@ -173,7 +213,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         }
         facets.add(new ESFacet("inGene", searchFacet.getMissingCount(), searchFacet.getTotalCount(), searchFacet.getOtherCount(), terms));
         // get overFDR
-        searchFacet = (TermsFacet) searchFacets.facetsAsMap().get("overFDR");
+       /* searchFacet = (TermsFacet) searchFacets.facetsAsMap().get("overFDR");
         terms = Lists.newArrayList();
         for (TermsFacet.Entry termEntry : searchFacet) {
             String term = "non-significant";
@@ -182,7 +222,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
             }
             terms.add(new ESTermsFacet(term, termEntry.getCount()));
         }
-        facets.add(new ESFacet("overFDR", searchFacet.getMissingCount(), searchFacet.getTotalCount(), searchFacet.getOtherCount(), terms));
+        facets.add(new ESFacet("overFDR", searchFacet.getMissingCount(), searchFacet.getTotalCount(), searchFacet.getOtherCount(), terms));*/
 
         // get annotation
         searchFacet = (TermsFacet) searchFacets.facetsAsMap().get("annotation");
@@ -196,30 +236,46 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
     }
 
     private FilterBuilder getFilterFromCriteria(MetaAnalysisTopResultsCriteria criteria) {
-        if (criteria == null || (criteria.isEmpty())) {
-            return null;
-        } else {
-            BoolFilterBuilder filter = FilterBuilders.boolFilter();
+        AndFilterBuilder filter = FilterBuilders.andFilter();
+        BoolFilterBuilder boolFilter = FilterBuilders.boolFilter();
+        boolFilter.must(FilterBuilders.hasParentFilter("study", esAclManager.getAclFilter(Lists.newArrayList("read"))));
+        filter.add(boolFilter);
+        if (criteria != null) {
             if (criteria.getChr() != null) {
-                filter.must(FilterBuilders.termFilter("chr", criteria.getChr()));
+                boolFilter.must(FilterBuilders.termFilter("chr", criteria.getChr()));
             }
             if (criteria.getAnnotation() != null) {
-                filter.must(FilterBuilders.termFilter("annotation", criteria.getAnnotation()));
+                boolFilter.must(FilterBuilders.termFilter("annotation", criteria.getAnnotation()));
             }
             if (criteria.isOverFDR() != null) {
-                filter.must(FilterBuilders.termFilter("overFDR", criteria.isOverFDR()));
+                boolFilter.must(FilterBuilders.termFilter("overFDR", criteria.isOverFDR()));
             }
             if (criteria.isInGene() != null) {
-                filter.must(FilterBuilders.termFilter("inGene", criteria.isInGene()));
+                boolFilter.must(FilterBuilders.termFilter("inGene", criteria.isInGene()));
             }
-            return filter;
+            if (criteria.getMafFrom() != null || criteria.getMafTo() != null) {
+                // use numeric because there is already a facet on it: http://elasticsearch-users.115913.n3.nabble.com/Just-Pushed-Numeric-Range-Filter-td1715331.html
+                NumericRangeFilterBuilder mafFilter = FilterBuilders.numericRangeFilter("maf");
+                if (criteria.getMafFrom() != null) {
+                    mafFilter.gte(criteria.getMafFrom());
+                }
+                if (criteria.getMafTo() != null) {
+                    mafFilter.lte(criteria.getMafTo());
+                }
+                // use and filter to combine bool and numeric_range because of performance
+                //https://groups.google.com/forum/#!msg/elasticsearch/PS12RcyNSWc/I1PX1r0RfFcJ
+                filter.add(mafFilter);
+            }
         }
+
+        return filter;
+
     }
 
     @Override
     public MetaSNPAnalysisPage findTopAnalysis(MetaAnalysisTopResultsCriteria criteria, int start, int size) {
         List<MetaSNPAnalysis> metaSNPAnalysises = Lists.newArrayList();
-        SearchRequestBuilder builder = client.prepareSearch(SearchServiceImpl.INDEX_NAME);
+        SearchRequestBuilder builder = client.prepareSearch(esAclManager.getIndex());
         /*FilterBuilder filter = FilterBuilders.
                 boolFilter().
                 must(FilterBuilders.termFilter("chr", chr));
@@ -230,13 +286,18 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         } else {
             builder.setQuery(QueryBuilders.constantScoreQuery(filter));
         }
-        builder.setSize(size).setFrom(start).addSort("score", SortOrder.DESC).addFields("position", "macs", "mafs", "chr", "score", "overFDR", "studyid", "gene", "annotation", "inGene").setTypes("meta_analysis_snps");
+        builder.setSize(size).setFrom(start).addSort("score", SortOrder.DESC).addFields("position", "mac", "maf", "chr", "score", "overFDR", "studyid", "_parent", "gene", "annotation", "inGene", "_parent").setTypes("meta_analysis_snps");
         SearchResponse response = builder.execute().actionGet();
 
         for (SearchHit searchHit : response.getHits()) {
             try {
                 Map<String, SearchHitField> fields = searchHit.getFields();
-                Long studyId = (long) (Integer) fields.get("studyid").getValue();
+                Long studyId = null;
+                if (fields.containsKey("studyid")) {
+                    studyId = (long) (Integer) fields.get("studyid").getValue();
+                } else {
+                    studyId = Long.parseLong((String) fields.get("_parent").getValue());
+                }
                 Study study = studyRepository.findOne(studyId);
                 SNPAnnot annot = new SNPAnnot();
                 annot.setPosition((Integer) fields.get("position").getValue());
@@ -261,10 +322,13 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                         .setGenotype(study.getAlleleAssay().getName())
                         .setOverFDR((Boolean) fields.get("overFDR").getValue())
                         .setPhenotypeId(study.getPhenotype().getId())
-                        .setStudyId(study.getPhenotype().getExperiment().getId());
+                        .setStudyId(study.getPhenotype().getExperiment().getId())
+                        .setMac((Integer) fields.get("mac").getValue())
+                        .setMaf((Double) fields.get("maf").getValue());
+
                 metaSNPAnalysises.add(metaAnalysisBuilder.build());
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
         return new MetaSNPAnalysisPage(metaSNPAnalysises, new PageRequest(start / size, size), response.getHits().getTotalHits());

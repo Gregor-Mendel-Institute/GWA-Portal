@@ -477,7 +477,7 @@ public class HelperServiceImpl implements HelperService {
     }
 
     private SearchRequestBuilder getStatsSearchBuilder() {
-        return client.prepareSearch(SearchServiceImpl.INDEX_NAME).setSearchType(SearchType.COUNT);
+        return client.prepareSearch(esAclManager.getIndex()).setSearchType(SearchType.COUNT);
     }
 
     @Override
@@ -490,14 +490,14 @@ public class HelperServiceImpl implements HelperService {
 
         // experiments
         requestBuilder.add(
-                client.prepareSearch(SearchServiceImpl.INDEX_NAME).setTypes("experiment")
+                client.prepareSearch(esAclManager.getIndex()).setTypes("experiment")
                         .addFacet(facet)
                         .setQuery(QueryBuilders.constantScoreQuery(filter))
                         .setSize(0)
         );
         //phenotypes
         requestBuilder.add(
-                client.prepareSearch(SearchServiceImpl.INDEX_NAME).setTypes("phenotype")
+                client.prepareSearch(esAclManager.getIndex()).setTypes("phenotype")
                         .addFacet(facet)
                         .setQuery(QueryBuilders.constantScoreQuery(filter))
                         .setSize(0)
@@ -505,7 +505,7 @@ public class HelperServiceImpl implements HelperService {
 
         //study
         requestBuilder.add(
-                client.prepareSearch(SearchServiceImpl.INDEX_NAME).setTypes("study")
+                client.prepareSearch(esAclManager.getIndex()).setTypes("study")
                         .addFacet(facet)
                         .setQuery(QueryBuilders.constantScoreQuery(filter))
                         .setSize(0)
