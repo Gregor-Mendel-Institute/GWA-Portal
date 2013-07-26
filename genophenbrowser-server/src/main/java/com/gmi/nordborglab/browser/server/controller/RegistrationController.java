@@ -20,48 +20,48 @@ import com.gmi.nordborglab.browser.server.service.UserService;
 @Controller
 @RequestMapping("/registration")
 public class RegistrationController {
-	
-	@Resource
-	UserService userService;
 
-	@RequestMapping(method = RequestMethod.GET)
+    @Resource
+    UserService userService;
+
+    @RequestMapping(method = RequestMethod.GET)
     public String showRegistration(ModelMap model) {
-            Registration registration = new Registration();
-            model.addAttribute("registration", registration);
+        Registration registration = new Registration();
+        model.addAttribute("registration", registration);
+        return "registrationform";
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    public String processForm(@Valid @ModelAttribute(value = "registration") Registration registration, BindingResult result) {
+        verifyBinding(result);
+
+        try {
+            userService.registerUserIfValid(registration, !result.hasErrors());
+        } catch (DuplicateRegistrationException e) {
+            result.rejectValue("email", "not.unique");
+        }
+
+        if (result.hasErrors()) {
             return "registrationform";
+        }
+
+        return "index";
     }
-	
-	@RequestMapping(method = RequestMethod.POST) 
-	public String processForm(@Valid @ModelAttribute(value="registration") Registration registration,BindingResult result)	 {
-		verifyBinding(result);
-		
-		try {
-			userService.registerUserIfValid(registration, !result.hasErrors());
-		}catch (DuplicateRegistrationException e)  {
-			result.rejectValue("email","not.unique");
-		}
-		
-		if (result.hasErrors()) { 
-			return "registrationform";
-		}
-		
-		return "/index.jsp";
-	}
-	
-	@InitBinder
+
+    @InitBinder
     public void initBinder(WebDataBinder binder) {
-            binder.setAllowedFields(new String[] { 
-                            "firstname", "lastname", "email",
-                             "password", "confirmPassword"
-            });
+        binder.setAllowedFields(new String[]{
+                "firstname", "lastname", "email",
+                "password", "confirmPassword"
+        });
     }
-	
-	private void verifyBinding(BindingResult result) {
+
+    private void verifyBinding(BindingResult result) {
         String[] suppressedFields = result.getSuppressedFields();
         if (suppressedFields.length > 0) {
-                throw new RuntimeException("You've attempted to bind fields that haven't been allowed in initBinder(): " 
-                                + StringUtils.join(suppressedFields, ", "));
+            throw new RuntimeException("You've attempted to bind fields that haven't been allowed in initBinder(): "
+                    + StringUtils.join(suppressedFields, ", "));
         }
-	}
-	
+    }
+
 }
