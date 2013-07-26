@@ -188,17 +188,24 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
 
     private void initGrid() {
         dataGrid.setWidth("100%");
+        dataGrid.setMinimumTableWidth(1000, Style.Unit.PX);
         dataGrid.setEmptyTableWidget(new Label("No Records found"));
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.AnalysisColumn(placeManger), "Analysis");
-
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.PhenotypeColumn(placeManger), "Phenotype");
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.StudyColumn(placeManger), "Study");
-
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.GenotypeColumn(), "Genotype");
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.MethodColumn(), "Method");
+        dataGrid.setColumnWidth(4, 80, Style.Unit.PX);
         dataGrid.addColumn(new IdentityColumn<MetaSNPAnalysisProxy>(new MetaAnalysisGeneView.ScoreCell()), "pVal");
-
+        dataGrid.setColumnWidth(5, 60, Style.Unit.PX);
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.MafColumn(), "Maf");
+        dataGrid.setColumnWidth(6, 60, Style.Unit.PX);
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.MacColumn(), "Mac");
+        dataGrid.setColumnWidth(7, 60, Style.Unit.PX);
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.ChrColumn(), "Chr");
+        dataGrid.setColumnWidth(8, 60, Style.Unit.PX);
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.SNPColumn(), "SNP");
+        dataGrid.setColumnWidth(9, 100, Style.Unit.PX);
     }
 
     @Override

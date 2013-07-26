@@ -8,18 +8,18 @@
         <g:layer top="0" height="40%">
             <g:LayoutPanel>
                 <g:layer left="0" width="25%">
+                    <g:SimpleLayoutPanel ui:field="chartContainer3">
+                        <gchart:PieChart ui:field="overFDRPieChart"/>
+                    </g:SimpleLayoutPanel>
+                </g:layer>
+                <g:layer left="25%" width="25%">
                     <g:SimpleLayoutPanel ui:field="chartContainer1">
                         <gchart:PieChart ui:field="chrPieChart"/>
                     </g:SimpleLayoutPanel>
                 </g:layer>
-                <g:layer left="25%" width="25%">
+                <g:layer left="50%" width="25%">
                     <g:SimpleLayoutPanel ui:field="chartContainer2">
                         <gchart:PieChart ui:field="inGenePieChart"/>
-                    </g:SimpleLayoutPanel>
-                </g:layer>
-                <g:layer left="50%" width="25%">
-                    <g:SimpleLayoutPanel ui:field="chartContainer3">
-                        <gchart:PieChart ui:field="overFDRPieChart"/>
                     </g:SimpleLayoutPanel>
                 </g:layer>
                 <g:layer left="75%" width="25%">

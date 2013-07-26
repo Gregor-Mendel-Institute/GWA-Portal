@@ -13,6 +13,8 @@ public class MetaAnalysisTopResultsCriteria {
     protected Boolean overFDR;
     protected Boolean inGene;
     protected String annotation;
+    protected Double mafFrom;
+    protected Double mafTo;
 
 
     public MetaAnalysisTopResultsCriteria() {
@@ -51,6 +53,22 @@ public class MetaAnalysisTopResultsCriteria {
     }
 
     public boolean isEmpty() {
-        return annotation == null && inGene == null && overFDR == null && chr == null;
+        return annotation == null && inGene == null && overFDR == null && chr == null && mafFrom == null && mafTo == null;
+    }
+
+    public Double getMafTo() {
+        return mafTo;
+    }
+
+    public void setMafTo(Double mafTo) {
+        this.mafTo = mafTo;
+    }
+
+    public Double getMafFrom() {
+        return mafFrom;
+    }
+
+    public void setMafFrom(Double mafFrom) {
+        this.mafFrom = mafFrom;
     }
 }

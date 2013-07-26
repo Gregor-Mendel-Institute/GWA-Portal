@@ -34,4 +34,8 @@ public interface MetaSNPAnalysisProxy extends ValueProxy {
     public Long getPhenotypeId();
 
     public Long getStudyId();
+
+    public Double getMaf();
+
+    public Integer getMac();
 }

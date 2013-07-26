@@ -22,6 +22,8 @@ public class MetaSNPAnalysis {
     protected String method;
     protected String genotype;
     protected Boolean isOverFDR;
+    protected Double maf;
+    protected Integer mac;
 
     public static class Builder {
 
@@ -36,6 +38,8 @@ public class MetaSNPAnalysis {
         private Long studyId;
         private Long phenotypeId;
         private Long analysisId;
+        private Integer mac;
+        private Double maf;
 
         public Builder setSnpAnnotation(SNPAnnot snpAnnotation) {
             this.snpAnnotation = snpAnnotation;
@@ -92,9 +96,21 @@ public class MetaSNPAnalysis {
             return this;
         }
 
+        public Builder setMac(Integer mac) {
+            this.mac = mac;
+            return this;
+        }
+
+        public Builder setMaf(double maf) {
+            this.maf = maf;
+            return this;
+        }
+
         public MetaSNPAnalysis build() {
             return new MetaSNPAnalysis(this);
         }
+
+
     }
 
     public MetaSNPAnalysis() {
@@ -113,6 +129,8 @@ public class MetaSNPAnalysis {
         this.analysisId = builder.analysisId;
         this.phenotypeId = builder.phenotypeId;
         this.studyId = builder.studyId;
+        this.mac = builder.mac;
+        this.maf = builder.maf;
     }
 
     public SNPAnnot getSnpAnnotation() {
@@ -158,5 +176,13 @@ public class MetaSNPAnalysis {
 
     public Long getStudyId() {
         return studyId;
+    }
+
+    public Double getMaf() {
+        return maf;
+    }
+
+    public Integer getMac() {
+        return mac;
     }
 }
