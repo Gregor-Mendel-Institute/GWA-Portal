@@ -65,12 +65,14 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         List<MetaSNPAnalysis> metaSNPAnalysises = Lists.newArrayList();
         // GET all studyids
         SearchRequestBuilder builder = client.prepareSearch(esAclManager.getIndex());
-        FilterBuilder filter = FilterBuilders.hasChildFilter("meta_analysis_snps", FilterBuilders.boolFilter().
-                must(
-                        FilterBuilders.numericRangeFilter("position").from(start).to(end),
-                        FilterBuilders.termFilter("chr", chr)
-                )
-        );
+        FilterBuilder filter = FilterBuilders.boolFilter().must(
+                FilterBuilders.hasChildFilter("meta_analysis_snps", FilterBuilders.boolFilter().
+                        must(
+                                FilterBuilders.numericRangeFilter("position").from(start).to(end),
+                                FilterBuilders.termFilter("chr", chr)
+                        )
+                ),
+                esAclManager.getAclFilter(Lists.newArrayList("read")));
         builder.addFields("_id", "_parent").setTypes("study").setQuery(QueryBuilders.constantScoreQuery(filter));
         SearchResponse response = builder.execute().actionGet();
         List<Long> ids = Lists.newArrayList();
