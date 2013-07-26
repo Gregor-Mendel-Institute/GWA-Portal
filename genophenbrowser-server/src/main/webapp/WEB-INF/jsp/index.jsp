@@ -21,7 +21,7 @@
     <script type="text/javascript" src="<c:url value='/js/m-radio.min.js' />"></script>
     <!-- FIXME use until https://github.com/eemi2010/gwt-tour/issues/1 is fixed -->
     <script type="text/javascript"
-            src="<c:url value='https://rawgithub.com/linkedin/hopscotch/master/js/hopscotch-0.1.min.js' />"></script>
+            src="<c:url value='/js/hopscotch.min.js' />"></script>
     <script type="text/javascript" src="<c:url value='/js/m-radio.min.js' />"></script>
     <script type="text/javascript" src="<c:url value='/browser/browser.nocache.js'/>"></script>
 </head>
