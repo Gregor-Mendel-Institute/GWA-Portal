@@ -1,18 +1,18 @@
 package com.gmi.nordborglab.browser.server.security;
 
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
+import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
-import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.*;
 import org.springframework.stereotype.Component;
 
@@ -38,15 +38,25 @@ public class AclManager {
     @Resource
     protected MutableAclService aclService;
 
+    @Resource
+    protected UserRepository userRepository;
+
+
+    public <T extends SecureEntity> Acl getAcl(T entity) {
+        ObjectIdentity oid = new ObjectIdentityImpl(entity.getClass(), entity.getId());
+        return aclService.readAclById(oid);
+    }
+
 
     public <T extends SecureEntity> List<T> setPermissionAndOwners(List<T> entities) {
         List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
         if (entities.size() > 0) {
             final ImmutableBiMap<ObjectIdentity, T> identities = retrieveObjectIdentites(entities);
             final ImmutableMap<ObjectIdentity, Acl> acls = ImmutableMap.copyOf(aclService.readAclsById(identities.keySet().asList(), authorities));
-            for (Map.Entry<ObjectIdentity, Acl> entry : acls.entrySet()) {
-                SecureEntity entity = identities.get(entry.getKey());
-                setPermissionAndOwner(entity, entry.getValue(), authorities);
+            for (Map.Entry<ObjectIdentity, T> entry : identities.entrySet()) {
+                Acl acl = acls.get(entry.getKey());
+                SecureEntity entity = entry.getValue();
+                setPermissionAndOwner(entity, acl, authorities);
             }
         }
         return entities;
@@ -61,16 +71,34 @@ public class AclManager {
     }
 
     private <T extends SecureEntity> T setPermissionAndOwner(T entity, Acl acl, List<Sid> authorities) {
-        boolean isOwner = false;
+        entity.setOwnerUser(getAppUserFromSid(acl.getOwner()));
         for (Sid sid : authorities) {
             if (sid.equals(acl.getOwner())) {
-                isOwner = true;
+                entity.setIsOwner(true);
                 break;
             }
         }
         setPermission(entity, acl, authorities);
-        entity.setIsOwner(isOwner);
         return entity;
+    }
+
+    private AppUser getAppUserFromSid(Sid sid) {
+        Long sidId = null;
+        if (sid instanceof GrantedAuthoritySid) {
+            AppUser user = new AppUser();
+            user.setFirstname("Admin");
+            user.setLastname("");
+            return user;
+        } else if (sid instanceof PrincipalSid) {
+            try {
+                sidId = Long.parseLong(((PrincipalSid) sid).getPrincipal());
+            } catch (Exception e) {
+            }
+        }
+        if (sidId == null) {
+            return null;
+        }
+        return userRepository.findOne(sidId);
     }
 
     private <T extends SecureEntity> T setPermission(T entity, Acl acl, List<Sid> authorities) {
@@ -88,15 +116,15 @@ public class AclManager {
         return entity;
     }
 
-    public <T extends SecureEntity> void addPermission(T entity, Sid recipient,
-                                                       Permission permission, Long parentId) {
+    public <T extends SecureEntity, S extends SecureEntity> void addPermission(T entity, Sid recipient,
+                                                                               Permission permission, Class<S> parentClass, Long parentId) {
         MutableAcl acl;
         ObjectIdentity oid = new ObjectIdentityImpl(entity.getClass(),
                 entity.getId());
 
         Acl parentAcl = null;
-        if (parentId != null) {
-            parentAcl = aclService.readAclById(new ObjectIdentityImpl(Experiment.class, parentId));
+        if (parentClass != null && parentId != null) {
+            parentAcl = aclService.readAclById(new ObjectIdentityImpl(parentClass, parentId));
         }
 
         try {
@@ -110,6 +138,18 @@ public class AclManager {
         }
         acl.insertAce(acl.getEntries().size(), permission, recipient, true);
         aclService.updateAcl(acl);
+    }
+
+    public <T extends SecureEntity, S extends SecureEntity> void addPermission(T entity, Sid recipient,
+                                                                               Permission permission, S parentEntity) {
+        Class<? extends SecureEntity> parentClass = null;
+        Long parentId = null;
+        if (parentEntity != null) {
+            parentClass = parentEntity.getClass();
+            parentId = parentEntity.getId();
+        }
+
+        addPermission(entity, recipient, permission, parentClass, parentId);
     }
 
     public <T extends SecureEntity> FluentIterable<T> filterByAcl(List<T> entities) {
@@ -163,5 +203,9 @@ public class AclManager {
             identities.put(oid, entity);
         }
         return ImmutableBiMap.copyOf(identities);
+    }
+
+    public <T extends SecureEntity> void deletePermissions(T entity, boolean deleteChildren) {
+        aclService.deleteAcl(new ObjectIdentityImpl(entity.getClass(), entity.getId()), deleteChildren);
     }
 }

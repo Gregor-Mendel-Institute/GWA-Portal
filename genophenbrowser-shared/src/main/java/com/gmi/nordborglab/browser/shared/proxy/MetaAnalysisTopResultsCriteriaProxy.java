@@ -28,4 +28,12 @@ public interface MetaAnalysisTopResultsCriteriaProxy extends ValueProxy {
     public String getAnnotation();
 
     public void setAnnotation(String annotation);
+
+    public Double getMafTo();
+
+    public void setMafTo(Double mafTo);
+
+    public Double getMafFrom();
+
+    public void setMafFrom(Double mafFrom);
 }

@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.server.domain;
 
+import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 
 import javax.persistence.Transient;
@@ -19,6 +20,9 @@ public class SecureEntity extends BaseEntity {
     private CustomAccessControlEntry userPermission = null;
     @Transient
     private boolean isOwner = false;
+
+    @Transient
+    private AppUser owner;
 
     public void setIsPublic(boolean aPublic) {
         isPublic = aPublic;
@@ -43,14 +47,18 @@ public class SecureEntity extends BaseEntity {
     }
 
     public void setIsOwner(boolean owner) {
-        isOwner = owner;
+        this.isOwner = owner;
     }
 
     public boolean isOwner() {
         return isOwner;
     }
 
-    public void setOwner(boolean owner) {
-        isOwner = owner;
+    public void setOwnerUser(AppUser owner) {
+        this.owner = owner;
+    }
+
+    public AppUser getOwnerUser() {
+        return owner;
     }
 }

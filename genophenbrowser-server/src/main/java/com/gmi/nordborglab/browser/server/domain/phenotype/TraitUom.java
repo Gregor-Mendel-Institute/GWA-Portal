@@ -2,23 +2,10 @@ package com.gmi.nordborglab.browser.server.domain.phenotype;
 
 import java.util.*;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
-import com.gmi.nordborglab.browser.server.domain.acl.AclTraitUomIdentity;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 import com.gmi.nordborglab.jpaontology.model.Term;
 import com.google.common.collect.Iterables;
 
@@ -28,14 +15,11 @@ import com.google.common.collect.Iterables;
 @SequenceGenerator(name = "idSequence", sequenceName = "phenotype.div_trait_uom_div_trait_uom_id_seq")
 public class TraitUom extends SecureEntity {
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne()
     @JoinColumn(name = "div_unit_of_measure_id")
     private UnitOfMeasure unitOfMeasure;
 
-    @OneToOne(mappedBy = "traitUom", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private AclTraitUomIdentity acl;
-
-    @OneToMany(mappedBy = "traitUom", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "traitUom", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<Trait> traits = new HashSet<Trait>();
 
     private String local_trait_name;
@@ -44,6 +28,13 @@ public class TraitUom extends SecureEntity {
     private String toAccession;
     @Column(name = "eo_accession")
     private String eoAccession;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modified = new Date();
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created = new Date();
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date published;
 
     @Transient
     private Experiment experiment;
@@ -66,9 +57,6 @@ public class TraitUom extends SecureEntity {
     public TraitUom() {
     }
 
-    public AclTraitUomIdentity getAcl() {
-        return acl;
-    }
 
     public Experiment getExperiment() {
         ///TODO change database schema for more efficient access
@@ -80,7 +68,7 @@ public class TraitUom extends SecureEntity {
     }
 
     public Set<Trait> getTraits() {
-        return Collections.unmodifiableSet(traits);
+        return traits;
     }
 
     public List<StatisticType> getStatisticTypes() {
@@ -167,5 +155,24 @@ public class TraitUom extends SecureEntity {
 
     public List<Long> getStatisticTypeTraitCounts() {
         return statisticTypeTraitCounts;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public Date getPublished() {
+        return published;
+    }
+
+    @PreRemove
+    public void preRemove() {
+        unitOfMeasure = null;
+        statisticTypes = null;
+        experiment = null;
     }
 }

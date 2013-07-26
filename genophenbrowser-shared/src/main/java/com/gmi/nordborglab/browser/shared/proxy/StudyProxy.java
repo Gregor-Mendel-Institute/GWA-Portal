@@ -53,4 +53,10 @@ public interface StudyProxy extends SecureEntityProxy {
     public StudyJobProxy getJob();
 
     void setJob(StudyJobProxy studyJob);
+
+    Date getCreated();
+
+    Date getPublished();
+
+    Date getModified();
 }

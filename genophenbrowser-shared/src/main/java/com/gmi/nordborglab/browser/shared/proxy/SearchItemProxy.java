@@ -8,7 +8,7 @@ public interface SearchItemProxy extends ValueProxy {
 
     public static enum CATEGORY {DIVERSITY, GERMPLASM, GENOTYPE}
 
-    public static enum SUB_CATEGORY {EXPERIMENT, PHENOTYPE, STUDY, ONTOLOGY, PASSPORT, STOCK, PUBLICATION, TAXONOMY, GENE}
+    public static enum SUB_CATEGORY {STUDY, PHENOTYPE, ANALYSIS, ONTOLOGY, PASSPORT, STOCK, PUBLICATION, TAXONOMY, GENE}
 
     public String getId();
 

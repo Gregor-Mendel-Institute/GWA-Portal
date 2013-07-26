@@ -6,7 +6,11 @@ import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPAnnotProxy;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.i18n.client.CurrencyList;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.cellview.client.Column;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
@@ -99,7 +103,7 @@ public interface MetaSNPAnalysisDataGridColumns {
         @Override
         public String getValue(MetaSNPAnalysisProxy object) {
             SNPAnnotProxy snpAnnot = object.getSnpAnnotation();
-            return snpAnnot.getPosition() + " [" + snpAnnot.getAnnotation() + "]";
+            return snpAnnot.getPosition() + (snpAnnot.getAnnotation() == null ? "" : " [" + snpAnnot.getAnnotation() + "]");
 
         }
     }
@@ -123,5 +127,40 @@ public interface MetaSNPAnalysisDataGridColumns {
         }
     }
 
+    public static class MafColumn extends Column<MetaSNPAnalysisProxy, Number> {
 
+        public MafColumn() {
+            super(new NumberCell(NumberFormat.getFormat(NumberFormat.getDecimalFormat().getPattern()).overrideFractionDigits(4)));
+        }
+
+        @Override
+        public Number getValue(MetaSNPAnalysisProxy object) {
+            return object.getMaf();
+        }
+    }
+
+    public static class MacColumn extends Column<MetaSNPAnalysisProxy, Number> {
+
+        public MacColumn() {
+            super(new NumberCell(NumberFormat.getFormat(NumberFormat.getDecimalFormat().getPattern()).overrideFractionDigits(0)));
+        }
+
+        @Override
+        public Number getValue(MetaSNPAnalysisProxy object) {
+            return object.getMac();
+        }
+    }
+
+
+    public static class ChrColumn extends Column<MetaSNPAnalysisProxy, String> {
+
+        public ChrColumn() {
+            super(new TextCell());
+        }
+
+        @Override
+        public String getValue(MetaSNPAnalysisProxy object) {
+            return object.getSnpAnnotation().getChr();
+        }
+    }
 }

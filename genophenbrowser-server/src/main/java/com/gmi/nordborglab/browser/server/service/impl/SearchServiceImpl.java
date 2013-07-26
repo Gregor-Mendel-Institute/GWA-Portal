@@ -2,14 +2,20 @@ package com.gmi.nordborglab.browser.server.service.impl;
 
 import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
 import com.gmi.nordborglab.browser.server.search.*;
+import com.gmi.nordborglab.browser.server.security.AclManager;
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
+import com.gmi.nordborglab.browser.server.security.EsAclManager;
 import com.gmi.nordborglab.browser.server.service.SearchService;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
+import com.google.common.collect.Lists;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +30,12 @@ public class SearchServiceImpl implements SearchService {
     @Resource
     protected Client client;
 
-    public static String INDEX_NAME = "gdpdm";
+    @Resource
+    protected EsAclManager esAclManager;
+
+
+    //public static String INDEX_NAME;
+
     public static String ONTOLOGY_INDEX_NAME = "ontologies";
     public static String[] GENE_INDEX_NAME = {"annot_chr1", "annot_chr2", "annot_chr3", "annot_chr4", "annot_chr5"};
 
@@ -36,6 +47,7 @@ public class SearchServiceImpl implements SearchService {
         MultiSearchRequestBuilder requestBuilder = client.prepareMultiSearch();
 
         if (category == CATEGORY.DIVERSITY) {
+            FilterBuilder filter = esAclManager.getAclFilter(Lists.newArrayList("read"));
             ExperimentSearchProcessor experimentProcessor = new ExperimentSearchProcessor(
                     term);
             PhenotypeSearchProcessor phenotypeProcessor = new PhenotypeSearchProcessor(
@@ -49,19 +61,19 @@ public class SearchServiceImpl implements SearchService {
             GeneSearchProcessor geneSearchprocessor = new GeneSearchProcessor(term);
 
             requestBuilder.add(experimentProcessor.getSearchBuilder(client
-                    .prepareSearch(INDEX_NAME)));
+                    .prepareSearch(esAclManager.getIndex())).setFilter(filter));
 
             requestBuilder.add(phenotypeProcessor.getSearchBuilder(client
-                    .prepareSearch(INDEX_NAME)));
+                    .prepareSearch(esAclManager.getIndex())).setFilter(filter));
 
             requestBuilder.add(studyProcessor.getSearchBuilder(client
-                    .prepareSearch(INDEX_NAME)));
+                    .prepareSearch(esAclManager.getIndex())).setFilter(filter));
 
             requestBuilder.add(ontologySearchProcessor.getSearchBuilder(client
                     .prepareSearch(ONTOLOGY_INDEX_NAME)));
 
             requestBuilder.add(publicationSearchProcessor.getSearchBuilder(client
-                    .prepareSearch(INDEX_NAME)));
+                    .prepareSearch(esAclManager.getIndex())));
 
             requestBuilder.add(geneSearchprocessor.getSearchBuilder(client.prepareSearch(GENE_INDEX_NAME)));
 
@@ -106,13 +118,13 @@ public class SearchServiceImpl implements SearchService {
             StockSearchProcessor stockSearchProcessor = new StockSearchProcessor(term);
 
             requestBuilder.add(taxonomySearchProcessor.getSearchBuilder(client
-                    .prepareSearch(INDEX_NAME)));
+                    .prepareSearch(esAclManager.getIndex())));
 
             requestBuilder.add(passportSearchProcessor.getSearchBuilder(client
-                    .prepareSearch(INDEX_NAME)));
+                    .prepareSearch(esAclManager.getIndex())));
 
             requestBuilder.add(stockSearchProcessor.getSearchBuilder(client
-                    .prepareSearch(INDEX_NAME)));
+                    .prepareSearch(esAclManager.getIndex())));
 
 
             MultiSearchResponse response = requestBuilder.execute().actionGet();

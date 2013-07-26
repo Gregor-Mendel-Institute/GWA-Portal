@@ -6,8 +6,12 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPrese
 import com.gmi.nordborglab.browser.shared.proxy.*;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.MetaAnalysisRequest;
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
@@ -84,7 +88,7 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
         }
     };
 
-    public enum STATS {CHR, INGENE, OVERFDR, ANNOTATION;}
+    public enum STATS {CHR, INGENE, OVERFDR, ANNOTATION, MAF}
 
     @Inject
     public MetaAnalysisTopResultsPresenter(EventBus eventBus, MyView view, MyProxy proxy,
@@ -223,7 +227,37 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
             case ANNOTATION:
                 criteria.setAnnotation(category);
                 break;
+            case MAF:
+                setMafFromCategory(category);
+                break;
         }
+    }
+
+    private void setMafFromCategory(String category) {
+        Double mafFrom = null;
+        Double mafTo = null;
+        CharMatcher numberMatcher = CharMatcher.DIGIT.or(CharMatcher.is('.'));
+        try {
+            if (CharMatcher.is('-').matchesAnyOf(category)) {
+                Iterable<String> range = Splitter.on("-").trimResults().split(category);
+                mafFrom = Double.valueOf(numberMatcher.retainFrom(Iterables.getFirst(range, null)));
+                mafTo = Double.valueOf(numberMatcher.retainFrom(Iterables.getLast(range, null)));
+            } else if (CharMatcher.is('<').matchesAnyOf(category)) {
+                mafTo = Double.valueOf(numberMatcher.retainFrom(category));
+            } else {
+                mafFrom = Double.valueOf(numberMatcher.retainFrom(category));
+            }
+        } catch (Exception e) {
+
+        }
+        if (mafFrom != null) {
+            mafFrom = mafFrom / 100;
+        }
+        if (mafTo != null) {
+            mafTo = mafTo / 100;
+        }
+        criteria.setMafFrom(mafFrom);
+        criteria.setMafTo(mafTo);
     }
 
     private MetaAnalysisRequest getContext() {

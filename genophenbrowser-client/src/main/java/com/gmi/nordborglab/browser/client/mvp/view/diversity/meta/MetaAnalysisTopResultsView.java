@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.DataGrid;
@@ -157,7 +158,7 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
         initDataGrid();
         widget = binder.createAndBindUi(this);
         stats2Chart = ImmutableBiMap.<MetaAnalysisTopResultsPresenter.STATS, PieChart>builder().put(MetaAnalysisTopResultsPresenter.STATS.CHR, chrPieChart)
-                .put(MetaAnalysisTopResultsPresenter.STATS.INGENE, inGenePieChart).put(MetaAnalysisTopResultsPresenter.STATS.OVERFDR, overFDRPieChart)
+                .put(MetaAnalysisTopResultsPresenter.STATS.INGENE, inGenePieChart).put(MetaAnalysisTopResultsPresenter.STATS.MAF, overFDRPieChart)
                 .put(MetaAnalysisTopResultsPresenter.STATS.ANNOTATION, annotationPieChart).build();
         initChartHandlers();
         pager.setDisplay(dataGrid);
@@ -165,19 +166,26 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
 
     private void initDataGrid() {
         dataGrid.setWidth("100%");
+        dataGrid.setMinimumTableWidth(1000, Style.Unit.PX);
         dataGrid.setEmptyTableWidget(new Label("No Records found"));
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.AnalysisColumn(placeManger), "Analysis");
-
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.PhenotypeColumn(placeManger), "Phenotype");
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.StudyColumn(placeManger), "Study");
-
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.GenotypeColumn(), "Genotype");
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.MethodColumn(), "Method");
+        dataGrid.setColumnWidth(4, 80, Style.Unit.PX);
         dataGrid.addColumn(new IdentityColumn<MetaSNPAnalysisProxy>(new MetaAnalysisGeneView.ScoreCell()), "pVal");
-
+        dataGrid.setColumnWidth(5, 60, Style.Unit.PX);
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.MafColumn(), "Maf");
+        dataGrid.setColumnWidth(6, 60, Style.Unit.PX);
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.MacColumn(), "Mac");
+        dataGrid.setColumnWidth(7, 60, Style.Unit.PX);
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.ChrColumn(), "Chr");
+        dataGrid.setColumnWidth(8, 60, Style.Unit.PX);
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.SNPColumn(), "SNP");
-
+        dataGrid.setColumnWidth(9, 100, Style.Unit.PX);
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.GeneColumn(placeManger), "Gene");
+        dataGrid.setColumnWidth(10, 120, Style.Unit.PX);
     }
 
     private void initChartHandlers() {
@@ -307,6 +315,9 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
                 break;
             case OVERFDR:
                 title = "SNP FDR";
+                break;
+            case MAF:
+                title = "MAF";
                 break;
             case ANNOTATION:
                 title = "SNP annotation";

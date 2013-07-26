@@ -25,10 +25,10 @@ import java.util.Date;
 import java.util.List;
 
 
-public class CurrentUser{
-	
-	private AppUserProxy appUser = null;
-	private AppDataProxy appData = null;
+public class CurrentUser {
+
+    private AppUserProxy appUser = null;
+    private AppDataProxy appData = null;
     private final RequestDispatcher dispatcher;
     private final MessageBus messageBus;
     private final EventBus eventBus;
@@ -36,77 +36,105 @@ public class CurrentUser{
     private final CustomRequestFactory rf;
 
 
-
     @Inject
-	public CurrentUser(RequestDispatcher dispatcher, MessageBus messageBus, EventBus eventBus, CustomRequestFactory rf) {
+    public CurrentUser(RequestDispatcher dispatcher, MessageBus messageBus, EventBus eventBus, CustomRequestFactory rf) {
         this.dispatcher = dispatcher;
         this.messageBus = messageBus;
         this.eventBus = eventBus;
         this.rf = rf;
     }
-	
-	public void setAppUser(AppUserProxy appuser) {
-		this.appUser = appuser;
+
+    public void setAppUser(AppUserProxy appuser) {
+        this.appUser = appuser;
         initComChanel();
-	}
-	
-	public boolean isLoggedIn() {
-		return appUser != null;
-	}
-	
-	public AppUserProxy getAppUser()  {
-		return appUser;
-	}
-	
-	public int getPermissionMask(AccessControlEntryProxy ace) {
-		int permission = 0;
-		if (isLoggedIn()) {
-			if (ace != null ) {
-				permission = ace.getMask();
-			}
-		}
-		return permission;
-	}
+    }
 
-	public void setAppData(AppDataProxy appData) {
-		this.appData = appData;
-	    addNullValues();
-	}
-	
-	
-	public AppDataProxy getAppData() {
-		return appData;
-	}
-	
-	private void addNullValues() {
-		if (appData == null)
-			return;
-		appData.getUnitOfMeasureList().add(0, null);
-		appData.getStatisticTypeList().add(0, null);
-		appData.getStudyProtocolList().add(0,null);
-		appData.getAlleleAssayList().add(0,null);
-	}
+    public boolean isLoggedIn() {
+        return appUser != null;
+    }
 
-	public boolean isAdmin() {
-		if (!isLoggedIn())
-			return false;
-		if (appUser.getAuthorities() == null)
-			return false;
-		AuthorityProxy authority = Iterables.find(appUser.getAuthorities(), new Predicate<AuthorityProxy>() {
+    public AppUserProxy getAppUser() {
+        return appUser;
+    }
 
-			@Override
-			public boolean apply(@Nullable AuthorityProxy input) {
-				if (input == null)
-					return false;
-				if (input.getAuthority().equals("ROLE_ADMIN"))
-					return true;
-				return false;
-			}
-		});
-		if (authority == null)
-			return false;
-		return true;
-	}
+    public int getPermissionMask(AccessControlEntryProxy ace) {
+        int permission = 0;
+        if (isLoggedIn()) {
+            if (ace != null) {
+                permission = ace.getMask();
+            }
+        }
+        return permission;
+    }
+
+    public boolean hasEdit(SecureEntityProxy entity) {
+        if (entity == null || entity.getUserPermission() == null)
+            return false;
+        return hasEdit(entity.getUserPermission().getMask());
+    }
+
+    public boolean hasEdit(int permission) {
+        boolean hasEdit = false;
+        if (isLoggedIn()) {
+            hasEdit = (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT || hasAdmin(permission);
+        }
+        return hasEdit;
+    }
+
+
+    public boolean hasAdmin(SecureEntityProxy entity) {
+        if (entity == null || entity.getUserPermission() == null)
+            return false;
+        return hasAdmin(entity.getUserPermission().getMask());
+    }
+
+    public boolean hasAdmin(int permission) {
+        boolean hasAdmin = false;
+        if (isLoggedIn()) {
+            hasAdmin = (permission & AccessControlEntryProxy.ADMINISTRATION) == AccessControlEntryProxy.ADMINISTRATION;
+        }
+        return hasAdmin;
+    }
+
+    public void setAppData(AppDataProxy appData) {
+        this.appData = appData;
+        addNullValues();
+    }
+
+
+    public AppDataProxy getAppData() {
+        return appData;
+    }
+
+    private void addNullValues() {
+        if (appData == null)
+            return;
+        appData.getUnitOfMeasureList().add(0, null);
+        appData.getStatisticTypeList().add(0, null);
+        appData.getStudyProtocolList().add(0, null);
+        appData.getAlleleAssayList().add(0, null);
+    }
+
+    public boolean isAdmin() {
+        if (!isLoggedIn())
+            return false;
+        if (appUser.getAuthorities() == null)
+            return false;
+        AuthorityProxy authority = Iterables.find(appUser.getAuthorities(), new Predicate<AuthorityProxy>() {
+
+            @Override
+            public boolean apply(@Nullable AuthorityProxy input) {
+                if (input == null)
+                    return false;
+                if (input.getAuthority().equals("ROLE_ADMIN"))
+                    return true;
+                return false;
+            }
+        });
+        if (authority == null)
+            return false;
+        return true;
+    }
 
     private void closeComChanel() {
         messageBus.unsubscribeAll("UserNotificationReceiver");
@@ -126,17 +154,18 @@ public class CurrentUser{
         messageBus.subscribe(appUser.getEmail(), new MessageCallback() {
             @Override
             public void callback(Message message) {
-                String type = message.get(String.class,"type");
+                String type = message.get(String.class, "type");
                 if (type.equals("gwasjob")) {
                     Long id = message.get(Long.class, "id");
                     rf.cdvRequest().findStudy(id).with(CdvManager.FULL_PATH).fire(new Receiver<StudyProxy>() {
                         @Override
                         public void onSuccess(StudyProxy response) {
-                             eventBus.fireEvent(new LoadStudyEvent(response));
+                            eventBus.fireEvent(new LoadStudyEvent(response));
                         }
                     });
                 }
-                eventBus.fireEvent(new LoadUserNotificationEvent()); }
+                eventBus.fireEvent(new LoadUserNotificationEvent());
+            }
         });
         MessageBuilder.createMessage("ClientComService")
                 .noErrorHandling()

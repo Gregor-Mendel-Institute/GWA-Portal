@@ -1,5 +1,5 @@
 {
-    "template": "gdpdm",
+    "template": "gdpdm*",
     "settings": {
         "analysis": {
             "filter": {
@@ -111,7 +111,28 @@
                     }
                 },
                 "owner": {
-                    "type": "integer"
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "sid": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "name": {
+                            "type": "multi_field",
+                            "fields": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "partial": {
+                                    "type": "string",
+                                    "index_analyzer": "my_ngram"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -138,10 +159,40 @@
                     "type": "string"
                 },
                 "to_accession": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "term_id": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "term_name": {
+                            "type": "string"
+                        },
+                        "term_definition": {
+                            "type": "string"
+                        },
+                        "term_comment": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "eo_accession": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "term_id": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "term_name": {
+                            "type": "string"
+                        },
+                        "term_definition": {
+                            "type": "string"
+                        },
+                        "term_comment": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "div_unit_of_measure": {
                     "type": "object",
@@ -161,6 +212,9 @@
                 "modified": {
                     "type": "date"
                 },
+                "experiment": {
+                    "type": "string"
+                },
                 "acl": {
                     "type": "nested",
                     "properties": {
@@ -174,7 +228,28 @@
                     }
                 },
                 "owner": {
-                    "type": "integer"
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "sid": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "name": {
+                            "type": "multi_field",
+                            "fields": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "partial": {
+                                    "type": "string",
+                                    "index_analyzer": "my_ngram"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -221,6 +296,12 @@
                 "modified": {
                     "type": "date"
                 },
+                "experiment": {
+                    "type": "string"
+                },
+                "phenotype": {
+                    "type": "string"
+                },
                 "acl": {
                     "type": "nested",
                     "properties": {
@@ -234,38 +315,59 @@
                     }
                 },
                 "owner": {
-                    "type": "integer"
-                }
-            },
-            "allele_assay": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "name": {
-                        "type": "string",
-                        "boost": 1.5,
-                        "index": "not_analyzed"
-                    },
-                    "producer": {
-                        "type": "string"
-                    },
-                    "comments": {
-                        "type": "string"
-                    },
-                    "assay_date": {
-                        "type": "date"
-                    },
-                    "scoring_tech_type": {
-                        "type": "object",
-                        "properties": {
-                            "scoring_tech_group": {
-                                "type": "string",
-                                "index": "not_analyzed"
-                            },
-                            "scoring_tech_type": {
-                                "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "sid": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "name": {
+                            "type": "multi_field",
+                            "fields": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "partial": {
+                                    "type": "string",
+                                    "index_analyzer": "my_ngram"
+                                }
+                            }
+                        }
+                    }
+                },
+                "allele_assay": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "name": {
+                            "type": "string",
+                            "boost": 1.5,
+                            "index": "not_analyzed"
+                        },
+                        "producer": {
+                            "type": "string"
+                        },
+                        "comments": {
+                            "type": "string"
+                        },
+                        "assay_date": {
+                            "type": "date"
+                        },
+                        "scoring_tech_type": {
+                            "type": "object",
+                            "properties": {
+                                "scoring_tech_group": {
+                                    "type": "string",
+                                    "index": "not_analyzed"
+                                },
+                                "scoring_tech_type": {
+                                    "type": "string"
+                                }
                             }
                         }
                     }
@@ -683,3 +785,4 @@
         }
     }
 }
+

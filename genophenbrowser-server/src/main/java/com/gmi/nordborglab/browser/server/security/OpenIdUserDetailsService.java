@@ -120,9 +120,9 @@ public class OpenIdUserDetailsService implements UserDetailsService,
         userRepository.save(appUser);
 
         //FIXME WORKAROUND for  http://forum.springsource.org/showthread.php?55490-ACL-Transaction-must-be-running
-        AclSid sid = aclSidRepository.findBySid(appUser.getUsername());
+        AclSid sid = aclSidRepository.findBySid(appUser.getId().toString());
         if (sid == null) {
-            sid = new AclSid(true, appUser.getUsername());
+            sid = new AclSid(true, appUser.getId().toString());
             aclSidRepository.save(sid);
         }
         return SecurityUtil.getUserFromAppUser(appUser);

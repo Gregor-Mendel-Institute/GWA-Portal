@@ -19,4 +19,6 @@ public interface SecureEntityProxy extends EntityProxy {
     public boolean isOwner();
 
     AccessControlEntryProxy getUserPermission();
+
+    AppUserProxy getOwnerUser();
 }

@@ -2,17 +2,18 @@
 db_user="sync_elasticsearch"
 db_password="searchisawesome"
 db_host="gdpdm.gmi.oeaw.ac.at"
-index="gdpdm"
+index=$2
+es_host=$1
 
-curl -XPUT $1/_river/gdpdm_experiment_river/_meta -d "{
+curl -XPUT $es_host/_river/${index}_experiment_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
-        \"strategy\":\"simple\",
+        \"strategy\":\"oneshot\",
         \"driver\" : \"org.postgresql.Driver\",
         \"url\" : \"jdbc:postgresql://$db_host:5432/GDPDM\",
         \"user\" : \"$db_user\",
         \"password\" : \"$db_password\",
-        \"sql\" : \"SELECT div_experiment_id as _id,  name, design, originator,comments, owner_sid as owner, \\\"publication.doi\\\",\\\"publication.volume\\\", \\\"publication.url\\\", \\\"publication.issue\\\",\\\"publication.page\\\", \\\"publication.journal\\\", \\\"publication.title\\\",\\\"publication.author\\\", \\\"publication.pubdate\\\", published, modified,created,permission as \\\"acl.permissions\\\",sid as \\\"acl.id\\\" FROM observation.view_search_div_experiment_acl order by div_experiment_id ASC\"
+        \"sql\" : \"SELECT DISTINCT div_experiment_id as _id,  name, design, originator,comments, owner_id as \\\"owner.id\\\",owner_sid as \\\"owner.sid\\\", owner_name as \\\"owner.name\\\",\\\"publication.doi\\\",\\\"publication.volume\\\", \\\"publication.url\\\", \\\"publication.issue\\\",\\\"publication.page\\\", \\\"publication.journal\\\", \\\"publication.title\\\",\\\"publication.author\\\", \\\"publication.pubdate\\\", published, modified,created,permission as \\\"acl.permissions\\\",sid as \\\"acl.id\\\" FROM observation.view_search_div_experiment_acl order by div_experiment_id ASC\"
     },
     \"index\":{
        \"index\":\"$index\",
@@ -22,15 +23,15 @@ curl -XPUT $1/_river/gdpdm_experiment_river/_meta -d "{
 
 echo "\n"
 
-curl -XPUT $1/_river/gdpdm_phenotype_river/_meta -d "{
+curl -XPUT $es_host/_river/${index}_phenotype_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
-        \"strategy\":\"simple\",
+        \"strategy\":\"oneshot\",
         \"driver\" : \"org.postgresql.Driver\",
         \"url\" : \"jdbc:postgresql://$db_host:5432/GDPDM\",
         \"user\" : \"$db_user\",
         \"password\" : \"$db_password\",
-        \"sql\" : \"SELECT div_trait_uom_id as _id,div_experiment_id as _parent, local_trait_name,trait_protocol,to_accession,unit_type as \\\"div_unit_of_measure.unit_type\\\", published, modified,created,permission as \\\"acl.permissions\\\", permission_id as \\\"acl.id\\\",owner_sid as owner  FROM phenotype.view_search_div_trait_uom_acl\"
+        \"sql\" : \"SELECT DISTINCT div_trait_uom_id as _id,div_experiment_id as _parent, local_trait_name,trait_protocol,unit_type as \\\"div_unit_of_measure.unit_type\\\", published, modified,created,permission as \\\"acl.permissions\\\", permission_id as \\\"acl.id\\\",owner_id as \\\"owner.id\\\",owner_sid as \\\"owner.sid\\\", owner_name as \\\"owner.name\\\",experiment,t_ont.acc as \\\"to_accession.term_id\\\",t_ont.name as \\\"to_accession.term_name\\\",t_ont.definition as \\\"to_accession.term_definition\\\",t_ont.comment as \\\"to_accession.term_comment\\\" FROM phenotype.view_search_div_trait_uom_acl LEFT JOIN dblink('dbname=Ontologies user=$db_user password=$db_password','SELECT acc,name,term_definition as definition,term_comment as comment FROM term LEFT JOIN term_definition ON term_definition.term_id = term.id') AS t_ont(acc varchar(255),name varchar(255),definition text,comment text) ON t_ont.acc = to_accession\"
    },
     \"index\":{
        \"index\":\"$index\",
@@ -40,15 +41,15 @@ curl -XPUT $1/_river/gdpdm_phenotype_river/_meta -d "{
 
 echo "\n"
 
-curl -XPUT $1/_river/gdpdm_study_river/_meta -d "{
+curl -XPUT $es_host/_river/${index}_study_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
-        \"strategy\":\"simple\",
+        \"strategy\":\"oneshot\",
         \"driver\" : \"org.postgresql.Driver\",
         \"url\" : \"jdbc:postgresql://$db_host:5432/GDPDM\",
         \"user\" : \"$db_user\",
         \"password\" : \"$db_password\",
-        \"sql\" : \"SELECT DISTINCT cdv_g2p_study_id as _id,div_trait_uom_id as _parent,div_experiment_id as _routing,name,producer,study_date,\\\"protocol.analysis_method\\\",\\\"allele_assay.name\\\",\\\"allele_assay.producer\\\",\\\"allele_assay.comments\\\",\\\"allele_assay.assay_date\\\",\\\"allele_assay.scoring_tech_type.scoring_tech_group\\\" ,\\\"allele_assay.scoring_tech_type.scoring_tech_type\\\",published,modified,created,permission as \\\"acl.permissions\\\", permission_id as \\\"acl.id\\\",owner_sid as owner from cdv.view_search_cdv_g2p_study_acl order by cdv_g2p_study_id\"
+        \"sql\" : \"SELECT DISTINCT cdv_g2p_study_id as _id,div_trait_uom_id as _parent,div_experiment_id as _routing,name,producer,study_date,\\\"protocol.analysis_method\\\",\\\"allele_assay.name\\\",\\\"allele_assay.producer\\\",\\\"allele_assay.comments\\\",\\\"allele_assay.assay_date\\\",\\\"allele_assay.scoring_tech_type.scoring_tech_group\\\" ,\\\"allele_assay.scoring_tech_type.scoring_tech_type\\\",published,modified,created,permission as \\\"acl.permissions\\\", permission_id as \\\"acl.id\\\",owner_id as \\\"owner.id\\\",owner_sid as \\\"owner.sid\\\", owner_name as \\\"owner.name\\\",experiment,phenotype from cdv.view_search_cdv_g2p_study_acl order by cdv_g2p_study_id\"
     },
     \"index\":{
        \"index\":\"$index\",
@@ -58,7 +59,7 @@ curl -XPUT $1/_river/gdpdm_study_river/_meta -d "{
 
 echo "\n"
 
-curl -XPUT $1/_river/gdpdm_publication_river/_meta -d "{
+curl -XPUT $es_host/_river/${index}_publication_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
         \"strategy\":\"simple\",
@@ -78,7 +79,7 @@ curl -XPUT $1/_river/gdpdm_publication_river/_meta -d "{
 
 echo "\n"
 
-curl -XPUT $1/_river/gdpdm_user_river/_meta -d "{
+curl -XPUT $es_host/_river/${index}_user_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
         \"strategy\":\"simple\",
@@ -97,10 +98,10 @@ curl -XPUT $1/_river/gdpdm_user_river/_meta -d "{
 echo "\n"
 
 
-curl -XPUT $1/_river/gdpdm_taxonomy_river/_meta -d "{
+curl -XPUT $es_host/_river/${index}_taxonomy_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
-        \"strategy\":\"simple\",
+        \"strategy\":\"oneshot\",
         \"driver\" : \"org.postgresql.Driver\",
         \"url\" : \"jdbc:postgresql://$db_host:5432/GDPDM\",
         \"user\" : \"$db_user\",
@@ -117,7 +118,7 @@ echo "\n"
 
 #parent child not supported by jdbc-river (workaround store the parent id)
 
-curl -XPUT $1/_river/gdpdm_passport_river/_meta -d "{
+curl -XPUT $es_host/_river/${index}_passport_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
 	\"strategy\":\"simple\",
@@ -135,7 +136,7 @@ curl -XPUT $1/_river/gdpdm_passport_river/_meta -d "{
 
 echo "\n"
 
-curl -XPUT $1/_river/gdpdm_stock_river/_meta -d "{
+curl -XPUT $es_host/_river/${index}_stock_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
 	\"strategy\":\"simple\",

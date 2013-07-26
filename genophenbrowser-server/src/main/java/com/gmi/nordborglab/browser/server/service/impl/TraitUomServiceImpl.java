@@ -1,26 +1,49 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
+import java.io.IOException;
 import java.util.*;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.domain.AppData;
+import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
+import com.gmi.nordborglab.browser.server.domain.pages.ExperimentPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.repository.PassportRepository;
+import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
 import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
+import com.gmi.nordborglab.browser.server.security.EsAclManager;
+import com.gmi.nordborglab.browser.server.service.CdvService;
 import com.gmi.nordborglab.browser.server.service.HelperService;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.gmi.nordborglab.jpaontology.model.Term;
 import com.gmi.nordborglab.jpaontology.model.Term2Term;
+import com.google.common.base.Function;
 import com.google.common.collect.*;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.facet.FacetBuilders;
+import org.elasticsearch.search.facet.Facets;
+import org.elasticsearch.search.facet.filter.FilterFacet;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
@@ -46,8 +69,6 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 @Transactional(readOnly = true)
 public class TraitUomServiceImpl extends WebApplicationObjectSupport implements TraitUomService {
 
-    @Resource
-    protected Client client;
 
     @Resource
     private HelperService helperService;
@@ -61,16 +82,25 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
     private ExperimentRepository experimentRepository;
 
     @Resource
-    private TermRepository termRepository;
+    private CdvService cdvService;
 
-    //@Resource
-    //private MutableAclService aclService;
+    @Resource
+    private StudyRepository studyRepository;
+
+    @Resource
+    private TermRepository termRepository;
 
     @Resource
     private RoleHierarchy roleHierarchy;
 
     @Resource
     private AclManager aclManager;
+
+    @Resource
+    private Client client;
+
+    @Resource
+    private EsAclManager esAclManager;
 
     @Override
     public TraitUomPage findPhenotypesByExperiment(Long id, int start, int size) {
@@ -89,9 +119,9 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
                 }
             }
             page = new TraitUomPage(partitionedTraits, pageRequest,
-                    totalElements);
+                    totalElements, null);
         } else {
-            page = new TraitUomPage(traits.toList().asList(), pageRequest, 0);
+            page = new TraitUomPage(traits.toList().asList(), pageRequest, 0, null);
         }
         return page;
     }
@@ -142,6 +172,32 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         return traitUom;
     }
 
+    @Transactional(readOnly = false)
+    @Override
+    public void delete(TraitUom traitUom) {
+        aclManager.setPermissionAndOwner(traitUom);
+        Long phenotypeId = traitUom.getId();
+        Long experimentId = traitUom.getExperiment().getId();
+        if (traitUom.isPublic()) {
+            throw new RuntimeException("Public phenotypes can't be deleted");
+        }
+        List<Study> studies = studyRepository.findByPhenotypeId(traitUom.getId());
+        for (Study study : studies) {
+            cdvService.delete(study);
+        }
+        for (Trait trait : traitUom.getTraits()) {
+            trait.setTraitUom(null);
+        }
+        traitUom.getTraits().clear();
+        traitUomRepository.delete(traitUom);
+        aclManager.deletePermissions(traitUom, true);
+        deleteFromIndex(phenotypeId, experimentId);
+    }
+
+    private void deleteFromIndex(Long phenotypeId, Long experimentId) {
+        client.prepareDelete(esAclManager.getIndex(), "phenotype", phenotypeId.toString()).setRouting(experimentId.toString()).execute();
+    }
+
 
     private TraitUom setStats(TraitUom traitUom) {
         traitUom.setNumberOfObsUnits(traitUomRepository.countObsUnitsByPhenotypeId(traitUom.getId()));
@@ -156,38 +212,81 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
     }
 
     @Override
-    public TraitUomPage findAll(String name, String experiment,
-                                String ontology, String protocol, int start, int size) {
-        TraitUomPage page = null;
-        PageRequest pageRequest = new PageRequest(start, size);
-        Sort sort = new Sort("id");
-        FluentIterable<TraitUom> traits = aclManager.filterByAcl(traitUomRepository.findAll(sort));
+    public TraitUomPage findAll(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
 
-        ///TODO add fulltext search and performance improvement
+        SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
+        request.setSize(size).setFrom(start).setTypes("phenotype").setNoFields();
 
-		/*SearchRequestBuilder builder = client.prepareSearch(SearchServiceImpl.INDEX_NAME);
-		PageRequest pageRequest = new PageRequest(start, size,sort);
-		BooleanBuilder predicate = new BooleanBuilder();
-		if (name != null || experiment != null || ontology != null || protocol != null) {
-			predicate.and(localTraitNameContains(name));
-		}*/
-        int totalElements = traits.size();
-        int pageStart = 0;
-        if (start > 0)
-            pageStart = start / size;
-        if (totalElements > 0) {
-            List<TraitUom> partitionedTraits = Iterables.get(Iterables.partition(traits, size), pageStart);
-            for (TraitUom trait : partitionedTraits) {
-                if (trait.getToAccession() != null) {
-                    trait.setTraitOntologyTerm(termRepository.findByAcc(trait.getToAccession()));
-                }
-            }
-            page = new TraitUomPage(partitionedTraits, pageRequest,
-                    totalElements);
-        } else {
-            page = new TraitUomPage(traits.toList().asList(), pageRequest, 0);
+        if (searchString != null && !searchString.equalsIgnoreCase("")) {
+            request.setQuery(multiMatchQuery(searchString, "local_trait_name^3.5", "local_trait_name.partial^1.5", "trait_protocol", "to_accession.term_id^3.5", "to_accession.term_name^1.5", "eo_accession", "owner.name", "experiment"));
         }
-        return page;
+        FilterBuilder searchFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, false);
+        FilterBuilder privateFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), true, false);
+        FilterBuilder publicFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, true);
+
+        // set facets
+        request.addFacet(FacetBuilders.filterFacet(ConstEnums.TABLE_FILTER.ALL.name()).filter(searchFilter));
+        request.addFacet(FacetBuilders.filterFacet(ConstEnums.TABLE_FILTER.PRIVATE.name()).filter(privateFilter));
+        request.addFacet(FacetBuilders.filterFacet(ConstEnums.TABLE_FILTER.PUBLISHED.name()).filter(publicFilter));
+
+        switch (filter) {
+            case PRIVATE:
+                searchFilter = privateFilter;
+                break;
+            case PUBLISHED:
+                searchFilter = publicFilter;
+                break;
+            case RECENT:
+                request.addSort("modified", SortOrder.DESC);
+                break;
+            default:
+                if (searchString == null || searchString.isEmpty())
+                    request.addSort("local_trait_name", SortOrder.ASC);
+        }
+        // set filter
+        request.setFilter(searchFilter);
+
+        SearchResponse response = request.execute().actionGet();
+        List<Long> idsToFetch = Lists.newArrayList();
+        for (SearchHit hit : response.getHits()) {
+            idsToFetch.add(Long.parseLong(hit.getId()));
+        }
+        List<TraitUom> traits = Lists.newArrayList();
+        //Neded because ids are not sorted
+
+        Map<Long, TraitUom> id2Map = Maps.uniqueIndex(traitUomRepository.findAll(idsToFetch), new Function<TraitUom, Long>() {
+            @Nullable
+            @Override
+            public Long apply(@Nullable TraitUom trait) {
+                return trait.getId();
+            }
+        });
+        for (Long id : idsToFetch) {
+            if (id2Map.containsKey(id)) {
+                traits.add(id2Map.get(id));
+            }
+        }
+        for (TraitUom traitUom : traits)
+            if (traitUom.getToAccession() != null) {
+                traitUom.setTraitOntologyTerm(termRepository.findByAcc(traitUom.getToAccession()));
+            }
+        //extract facets
+        Facets searchFacets = response.getFacets();
+        List<ESFacet> facets = Lists.newArrayList();
+
+        FilterFacet filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.TABLE_FILTER.ALL.name());
+        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.ALL.name(), 0, filterFacet.getCount(), 0, null));
+        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.RECENT.name(), 0, filterFacet.getCount(), 0, null));
+
+        filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.TABLE_FILTER.PRIVATE.name());
+        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.PRIVATE.name(), 0, filterFacet.getCount(), 0, null));
+
+        // get annotation
+        filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.TABLE_FILTER.PUBLISHED.name());
+        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.PUBLISHED.name(), 0, filterFacet.getCount(), 0, null));
+
+        aclManager.setPermissionAndOwners(traits);
+        return new TraitUomPage(traits, new PageRequest(start, size), response.getHits().getTotalHits(), facets);
     }
 
     @Override
@@ -238,6 +337,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
             ObsUnit obsUnit = lookUpForObsUnit.get(value.getPassportId());
             if (obsUnit == null) {
                 Passport passport = passportRepository.findOne(value.getPassportId());
+                //TODO check if stock is available
                 Stock stock = passport.getStocks().get(0);
                 obsUnit = new ObsUnit();
                 obsUnit.setStock(stock);
@@ -258,14 +358,59 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
             }
         }
         traitUom = traitUomRepository.save(traitUom);
+        if (traitUom.getToAccession() != null) {
+            traitUom.setTraitOntologyTerm(termRepository.findByAcc(traitUom.getToAccession()));
+        }
         CumulativePermission permission = new CumulativePermission();
         permission.set(CustomPermission.ADMINISTRATION);
         permission.set(CustomPermission.EDIT);
         permission.set(CustomPermission.READ);
         aclManager.addPermission(traitUom, new PrincipalSid(SecurityUtil.getUsername()),
-                permission, experimentId);
-        aclManager.addPermission(traitUom, new GrantedAuthoritySid("ROLE_ADMIN"), permission, experimentId);
+                permission, Experiment.class, experimentId);
+        aclManager.addPermission(traitUom, new GrantedAuthoritySid("ROLE_ADMIN"), permission, Experiment.class, experimentId);
+        indexTraitUom(traitUom);
         return traitUom.getId();
+    }
+
+    private void indexTraitUom(TraitUom traitUom) {
+        try {
+            XContentBuilder builder = XContentFactory.jsonBuilder();
+
+            builder.startObject()
+                    .field("local_trait_name", traitUom.getLocalTraitName())
+                    .field("published", traitUom.getPublished())
+                    .field("modified", traitUom.getModified())
+                    .field("created", traitUom.getCreated())
+                    .field("trait_protocol", traitUom.getTraitProtocol())
+                    .field("experiment", traitUom.getExperiment().getName());
+            if (traitUom.getTraitOntologyTerm() != null) {
+                builder.startObject("to_accession");
+                getOntologyBuilder(builder, traitUom.getTraitOntologyTerm());
+                builder.endObject();
+            }
+            //TODO do the same thing for Environment ontology
+
+            esAclManager.addACLAndOwnerContent(builder, aclManager.getAcl(traitUom));
+            builder.endObject();
+            IndexRequestBuilder request = client.prepareIndex(esAclManager.getIndex(), "phenotype", traitUom.getId().toString())
+                    .setSource(builder).setParent(traitUom.getExperiment().getId().toString());
+
+            request.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private XContentBuilder getOntologyBuilder(XContentBuilder builder, Term term) {
+        try {
+            builder.field("term_id", term.getAcc())
+                    .field("term_definition", term.getTermDefinition().getTermDefinition())
+                    .field("term_comment", term.getTermDefinition().getTermComment())
+                    .field("term_name", term.getName());
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return builder;
     }
 
     @Override

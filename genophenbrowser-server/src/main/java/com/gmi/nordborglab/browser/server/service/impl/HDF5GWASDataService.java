@@ -203,6 +203,14 @@ public class HDF5GWASDataService implements GWASDataService {
         return study;
     }
 
+    @Override
+    public void deleteStudyFile(Long id) {
+        File file = new File(GWAS_STUDY_FOLDER + id + ".hdf5");
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
     private GWASResult updateStats(GWASResult gwasResult, Map<String, ChrGWAData> data) {
         float maxScore = 0;
         int numberOfSNPs = 0;

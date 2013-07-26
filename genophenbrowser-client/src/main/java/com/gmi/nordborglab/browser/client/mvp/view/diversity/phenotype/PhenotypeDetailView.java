@@ -1,6 +1,11 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.ModalFooter;
+import com.github.gwtbootstrap.client.ui.constants.BackdropType;
+import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeDetailUiHandlers;
@@ -20,6 +25,7 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -58,8 +64,8 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 
     @UiField
     PhenotypeDisplayEditor phenotypeDisplayEditor;
-    @UiField
-    PhenotypeEditEditor phenotypeEditEditor;
+
+    private PhenotypeEditEditor phenotypeEditEditor = new PhenotypeEditEditor();
     @UiField
     SimpleLayoutPanel lowerChartContainer;
     @UiField
@@ -77,11 +83,7 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     @UiField
     ToggleButton edit;
     @UiField
-    ToggleButton save;
-    @UiField
-    Anchor cancel;
-    @UiField
-    Anchor delete;
+    ToggleButton delete;
     @UiField(provided = true)
     MainResources mainRes;
     protected DataTable histogramData;
@@ -96,11 +98,12 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     private GeoChart geoChart = new GeoChart();
     private PieChart pieChart;
     private PieChart phenotypePieChart;
-    protected State state = State.DISPLAYING;
     private final PhenotypeDisplayDriver displayDriver;
     private final PhenotypeEditDriver editDriver;
     private boolean layoutScheduled = false;
     private boolean showBlank = true;
+    private Modal editPopup = new Modal(true);
+    private Modal deletePopup = new Modal(true);
 
 
     private final ScheduledCommand layoutCmd = new ScheduledCommand() {
@@ -118,6 +121,46 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         this.editDriver = editDriver;
         this.displayDriver.initialize(phenotypeDisplayEditor);
         this.editDriver.initialize(phenotypeEditEditor);
+        editPopup.setBackdrop(BackdropType.STATIC);
+        editPopup.setCloseVisible(true);
+        editPopup.setTitle("Edit phenotype");
+        Button cancelEditBtn = new Button("Cancel", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onCancel();
+            }
+        });
+        cancelEditBtn.setType(ButtonType.DEFAULT);
+        Button saveEditBtn = new Button("Save", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onSave();
+            }
+        });
+        saveEditBtn.setType(ButtonType.PRIMARY);
+        ModalFooter footer = new ModalFooter(cancelEditBtn, saveEditBtn);
+        editPopup.add(phenotypeEditEditor);
+        editPopup.add(footer);
+
+        deletePopup.setBackdrop(BackdropType.STATIC);
+        deletePopup.setCloseVisible(true);
+        deletePopup.add(new HTML("<h4>Do you really want to delete the phenotype?</h4>"));
+        Button cancelDeleteBtn = new Button("Cancel", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                deletePopup.hide();
+            }
+        });
+        cancelDeleteBtn.setType(ButtonType.DEFAULT);
+        Button deleteBtn = new Button("Delete", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onConfirmDelete();
+            }
+        });
+        deleteBtn.setType(ButtonType.DANGER);
+        deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
+
     }
 
     @Override
@@ -130,23 +173,6 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         return displayDriver;
     }
 
-
-    @Override
-    public void setState(State state, int permission) {
-        this.state = state;
-        phenotypeDisplayEditor.setVisible(state == State.DISPLAYING);
-        phenotypeEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        edit.setVisible(state == State.DISPLAYING &&
-                (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        delete.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-    }
-
-    @Override
-    public State getState() {
-        return state;
-    }
 
     @Override
     public PhenotypeEditDriver getEditDriver() {
@@ -194,32 +220,14 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 
     @UiHandler("edit")
     public void onEdit(ClickEvent e) {
-        if (state == State.DISPLAYING) {
-            getUiHandlers().onEdit();
-        }
+        getUiHandlers().onEdit();
     }
 
     @UiHandler("delete")
     public void onDelete(ClickEvent e) {
-        if (state == State.EDITING) {
-            if (Window.confirm("Do you really want to delete the Phenotype and all the studies?"))
-                getUiHandlers().onDelete();
-        }
+        getUiHandlers().onDelete();
     }
 
-    @UiHandler("save")
-    public void onSave(ClickEvent e) {
-        if (state == State.EDITING) {
-            getUiHandlers().onSave();
-        }
-    }
-
-    @UiHandler("cancel")
-    public void onCancel(ClickEvent e) {
-        if (state == State.EDITING) {
-            getUiHandlers().onCancel();
-        }
-    }
 
     private GeoChart.Options createGeoChartOptions() {
         GeoChart.Options options = GeoChart.Options.create();
@@ -402,5 +410,27 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     public void drawCharts() {
         drawUpperCharts();
         drawLowerCharts();
+    }
+
+    @Override
+    public void showActionBtns(boolean show) {
+        edit.setVisible(show);
+        delete.setVisible(show);
+    }
+
+    @Override
+    public void showEditPopup(boolean show) {
+        if (show)
+            editPopup.show();
+        else
+            editPopup.hide();
+    }
+
+    @Override
+    public void showDeletePopup(boolean show) {
+        if (show)
+            deletePopup.show();
+        else
+            deletePopup.hide();
     }
 }

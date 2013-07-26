@@ -6,12 +6,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
-import com.gmi.nordborglab.browser.server.domain.acl.AclExperimentIdentity;
-import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
-import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 
 @Entity
 @Table(name = "div_experiment", schema = "observation")
@@ -29,16 +25,19 @@ public class Experiment extends SecureEntity {
 
     private String design;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created = new Date();
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date published;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modified = new Date();
 
     private String comments;
 
-    @OneToOne(mappedBy = "experiment", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private AclExperimentIdentity acl;
-
-    @OneToMany(mappedBy = "experiment", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "experiment", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<ObsUnit> obsUnits = new HashSet<ObsUnit>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinTable(schema = "util", name = "publications_experiment", inverseJoinColumns = @JoinColumn(name = "publication_id", referencedColumnName = "id"),
             joinColumns = @JoinColumn(name = "div_experiment_id", referencedColumnName = "div_experiment_id"))
     private Set<Publication> publications = new HashSet<Publication>();
@@ -48,11 +47,6 @@ public class Experiment extends SecureEntity {
     int numberOfPhenotypes = 0;
 
     public Experiment() {
-    }
-
-
-    public AclExperimentIdentity getAcl() {
-        return acl;
     }
 
 
@@ -124,4 +118,15 @@ public class Experiment extends SecureEntity {
         publication.getExperiments().remove(this);
     }
 
+    public Date getCreated() {
+        return created;
+    }
+
+    public Date getPublished() {
+        return published;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
 }

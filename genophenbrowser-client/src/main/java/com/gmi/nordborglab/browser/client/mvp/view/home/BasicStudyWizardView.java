@@ -663,6 +663,11 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
                 link.setDisabled(false);
             }
         }
+        if (statisticTypes.size() == 1) {
+            StatisticTypeProxy statisticType = statisticTypes.get(0);
+            statisticTypeLinks.get(statisticType).setActive(true);
+            getUiHandlers().onSelectStatisticType(statisticType);
+        }
     }
 
     @Override

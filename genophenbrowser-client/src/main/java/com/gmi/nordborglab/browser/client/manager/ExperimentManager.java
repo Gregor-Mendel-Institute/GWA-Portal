@@ -6,18 +6,19 @@ import com.gmi.nordborglab.browser.shared.proxy.PublicationPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 
 import java.util.List;
 
-public class ExperimentManager extends RequestFactoryManager<ExperimentRequest>{
-	
+public class ExperimentManager extends RequestFactoryManager<ExperimentRequest> {
 
-	@Inject
-	public ExperimentManager(CustomRequestFactory rf) {
-		super(rf);
-	}
+
+    @Inject
+    public ExperimentManager(CustomRequestFactory rf) {
+        super(rf);
+    }
 
     @Override
     public ExperimentRequest getContext() {
@@ -28,19 +29,24 @@ public class ExperimentManager extends RequestFactoryManager<ExperimentRequest>{
         return rf;
     }
 
-	public void findAll(Receiver<ExperimentPageProxy> receiver,int start,int size) {
-		rf.experimentRequest().findByAcl(start,size).with("content.acl").fire(receiver);
-	}
 
-	public void findOne(Receiver<ExperimentProxy> receiver,Long id) {
-		rf.experimentRequest().findExperiment(id).with("userPermission","publications").fire(receiver);
-	}
+    public void findAll(Receiver<ExperimentPageProxy> receiver, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
+        rf.experimentRequest().findByAclAndFilter(filter, searchString, start, size).with("content.acl", "content.ownerUser", "facets").fire(receiver);
+    }
+
+    public void findOne(Receiver<ExperimentProxy> receiver, Long id) {
+        rf.experimentRequest().findExperiment(id).with("userPermission", "publications").fire(receiver);
+    }
 
     public void findAllWithAccess(Receiver<List<ExperimentProxy>> receiver, Integer permission) {
         rf.experimentRequest().findAllByAcl(permission).fire(receiver);
     }
 
-    public void findAllPublications(Receiver<PublicationPageProxy> receiver,int start, int size) {
-        rf.experimentRequest().getPublications(start,size).fire(receiver);
+    public void findAllPublications(Receiver<PublicationPageProxy> receiver, int start, int size) {
+        rf.experimentRequest().getPublications(start, size).fire(receiver);
+    }
+
+    public void delete(Receiver<Void> receiver, ExperimentProxy experiment) {
+        rf.experimentRequest().delete(experiment).fire(receiver);
     }
 }

@@ -1,20 +1,12 @@
 package com.gmi.nordborglab.browser.server.repository;
 
-import com.gmi.nordborglab.browser.server.domain.acl.AclExperimentClass;
-import com.gmi.nordborglab.browser.server.domain.acl.AclExperimentEntry;
-import com.gmi.nordborglab.browser.server.domain.acl.AclExperimentIdentity;
 import com.gmi.nordborglab.browser.server.domain.acl.AclSid;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.google.common.collect.Lists;
 import org.junit.Test;
-import org.springframework.security.acls.domain.GrantedAuthoritySid;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.Sid;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -5,9 +5,10 @@ import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentsOverviewUiHandlers;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
@@ -26,82 +27,126 @@ import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
+import java.util.List;
+
 
 public class ExperimentsOverviewPresenter
-		extends
-		Presenter<ExperimentsOverviewPresenter.MyView, ExperimentsOverviewPresenter.MyProxy>  implements ExperimentsOverviewUiHandlers{
+        extends
+        Presenter<ExperimentsOverviewPresenter.MyView, ExperimentsOverviewPresenter.MyProxy> implements ExperimentsOverviewUiHandlers {
 
-	public interface MyView extends View,HasUiHandlers<ExperimentsOverviewUiHandlers> {
-		HasData<ExperimentProxy> getDisplay();
-	}
+    public interface MyView extends View, HasUiHandlers<ExperimentsOverviewUiHandlers> {
+        HasData<ExperimentProxy> getDisplay();
 
-	@ProxyCodeSplit
-	@NameToken(NameTokens.experiments)
+        void setActiveNavLink(ConstEnums.TABLE_FILTER filter);
+
+        void displayFacets(List<FacetProxy> facets);
+    }
+
+    @ProxyCodeSplit
+    @NameToken(NameTokens.experiments)
     @TabInfo(container = ExperimentsOverviewTabPresenter.class,
-	      label = "Overview",
-	      priority = 0) 
-	@Title("Experiments")
-	public interface MyProxy extends TabContentProxyPlace<ExperimentsOverviewPresenter> {
-	}
-	
+            label = "Overview",
+            priority = 0)
+    @Title("Studies")
+    public interface MyProxy extends TabContentProxyPlace<ExperimentsOverviewPresenter> {
+    }
 
-	private final ExperimentManager experimentManager;
-	private final PlaceManager placeManager;
-	protected final AsyncDataProvider<ExperimentProxy> dataProvider;
 
-	@Inject
-	public ExperimentsOverviewPresenter(final EventBus eventBus,
-			final MyView view, final MyProxy proxy,
-			final ExperimentManager experimentManager, 
-			final PlaceManager placeManager) {
-		super(eventBus, view, proxy);
-		getView().setUiHandlers(this);
-		this.experimentManager = experimentManager;
-		this.placeManager = placeManager;
-		dataProvider = new AsyncDataProvider<ExperimentProxy>() {
+    private final ExperimentManager experimentManager;
+    private final PlaceManager placeManager;
+    protected final AsyncDataProvider<ExperimentProxy> dataProvider;
+    private ConstEnums.TABLE_FILTER currentFilter = ConstEnums.TABLE_FILTER.ALL;
+    private String searchString = null;
+    private List<FacetProxy> facets;
 
-			@Override
-			protected void onRangeChanged(HasData<ExperimentProxy> display) {
-				requestExperiments();
-			}
-		};
-	}
+    @Inject
+    public ExperimentsOverviewPresenter(final EventBus eventBus,
+                                        final MyView view, final MyProxy proxy,
+                                        final ExperimentManager experimentManager,
+                                        final PlaceManager placeManager) {
+        super(eventBus, view, proxy);
+        getView().setUiHandlers(this);
+        this.experimentManager = experimentManager;
+        this.placeManager = placeManager;
+        dataProvider = new AsyncDataProvider<ExperimentProxy>() {
 
-	protected void requestExperiments() {
-		fireEvent(new LoadingIndicatorEvent(true));
-		Receiver<ExperimentPageProxy> receiver = new Receiver<ExperimentPageProxy>() {
-			@Override
-			public void onSuccess(ExperimentPageProxy experiments) {
-				fireEvent(new LoadingIndicatorEvent(false));
-				dataProvider.updateRowCount((int)experiments.getTotalElements(), true);
-				dataProvider.updateRowData(getView().getDisplay().getVisibleRange().getStart(), experiments.getContent());
-			}
-		};
-		Range range = getView().getDisplay().getVisibleRange();
-		experimentManager.findAll(receiver,range.getStart(),range.getLength());
-	}
+            @Override
+            protected void onRangeChanged(HasData<ExperimentProxy> display) {
+                requestExperiments();
+            }
+        };
+    }
 
-	@Override
-	protected void revealInParent() {
-		RevealContentEvent.fire(this, ExperimentsOverviewTabPresenter.TYPE_SetTabContent,
-				this);
-	}
+    protected void requestExperiments() {
+        fireEvent(new LoadingIndicatorEvent(true));
+        Receiver<ExperimentPageProxy> receiver = new Receiver<ExperimentPageProxy>() {
+            @Override
+            public void onSuccess(ExperimentPageProxy experiments) {
+                fireEvent(new LoadingIndicatorEvent(false));
+                dataProvider.updateRowCount((int) experiments.getTotalElements(), true);
+                dataProvider.updateRowData(getView().getDisplay().getVisibleRange().getStart(), experiments.getContent());
+                facets = experiments.getFacets();
+                getView().displayFacets(facets);
+            }
+        };
+        Range range = getView().getDisplay().getVisibleRange();
+        experimentManager.findAll(receiver, currentFilter, searchString, range.getStart(), range.getLength());
+    }
 
-	@Override
-	protected void onBind() {
-		super.onBind();
-		dataProvider.addDataDisplay(getView().getDisplay());
-	}
+    @Override
+    protected void revealInParent() {
+        RevealContentEvent.fire(this, ExperimentsOverviewTabPresenter.TYPE_SetTabContent,
+                this);
+    }
 
-	@Override
-	protected void onReset() {
-		super.onReset();
-		
-	}
+    @Override
+    protected void onBind() {
+        super.onBind();
+        dataProvider.addDataDisplay(getView().getDisplay());
+    }
 
-	@Override
-	public void loadExperiment(ExperimentProxy experiment) {
-		PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.experiment).with("id", experiment.getId().toString());
-		placeManager.revealPlace(request);
-	}
+    @Override
+    protected void onReset() {
+        super.onReset();
+        PlaceRequest request = placeManager.getCurrentPlaceRequest();
+        ConstEnums.TABLE_FILTER newFilter = ConstEnums.TABLE_FILTER.ALL;
+        String newCategoryString = request.getParameter("filter", null);
+        if (newCategoryString != null) {
+            try {
+                newFilter = ConstEnums.TABLE_FILTER.valueOf(newCategoryString);
+            } catch (Exception e) {
+
+            }
+        }
+        if (newFilter != currentFilter) {
+            currentFilter = newFilter;
+            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+        }
+        getView().setActiveNavLink(currentFilter);
+    }
+
+
+    @Override
+    public void loadExperiment(ExperimentProxy experiment) {
+        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.experiment).with("id", experiment.getId().toString());
+        placeManager.revealPlace(request);
+    }
+
+    @Override
+    public void selectFilter(ConstEnums.TABLE_FILTER filter) {
+        if (filter != currentFilter) {
+            currentFilter = filter;
+            PlaceRequest request = placeManager.getCurrentPlaceRequest();
+            request.with("filter", filter.toString());
+            placeManager.updateHistory(request, true);
+            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+            getView().setActiveNavLink(currentFilter);
+        }
+    }
+
+    @Override
+    public void updateSearchString(String value) {
+        searchString = value;
+        getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+    }
 }

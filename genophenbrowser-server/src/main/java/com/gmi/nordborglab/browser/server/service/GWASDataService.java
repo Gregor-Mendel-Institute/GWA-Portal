@@ -40,4 +40,6 @@ public interface GWASDataService {
 
     @PreAuthorize("hasRole('ROLE_USER') AND hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ') ")
     Study uploadStudyGWASResult(Long studyId, CommonsMultipartFile file) throws IOException;
+
+    public void deleteStudyFile(Long id);
 }
