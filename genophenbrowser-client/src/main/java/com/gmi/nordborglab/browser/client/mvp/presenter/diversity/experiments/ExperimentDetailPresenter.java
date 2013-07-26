@@ -29,6 +29,7 @@ import com.gwtplatform.mvp.client.HasUiHandlers;
 
 import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
+
 import com.gmi.nordborglab.browser.client.CurrentUser;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
@@ -64,19 +65,15 @@ import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 public class ExperimentDetailPresenter
-		extends
-		Presenter<ExperimentDetailPresenter.MyView, ExperimentDetailPresenter.MyProxy>
-		implements ExperimentDetailUiHandlers {
+        extends
+        Presenter<ExperimentDetailPresenter.MyView, ExperimentDetailPresenter.MyProxy>
+        implements ExperimentDetailUiHandlers {
 
-	public interface MyView extends View,
-			HasUiHandlers<ExperimentDetailUiHandlers> {
-		ExperimentEditDriver getExperimentEditDriver();
+    public interface MyView extends View,
+            HasUiHandlers<ExperimentDetailUiHandlers> {
+        ExperimentEditDriver getExperimentEditDriver();
 
-		ExperimentDisplayDriver getExperimentDisplayDriver();
-
-		void setState(State state,int permission);
-
-		State getState();
+        ExperimentDisplayDriver getExperimentDisplayDriver();
 
         void showPermissionPanel(boolean show);
 
@@ -87,181 +84,192 @@ public class ExperimentDetailPresenter
         void phaseInPublication(PublicationProxy publicationProxy, ProvidesKey<PublicationProxy> providesKey);
 
         HasText getDOIText();
+
+        void showEditPopup(boolean show);
+
+        void showDeletePopup(boolean show);
+
+        void showShareBtn(boolean show);
+
+        void showActionBtns(boolean show);
     }
 
-	public static enum State {
-		DISPLAYING, EDITING, SAVING;
-	}
+    public static enum State {
+        DISPLAYING, EDITING, SAVING;
+    }
 
-	@ProxyCodeSplit
-	@TabInfo(container = ExperimentDetailTabPresenter.class, label = "Overview", priority = 0)
-	@NameToken(NameTokens.experiment)
-	public interface MyProxy extends
-			TabContentProxyPlace<ExperimentDetailPresenter> {
-	}
+    @ProxyCodeSplit
+    @TabInfo(container = ExperimentDetailTabPresenter.class, label = "Overview", priority = 0)
+    @NameToken(NameTokens.experiment)
+    public interface MyProxy extends
+            TabContentProxyPlace<ExperimentDetailPresenter> {
+    }
 
-	@TitleFunction
-	public String getTitle() {
-		String title = null;
-		if (experiment != null) {
-			title = experiment.getName();
-		}
-		return title;
-	}
+    @TitleFunction
+    public String getTitle() {
+        String title = null;
+        if (experiment != null) {
+            title = experiment.getName();
+        }
+        return title;
+    }
+
     public static final Object TYPE_SetPermissionContent = new Object();
-	private final PlaceManager placeManager;
-	private final ExperimentManager experimentManager;
-	ExperimentProxy experiment;
-	final CurrentUser currentUser;
-	private ExperimentEditDriver editDriver = null;
-	private Receiver<ExperimentProxy> receiver = null;
-	protected boolean fireLoadExperimentEvent = false;
+    private final PlaceManager placeManager;
+    private final ExperimentManager experimentManager;
+    ExperimentProxy experiment;
+    final CurrentUser currentUser;
+    private ExperimentEditDriver editDriver = null;
+    private Receiver<ExperimentProxy> receiver = null;
+    protected boolean fireLoadExperimentEvent = false;
     private final PermissionDetailPresenter permissionDetailPresenter;
-	public static Type<PlaceRequestHandler> type = new Type<PlaceRequestHandler>();
+    public static Type<PlaceRequestHandler> type = new Type<PlaceRequestHandler>();
     private final ListDataProvider<PublicationProxy> publicationDataProvider = new ListDataProvider<PublicationProxy>();
 
-	@Inject
-	public ExperimentDetailPresenter(final EventBus eventBus,
-			final MyView view, final MyProxy proxy,
-			final PlaceManager placeManager,
-			final ExperimentManager experimentManager,
-			final CurrentUser currentUser,
-            final PermissionDetailPresenter permissionDetailPresenter) {
-		super(eventBus, view, proxy);
-		getView().setUiHandlers(this);
-        this.permissionDetailPresenter =permissionDetailPresenter;
-		this.placeManager = placeManager;
-		this.currentUser = currentUser;
-		this.experimentManager = experimentManager;
-		this.editDriver = getView().getExperimentEditDriver();
-		receiver = new Receiver<ExperimentProxy>() {
-			public void onSuccess(ExperimentProxy response) {
-				experiment = response;
-				getView().setState(State.DISPLAYING,getPermission());
-				getView().getExperimentDisplayDriver().display(experiment);
-			}
+    @Inject
+    public ExperimentDetailPresenter(final EventBus eventBus,
+                                     final MyView view, final MyProxy proxy,
+                                     final PlaceManager placeManager,
+                                     final ExperimentManager experimentManager,
+                                     final CurrentUser currentUser,
+                                     final PermissionDetailPresenter permissionDetailPresenter) {
+        super(eventBus, view, proxy);
+        getView().setUiHandlers(this);
+        this.permissionDetailPresenter = permissionDetailPresenter;
+        this.placeManager = placeManager;
+        this.currentUser = currentUser;
+        this.experimentManager = experimentManager;
+        this.editDriver = getView().getExperimentEditDriver();
+        receiver = new Receiver<ExperimentProxy>() {
+            public void onSuccess(ExperimentProxy response) {
+                fireEvent(new LoadingIndicatorEvent(false));
+                experiment = response;
+                getView().getExperimentDisplayDriver().display(experiment);
+                getView().showEditPopup(false);
+            }
 
-			public void onFailure(ServerFailure error) {
-				fireEvent(new DisplayNotificationEvent("Error while saving",error.getMessage(),true,DisplayNotificationEvent.LEVEL_ERROR,0));
-				onEdit();
-			}
+            public void onFailure(ServerFailure error) {
+                fireEvent(new LoadingIndicatorEvent(false));
+                fireEvent(new DisplayNotificationEvent("Error while saving", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, 0));
+                onEdit();
+            }
 
-			public void onConstraintViolation(
-					Set<ConstraintViolation<?>> violations) {
-				super.onConstraintViolation(violations);
-				getView().setState(State.EDITING,getPermission());
-			}
-		};
+            public void onConstraintViolation(
+                    Set<ConstraintViolation<?>> violations) {
+                fireEvent(new LoadingIndicatorEvent(false));
+                super.onConstraintViolation(violations);
+            }
+        };
 
         publicationDataProvider.addDataDisplay(getView().getPublicationDisplay());
-	}
+    }
 
-	@Override
-	protected void revealInParent() {
-		RevealContentEvent.fire(this,
-				ExperimentDetailTabPresenter.TYPE_SetTabContent, this);
-	}
+    @Override
+    protected void revealInParent() {
+        RevealContentEvent.fire(this,
+                ExperimentDetailTabPresenter.TYPE_SetTabContent, this);
+    }
 
-	@Override
-	protected void onBind() {
-		super.onBind();
-        setInSlot(TYPE_SetPermissionContent,permissionDetailPresenter);
-        registerHandler(getEventBus().addHandlerToSource(PermissionDoneEvent.TYPE,permissionDetailPresenter,new PermissionDoneEvent.Handler() {
+    @Override
+    protected void onBind() {
+        super.onBind();
+        setInSlot(TYPE_SetPermissionContent, permissionDetailPresenter);
+        registerHandler(getEventBus().addHandlerToSource(PermissionDoneEvent.TYPE, permissionDetailPresenter, new PermissionDoneEvent.Handler() {
             @Override
             public void onPermissionDone(PermissionDoneEvent event) {
                 getView().showPermissionPanel(false);
             }
         }));
-	}
+    }
 
-	@Override
-	protected void onReset() {
-		super.onReset();
-		if (fireLoadExperimentEvent) {
-			fireEvent(new LoadExperimentEvent(experiment));
-			fireLoadExperimentEvent = false;
-		}
-		getView().getExperimentDisplayDriver().display(experiment);
-		getView().setState(State.DISPLAYING,getPermission());
+    @Override
+    protected void onReset() {
+        super.onReset();
+        if (fireLoadExperimentEvent) {
+            fireEvent(new LoadExperimentEvent(experiment));
+            fireLoadExperimentEvent = false;
+        }
+        getView().getExperimentDisplayDriver().display(experiment);
+        getView().showActionBtns(currentUser.hasEdit(experiment));
+        getView().showShareBtn(currentUser.hasAdmin(experiment));
         publicationDataProvider.setList(ImmutableList.copyOf(experiment.getPublications()));
-		LoadingIndicatorEvent.fire(this, false);
-	}
+        LoadingIndicatorEvent.fire(this, false);
+    }
 
-	@Override
-	public void prepareFromRequest(PlaceRequest placeRequest) {
-		super.prepareFromRequest(placeRequest);
-		LoadingIndicatorEvent.fire(this, true);
-		Receiver<ExperimentProxy> receiver = new Receiver<ExperimentProxy>() {
-			@Override
-			public void onSuccess(ExperimentProxy exp) {
-				experiment = exp;
-				fireLoadExperimentEvent = true;
-				getProxy().manualReveal(ExperimentDetailPresenter.this);
-			}
+    @Override
+    public void prepareFromRequest(PlaceRequest placeRequest) {
+        super.prepareFromRequest(placeRequest);
+        LoadingIndicatorEvent.fire(this, true);
+        Receiver<ExperimentProxy> receiver = new Receiver<ExperimentProxy>() {
+            @Override
+            public void onSuccess(ExperimentProxy exp) {
+                experiment = exp;
+                fireLoadExperimentEvent = true;
+                getProxy().manualReveal(ExperimentDetailPresenter.this);
+            }
 
-			@Override
-			public void onFailure(ServerFailure error) {
-				getProxy().manualRevealFailed();
-				placeManager.revealPlace(new PlaceRequest(NameTokens.experiments));
-			}
-		};
-		try {
-			Long experimentId = Long.valueOf(placeRequest.getParameter("id",
-					null));
-			if (experiment == null || !experiment.getId().equals(experimentId)) {
-				experimentManager.findOne(receiver, experimentId);
-			} else {
-				getProxy().manualReveal(ExperimentDetailPresenter.this);
-			}
-		} catch (NumberFormatException e) {
-			getProxy().manualRevealFailed();
-			placeManager.revealPlace(new PlaceRequest(NameTokens.experiments));
-		}
-	}
+            @Override
+            public void onFailure(ServerFailure error) {
+                getProxy().manualRevealFailed();
+                placeManager.revealPlace(new PlaceRequest(NameTokens.experiments));
+            }
+        };
+        try {
+            Long experimentId = Long.valueOf(placeRequest.getParameter("id",
+                    null));
+            if (experiment == null || !experiment.getId().equals(experimentId)) {
+                experimentManager.findOne(receiver, experimentId);
+            } else {
+                getProxy().manualReveal(ExperimentDetailPresenter.this);
+            }
+        } catch (NumberFormatException e) {
+            getProxy().manualRevealFailed();
+            placeManager.revealPlace(new PlaceRequest(NameTokens.experiments));
+        }
+    }
 
-	@Override
-	public boolean useManualReveal() {
-		return true;
-	}
+    @Override
+    public boolean useManualReveal() {
+        return true;
+    }
 
-	@Override
-	public void onEdit() {
-		getView().setState(State.EDITING,getPermission());
-		ExperimentRequest ctx = experimentManager.getRequestFactory()
-				.experimentRequest();
-		editDriver.edit(experiment, ctx);
-		ctx.save(experiment).with("userPermission", "publications").to(receiver);
-	}
+    @Override
+    public void onEdit() {
+        ExperimentRequest ctx = experimentManager.getRequestFactory()
+                .experimentRequest();
+        editDriver.edit(experiment, ctx);
+        ctx.save(experiment).with("userPermission", "publications").to(receiver);
+        getView().showEditPopup(true);
+    }
 
-	@Override
-	public void onSave() {
-		getView().setState(State.SAVING,getPermission());
-		RequestContext req = editDriver.flush();
-		req.fire();
-	}
+    @Override
+    public void onSave() {
+        RequestContext req = editDriver.flush();
+        fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
+        req.fire();
+    }
 
-	@Override
-	public void onCancel() {
-		getView().setState(State.DISPLAYING,getPermission());
-		getView().getExperimentDisplayDriver().display(experiment);
-	}
-	
-	protected int getPermission() {
-		assert experiment != null;
-		int permission = 0;
-		if (currentUser.isLoggedIn()) {
-			if (experiment.getUserPermission() != null ) {
-				permission = experiment.getUserPermission().getMask();
-			}
-		}
-		return permission;
-	}
-	
+    @Override
+    public void onCancel() {
+        getView().showEditPopup(false);
+    }
 
-	@Override
-	public void onDelete() {
-		
-	}
+    protected int getPermission() {
+        assert experiment != null;
+        int permission = 0;
+        if (currentUser.isLoggedIn()) {
+            if (experiment.getUserPermission() != null) {
+                permission = experiment.getUserPermission().getMask();
+            }
+        }
+        return permission;
+    }
+
+
+    @Override
+    public void onDelete() {
+        getView().showDeletePopup(true);
+    }
 
     @Override
     public void onShare() {
@@ -271,8 +279,6 @@ public class ExperimentDetailPresenter
 
     @Override
     public void onDeletePublication(PublicationProxy publication) {
-        if (getView().getState() == State.EDITING)
-            return;
         ExperimentRequest ctx = experimentManager.getContext();
         experiment = ctx.edit(experiment);
         publication = ctx.edit(publication);
@@ -288,13 +294,11 @@ public class ExperimentDetailPresenter
 
     @Override
     public void queryDOI(String DOI) {
-        if (getView().getState() == State.EDITING)
-            return;
         fireEvent(new LoadingIndicatorEvent(true));
-        RequestBuilder rb = new RequestBuilder(RequestBuilder.GET,"/doi/"+DOI);
-        rb.setHeader("Accept","application/vnd.citationstyles.csl+json");
+        RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, "/doi/" + DOI);
+        rb.setHeader("Accept", "application/vnd.citationstyles.csl+json");
         try {
-            rb.sendRequest(null,new RequestCallback() {
+            rb.sendRequest(null, new RequestCallback() {
                 @Override
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() == 200) {
@@ -308,9 +312,9 @@ public class ExperimentDetailPresenter
                             String title = object.get("title").isString().stringValue();
                             String journal = object.get("container-title").isString().stringValue();
                             JSONObject authorObj = object.get("author").isArray().get(0).isObject();
-                            String author = authorObj.get("given").isString().stringValue()+" "+authorObj.get("family").isString().stringValue();
+                            String author = authorObj.get("given").isString().stringValue() + " " + authorObj.get("family").isString().stringValue();
                             JSONArray dateArr = object.get("issued").isObject().get("date-parts").isArray().get(0).isArray();
-                            Date issued = new Date((int)dateArr.get(0).isNumber().doubleValue(),(int)dateArr.get(1).isNumber().doubleValue(),(int)dateArr.get(2).isNumber().doubleValue());
+                            Date issued = new Date((int) dateArr.get(0).isNumber().doubleValue(), (int) dateArr.get(1).isNumber().doubleValue(), (int) dateArr.get(2).isNumber().doubleValue());
                             ExperimentRequest ctx = experimentManager.getContext();
                             PublicationProxy publication = ctx.create(PublicationProxy.class);
                             publication.setDOI(DOI);
@@ -322,11 +326,11 @@ public class ExperimentDetailPresenter
                             publication.setURL(URL);
                             publication.setVolume(volume);
                             publication.setPubDate(issued);
-                            ctx.addPublication(experiment.getId(),publication).with("userPermission","publications").fire(new Receiver<ExperimentProxy>() {
+                            ctx.addPublication(experiment.getId(), publication).with("userPermission", "publications").fire(new Receiver<ExperimentProxy>() {
                                 @Override
                                 public void onSuccess(ExperimentProxy response) {
                                     fireEvent(new LoadingIndicatorEvent(false));
-                                    experiment =  response;
+                                    experiment = response;
                                     publicationDataProvider.setList(Lists.newArrayList(experiment.getPublications()));
                                     PublicationProxy newPublication = Iterables.get(Collections2.filter(experiment.getPublications(), new Predicate<PublicationProxy>() {
                                         @Override
@@ -343,52 +347,72 @@ public class ExperimentDetailPresenter
 
                                 @Override
                                 public void onFailure(ServerFailure error) {
-                                    DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this,"Publication","Error saving publicaiton");
+                                    DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this, "Publication", "Error saving publicaiton");
                                     fireEvent(new LoadingIndicatorEvent(false));
                                 }
                             });
-                        }
-                        catch (Exception e) {
-                            DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this,"DOI query failed","Could not parse meta-data");
+                        } catch (Exception e) {
+                            DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this, "DOI query failed", "Could not parse meta-data");
                             fireEvent(new LoadingIndicatorEvent(false));
                         }
 
-                    }
-                    else  if (response.getStatusCode() == 204) {
-                        DisplayNotificationEvent.fireWarning(ExperimentDetailPresenter.this,"DOI query failed","No metadata found");
+                    } else if (response.getStatusCode() == 204) {
+                        DisplayNotificationEvent.fireWarning(ExperimentDetailPresenter.this, "DOI query failed", "No metadata found");
                         fireEvent(new LoadingIndicatorEvent(false));
-                    }
-                    else if (response.getStatusCode() == 404) {
-                        DisplayNotificationEvent.fireWarning(ExperimentDetailPresenter.this,"DOI query failed","DOI doesn't exist");
+                    } else if (response.getStatusCode() == 404) {
+                        DisplayNotificationEvent.fireWarning(ExperimentDetailPresenter.this, "DOI query failed", "DOI doesn't exist");
                         fireEvent(new LoadingIndicatorEvent(false));
-                    }
-                    else {
-                        DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this,"DOI query failed","General error");
+                    } else {
+                        DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this, "DOI query failed", "General error");
                         fireEvent(new LoadingIndicatorEvent(false));
                     }
                 }
 
                 @Override
                 public void onError(Request request, Throwable exception) {
-                    DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this,"Error",exception.getMessage());
+                    DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this, "Error", exception.getMessage());
                     fireEvent(new LoadingIndicatorEvent(false));
                 }
             });
-        }
-        catch (Exception e) {
-            DisplayNotificationEvent.fireError(this,"Error",e.getMessage());
+        } catch (Exception e) {
+            DisplayNotificationEvent.fireError(this, "Error", e.getMessage());
             fireEvent(new LoadingIndicatorEvent(false));
         }
     }
 
+    @Override
+    public void onConfirmDelete() {
+        fireEvent(new LoadingIndicatorEvent(true, "Removing..."));
+        experimentManager.delete(new Receiver<Void>() {
+            @Override
+            public void onSuccess(Void response) {
+                PlaceRequest request = null;
+                if (placeManager.getHierarchyDepth() <= 1) {
+                    request = new ParameterizedPlaceRequest(NameTokens.experiments);
+                } else {
+                    request = placeManager.getCurrentPlaceHierarchy().get(placeManager.getHierarchyDepth() - 2);
+                }
+                getView().showDeletePopup(false);
+                experiment = null;
+                placeManager.revealPlace(request);
+            }
+
+            @Override
+            public void onFailure(ServerFailure error) {
+                fireEvent(new LoadingIndicatorEvent(false));
+                super.onFailure(error);    //To change body of overridden methods use File | Settings | File Templates.
+            }
+        }, experiment);
+    }
+
     @ProxyEvent
-	public void onLoadExperiment(LoadExperimentEvent event) {
-		experiment = event.getExperiment();
-		PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id",experiment.getId().toString());
-		String historyToken  = placeManager.buildHistoryToken(request);
-		TabData tabData = getProxy().getTabData();
-		getProxy().changeTab(new TabDataDynamic(tabData.getLabel(), tabData.getPriority(), historyToken));
-	}
+    public void onLoadExperiment(LoadExperimentEvent event) {
+        experiment = event.getExperiment();
+        PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id", experiment.getId().toString());
+        String historyToken = placeManager.buildHistoryToken(request);
+        TabData tabData = getProxy().getTabData();
+        getProxy().changeTab(new TabDataDynamic(tabData.getLabel(), tabData.getPriority(), historyToken));
+    }
 
     @Override
     protected void onReveal() {

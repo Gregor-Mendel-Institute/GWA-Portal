@@ -1,9 +1,9 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
-import com.github.gwtbootstrap.client.ui.Form;
-import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.*;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
+import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.gmi.nordborglab.browser.client.editors.ExperimentDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.ExperimentEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentDetailUiHandlers;
@@ -24,6 +24,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -32,6 +33,7 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.inject.Inject;
@@ -53,18 +55,13 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     public interface ExperimentDisplayDriver extends RequestFactoryEditorDriver<ExperimentProxy, ExperimentDisplayEditor> {
     }
 
-    @UiField
-    ExperimentEditEditor experimentEditEditor;
+    private ExperimentEditEditor experimentEditEditor = new ExperimentEditEditor();
     @UiField
     ExperimentDisplayEditor experimentDisplayEditor;
     @UiField
     ToggleButton edit;
     @UiField
-    ToggleButton save;
-    @UiField
-    Anchor cancel;
-    @UiField
-    Anchor delete;
+    ToggleButton delete;
     @UiField
     ToggleButton share;
     @UiField(provided = true)
@@ -75,7 +72,6 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     Form addDOIForm;
     private final ExperimentEditDriver experimentEditDriver;
     private final ExperimentDisplayDriver experimentDisplayDriver;
-    private State state = State.DISPLAYING;
     private final MainResources resources;
     private Modal permissionPopUp = new Modal(true);
     private boolean layoutScheduled = false;
@@ -85,6 +81,8 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
             forceLayout();
         }
     };
+    private Modal editPopup = new Modal(true);
+    private Modal deletePopup = new Modal(true);
 
 
     public static class ResponsiveDataGrid extends DataGrid<PublicationProxy> {
@@ -268,6 +266,47 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         permissionPopUp.setCloseVisible(false);
         permissionPopUp.setKeyboard(false);
         //initDataGrid();
+
+        editPopup.setBackdrop(BackdropType.STATIC);
+        editPopup.setCloseVisible(true);
+        editPopup.setTitle("Edit study");
+        com.github.gwtbootstrap.client.ui.Button cancelEditBtn = new com.github.gwtbootstrap.client.ui.Button("Cancel", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onCancel();
+            }
+        });
+        cancelEditBtn.setType(ButtonType.DEFAULT);
+        com.github.gwtbootstrap.client.ui.Button saveEditBtn = new com.github.gwtbootstrap.client.ui.Button("Save", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onSave();
+            }
+        });
+        saveEditBtn.setType(ButtonType.PRIMARY);
+        ModalFooter footer = new ModalFooter(cancelEditBtn, saveEditBtn);
+        editPopup.add(experimentEditEditor);
+        editPopup.add(footer);
+
+        deletePopup.setBackdrop(BackdropType.STATIC);
+        deletePopup.setCloseVisible(true);
+        deletePopup.add(new HTML("<h4>Do you really want to delete the study?</h4>"));
+        com.github.gwtbootstrap.client.ui.Button cancelDeleteBtn = new com.github.gwtbootstrap.client.ui.Button("Cancel", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                deletePopup.hide();
+            }
+        });
+        cancelDeleteBtn.setType(ButtonType.DEFAULT);
+        com.github.gwtbootstrap.client.ui.Button deleteBtn = new com.github.gwtbootstrap.client.ui.Button("Delete", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onConfirmDelete();
+            }
+        });
+        deleteBtn.setType(ButtonType.DANGER);
+        deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
+
     }
 
     private void initDataGrid() {
@@ -344,26 +383,6 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 
 
     @Override
-    public void setState(State state, int permission) {
-        this.state = state;
-        experimentDisplayEditor.setVisible(state == State.DISPLAYING);
-        experimentEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        edit.setVisible(state == State.DISPLAYING &&
-                (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        delete.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        share.setVisible((permission & AccessControlEntryProxy.ADMINISTRATION) == AccessControlEntryProxy.ADMINISTRATION);
-        addDOIForm.setVisible(state == State.DISPLAYING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        publicationDataGrid.setShowAction((state == State.DISPLAYING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT));
-    }
-
-    @Override
-    public State getState() {
-        return state;
-    }
-
-    @Override
     public void showPermissionPanel(boolean show) {
         if (show)
             permissionPopUp.show();
@@ -379,35 +398,6 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     @Override
     public ExperimentDisplayDriver getExperimentDisplayDriver() {
         return experimentDisplayDriver;
-    }
-
-    @UiHandler("edit")
-    public void onEdit(ClickEvent e) {
-        if (state == State.DISPLAYING) {
-            getUiHandlers().onEdit();
-        }
-    }
-
-    @UiHandler("delete")
-    public void onDelete(ClickEvent e) {
-        if (state == State.EDITING) {
-            if (Window.confirm("Do you really want to delete the Experiment?"))
-                getUiHandlers().onDelete();
-        }
-    }
-
-    @UiHandler("save")
-    public void onSave(ClickEvent e) {
-        if (state == State.EDITING) {
-            getUiHandlers().onSave();
-        }
-    }
-
-    @UiHandler("cancel")
-    public void onCancel(ClickEvent e) {
-        if (state == State.EDITING) {
-            getUiHandlers().onCancel();
-        }
     }
 
     @UiHandler("share")
@@ -442,5 +432,42 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     @Override
     public HasText getDOIText() {
         return doiTb;
+    }
+
+    @UiHandler("edit")
+    public void onEdit(ClickEvent e) {
+        getUiHandlers().onEdit();
+    }
+
+    @UiHandler("delete")
+    public void onDelete(ClickEvent e) {
+        getUiHandlers().onDelete();
+    }
+
+    @Override
+    public void showEditPopup(boolean show) {
+        if (show)
+            editPopup.show();
+        else
+            editPopup.hide();
+    }
+
+    @Override
+    public void showDeletePopup(boolean show) {
+        if (show)
+            deletePopup.show();
+        else
+            deletePopup.hide();
+    }
+
+    @Override
+    public void showShareBtn(boolean show) {
+        share.setVisible(show);
+    }
+
+    @Override
+    public void showActionBtns(boolean show) {
+        edit.setVisible(show);
+        delete.setVisible(show);
     }
 }

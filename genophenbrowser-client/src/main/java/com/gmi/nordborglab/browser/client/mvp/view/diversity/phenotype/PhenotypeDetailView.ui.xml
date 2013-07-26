@@ -1,117 +1,115 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
-	xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
-	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
-	ui:generateLocales='default'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+             ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+             ui:generateLocales='default'>
 
-	<ui:with field="mainRes"
-		type="com.gmi.nordborglab.browser.client.resources.MainResources" />
+    <ui:with field="mainRes"
+             type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
 
-	<ui:style>
-		.container {
-			padding: 19px 19px;
-		}
-		
-		.actionRow {
-			float: right;
-		}
-	</ui:style>
-	<g:DockLayoutPanel unit="EM">
-		<g:west size="30">
-			<g:LayoutPanel>
-				<g:layer left="0" top="0" height="28em" right="0">
-					<g:LayoutPanel>
-						<g:layer top="5px" height="40px" left="0" right="0">
-							<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
-								<div class="{style.actionRow}">
-									<g:ToggleButton ui:field="edit"
-										addStyleNames="{mainRes.style.button_blue}" visible="true">Edit</g:ToggleButton>
-									<g:ToggleButton ui:field="save"
-										addStyleNames="{mainRes.style.button_grey}" visible="true">Save</g:ToggleButton>
-									<g:Anchor ui:field="cancel" visible="true"
-										addStyleNames="{mainRes.style.cursor}">Cancel</g:Anchor>
-									<g:Anchor ui:field="delete" visible="true"
-										addStyleNames="{mainRes.style.cursor}">Delete</g:Anchor>
-								</div>
-							</g:HTMLPanel>
-						</g:layer>
-						<g:layer top="47px" bottom="0" left="0" right="0">
-							<b:Form type="HORIZONTAL">
+    <ui:style>
+        .container {
+            padding: 19px 19px;
+        }
+
+        .actionRow {
+            float: right;
+        }
+    </ui:style>
+    <g:DockLayoutPanel unit="EM">
+        <g:west size="30">
+            <g:LayoutPanel>
+                <g:layer left="0" top="0" height="28em" right="0">
+                    <g:LayoutPanel>
+                        <g:layer top="5px" height="40px" left="0" right="0">
+                            <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                                <div class="{style.actionRow}">
+                                    <g:ToggleButton ui:field="edit"
+                                                    addStyleNames="{mainRes.style.button_blue}" visible="true">Edit
+                                    </g:ToggleButton>
+                                    <g:ToggleButton ui:field="delete"
+                                                    addStyleNames="{mainRes.style.button_red}" visible="true">Delete
+                                    </g:ToggleButton>
+                                </div>
+                            </g:HTMLPanel>
+                        </g:layer>
+                        <g:layer top="47px" bottom="0" left="0" right="0">
+                            <b:Form type="HORIZONTAL">
                                 <g:FlowPanel>
-                                    <ed:PhenotypeEditEditor ui:field="phenotypeEditEditor"
-                                        visible="false"></ed:PhenotypeEditEditor>
-                                    <ed:PhenotypeDisplayEditor ui:field="phenotypeDisplayEditor"></ed:PhenotypeDisplayEditor>
+                                    <ed:PhenotypeDisplayEditor
+                                            ui:field="phenotypeDisplayEditor"></ed:PhenotypeDisplayEditor>
                                 </g:FlowPanel>
                             </b:Form>
-						</g:layer>
-					</g:LayoutPanel>
-				</g:layer>
-				<g:layer top="30em" left="0" right="0" bottom="0">
-					<g:SimpleLayoutPanel ui:field="phenotypePieChartContainer" />
-				</g:layer>
-			</g:LayoutPanel>
-		</g:west>
-		<g:center>
-			<g:LayoutPanel>
-				<g:layer top="0" left="0" height="28em" right="0">
-					<g:LayoutPanel>
-						<g:layer top="5px" height="40px" left="0" right="0">
-							<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
-								<div class="{mainRes.style.chartIconContainer}">
-									<g:HTMLPanel ui:field="geoChartBtnContainer"
-										addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
-										<b:Tooltip text="Shows the geographic distribution on a map">
-											<g:Button ui:field="geoChartBtn"
-												addStyleNames="{mainRes.style.earth} {mainRes.style.iconItem}" />
-										</b:Tooltip>
-									</g:HTMLPanel>
-									<g:HTMLPanel ui:field="pieChartBtnContainer"
-										addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
-										<b:Tooltip text="Shows the geographic distribution as a piechart">
-											<g:Button ui:field="pieChartBtn"
-												addStyleNames="{mainRes.style.piechart} {mainRes.style.iconItem}" />
-										</b:Tooltip>
-									</g:HTMLPanel>
-								</div>
-							</g:HTMLPanel>
-						</g:layer>
-						<g:layer top="47px" bottom="0" left="0" right="0">
-							<g:SimpleLayoutPanel ui:field="upperChartContainer" />
-						</g:layer>
-					</g:LayoutPanel>
-				</g:layer>
-				<g:layer top="30em" left="0" right="0" bottom="0">
-					<g:LayoutPanel>
-						<g:layer top="0" height="40px" left="0" right="0">
-							<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
-								<div class="{mainRes.style.chartIconContainer}">
-									<g:HTMLPanel ui:field="columnChartBtnContainer"
-										addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
-										<b:Tooltip text="Shows the phenotype distrubtion as a histogram">
-											<g:Button ui:field="columnChartBtn"
-												addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}" />
-										</b:Tooltip>
-									</g:HTMLPanel>
-									<g:HTMLPanel ui:field="motionChartBtnContainer"
-										addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
-										<b:Tooltip text="Shows the phenotype values in a motionchart">
-											<g:Button ui:field="motionChartBtn"
-												addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}" />
-										</b:Tooltip>
-									</g:HTMLPanel>
-								</div>
-							</g:HTMLPanel>
-						</g:layer>
-						<g:layer top="40px" bottom="0" left="0" right="0">
-							<g:SimpleLayoutPanel ui:field="lowerChartContainer" />
-						</g:layer>
-					</g:LayoutPanel>
-				</g:layer>
-			</g:LayoutPanel>
-		</g:center>
-	</g:DockLayoutPanel>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+                <g:layer top="30em" left="0" right="0" bottom="0">
+                    <g:SimpleLayoutPanel ui:field="phenotypePieChartContainer"/>
+                </g:layer>
+            </g:LayoutPanel>
+        </g:west>
+        <g:center>
+            <g:LayoutPanel>
+                <g:layer top="0" left="0" height="28em" right="0">
+                    <g:LayoutPanel>
+                        <g:layer top="5px" height="40px" left="0" right="0">
+                            <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                                <div class="{mainRes.style.chartIconContainer}">
+                                    <g:HTMLPanel ui:field="geoChartBtnContainer"
+                                                 addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
+                                        <b:Tooltip text="Shows the geographic distribution on a map">
+                                            <g:Button ui:field="geoChartBtn"
+                                                      addStyleNames="{mainRes.style.earth} {mainRes.style.iconItem}"/>
+                                        </b:Tooltip>
+                                    </g:HTMLPanel>
+                                    <g:HTMLPanel ui:field="pieChartBtnContainer"
+                                                 addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
+                                        <b:Tooltip text="Shows the geographic distribution as a piechart">
+                                            <g:Button ui:field="pieChartBtn"
+                                                      addStyleNames="{mainRes.style.piechart} {mainRes.style.iconItem}"/>
+                                        </b:Tooltip>
+                                    </g:HTMLPanel>
+                                </div>
+                            </g:HTMLPanel>
+                        </g:layer>
+                        <g:layer top="47px" bottom="0" left="0" right="0">
+                            <g:SimpleLayoutPanel ui:field="upperChartContainer"/>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+                <g:layer top="30em" left="0" right="0" bottom="0">
+                    <g:LayoutPanel>
+                        <g:layer top="0" height="40px" left="0" right="0">
+                            <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                                <div class="{mainRes.style.chartIconContainer}">
+                                    <g:HTMLPanel ui:field="columnChartBtnContainer"
+                                                 addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
+                                        <b:Tooltip text="Shows the phenotype distrubtion as a histogram">
+                                            <g:Button ui:field="columnChartBtn"
+                                                      addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}"/>
+                                        </b:Tooltip>
+                                    </g:HTMLPanel>
+                                    <g:HTMLPanel ui:field="motionChartBtnContainer"
+                                                 addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
+                                        <b:Tooltip text="Shows the phenotype values in a motionchart">
+                                            <g:Button ui:field="motionChartBtn"
+                                                      addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}"/>
+                                        </b:Tooltip>
+                                    </g:HTMLPanel>
+                                </div>
+                            </g:HTMLPanel>
+                        </g:layer>
+                        <g:layer top="40px" bottom="0" left="0" right="0">
+                            <g:SimpleLayoutPanel ui:field="lowerChartContainer"/>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+            </g:LayoutPanel>
+        </g:center>
+    </g:DockLayoutPanel>
 
 </ui:UiBinder>

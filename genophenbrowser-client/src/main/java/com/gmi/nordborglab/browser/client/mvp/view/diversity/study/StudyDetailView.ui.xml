@@ -1,123 +1,119 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
-	xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-	xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
-	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
-	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
-	ui:generateLocales='default'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
+             ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+             ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+             ui:generateLocales='default'>
 
-	<ui:with field="mainRes"
-		type="com.gmi.nordborglab.browser.client.resources.MainResources" />
+    <ui:with field="mainRes"
+             type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
 
 
-	 <ui:style>
-         .container {
-             padding: 19px 19px;
-         }
+    <ui:style>
+        .container {
+            padding: 19px 19px;
+        }
 
-         .actionRow {
-             float: right;
-         }
+        .actionRow {
+            float: right;
+        }
 
-         .subheader {
-             border-bottom: 1px solid #cdcdcd;
-             margin-bottom: 5px;
-         }
+        .subheader {
+            border-bottom: 1px solid #cdcdcd;
+            margin-bottom: 5px;
+        }
 
-         .subheader h1 {
-             font-size: 15px;
-             line-height: 34px;
-             margin-bottom: 0px;
-             color: #808080;
-         }
+        .subheader h1 {
+            font-size: 15px;
+            line-height: 34px;
+            margin-bottom: 0px;
+            color: #808080;
+        }
 
-         .subheader_container {
-             margin-left: 10px;
-             margin-top: 10px;
-         }
+        .subheader_container {
+            margin-left: 10px;
+            margin-top: 10px;
+        }
 
-         .progressBar {
-             margin-bottom: 0px !important;
-             display: inline-block;
-             width: 100px;
-             margin-left: 25px;
-         }
+        .progressBar {
+            margin-bottom: 0px !important;
+            display: inline-block;
+            width: 100px;
+            margin-left: 25px;
+        }
 
-         .job_table {
+        .job_table {
 
-         }
+        }
 
-         .job_table td {
-             padding: 3px 0;
-             vertical-align: middle;
-         }
+        .job_table td {
+            padding: 3px 0;
+            vertical-align: middle;
+        }
 
-         .job_action_container {
-             float: right;
-             width: auto;
-             margin-top: 10px;
-         }
+        .job_action_container {
+            float: right;
+            width: auto;
+            margin-top: 10px;
+        }
 
-         .job_actions {
-             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-             border: 1px solid #ccc;
-             color: #808185;
-             display: block;
-             float: right;
-             font-size: 13px;
-             margin-right: 5px;
-             padding: 2px 4px 4px;
-             text-decoration: none;
-         }
+        .job_actions {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            border: 1px solid #ccc;
+            color: #808185;
+            display: block;
+            float: right;
+            font-size: 13px;
+            margin-right: 5px;
+            padding: 2px 4px 4px;
+            text-decoration: none;
+        }
 
-         .actionDropDown {
+        .actionDropDown {
 
-         }
+        }
 
-         .actionDropDown >  a {
-             margin-top: 0px !important;
-             margin-bottom: 0px !important;
-         }
+        .actionDropDown >  a {
+            margin-top: 0px !important;
+            margin-bottom: 0px !important;
+        }
 
-         .actionDropDownContainer {
-             margin-bottom: 0px;
-             margin-left: 150px;
-         }
+        .actionDropDownContainer {
+            margin-bottom: 0px;
+            margin-left: 150px;
+        }
 
-         .statusLabel {
-            margin-top:6px;
-            float:left;
-         }
+        .statusLabel {
+            margin-top: 6px;
+            float: left;
+        }
 
-     </ui:style>
-	<g:ScrollPanel>
-		<g:LayoutPanel>
-			<g:layer left="0" top="0" height="28em" right="0">
-				<g:LayoutPanel>
-					<g:layer left="0" top="0" bottom="0" width="30em">
-						<g:LayoutPanel>
-							<g:layer top="5px" height="40px" left="0" right="0">
-								<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
-									<div class="{style.actionRow}">
-										<g:ToggleButton ui:field="edit"
-											addStyleNames="{mainRes.style.button_blue}" visible="true">Edit</g:ToggleButton>
-										<g:ToggleButton ui:field="save"
-											addStyleNames="{mainRes.style.button_grey}" visible="true">Save</g:ToggleButton>
-										<g:Anchor ui:field="cancel" visible="true"
-											addStyleNames="{mainRes.style.cursor}">Cancel</g:Anchor>
-										<g:Anchor ui:field="delete" visible="true"
-											addStyleNames="{mainRes.style.cursor}">Delete</g:Anchor>
-                                        <!--<b:Button text="Upload" type="DANGER" icon="UPLOAD" ui:field="uploadBtn"/>
-                                        <b:Button text="Run analsis" type="INFO" icon="CLOUD" ui:field="startBtn" />-->
-									</div>
-								</g:HTMLPanel>
-							</g:layer>
-							<g:layer top="47px" bottom="0" left="0" right="0">
-								<g:FlowPanel>
-									<ed:StudyDisplayEditor ui:field="studyDisplayEditor" />
-									<ed:StudyEditEditor ui:field="studyEditEditor" visible="false"/>
+    </ui:style>
+    <g:ScrollPanel>
+        <g:LayoutPanel>
+            <g:layer left="0" top="0" height="28em" right="0">
+                <g:LayoutPanel>
+                    <g:layer left="0" top="0" bottom="0" width="30em">
+                        <g:LayoutPanel>
+                            <g:layer top="5px" height="40px" left="0" right="0">
+                                <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                                    <div class="{style.actionRow}">
+                                        <g:ToggleButton ui:field="edit"
+                                                        addStyleNames="{mainRes.style.button_blue}" visible="true">Edit
+                                        </g:ToggleButton>
+                                        <g:ToggleButton ui:field="delete"
+                                                        addStyleNames="{mainRes.style.button_red}" visible="true">Delete
+                                        </g:ToggleButton>
+                                    </div>
+                                </g:HTMLPanel>
+                            </g:layer>
+                            <g:layer top="47px" bottom="0" left="0" right="0">
+                                <g:FlowPanel>
+                                    <ed:StudyDisplayEditor ui:field="studyDisplayEditor"/>
                                     <g:HTMLPanel addStyleNames="{style.subheader_container}">
                                         <div class="{style.subheader}">
                                             <h1>
@@ -132,97 +128,112 @@
                                                 <colgroup>
                                                     <col style="width:90px"></col>
                                                     <col></col>
-                                                 </colgroup>
+                                                </colgroup>
                                                 <tbody>
                                                     <tr>
-                                                        <td><span>Status</span></td>
-                                                        <td><b:Label addStyleNames="{style.statusLabel}" ui:field="jobStatusLb" />
-                                                            <b:ProgressBar ui:field="jobStatusProgress" addStyleNames="{style.progressBar}"></b:ProgressBar>
-                                                            <b:NavPills addStyleNames="{style.actionDropDownContainer}" ui:field="actionDd">
-                                                                <b:Dropdown text="Action" addStyleNames="{style.actionDropDown}">
-                                                                    <b:NavLink text="Upload" icon="UPLOAD" ui:field="uploadBtn" />
-                                                                    <b:NavLink text="Run analysis" icon="CLOUD" ui:field="startBtn"/>
+                                                        <td>
+                                                            <span>Status</span>
+                                                        </td>
+                                                        <td>
+                                                            <b:Label addStyleNames="{style.statusLabel}"
+                                                                     ui:field="jobStatusLb"/>
+                                                            <b:ProgressBar ui:field="jobStatusProgress"
+                                                                           addStyleNames="{style.progressBar}"></b:ProgressBar>
+                                                            <b:NavPills addStyleNames="{style.actionDropDownContainer}"
+                                                                        ui:field="actionDd">
+                                                                <b:Dropdown text="Action"
+                                                                            addStyleNames="{style.actionDropDown}">
+                                                                    <b:NavLink text="Upload" icon="UPLOAD"
+                                                                               ui:field="uploadBtn"/>
+                                                                    <b:NavLink text="Run analysis" icon="CLOUD"
+                                                                               ui:field="startBtn"/>
                                                                 </b:Dropdown>
                                                             </b:NavPills>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>Task</td>
-                                                        <td><g:Label ui:field="taskLb" /></td>
+                                                        <td>
+                                                            <g:Label ui:field="taskLb"/>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td>Modified</td>
-                                                        <td><g:Label ui:field="modifiedLb" /></td>
+                                                        <td>
+                                                            <g:Label ui:field="modifiedLb"/>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td>Created</td>
-                                                        <td><g:Label ui:field="createdLb" /></td>
+                                                        <td>
+                                                            <g:Label ui:field="createdLb"/>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </g:HTMLPanel>
-								</g:FlowPanel>
-							</g:layer>
-						</g:LayoutPanel>
-					</g:layer>
-					<g:layer left="35em" top="0" bottom="0" right="0">
-						<g:LayoutPanel>
-							<g:layer top="5px" height="40px" left="0" right="0">
-								<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
-									<div class="{mainRes.style.chartIconContainer}">
-										<g:HTMLPanel ui:field="geoChartBtnContainer"
-											addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
-											<b:Tooltip text="Shows the geographic distribution on a map">
-												<g:Button ui:field="geoChartBtn"
-													addStyleNames="{mainRes.style.earth} {mainRes.style.iconItem}" />
-											</b:Tooltip>
-										</g:HTMLPanel>
-										<g:HTMLPanel ui:field="pieChartBtnContainer"
-											addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
-											<b:Tooltip text="Shows the geographic distribution as a piechart">
-												<g:Button ui:field="pieChartBtn"
-													addStyleNames="{mainRes.style.piechart} {mainRes.style.iconItem}" />
-											</b:Tooltip>
-										</g:HTMLPanel>
-									</div>
-								</g:HTMLPanel>
-							</g:layer>
-							<g:layer top="47px" bottom="0" left="0" right="0">
-								<g:SimpleLayoutPanel ui:field="upperChartContainer" />
-							</g:layer>
-						</g:LayoutPanel>
-					</g:layer>
-				</g:LayoutPanel>
-			</g:layer>
-			<g:layer top="30em" height="30em" left="0" right="0">
-				<g:LayoutPanel>
-					<g:layer top="0" height="40px" left="0" right="0">
-						<g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
-							<div class="{mainRes.style.chartIconContainer}">
-								<g:HTMLPanel ui:field="columnChartBtnContainer"
-									addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
-									<b:Tooltip text="Shows the phenotype distrubtion as a histogram">
-										<g:Button ui:field="columnChartBtn"
-											addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}" />
-									</b:Tooltip>
-								</g:HTMLPanel>
-								<g:HTMLPanel ui:field="motionChartBtnContainer"
-									addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
-									<b:Tooltip text="Shows the phenotype values in a motionchart">
-										<g:Button ui:field="motionChartBtn"
-											addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}" />
-									</b:Tooltip>
-								</g:HTMLPanel>
-							</div>
-						</g:HTMLPanel>
-					</g:layer>
-					<g:layer top="40px" bottom="0" left="0" right="0">
-						<g:SimpleLayoutPanel ui:field="lowerChartContainer" />
-					</g:layer>
-				</g:LayoutPanel>
+                                </g:FlowPanel>
+                            </g:layer>
+                        </g:LayoutPanel>
+                    </g:layer>
+                    <g:layer left="35em" top="0" bottom="0" right="0">
+                        <g:LayoutPanel>
+                            <g:layer top="5px" height="40px" left="0" right="0">
+                                <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                                    <div class="{mainRes.style.chartIconContainer}">
+                                        <g:HTMLPanel ui:field="geoChartBtnContainer"
+                                                     addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
+                                            <b:Tooltip text="Shows the geographic distribution on a map">
+                                                <g:Button ui:field="geoChartBtn"
+                                                          addStyleNames="{mainRes.style.earth} {mainRes.style.iconItem}"/>
+                                            </b:Tooltip>
+                                        </g:HTMLPanel>
+                                        <g:HTMLPanel ui:field="pieChartBtnContainer"
+                                                     addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
+                                            <b:Tooltip text="Shows the geographic distribution as a piechart">
+                                                <g:Button ui:field="pieChartBtn"
+                                                          addStyleNames="{mainRes.style.piechart} {mainRes.style.iconItem}"/>
+                                            </b:Tooltip>
+                                        </g:HTMLPanel>
+                                    </div>
+                                </g:HTMLPanel>
+                            </g:layer>
+                            <g:layer top="47px" bottom="0" left="0" right="0">
+                                <g:SimpleLayoutPanel ui:field="upperChartContainer"/>
+                            </g:layer>
+                        </g:LayoutPanel>
+                    </g:layer>
+                </g:LayoutPanel>
+            </g:layer>
+            <g:layer top="30em" height="30em" left="0" right="0">
+                <g:LayoutPanel>
+                    <g:layer top="0" height="40px" left="0" right="0">
+                        <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                            <div class="{mainRes.style.chartIconContainer}">
+                                <g:HTMLPanel ui:field="columnChartBtnContainer"
+                                             addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
+                                    <b:Tooltip text="Shows the phenotype distrubtion as a histogram">
+                                        <g:Button ui:field="columnChartBtn"
+                                                  addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}"/>
+                                    </b:Tooltip>
+                                </g:HTMLPanel>
+                                <g:HTMLPanel ui:field="motionChartBtnContainer"
+                                             addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
+                                    <b:Tooltip text="Shows the phenotype values in a motionchart">
+                                        <g:Button ui:field="motionChartBtn"
+                                                  addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}"/>
+                                    </b:Tooltip>
+                                </g:HTMLPanel>
+                            </div>
+                        </g:HTMLPanel>
+                    </g:layer>
+                    <g:layer top="40px" bottom="0" left="0" right="0">
+                        <g:SimpleLayoutPanel ui:field="lowerChartContainer"/>
+                    </g:layer>
+                </g:LayoutPanel>
 
-			</g:layer>
-		</g:LayoutPanel>
-	</g:ScrollPanel>
+            </g:layer>
+        </g:LayoutPanel>
+    </g:ScrollPanel>
 </ui:UiBinder>

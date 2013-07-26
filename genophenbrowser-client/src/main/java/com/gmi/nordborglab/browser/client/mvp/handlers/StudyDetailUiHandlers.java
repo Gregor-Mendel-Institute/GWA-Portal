@@ -4,15 +4,17 @@ import com.gwtplatform.mvp.client.UiHandlers;
 
 public interface StudyDetailUiHandlers extends UiHandlers {
 
-	public void onEdit();
+    public void onEdit();
 
-	public void onSave();
+    public void onSave();
 
-	public void onCancel();
+    public void onCancel();
 
-	public void onDelete();
+    public void onDelete();
 
     void onStartAnalysis();
 
     void onClickUpload();
+
+    void onConfirmDelete();
 }

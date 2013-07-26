@@ -6,6 +6,7 @@ import javax.validation.ConstraintViolation;
 
 import com.gmi.nordborglab.browser.client.events.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASUploadWizardPresenterWidget;
+import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.HasUiHandlers;
@@ -51,8 +52,6 @@ public class StudyDetailPresenter extends
 
         StudyDisplayDriver getDisplayDriver();
 
-        void setState(State displaying, int permissionMask);
-
         void scheduledLayout();
 
         void setGeoChartData(Multiset<String> geochartData);
@@ -63,13 +62,18 @@ public class StudyDetailPresenter extends
 
         StudyEditDriver getEditDriver();
 
-        State getState();
 
         void showGWASUploadPopup(boolean show);
 
         void showGWASBtns(boolean show);
 
         void showJobInfo(StudyJobProxy job, int permissionMask);
+
+        void showActionBtns(boolean show);
+
+        void showEditPopup(boolean show);
+
+        void showDeletePopup(boolean show);
     }
 
     protected StudyProxy study;
@@ -112,22 +116,24 @@ public class StudyDetailPresenter extends
         this.currentUser = currentUser;
         receiver = new Receiver<StudyProxy>() {
             public void onSuccess(StudyProxy response) {
+                fireEvent(new LoadingIndicatorEvent(false));
                 study = response;
                 fireEvent(new LoadStudyEvent(study));
-                getView().setState(State.DISPLAYING, getPermission());
+                getView().showEditPopup(false);
                 getView().getDisplayDriver().display(study);
             }
 
 
             public void onFailure(ServerFailure error) {
+                fireEvent(new LoadingIndicatorEvent(false));
                 fireEvent(new DisplayNotificationEvent("Error while saving", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, 0));
                 onEdit();
             }
 
             public void onConstraintViolation(
                     Set<ConstraintViolation<?>> violations) {
+                fireEvent(new LoadingIndicatorEvent(false));
                 super.onConstraintViolation(violations);
-                getView().setState(State.EDITING, getPermission());
             }
         };
     }
@@ -177,8 +183,7 @@ public class StudyDetailPresenter extends
             fireEvent(new LoadStudyEvent(study));
         }
         getView().getDisplayDriver().display(study);
-        getView().setState(State.DISPLAYING,
-                currentUser.getPermissionMask(study.getUserPermission()));
+        getView().showActionBtns(currentUser.hasEdit(study));
         getProxy().getTab().setTargetHistoryToken(
                 placeManager.buildHistoryToken(placeManager
                         .getCurrentPlaceRequest()));
@@ -191,6 +196,7 @@ public class StudyDetailPresenter extends
         getView().setPhenotypExplorerData(ImmutableSet.copyOf(study.getTraits()));
         fireEvent(new LoadingIndicatorEvent(false));
     }
+
 
     @Override
     public boolean useManualReveal() {
@@ -289,31 +295,28 @@ public class StudyDetailPresenter extends
 
     @Override
     public void onEdit() {
-        getView().setState(State.EDITING, getPermission());
         CdvRequest ctx = cdvManager.getContext();
-
         getView().getEditDriver().edit(study, ctx);
         ctx.saveStudy(study).with(CdvManager.FULL_PATH).to(receiver);
-
+        getView().showEditPopup(true);
     }
 
     @Override
     public void onSave() {
-        getView().setState(State.SAVING, getPermission());
         RequestContext req = getView().getEditDriver().flush();
+        fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
         req.fire();
 
     }
 
     @Override
     public void onCancel() {
-        getView().setState(State.DISPLAYING, getPermission());
-        getView().getDisplayDriver().display(study);
+        getView().showEditPopup(false);
     }
 
     @Override
     public void onDelete() {
-        // TODO Auto-generated method stub
+        getView().showDeletePopup(true);
 
     }
 
@@ -337,6 +340,31 @@ public class StudyDetailPresenter extends
     public void onClickUpload() {
         //gwasUploadWizardPresenterWidget.setMultipleUpload(false);
         //gwasUploadWizardPresenterWidget.setRestURL("/provider/study/" + study.getId() + "/upload");
+    }
+
+    @Override
+    public void onConfirmDelete() {
+        fireEvent(new LoadingIndicatorEvent(true, "Removing..."));
+        cdvManager.delete(new Receiver<Void>() {
+            @Override
+            public void onSuccess(Void response) {
+                PlaceRequest request = null;
+                if (placeManager.getHierarchyDepth() <= 1) {
+                    request = new ParameterizedPlaceRequest(NameTokens.phenotypeoverview);
+                } else {
+                    request = placeManager.getCurrentPlaceHierarchy().get(placeManager.getHierarchyDepth() - 2);
+                }
+                getView().showDeletePopup(false);
+                study = null;
+                placeManager.revealPlace(request);
+            }
+
+            @Override
+            public void onFailure(ServerFailure error) {
+                fireEvent(new LoadingIndicatorEvent(false));
+                super.onFailure(error);    //To change body of overridden methods use File | Settings | File Templates.
+            }
+        }, study);
     }
 
 
