@@ -27,100 +27,103 @@ import com.gwtplatform.mvp.client.annotations.*;
 import com.gwtplatform.mvp.client.proxy.*;
 
 public class StudyGWASPlotPresenter
-		extends
-		Presenter<StudyGWASPlotPresenter.MyView, StudyGWASPlotPresenter.MyProxy> {
+        extends
+        Presenter<StudyGWASPlotPresenter.MyView, StudyGWASPlotPresenter.MyProxy> {
 
-	public interface MyView extends View {
+    public interface MyView extends View {
 
-	}
+    }
 
-	@ProxyCodeSplit
-	@NameToken(NameTokens.studygwas)
-	@TabInfo(label="GWAS-Plots",priority=1,container=StudyTabPresenter.class)
-	public interface MyProxy extends TabContentProxyPlace<StudyGWASPlotPresenter> {
-	}
+    @ProxyCodeSplit
+    @NameToken(NameTokens.studygwas)
+    @TabInfo(label = "GWAS-Plots", priority = 1, container = StudyTabPresenter.class)
+    public interface MyProxy extends TabContentProxyPlace<StudyGWASPlotPresenter> {
+    }
 
     @ContentSlot
     public static final GwtEvent.Type<RevealContentHandler<?>> TYPE_SetGWASPlotsContent = new GwtEvent.Type<RevealContentHandler<?>>();
-	
-	protected StudyProxy study;
-	protected Long studyId;
-	protected boolean gwasPlotsLoaded = false; 
-	protected final PlaceManager placeManager;
-	protected boolean fireLoadEvent = false;
-	protected final CdvManager cdvManager;
+
+    protected StudyProxy study;
+    protected Long studyId;
+    protected boolean gwasPlotsLoaded = false;
+    protected final PlaceManager placeManager;
+    protected boolean fireLoadEvent = false;
+    protected final CdvManager cdvManager;
     private final GWASPlotPresenterWidget gwasPlotPresenterWidget;
 
-	@Inject
-	public StudyGWASPlotPresenter(final EventBus eventBus, final MyView view,
-			final MyProxy proxy, final PlaceManager placeManager,
-   		    final CdvManager cdvManager,
-            final GWASPlotPresenterWidget gwasPlotPresenterWidget) {
-		super(eventBus, view, proxy);
+    @Inject
+    public StudyGWASPlotPresenter(final EventBus eventBus, final MyView view,
+                                  final MyProxy proxy, final PlaceManager placeManager,
+                                  final CdvManager cdvManager,
+                                  final GWASPlotPresenterWidget gwasPlotPresenterWidget) {
+        super(eventBus, view, proxy);
         this.gwasPlotPresenterWidget = gwasPlotPresenterWidget;
-		this.placeManager = placeManager;
-		this.cdvManager = cdvManager;
-	}
+        this.placeManager = placeManager;
+        this.cdvManager = cdvManager;
+    }
 
-	@Override
-	protected void revealInParent() {
-		RevealContentEvent.fire(this, StudyTabPresenter.TYPE_SetTabContent, this);
-	}
+    @Override
+    protected void revealInParent() {
+        RevealContentEvent.fire(this, StudyTabPresenter.TYPE_SetTabContent, this);
+    }
 
-	@Override
-	protected void onBind() {
-		super.onBind();
-        setInSlot(TYPE_SetGWASPlotsContent,gwasPlotPresenterWidget);
-	}
+    @Override
+    protected void onBind() {
+        super.onBind();
+        setInSlot(TYPE_SetGWASPlotsContent, gwasPlotPresenterWidget);
+    }
 
-	@Override
-	protected void onReset() {
-		super.onReset();
-		if (fireLoadEvent) {
-			fireEvent(new LoadStudyEvent(study));
-			fireLoadEvent = false;
-		}
+    @Override
+    protected void onReset() {
+        super.onReset();
+        if (fireLoadEvent) {
+            fireEvent(new LoadStudyEvent(study));
+            fireLoadEvent = false;
+        }
         gwasPlotPresenterWidget.loadPlots(studyId, GetGWASDataAction.TYPE.STUDY);
-	}
-	
-	@Override
-	public void prepareFromRequest(PlaceRequest placeRequest) {
-		super.prepareFromRequest(placeRequest);
-		LoadingIndicatorEvent.fire(this, true);
-		try {
-			final Long studyIdToLoad = Long.valueOf(placeRequest.getParameter("id",null));
-			if (!studyIdToLoad.equals(studyId)) {
-				studyId = studyIdToLoad;
-				gwasPlotsLoaded = false;
-			}
-			if (gwasPlotsLoaded) {
-				getProxy().manualReveal(StudyGWASPlotPresenter.this);
-				return;
-			}
-			if (study == null || !study.getId().equals(studyIdToLoad)) {
-				cdvManager.findOne(new Receiver<StudyProxy>() {
-	
-					@Override
-					public void onSuccess(StudyProxy response) {
-						study = response;
-						fireLoadEvent = true;
-					}
-				},studyIdToLoad);
-			}
-		} catch (NumberFormatException e) {
-			getProxy().manualRevealFailed();
-			placeManager.revealPlace(new ParameterizedPlaceRequest(NameTokens.experiments));
-		}
-	}
-	
-	@ProxyEvent
-	public void onLoad(LoadStudyEvent event) {
-		study = event.getStudy();
-		if (!study.getId().equals(studyId))
-			gwasPlotsLoaded = false;
-		PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id", study.getId().toString());
-		String historyToken  = placeManager.buildHistoryToken(request);
-		TabData tabData = getProxy().getTabData();
-		getProxy().changeTab(new TabDataDynamic("Plot ("+study.getProtocol().getAnalysisMethod()+")", tabData.getPriority(), historyToken));
-	}
+    }
+
+    @Override
+    public void prepareFromRequest(PlaceRequest placeRequest) {
+        super.prepareFromRequest(placeRequest);
+        LoadingIndicatorEvent.fire(this, true);
+        try {
+            final Long studyIdToLoad = Long.valueOf(placeRequest.getParameter("id", null));
+            if (!studyIdToLoad.equals(studyId)) {
+                studyId = studyIdToLoad;
+                gwasPlotsLoaded = false;
+            }
+            if (gwasPlotsLoaded) {
+                getProxy().manualReveal(StudyGWASPlotPresenter.this);
+                return;
+            }
+            if (study == null || !study.getId().equals(studyIdToLoad)) {
+                cdvManager.findOne(new Receiver<StudyProxy>() {
+
+                    @Override
+                    public void onSuccess(StudyProxy response) {
+                        study = response;
+                        fireLoadEvent = true;
+                    }
+                }, studyIdToLoad);
+            }
+        } catch (NumberFormatException e) {
+            getProxy().manualRevealFailed();
+            placeManager.revealPlace(new ParameterizedPlaceRequest(NameTokens.experiments));
+        }
+    }
+
+    @ProxyEvent
+    public void onLoad(LoadStudyEvent event) {
+        study = event.getStudy();
+        if (!study.getId().equals(studyId))
+            gwasPlotsLoaded = false;
+        PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id", study.getId().toString());
+        String historyToken = placeManager.buildHistoryToken(request);
+        TabData tabData = getProxy().getTabData();
+        TabDataDynamic newTabData = new TabDataDynamic("Plot (" + study.getProtocol().getAnalysisMethod() + ")", tabData.getPriority(), historyToken);
+        boolean hasPlots = study.getJob() != null && study.getJob().getStatus().equalsIgnoreCase("Finished");
+        newTabData.setHasAccess(hasPlots);
+        getProxy().changeTab(newTabData);
+    }
 }
