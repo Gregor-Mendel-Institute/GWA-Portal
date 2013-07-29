@@ -107,7 +107,7 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
         dataGrid.setColumnWidth(1, 25, Unit.PCT);
         dataGrid.setColumnWidth(2, 25, Unit.PCT);
         dataGrid.setColumnWidth(3, 25, Unit.PCT);
-        dataGrid.setColumnWidth(4, 55, Unit.PX);
+        dataGrid.setColumnWidth(4, 80, Unit.PX);
         dataGrid.setColumnWidth(5, 200, Unit.PX);
         dataGrid.setColumnWidth(6, 100, Style.Unit.PX);
         dataGrid.setColumnWidth(7, 100, Style.Unit.PX);
