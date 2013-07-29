@@ -11,18 +11,14 @@ import com.gmi.nordborglab.browser.client.events.StudyModifiedEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyListUiHandlers;
-import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
-import com.gmi.nordborglab.browser.shared.proxy.StudyPageProxy;
-import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
-import com.google.common.collect.Lists;
+import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
-import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 import com.gwtplatform.mvp.client.HasUiHandlers;
@@ -39,6 +35,7 @@ import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class StudyListPresenter extends
         Presenter<StudyListPresenter.MyView, StudyListPresenter.MyProxy> implements StudyListUiHandlers {
@@ -48,6 +45,10 @@ public class StudyListPresenter extends
         HasData<StudyProxy> getDisplay();
 
         void showAddBtn(boolean showAdd);
+
+        void setActiveNavLink(ConstEnums.TABLE_FILTER filter);
+
+        void displayFacets(List<FacetProxy> facets);
     }
 
     protected PhenotypeProxy phenotype;
@@ -59,6 +60,10 @@ public class StudyListPresenter extends
     protected boolean fireLoadEvent = false;
     protected final AsyncDataProvider<StudyProxy> dataProvider;
     protected final CurrentUser currentUser;
+    private ConstEnums.TABLE_FILTER currentFilter = ConstEnums.TABLE_FILTER.ALL;
+    private String searchString = null;
+    private List<FacetProxy> facets;
+
 
     @ProxyCodeSplit
     @NameToken(NameTokens.studylist)
@@ -129,6 +134,8 @@ public class StudyListPresenter extends
             if (!phenotypeIdToLoad.equals(phenotypeId)) {
                 phenotypeId = phenotypeIdToLoad;
                 studiesLoaded = false;
+                facets = null;
+                searchString = null;
             }
             if (studiesLoaded) {
                 getProxy().manualReveal(StudyListPresenter.this);
@@ -184,11 +191,13 @@ public class StudyListPresenter extends
             return;
         Receiver<StudyPageProxy> receiver = new Receiver<StudyPageProxy>() {
             @Override
-            public void onSuccess(StudyPageProxy obsUnits) {
+            public void onSuccess(StudyPageProxy studyPage) {
                 dataProvider.updateRowCount(
-                        (int) obsUnits.getTotalElements(), true);
-                dataProvider.updateRowData(range.getStart(), obsUnits.getContent());
+                        (int) studyPage.getTotalElements(), true);
+                dataProvider.updateRowData(range.getStart(), studyPage.getContent());
                 studiesLoaded = true;
+                facets = studyPage.getFacets();
+                getView().displayFacets(facets);
                 if (callback != null)
                     callback.onSuccess(null);
             }
@@ -201,7 +210,7 @@ public class StudyListPresenter extends
             }
 
         };
-        cdvManager.findStudiesByPhenotypeId(receiver, phenotypeId, range.getStart(), range.getLength());
+        cdvManager.findStudiesByPhenotypeId(receiver, currentFilter, searchString, phenotypeId, range.getStart(), range.getLength());
     }
 
     @Override
@@ -215,5 +224,23 @@ public class StudyListPresenter extends
         boolean showAdd = (((permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT) ||
                 ((permission & AccessControlEntryProxy.ADMINISTRATION) == AccessControlEntryProxy.ADMINISTRATION));
         getView().showAddBtn(showAdd);
+    }
+
+    @Override
+    public void selectFilter(ConstEnums.TABLE_FILTER filter) {
+        if (filter != currentFilter) {
+            currentFilter = filter;
+            PlaceRequest request = placeManager.getCurrentPlaceRequest();
+            request.with("filter", filter.toString());
+            placeManager.updateHistory(request, true);
+            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+            getView().setActiveNavLink(currentFilter);
+        }
+    }
+
+    @Override
+    public void updateSearchString(String searchString) {
+        this.searchString = searchString;
+        getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
     }
 }

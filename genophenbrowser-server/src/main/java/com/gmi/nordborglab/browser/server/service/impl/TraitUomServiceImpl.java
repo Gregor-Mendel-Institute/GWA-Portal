@@ -39,6 +39,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.Facets;
@@ -213,7 +214,15 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
 
     @Override
     public TraitUomPage findAll(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
+        return findAll(null, filter, searchString, start, size);
+    }
 
+    @Override
+    public TraitUomPage findAll(Long experimentId, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
+        FilterBuilder experimentFilter = null;
+        if (experimentId != null) {
+            experimentFilter = FilterBuilders.termFilter("_parent", experimentId.toString());
+        }
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(start).setTypes("phenotype").setNoFields();
 
@@ -223,6 +232,11 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         FilterBuilder searchFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, false);
         FilterBuilder privateFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), true, false);
         FilterBuilder publicFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, true);
+        if (experimentFilter != null) {
+            searchFilter = FilterBuilders.boolFilter().must(experimentFilter, searchFilter);
+            privateFilter = FilterBuilders.boolFilter().must(experimentFilter, searchFilter);
+            publicFilter = FilterBuilders.boolFilter().must(experimentFilter, searchFilter);
+        }
 
         // set facets
         request.addFacet(FacetBuilders.filterFacet(ConstEnums.TABLE_FILTER.ALL.name()).filter(searchFilter));

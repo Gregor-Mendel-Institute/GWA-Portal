@@ -27,4 +27,6 @@ public interface CdvRequest extends RequestContext {
     Request<StudyProxy> createStudyJob(Long studyId);
 
     Request<Void> delete(StudyProxy study);
+
+    Request<StudyPageProxy> findAll(Long id, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
 }

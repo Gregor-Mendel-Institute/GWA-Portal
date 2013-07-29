@@ -23,6 +23,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.facet.FacetBuilders;
@@ -197,6 +198,16 @@ public class CdvServiceImpl implements CdvService {
 
     @Override
     public StudyPage findAll(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
+        return findAll(null, filter, searchString, start, size);
+    }
+
+    @Override
+    public StudyPage findAll(Long phenotypeId, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
+        FilterBuilder phenotypeFilter = null;
+        if (phenotypeId != null) {
+            phenotypeFilter = FilterBuilders.termFilter("_parent", phenotypeId.toString());
+        }
+
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(start).setTypes("study").setNoFields();
 
@@ -206,6 +217,12 @@ public class CdvServiceImpl implements CdvService {
         FilterBuilder searchFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, false);
         FilterBuilder privateFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), true, false);
         FilterBuilder publicFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, true);
+
+        if (phenotypeFilter != null) {
+            searchFilter = FilterBuilders.boolFilter().must(phenotypeFilter, searchFilter);
+            privateFilter = FilterBuilders.boolFilter().must(phenotypeFilter, searchFilter);
+            publicFilter = FilterBuilders.boolFilter().must(phenotypeFilter, searchFilter);
+        }
 
         // set facets
         request.addFacet(FacetBuilders.filterFacet(ConstEnums.TABLE_FILTER.ALL.name()).filter(searchFilter));

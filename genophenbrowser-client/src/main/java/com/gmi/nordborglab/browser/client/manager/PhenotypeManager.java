@@ -21,8 +21,8 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
         super(rf);
     }
 
-    public void findAll(Receiver<PhenotypePageProxy> receiver, Long id, int start, int size) {
-        rf.phenotypeRequest().findPhenotypesByExperiment(id, start, size).with("content.traitOntologyTerm").fire(receiver);
+    public void findAll(Receiver<PhenotypePageProxy> receiver, Long id, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
+        rf.phenotypeRequest().findAll(id, filter, searchString, start, size).with("content.traitOntologyTerm", "content.ownerUser", "facets").fire(receiver);
     }
 
     public void findAll(Receiver<PhenotypePageProxy> receiver, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
