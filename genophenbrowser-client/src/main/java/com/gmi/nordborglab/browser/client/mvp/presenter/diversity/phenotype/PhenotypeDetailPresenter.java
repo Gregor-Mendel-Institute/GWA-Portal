@@ -76,8 +76,6 @@ public class PhenotypeDetailPresenter
 
         void setPhenotypExplorerData(ImmutableList<TraitProxy> traits);
 
-        void setPhenotypePieChartData(List<StatisticTypeProxy> statisticTypes);
-
         void drawCharts();
 
         void showEditPopup(boolean show);
@@ -85,6 +83,10 @@ public class PhenotypeDetailPresenter
         void showActionBtns(boolean show);
 
         void showDeletePopup(boolean show);
+
+        void setStatisticTypes(List<StatisticTypeProxy> statisticTypes);
+
+        void setAvailableStatisticTypes(List<StatisticTypeProxy> statisticTypes);
     }
 
 
@@ -118,6 +120,7 @@ public class PhenotypeDetailPresenter
         this.phenotypeManager = phenotypeManager;
         this.currentUser = currentUser;
         getView().setAcceptableValuesForUnitOfMeasure(currentUser.getAppData().getUnitOfMeasureList());
+        getView().setAvailableStatisticTypes(currentUser.getAppData().getStatisticTypeList());
         receiver = new Receiver<PhenotypeProxy>() {
             public void onSuccess(PhenotypeProxy response) {
                 fireEvent(new LoadingIndicatorEvent(false));
@@ -164,7 +167,7 @@ public class PhenotypeDetailPresenter
         getView().showActionBtns(currentUser.hasEdit(phenotype));
         getProxy().getTab().setTargetHistoryToken(placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest()));
         LoadingIndicatorEvent.fire(this, false);
-        getView().setPhenotypePieChartData(statisticTypes);
+        getView().setStatisticTypes(statisticTypes);
         getView().setGeoChartData(null);
         getView().setHistogramChartData(null);
         getView().setPhenotypExplorerData(null);
@@ -265,6 +268,32 @@ public class PhenotypeDetailPresenter
     }
 
     @Override
+    public void onSelectStatisticType(final StatisticTypeProxy type) {
+        if (type == null) {
+            getView().setGeoChartData(null);
+            getView().setHistogramChartData(null);
+            getView().setPhenotypExplorerData(null);
+            getView().drawCharts();
+        } else {
+            List<TraitProxy> cachedTraits = cache.get(type);
+            if (cachedTraits != null) {
+                calculateChartDataAndDisplay(cachedTraits);
+            } else {
+                fireEvent(new LoadingIndicatorEvent(true));
+                phenotypeManager.findAllTraitValuesByType(phenotype.getId(), type.getId(), new Receiver<List<TraitProxy>>() {
+
+                    @Override
+                    public void onSuccess(List<TraitProxy> response) {
+                        fireEvent(new LoadingIndicatorEvent(false));
+                        cache.put(type, response);
+                        calculateChartDataAndDisplay(response);
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
     public boolean useManualReveal() {
         return true;
     }
@@ -332,33 +361,6 @@ public class PhenotypeDetailPresenter
             }
         }
         geochartData = builder.build();
-    }
-
-    @Override
-    public void onSelectPhenotypeType(Integer index) {
-        if (index == null) {
-            getView().setGeoChartData(null);
-            getView().setHistogramChartData(null);
-            getView().setPhenotypExplorerData(null);
-            getView().drawCharts();
-        } else {
-            final StatisticTypeProxy type = Iterables.get(statisticTypes, index);
-            List<TraitProxy> cachedTraits = cache.get(type);
-            if (cachedTraits != null) {
-                calculateChartDataAndDisplay(cachedTraits);
-            } else {
-                fireEvent(new LoadingIndicatorEvent(true));
-                phenotypeManager.findAllTraitValuesByType(phenotype.getId(), type.getId(), new Receiver<List<TraitProxy>>() {
-
-                    @Override
-                    public void onSuccess(List<TraitProxy> response) {
-                        fireEvent(new LoadingIndicatorEvent(false));
-                        cache.put(type, response);
-                        calculateChartDataAndDisplay(response);
-                    }
-                });
-            }
-        }
     }
 
     private void calculateChartDataAndDisplay(List<TraitProxy> traits) {

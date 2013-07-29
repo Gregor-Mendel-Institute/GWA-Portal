@@ -14,16 +14,22 @@
     <ui:style>
         .container {
             padding: 19px 19px;
+            min-height: 800px;
         }
 
         .actionRow {
             float: right;
         }
+
+        .statisticTypeContainer {
+            margin-top: -4px;
+            float: left;
+        }
     </ui:style>
-    <g:DockLayoutPanel unit="EM">
-        <g:west size="30">
-            <g:LayoutPanel>
-                <g:layer left="0" top="0" height="28em" right="0">
+    <g:LayoutPanel addStyleNames="{style.container}" ui:field="container">
+        <g:layer top="0" height="29em">
+            <g:DockLayoutPanel unit="EM">
+                <g:west size="30">
                     <g:LayoutPanel>
                         <g:layer top="5px" height="40px" left="0" right="0">
                             <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
@@ -46,18 +52,14 @@
                             </b:Form>
                         </g:layer>
                     </g:LayoutPanel>
-                </g:layer>
-                <g:layer top="30em" left="0" right="0" bottom="0">
-                    <g:SimpleLayoutPanel ui:field="phenotypePieChartContainer"/>
-                </g:layer>
-            </g:LayoutPanel>
-        </g:west>
-        <g:center>
-            <g:LayoutPanel>
-                <g:layer top="0" left="0" height="28em" right="0">
+                </g:west>
+                <g:center>
                     <g:LayoutPanel>
-                        <g:layer top="5px" height="40px" left="0" right="0">
+                        <g:layer top="5px" height="40px" left="5px" right="0">
                             <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                                <div class="{style.statisticTypeContainer}">
+                                    <b:NavPills ui:field="statisticTypePills"/>
+                                </div>
                                 <div class="{mainRes.style.chartIconContainer}">
                                     <g:HTMLPanel ui:field="geoChartBtnContainer"
                                                  addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
@@ -76,40 +78,39 @@
                                 </div>
                             </g:HTMLPanel>
                         </g:layer>
-                        <g:layer top="47px" bottom="0" left="0" right="0">
+                        <g:layer top="47px" bottom="0" left="5px" right="0">
                             <g:SimpleLayoutPanel ui:field="upperChartContainer"/>
                         </g:layer>
                     </g:LayoutPanel>
-                </g:layer>
-                <g:layer top="30em" left="0" right="0" bottom="0">
-                    <g:LayoutPanel>
-                        <g:layer top="0" height="40px" left="0" right="0">
-                            <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
-                                <div class="{mainRes.style.chartIconContainer}">
-                                    <g:HTMLPanel ui:field="columnChartBtnContainer"
-                                                 addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
-                                        <b:Tooltip text="Shows the phenotype distrubtion as a histogram">
-                                            <g:Button ui:field="columnChartBtn"
-                                                      addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}"/>
-                                        </b:Tooltip>
-                                    </g:HTMLPanel>
-                                    <g:HTMLPanel ui:field="motionChartBtnContainer"
-                                                 addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
-                                        <b:Tooltip text="Shows the phenotype values in a motionchart">
-                                            <g:Button ui:field="motionChartBtn"
-                                                      addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}"/>
-                                        </b:Tooltip>
-                                    </g:HTMLPanel>
-                                </div>
+                </g:center>
+            </g:DockLayoutPanel>
+        </g:layer>
+        <g:layer top="29em" bottom="0">
+            <g:LayoutPanel>
+                <g:layer top="0" height="40px" left="0" right="0">
+                    <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                        <div class="{mainRes.style.chartIconContainer}">
+                            <g:HTMLPanel ui:field="columnChartBtnContainer"
+                                         addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
+                                <b:Tooltip text="Shows the phenotype distrubtion as a histogram">
+                                    <g:Button ui:field="columnChartBtn"
+                                              addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}"/>
+                                </b:Tooltip>
                             </g:HTMLPanel>
-                        </g:layer>
-                        <g:layer top="40px" bottom="0" left="0" right="0">
-                            <g:SimpleLayoutPanel ui:field="lowerChartContainer"/>
-                        </g:layer>
-                    </g:LayoutPanel>
+                            <g:HTMLPanel ui:field="motionChartBtnContainer"
+                                         addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
+                                <b:Tooltip text="Shows the phenotype values in a motionchart">
+                                    <g:Button ui:field="motionChartBtn"
+                                              addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}"/>
+                                </b:Tooltip>
+                            </g:HTMLPanel>
+                        </div>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="40px" bottom="0" left="5px" right="0">
+                    <g:SimpleLayoutPanel ui:field="lowerChartContainer"/>
                 </g:layer>
             </g:LayoutPanel>
-        </g:center>
-    </g:DockLayoutPanel>
-
+        </g:layer>
+    </g:LayoutPanel>
 </ui:UiBinder>

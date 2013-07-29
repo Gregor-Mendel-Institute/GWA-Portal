@@ -13,6 +13,7 @@ import com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 
 public interface TraitUomService {
+
     TraitUomPage findPhenotypesByExperiment(Long id, int page, int size);
 
     int countPhenotypeByExperimentCount(Long id);
@@ -28,6 +29,8 @@ public interface TraitUomService {
 
 
     List<TraitUom> findPhenotypesByPassportId(Long passportId);
+
+    TraitUomPage findAll(Long experimentId, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
 
     TraitUomPage findAll(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
 

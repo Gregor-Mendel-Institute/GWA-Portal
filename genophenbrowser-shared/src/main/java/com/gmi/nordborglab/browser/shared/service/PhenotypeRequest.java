@@ -22,6 +22,8 @@ public interface PhenotypeRequest extends RequestContext {
 
     Request<PhenotypePageProxy> findAll(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
 
+    Request<PhenotypePageProxy> findAll(Long id, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
+
     Request<List<PhenotypeProxy>> findPhenotypesByExperimentAndAcl(Long experimentId, int permission);
 
     Request<Long> savePhenotypeUploadData(Long experimentId, PhenotypeUploadDataProxy data);

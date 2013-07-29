@@ -26,6 +26,8 @@ public interface CdvService {
 
     public StudyPage findAll(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
 
+    public StudyPage findAll(Long phenotypeId, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
+
     @PreAuthorize("hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
     public List<Trait> findTraitValues(Long studyId);
 

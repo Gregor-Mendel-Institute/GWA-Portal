@@ -9,6 +9,7 @@ import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.common.collect.ImmutableMap;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.TextCell;
@@ -56,19 +57,15 @@ public interface PhenotypeListDataGridColumns {
 
     }
 
-    public static class TraitOntologyColumn extends Column<PhenotypeProxy, String> {
+    public static class TraitOntologyColumn extends Column<PhenotypeProxy, TermProxy> {
 
         public TraitOntologyColumn() {
-            super(new TextCell());
+            super(new TermCell());
         }
 
         @Override
-        public String getValue(PhenotypeProxy object) {
-            String to = "";
-            if (object.getTraitOntologyTerm() != null) {
-                to = object.getTraitOntologyTerm().getName() + " (" + object.getTraitOntologyTerm().getAcc() + ")";
-            }
-            return to;
+        public TermProxy getValue(PhenotypeProxy object) {
+            return object.getTraitOntologyTerm();
         }
     }
 
@@ -139,4 +136,31 @@ public interface PhenotypeListDataGridColumns {
 
         }
     }
+
+    public static class TermCell extends AbstractCell<TermProxy> {
+
+        interface Template extends SafeHtmlTemplates {
+
+            @SafeHtmlTemplates.Template("<div style=\"font-size:110%;\">{0}</div><div style=\"font-size:90%;color:#777;\">{1}</div>")
+            SafeHtml cell(SafeHtml name, SafeHtml subTitle);
+
+        }
+
+        private static Template templates = GWT.create(Template.class);
+
+        public TermCell() {
+            super();
+        }
+
+        @Override
+        public void render(Context context, TermProxy value, SafeHtmlBuilder sb) {
+            if (value == null)
+                return;
+            SafeHtml name = SafeHtmlUtils.fromString(value.getName());
+            SafeHtml title = SafeHtmlUtils.fromString(value.getAcc());
+            sb.append(templates.cell(name, title));
+        }
+    }
+
+
 }

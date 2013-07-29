@@ -1,9 +1,10 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
+import com.eemi.gwt.tour.client.GwtTour;
+import com.github.gwtbootstrap.client.ui.*;
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.ModalFooter;
+import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeDisplayEditor;
@@ -18,12 +19,14 @@ import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multiset;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -47,6 +50,7 @@ import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHandlers> implements
         PhenotypeDetailPresenter.MyView {
@@ -71,8 +75,6 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     @UiField
     SimpleLayoutPanel upperChartContainer;
     @UiField
-    SimpleLayoutPanel phenotypePieChartContainer;
-    @UiField
     HTMLPanel geoChartBtnContainer;
     @UiField
     HTMLPanel pieChartBtnContainer;
@@ -86,13 +88,17 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     ToggleButton delete;
     @UiField(provided = true)
     MainResources mainRes;
+    @UiField
+    NavPills statisticTypePills;
+    @UiField
+    LayoutPanel container;
     protected DataTable histogramData;
     protected DataTable phenotypeExplorerData;
     protected DataTable geoChartData;
     protected DataTable phenotypeTypeData;
     private LOWER_CHART_TYPE lowerChartType = LOWER_CHART_TYPE.histogram;
     private UPPER_CHART_TYPE upperChartType = UPPER_CHART_TYPE.geochart;
-    private ColumnChart columnChart;
+    private ResizeableColumnChart columnChart;
     private ResizeableMotionChart motionChart;
     //private ResizeablePieChart
     private GeoChart geoChart = new GeoChart();
@@ -104,6 +110,23 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     private boolean showBlank = true;
     private Modal editPopup = new Modal(true);
     private Modal deletePopup = new Modal(true);
+    private ImmutableBiMap<StatisticTypeProxy, NavLink> statisticTypeLinks;
+
+    ClickHandler statisticTypeClickhandler = new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+            IconAnchor source = (IconAnchor) event.getSource();
+            if (source.getParent() instanceof NavLink) {
+                NavLink link = (NavLink) source.getParent();
+                if (link.isDisabled())
+                    return;
+                resetStatisticTypeLinkActive();
+                link.setActive(true);
+                StatisticTypeProxy statisticType = statisticTypeLinks.inverse().get(link);
+                getUiHandlers().onSelectStatisticType(statisticType);
+            }
+        }
+    };
 
 
     private final ScheduledCommand layoutCmd = new ScheduledCommand() {
@@ -160,7 +183,56 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         });
         deleteBtn.setType(ButtonType.DANGER);
         deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
+    }
 
+    private void resetStatisticTypeLinkActive() {
+        for (NavLink link : statisticTypeLinks.values()) {
+            link.setActive(false);
+        }
+    }
+
+    private void resetStatisticTypeLinks() {
+        for (Map.Entry<StatisticTypeProxy, NavLink> entrySet : statisticTypeLinks.entrySet()) {
+            NavLink link = entrySet.getValue();
+            StatisticTypeProxy statisticType = entrySet.getKey();
+            link.setDisabled(true);
+            link.setText(statisticType.getStatType());
+            link.setActive(false);
+        }
+    }
+
+    @Override
+    public void setAvailableStatisticTypes(List<StatisticTypeProxy> statisticTypes) {
+        statisticTypePills.clear();
+        ImmutableBiMap.Builder builder = ImmutableBiMap.<StatisticTypeProxy, NavLink>builder();
+        for (StatisticTypeProxy statisticType : statisticTypes) {
+            if (statisticType == null)
+                continue;
+            NavLink link = new NavLink(statisticType.getStatType());
+            link.setDisabled(true);
+            link.addClickHandler(statisticTypeClickhandler);
+            builder.put(statisticType, link);
+            statisticTypePills.add(link);
+        }
+        statisticTypeLinks = builder.build();
+    }
+
+    @Override
+    public void setStatisticTypes(List<StatisticTypeProxy> statisticTypes) {
+        resetStatisticTypeLinks();
+        for (int i = 0; i < statisticTypes.size(); i++) {
+            StatisticTypeProxy statisticType = statisticTypes.get(i);
+            NavLink link = statisticTypeLinks.get(statisticType);
+            if (link != null) {
+                link.setText(statisticType.getStatType() + " [" + statisticType.getNumberOfTraits() + "]");
+                link.setDisabled(false);
+            }
+        }
+        if (statisticTypes.size() == 1) {
+            StatisticTypeProxy statisticType = statisticTypes.get(0);
+            statisticTypeLinks.get(statisticType).setActive(true);
+            getUiHandlers().onSelectStatisticType(statisticType);
+        }
     }
 
     @Override
@@ -213,9 +285,10 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     private void forceLayout() {
         if (!widget.isAttached() || !widget.isVisible())
             return;
-        drawPhenotypePieChart();
+        //drawPhenotypePieChart();
         drawUpperCharts();
         drawLowerCharts();
+        container.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.AUTO);
     }
 
     @UiHandler("edit")
@@ -239,7 +312,7 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     private Options createColumnChartOptions() {
         Options options = DataTableUtils.getDefaultPhenotypeHistogramOptions();
         if (showBlank) {
-            options.setTitle("<- Select a phenotype type from the piechart");
+            options.setTitle("Select a statistic type from the top list (measure, mean, variance, etc)");
             options.setColors("#CCC");
             Options toolTip = Options.create();
             toolTip.set("trigger", "none");
@@ -256,7 +329,7 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         options.set(
                 "state",
                 "%7B%22time%22%3A%22notime%22%2C%22iconType%22%3A%22BUBBLE%22%2C%22xZoomedDataMin%22%3Anull%2C%22yZoomedDataMax%22%3Anull%2C%22xZoomedIn%22%3Afalse%2C%22iconKeySettings%22%3A%5B%5D%2C%22showTrails%22%3Atrue%2C%22xAxisOption%22%3A%222%22%2C%22colorOption%22%3A%224%22%2C%22yAxisOption%22%3A%223%22%2C%22playDuration%22%3A15%2C%22xZoomedDataMax%22%3Anull%2C%22orderedByX%22%3Afalse%2C%22duration%22%3A%7B%22multiplier%22%3A1%2C%22timeUnit%22%3A%22none%22%7D%2C%22xLambda%22%3A1%2C%22orderedByY%22%3Afalse%2C%22sizeOption%22%3A%22_UNISIZE%22%2C%22yZoomedDataMin%22%3Anull%2C%22nonSelectedAlpha%22%3A0.4%2C%22stateVersion%22%3A3%2C%22dimensions%22%3A%7B%22iconDimensions%22%3A%5B%22dim0%22%5D%7D%2C%22yLambda%22%3A1%2C%22yZoomedIn%22%3Afalse%7D%3B");
-        options.setHeight(600);
+        options.setHeight(lowerChartContainer.getOffsetHeight());
         options.setWidth(lowerChartContainer.getOffsetWidth());
         return options;
     }
@@ -267,36 +340,6 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         options.setHeight(upperChartContainer.getOffsetHeight());
         options.setWidth(upperChartContainer.getOffsetWidth());
         return options;
-    }
-
-    private void drawPhenotypePieChart() {
-        PieOptions options = PieOptions.create();
-        options.setTitle("Select a phenotype type");
-
-        options.setLegend(PieLegendPosition.BOTTOM);
-        //options.setHeight(phenotype.getOffsetHeight());
-        //options.setWidth(upperChartContainer.getOffsetWidth());
-        //return options;
-        options.setAutomaticResize(true);
-        phenotypePieChartContainer.clear();
-        phenotypePieChart = new PieChart(phenotypeTypeData, options);
-        phenotypePieChartContainer.add(phenotypePieChart);
-
-        phenotypePieChart.addSelectHandler(new SelectHandler() {
-
-            @Override
-            public void onSelect(SelectEvent event) {
-                JsArray<Selection> selections = phenotypePieChart.getSelections();
-
-                Integer row = null;
-                if (selections != null && selections.length() > 0) {
-                    Selection selection = selections.get(0);
-                    row = selection.getRow();
-                }
-                getUiHandlers().onSelectPhenotypeType(row);
-            }
-
-        });
     }
 
 
@@ -327,8 +370,8 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
                         createColumnChartOptions());
                 lowerChartContainer.add(columnChart);
             } else {
-                columnChart = (ColumnChart) lowerChartContainer.getWidget();
-                columnChart.draw(histogramData, createColumnChartOptions());
+                columnChart = (ResizeableColumnChart) lowerChartContainer.getWidget();
+                columnChart.draw2(histogramData, createColumnChartOptions());
             }
         } else {
             if (lowerChartContainer.getWidget() == null) {
@@ -392,18 +435,6 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
                 .iconContainer_active());
         lowerChartContainer.clear();
         drawLowerCharts();
-    }
-
-    @Override
-    public void setPhenotypePieChartData(List<StatisticTypeProxy> statisticTypes) {
-        phenotypeTypeData = DataTable.create();
-        phenotypeTypeData.addColumn(ColumnType.STRING, "Type");
-        phenotypeTypeData.addColumn(ColumnType.NUMBER, "Values");
-        for (StatisticTypeProxy type : statisticTypes) {
-            int i = phenotypeTypeData.addRow();
-            phenotypeTypeData.setValue(i, 0, type.getStatType());
-            phenotypeTypeData.setValue(i, 1, type.getNumberOfTraits());
-        }
     }
 
     @Override
