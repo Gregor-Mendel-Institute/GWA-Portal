@@ -2,8 +2,10 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
 import com.github.gwtbootstrap.client.ui.*;
 import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.client.ui.Tooltip;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
+import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.editors.ExperimentDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.ExperimentEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentDetailUiHandlers;
@@ -15,14 +17,14 @@ import com.gmi.nordborglab.browser.client.ui.PhaseAnimation;
 import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
-import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
-import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
+import com.gmi.nordborglab.browser.shared.proxy.*;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -39,7 +41,20 @@ import com.google.gwt.view.client.ProvidesKey;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
+import com.googlecode.gwt.charts.client.ColumnType;
+import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.corechart.LineChartOptions;
+import com.googlecode.gwt.charts.client.corechart.PieChart;
+import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
+import com.googlecode.gwt.charts.client.format.DateFormat;
+import com.googlecode.gwt.charts.client.format.DateFormatOptions;
+import com.googlecode.gwt.charts.client.options.*;
+import com.googlecode.gwt.charts.client.options.Legend;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiHandlers> implements
         ExperimentDetailPresenter.MyView {
@@ -63,13 +78,23 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     @UiField
     ToggleButton delete;
     @UiField
-    ToggleButton share;
+    com.github.gwtbootstrap.client.ui.Button share;
     @UiField(provided = true)
     ResponsiveDataGrid publicationDataGrid;
     @UiField
     TextBox doiTb;
     @UiField
     Form addDOIForm;
+    @UiField
+    Tooltip shareTooltip;
+    @UiField
+    SpanElement phenotypeCountLb;
+    @UiField
+    SpanElement analysisCountLb;
+    @UiField
+    PieChart ontologyChart;
+    @UiField
+    ButtonGroup ontologyTypeBtnGrp;
     private final ExperimentEditDriver experimentEditDriver;
     private final ExperimentDisplayDriver experimentDisplayDriver;
     private final MainResources resources;
@@ -84,6 +109,11 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     private Modal editPopup = new Modal(true);
     private Modal deletePopup = new Modal(true);
 
+    public enum ONTOLOGY_TYPE {TRAIT, ENVIRONMENT}
+
+    ;
+    private ONTOLOGY_TYPE currentOntologyType = ONTOLOGY_TYPE.TRAIT;
+    private Map<ONTOLOGY_TYPE, DataTable> ontology2Map = new HashMap<ONTOLOGY_TYPE, DataTable>();
 
     public static class ResponsiveDataGrid extends DataGrid<PublicationProxy> {
 
@@ -306,7 +336,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         });
         deleteBtn.setType(ButtonType.DANGER);
         deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
-
+        share.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
     }
 
     private void initDataGrid() {
@@ -466,8 +496,78 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     }
 
     @Override
+    public void setShareTooltip(String toopltipMsg, IconType icon) {
+        shareTooltip.setText(toopltipMsg);
+        share.setIcon(icon);
+        shareTooltip.reconfigure();
+    }
+
+    @Override
     public void showActionBtns(boolean show) {
         edit.setVisible(show);
         delete.setVisible(show);
+    }
+
+    @Override
+    public void displayStats(List<FacetProxy> stats, int numberOfPhenotypes, long numberOfAnalysis) {
+        initDataTables(stats);
+        drawDataTable();
+        phenotypeCountLb.setInnerText(String.valueOf(numberOfPhenotypes));
+        analysisCountLb.setInnerText(String.valueOf(numberOfAnalysis));
+    }
+
+    private void drawDataTable() {
+        ontologyChart.draw(ontology2Map.get(currentOntologyType), getChartOptions());
+    }
+
+    private PieChartOptions getChartOptions() {
+        PieChartOptions options = PieChartOptions.create();
+        options.setHeight(340);
+        ChartArea area = ChartArea.create();
+        area.setLeft(0);
+        area.setTop(0);
+        area.setHeight("100%");
+        area.setWidth("100%");
+        options.setChartArea(area);
+        Legend legend = Legend.create();
+        legend.setAligment(LegendAlignment.CENTER);
+        legend.setPosition(LegendPosition.RIGHT);
+        options.setLegend(legend);
+        return options;
+    }
+
+    private void initDataTables(List<FacetProxy> stats) {
+        ontology2Map.clear();
+        ontology2Map.put(ONTOLOGY_TYPE.TRAIT, getDataTableFromStats(stats.get(0)));
+        ontology2Map.put(ONTOLOGY_TYPE.ENVIRONMENT, getDataTableFromStats(stats.get(1)));
+    }
+
+    private DataTable getDataTableFromStats(FacetProxy stat) {
+        DataTable dataTable = DataTable.create();
+        dataTable.addColumn(ColumnType.STRING, stat.getName());
+        dataTable.addColumn(ColumnType.NUMBER, "count");
+        dataTable.addRows(stat.getTerms().size());
+        for (int i = 0; i < stat.getTerms().size(); i++) {
+            FacetTermProxy term = stat.getTerms().get(i);
+            dataTable.setValue(i, 0, term.getTerm());
+            dataTable.setValue(i, 1, term.getValue());
+        }
+        return dataTable;
+    }
+
+    @UiHandler("traitTypeBtn")
+    public void onClickTraitTypeBtn(ClickEvent e) {
+        if (currentOntologyType != ONTOLOGY_TYPE.TRAIT) {
+            currentOntologyType = ONTOLOGY_TYPE.TRAIT;
+            drawDataTable();
+        }
+    }
+
+    @UiHandler("envTypeBtn")
+    public void onClickEnvironmentTypeBtn(ClickEvent e) {
+        if (currentOntologyType != ONTOLOGY_TYPE.ENVIRONMENT) {
+            currentOntologyType = ONTOLOGY_TYPE.ENVIRONMENT;
+            drawDataTable();
+        }
     }
 }

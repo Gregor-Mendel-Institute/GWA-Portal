@@ -290,7 +290,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
         builder.append("<td><div class=\"" + style.circle() + " " + (!isRead ? style.circle_red() : "") + "\"></div></td>");
         builder.append("<td class=\"" + style.notification_icon() + "\">" + icon + "</td>");
         builder.append("<td>" + notification.getText() + "</td>");
-        builder.append("<td style=\"font-size:10px;white-space: nowrap;\">" + DateUtils.formatTimeElapsedSinceMillisecond(System.currentTimeMillis() - notification.getCreateDate().getTime(), 1) + " ago</td>");
+        builder.append("<td style=\"font-size:10px;white-space: nowrap;font-style:italic;\">" + DateUtils.formatTimeElapsedSinceMillisecond(System.currentTimeMillis() - notification.getCreateDate().getTime(), 1) + " ago</td>");
         builder.append("</tr>");
         return builder.toString();
     }

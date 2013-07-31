@@ -37,6 +37,8 @@ public interface ExperimentProxy extends SecureEntityProxy {
 
     int getNumberOfPhenotypes();
 
+    long getNumberOfAnalyses();
+
     Set<PublicationProxy> getPublications();
 
     Date getCreated();
@@ -44,4 +46,6 @@ public interface ExperimentProxy extends SecureEntityProxy {
     Date getModified();
 
     Date getPublished();
+
+    List<FacetProxy> getStats();
 }
