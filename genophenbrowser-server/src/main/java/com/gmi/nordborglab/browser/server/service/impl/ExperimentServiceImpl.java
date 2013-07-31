@@ -17,11 +17,15 @@ import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
 import com.gmi.nordborglab.browser.server.security.*;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
+import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.visualization.datasource.query.parser.QueryBuilder;
+import org.elasticsearch.action.count.CountRequestBuilder;
+import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -30,7 +34,10 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentFactory.*;
+import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.facet.FacetBuilder;
 import org.elasticsearch.search.facet.FacetBuilders;
@@ -91,6 +98,9 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
     @Resource
     private EsAclManager esAclManager;
+
+    @Resource
+    private TermRepository termRepository;
 
     @Resource
     PermissionFactory permissionFactory;
@@ -281,6 +291,8 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
         Experiment experiment = experimentRepository.findOne(id);
         experiment = aclManager.setPermissionAndOwner(experiment);
         experiment.setNumberOfPhenotypes(traitUomService.countPhenotypeByExperimentCount(experiment.getId()));
+        experiment.setNumberOfAnalyses(countAnalysesByExperiment(id));
+        experiment.setStats(getPhenotypeStats(id));
         return experiment;
     }
 
@@ -317,5 +329,39 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
         // INFO neccessary because umodifiable list
         Set<Experiment> experiments = Sets.newCopyOnWriteArraySet(publication.getExperiments());
         return experiments;
+    }
+
+    private long countAnalysesByExperiment(Long experimentId) {
+        SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
+        FilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.hasParentFilter("phenotype", FilterBuilders.termFilter("_parent", experimentId.toString())), esAclManager.getAclFilter(Lists.newArrayList("read")));
+        ConstantScoreQueryBuilder query = QueryBuilders.constantScoreQuery(filter);
+        SearchResponse response = request.setTypes("study").setSize(0).setQuery(query).execute().actionGet();
+        return response.getHits().getTotalHits();
+    }
+
+    private List<ESFacet> getPhenotypeStats(Long experimentId) {
+        SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex()).setTypes("phenotype").setSize(0);
+        FilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.termFilter("_parent", experimentId.toString()), esAclManager.getAclFilter(Lists.newArrayList("read")));
+        //TODO change mapping so that term_name is not analyzed
+        request.setQuery(QueryBuilders.constantScoreQuery(filter))
+                .addFacet(FacetBuilders.termsFacet("TO").field("to_accession.term_id"))
+                .addFacet(FacetBuilders.termsFacet("EO").field("eo_accession.term_id"));
+        SearchResponse response = request.execute().actionGet();
+        List<ESFacet> facets = Lists.newArrayList();
+        TermsFacet searchFacet = (TermsFacet) response.getFacets().facetsAsMap().get("TO");
+        List<ESTermsFacet> terms = Lists.newArrayList();
+        for (TermsFacet.Entry termEntry : searchFacet) {
+            //TODO inefficient change mapping and retrieve directly from ES
+            terms.add(new ESTermsFacet(termRepository.findByAcc(termEntry.getTerm().string()).getName(), termEntry.getCount()));
+        }
+        facets.add(new ESFacet("TO", searchFacet.getMissingCount(), searchFacet.getTotalCount(), searchFacet.getOtherCount(), terms));
+        // TO
+        searchFacet = (TermsFacet) response.getFacets().facetsAsMap().get("EO");
+        terms = Lists.newArrayList();
+        for (TermsFacet.Entry termEntry : searchFacet) {
+            terms.add(new ESTermsFacet(termEntry.getTerm().string(), termEntry.getCount()));
+        }
+        facets.add(new ESFacet("EO", searchFacet.getMissingCount(), searchFacet.getTotalCount(), searchFacet.getOtherCount(), terms));
+        return facets;
     }
 }

@@ -1,11 +1,14 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
+import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.events.PermissionDoneEvent;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
 import com.gmi.nordborglab.browser.client.ui.PhaseAnimation;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -92,6 +95,10 @@ public class ExperimentDetailPresenter
         void showShareBtn(boolean show);
 
         void showActionBtns(boolean show);
+
+        void setShareTooltip(String toopltipMsg, IconType icon);
+
+        void displayStats(List<FacetProxy> stats, int numberOfPhenotypes, long numberOfAnalysis);
     }
 
     public static enum State {
@@ -192,7 +199,17 @@ public class ExperimentDetailPresenter
         getView().getExperimentDisplayDriver().display(experiment);
         getView().showActionBtns(currentUser.hasEdit(experiment));
         getView().showShareBtn(currentUser.hasAdmin(experiment));
+
+        String toolTipText = "Public - Anyone on the Internet can find and access";
+        IconType toolTipIcon = IconType.GLOBE;
+        if (!experiment.isPublic()) {
+            toolTipText = "Private - Only people explicitly granted permission can access";
+            toolTipIcon = IconType.LOCK;
+
+        }
+        getView().setShareTooltip(toolTipText, toolTipIcon);
         publicationDataProvider.setList(ImmutableList.copyOf(experiment.getPublications()));
+        getView().displayStats(experiment.getStats(), experiment.getNumberOfPhenotypes(), experiment.getNumberOfAnalyses());
         LoadingIndicatorEvent.fire(this, false);
     }
 

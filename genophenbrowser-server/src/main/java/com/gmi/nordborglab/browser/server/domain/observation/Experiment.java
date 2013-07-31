@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 
@@ -45,6 +46,11 @@ public class Experiment extends SecureEntity {
 
     @Transient
     int numberOfPhenotypes = 0;
+    @Transient
+    private long numberOfAnalyses;
+
+    @Transient
+    private List<ESFacet> stats;
 
     public Experiment() {
     }
@@ -128,5 +134,21 @@ public class Experiment extends SecureEntity {
 
     public Date getModified() {
         return modified;
+    }
+
+    public void setNumberOfAnalyses(long numberOfAnalyses) {
+        this.numberOfAnalyses = numberOfAnalyses;
+    }
+
+    public long getNumberOfAnalyses() {
+        return numberOfAnalyses;
+    }
+
+    public void setStats(List<ESFacet> stats) {
+        this.stats = stats;
+    }
+
+    public List<ESFacet> getStats() {
+        return stats;
     }
 }
