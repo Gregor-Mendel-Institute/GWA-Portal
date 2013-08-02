@@ -11,65 +11,65 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 
-public class SpringEntitiyLocator extends Locator<BaseEntity,Long>{
-	
-	@PersistenceContext
-	private EntityManager em;
+public class SpringEntitiyLocator extends Locator<BaseEntity, Long> {
 
-	
-	public SpringEntitiyLocator() {
-		
-	}
+    @PersistenceContext
+    private EntityManager em;
 
-	@Override
-	public BaseEntity create(Class<? extends BaseEntity> clazz) {
-		 try {
-		      return clazz.newInstance();
-		    } catch (InstantiationException e) {
-		      throw new RuntimeException(e);
-		    } catch (IllegalAccessException e) {
-		      throw new RuntimeException(e);
-		    }
-	}
 
-	@Override
-	public BaseEntity find(Class<? extends BaseEntity> clazz, Long id) {
-		return getEM().find(clazz, id);
-	}
+    public SpringEntitiyLocator() {
 
-	@Override
-	public Class<BaseEntity> getDomainType() {
-		return null;
-	}
+    }
 
-	@Override
-	public Long getId(BaseEntity domainObject) {
-		return domainObject.getId();
-	}
+    @Override
+    public BaseEntity create(Class<? extends BaseEntity> clazz) {
+        try {
+            return clazz.newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Override
-	public Class<Long> getIdType() {
-		return Long.class;
-	}
+    @Override
+    public BaseEntity find(Class<? extends BaseEntity> clazz, Long id) {
+        return getEM().find(clazz, id);
+    }
 
-	@Override
-	public Object getVersion(BaseEntity domainObject) {
-		return domainObject.getId();
-	}
-	
-	
-	private EntityManager getEM() {
-		if (em == null) {
-			ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(RequestFactoryServlet.getThreadLocalServletContext());
-			SharedEntityManagerBean bean =  context.getBean(SharedEntityManagerBean.class);
-			em = bean.getObject();
-		}
-		return em;
-	}
+    @Override
+    public Class<BaseEntity> getDomainType() {
+        return null;
+    }
 
-	@Override
-	public boolean isLive(BaseEntity domainObject) {
-		return true;
-	}
-	
+    @Override
+    public Long getId(BaseEntity domainObject) {
+        return domainObject.getId();
+    }
+
+    @Override
+    public Class<Long> getIdType() {
+        return Long.class;
+    }
+
+    @Override
+    public Object getVersion(BaseEntity domainObject) {
+        return domainObject.getId();
+    }
+
+
+    private EntityManager getEM() {
+        if (em == null) {
+            ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(RequestFactoryServlet.getThreadLocalServletContext());
+            //SharedEntityManagerBean bean =
+            em = context.getBean("entityManager", EntityManager.class);
+        }
+        return em;
+    }
+
+    @Override
+    public boolean isLive(BaseEntity domainObject) {
+        return true;
+    }
+
 }

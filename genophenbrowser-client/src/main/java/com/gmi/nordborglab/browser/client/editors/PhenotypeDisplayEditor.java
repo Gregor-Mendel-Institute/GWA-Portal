@@ -37,6 +37,7 @@ public class PhenotypeDisplayEditor extends Composite implements Editor<Phenotyp
 
     public PhenotypeDisplayEditor() {
         traitOntologyTerm = new ValueLabel<TermProxy>(new OntologyRenderer());
+        environOntologyTerm = new ValueLabel<TermProxy>(new OntologyRenderer());
         initWidget(uiBinder.createAndBindUi(this));
     }
 
@@ -45,8 +46,10 @@ public class PhenotypeDisplayEditor extends Composite implements Editor<Phenotyp
     //@UiField Label toAccession;
     @UiField(provided = true)
     ValueLabel<TermProxy> traitOntologyTerm;
-    @UiField
-    Label eoAccession;
+
+    @UiField(provided = true)
+    ValueLabel<TermProxy> environOntologyTerm;
+
     @Path("unitOfMeasure.unitType")
     @UiField
     Label unitOfMeasure;

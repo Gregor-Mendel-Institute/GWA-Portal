@@ -115,9 +115,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         if (totalElements > 0) {
             List<TraitUom> partitionedTraits = Iterables.get(Iterables.partition(traits, size), pageStart);
             for (TraitUom trait : partitionedTraits) {
-                if (trait.getToAccession() != null) {
-                    trait.setTraitOntologyTerm(termRepository.findByAcc(trait.getToAccession()));
-                }
+                initOntologies(trait);
             }
             page = new TraitUomPage(partitionedTraits, pageRequest,
                     totalElements, null);
@@ -153,9 +151,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         traitUom.setStatisticTypes(statisticTypeToReturn);
         traitUom = setStats(traitUom);
         traitUom = aclManager.setPermissionAndOwner(traitUom);
-        if (traitUom.getToAccession() != null) {
-            traitUom.setTraitOntologyTerm(termRepository.findByAcc(traitUom.getToAccession()));
-        }
+        initOntologies(traitUom);
         return traitUom;
     }
 
@@ -167,9 +163,8 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         traitUom = traitUomRepository.save(traitUom);
         traitUom = setStats(traitUom);
         traitUom = aclManager.setPermissionAndOwner(traitUom);
-        if (traitUom.getToAccession() != null) {
-            traitUom.setTraitOntologyTerm(termRepository.findByAcc(traitUom.getToAccession()));
-        }
+        initOntologies(traitUom);
+        indexTraitUom(traitUom);
         return traitUom;
     }
 
@@ -227,7 +222,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         request.setSize(size).setFrom(start).setTypes("phenotype").setNoFields();
 
         if (searchString != null && !searchString.equalsIgnoreCase("")) {
-            request.setQuery(multiMatchQuery(searchString, "local_trait_name^3.5", "local_trait_name.partial^1.5", "trait_protocol", "to_accession.term_id^3.5", "to_accession.term_name^1.5", "eo_accession", "owner.name", "experiment"));
+            request.setQuery(multiMatchQuery(searchString, "local_trait_name^3.5", "local_trait_name.partial^1.5", "trait_protocol", "to_accession.term_id^3.5", "to_accession.term_name^1.5", "eo_accession.term_id^3.5", "eo_accession.term_name^1.5", "owner.name", "experiment"));
         }
         FilterBuilder searchFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, false);
         FilterBuilder privateFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), true, false);
@@ -280,10 +275,10 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
                 traits.add(id2Map.get(id));
             }
         }
-        for (TraitUom traitUom : traits)
-            if (traitUom.getToAccession() != null) {
-                traitUom.setTraitOntologyTerm(termRepository.findByAcc(traitUom.getToAccession()));
-            }
+        for (TraitUom traitUom : traits) {
+            initOntologies(traitUom);
+
+        }
         //extract facets
         Facets searchFacets = response.getFacets();
         List<ESFacet> facets = Lists.newArrayList();
@@ -328,9 +323,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
                 traitUom.setStatisticTypeTraitCounts(statisticTypeTraitCounts);
                 traitUom = setStats(traitUom);
                 traitUom = aclManager.setPermissionAndOwner(traitUom);
-                if (traitUom.getToAccession() != null) {
-                    traitUom.setTraitOntologyTerm(termRepository.findByAcc(traitUom.getToAccession()));
-                }
+                initOntologies(traitUom);
             }
         }
         return traitsToReturn;
@@ -372,9 +365,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
             }
         }
         traitUom = traitUomRepository.save(traitUom);
-        if (traitUom.getToAccession() != null) {
-            traitUom.setTraitOntologyTerm(termRepository.findByAcc(traitUom.getToAccession()));
-        }
+        initOntologies(traitUom);
         CumulativePermission permission = new CumulativePermission();
         permission.set(CustomPermission.ADMINISTRATION);
         permission.set(CustomPermission.EDIT);
@@ -402,8 +393,11 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
                 getOntologyBuilder(builder, traitUom.getTraitOntologyTerm());
                 builder.endObject();
             }
-            //TODO do the same thing for Environment ontology
-
+            if (traitUom.getEnvironOntologyTerm() != null) {
+                builder.startObject("eo_accession");
+                getOntologyBuilder(builder, traitUom.getEnvironOntologyTerm());
+                builder.endObject();
+            }
             esAclManager.addACLAndOwnerContent(builder, aclManager.getAcl(traitUom));
             builder.endObject();
             IndexRequestBuilder request = client.prepareIndex(esAclManager.getIndex(), "phenotype", traitUom.getId().toString())
@@ -439,9 +433,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
             throw new RuntimeException(type + " Type unknown");
         }
         for (TraitUom trait : traits) {
-            if (trait.getToAccession() != null) {
-                trait.setTraitOntologyTerm(termRepository.findByAcc(trait.getToAccession()));
-            }
+            initOntologies(trait);
         }
         return traits;
     }
@@ -489,6 +481,15 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
                 map.put(passportId, obsUnit);
         }
         return map;
+    }
+
+    private void initOntologies(TraitUom traitUom) {
+        if (traitUom.getToAccession() != null) {
+            traitUom.setTraitOntologyTerm(termRepository.findByAcc(traitUom.getToAccession()));
+        }
+        if (traitUom.getEoAccession() != null) {
+            traitUom.setEnvironOntologyTerm(termRepository.findByAcc(traitUom.getEoAccession()));
+        }
     }
 }
 

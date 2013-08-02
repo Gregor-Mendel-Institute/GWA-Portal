@@ -10,4 +10,6 @@ package com.gmi.nordborglab.browser.shared.util;
 public interface ConstEnums {
 
     public static enum TABLE_FILTER {ALL, PRIVATE, PUBLISHED, RECENT}
+
+    public static enum ONTOLOGY_TYPE {TRAIT, ENVIRONMENT}
 }

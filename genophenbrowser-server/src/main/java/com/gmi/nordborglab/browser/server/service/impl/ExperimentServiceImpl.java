@@ -119,8 +119,8 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
             aclManager.addPermission(experiment, new PrincipalSid(SecurityUtil.getUsername()),
                     permission, null);
             aclManager.addPermission(experiment, new GrantedAuthoritySid("ROLE_ADMIN"), permission, null);
-            indexExperiment(experiment);
         }
+        indexExperiment(experiment);
         experiment = aclManager.setPermissionAndOwner(experiment);
         return experiment;
     }
@@ -359,7 +359,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
         searchFacet = (TermsFacet) response.getFacets().facetsAsMap().get("EO");
         terms = Lists.newArrayList();
         for (TermsFacet.Entry termEntry : searchFacet) {
-            terms.add(new ESTermsFacet(termEntry.getTerm().string(), termEntry.getCount()));
+            terms.add(new ESTermsFacet(termRepository.findByAcc(termEntry.getTerm().string()).getName(), termEntry.getCount()));
         }
         facets.add(new ESFacet("EO", searchFacet.getMissingCount(), searchFacet.getTotalCount(), searchFacet.getOtherCount(), terms));
         return facets;

@@ -93,6 +93,7 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
         dataGrid.addColumn(
                 new PhenotypeListDataGridColumns.TraitOntologyColumn(),
                 "Trait-Ontology");
+        dataGrid.addColumn(new PhenotypeListDataGridColumns.EnvironOntologyColumn(), "Env-Ontology");
         dataGrid.addColumn(new PhenotypeListDataGridColumns.ProtocolColumn(),
                 "Protocol");
         dataGrid.addColumn(new OwnerColumn(), "Owner");
@@ -101,9 +102,10 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
         dataGrid.setColumnWidth(0, 15, Unit.PCT);
         dataGrid.setColumnWidth(1, 15, Unit.PCT);
         dataGrid.setColumnWidth(2, 15, Unit.PCT);
-        dataGrid.setColumnWidth(3, 55, Unit.PCT);
-        dataGrid.setColumnWidth(4, 100, Style.Unit.PX);
+        dataGrid.setColumnWidth(3, 15, Unit.PCT);
+        dataGrid.setColumnWidth(4, 40, Unit.PCT);
         dataGrid.setColumnWidth(5, 100, Style.Unit.PX);
+        dataGrid.setColumnWidth(6, 100, Style.Unit.PX);
     }
 
     @Override

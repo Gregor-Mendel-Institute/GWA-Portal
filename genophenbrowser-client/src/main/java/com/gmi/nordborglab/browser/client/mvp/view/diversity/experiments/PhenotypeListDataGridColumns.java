@@ -12,6 +12,7 @@ import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.common.collect.ImmutableMap;
 import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -66,6 +67,18 @@ public interface PhenotypeListDataGridColumns {
         @Override
         public TermProxy getValue(PhenotypeProxy object) {
             return object.getTraitOntologyTerm();
+        }
+    }
+
+    public static class EnvironOntologyColumn extends Column<PhenotypeProxy, TermProxy> {
+
+        public EnvironOntologyColumn() {
+            super(new TermCell());
+        }
+
+        @Override
+        public TermProxy getValue(PhenotypeProxy object) {
+            return object.getEnvironOntologyTerm();
         }
     }
 

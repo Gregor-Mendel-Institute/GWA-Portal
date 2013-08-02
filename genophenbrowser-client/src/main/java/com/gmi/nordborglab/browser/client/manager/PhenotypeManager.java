@@ -14,7 +14,7 @@ import com.google.web.bindery.requestfactory.shared.Receiver;
 
 public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
 
-    public static String[] PATHS = {"statisticTypes", "unitOfMeasure", "userPermission", "traitOntologyTerm"};
+    public static String[] PATHS = {"statisticTypes", "unitOfMeasure", "userPermission", "traitOntologyTerm", "environOntologyTerm"};
 
     @Inject
     public PhenotypeManager(CustomRequestFactory rf) {
@@ -22,11 +22,11 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
     }
 
     public void findAll(Receiver<PhenotypePageProxy> receiver, Long id, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        rf.phenotypeRequest().findAll(id, filter, searchString, start, size).with("content.traitOntologyTerm", "content.ownerUser", "facets").fire(receiver);
+        rf.phenotypeRequest().findAll(id, filter, searchString, start, size).with("content.traitOntologyTerm", "content.environOntologyTerm", "content.ownerUser", "facets").fire(receiver);
     }
 
     public void findAll(Receiver<PhenotypePageProxy> receiver, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        rf.phenotypeRequest().findAll(filter, searchString, start, size).with("content.traitOntologyTerm", "content.experiment", "content.ownerUser", "facets").fire(receiver);
+        rf.phenotypeRequest().findAll(filter, searchString, start, size).with("content.traitOntologyTerm", "content.environOntologyTerm", "content.experiment", "content.ownerUser", "facets").fire(receiver);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
     }
 
     public void findAllByOntology(Receiver<List<PhenotypeProxy>> receiver, String type, String acc, boolean checkChilds) {
-        getContext().findAllByOntology(type, acc, checkChilds).with("traitOntologyTerm", "experiment").fire(receiver);
+        getContext().findAllByOntology(type, acc, checkChilds).with("traitOntologyTerm", "environOntologyTerm", "experiment").fire(receiver);
     }
 
     public void delete(Receiver<Void> receiver, PhenotypeProxy phenotype) {

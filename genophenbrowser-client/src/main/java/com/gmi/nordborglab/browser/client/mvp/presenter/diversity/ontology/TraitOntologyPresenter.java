@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology;
 
 import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.events.OntologyLoadedEvent;
 import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
@@ -11,9 +10,9 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.ontology.TraitOntol
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.Term2TermProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.gwt.view.client.*;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
@@ -32,10 +31,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class TraitOntologyPresenter
-		extends
-		Presenter<TraitOntologyPresenter.MyView, TraitOntologyPresenter.MyProxy> implements OntologyUiHandlers {
+        extends
+        Presenter<TraitOntologyPresenter.MyView, TraitOntologyPresenter.MyProxy> implements OntologyUiHandlers {
 
-    public interface MyView extends View,HasUiHandlers<OntologyUiHandlers> {
+    public interface MyView extends View, HasUiHandlers<OntologyUiHandlers> {
 
         void initNavigationTree(TermProxy term);
 
@@ -50,45 +49,43 @@ public class TraitOntologyPresenter
         void openNavTreeAndSelectItem(TermProxy term);
     }
 
-	@ProxyCodeSplit
-	@NameToken(NameTokens.traitontology)
-	public interface MyProxy extends ProxyPlace<TraitOntologyPresenter> {
+    @ProxyCodeSplit
+    @NameToken(NameTokens.traitontology)
+    public interface MyProxy extends ProxyPlace<TraitOntologyPresenter> {
 
     }
 
-    public static enum ONTOLOGY_TYPE {TRAIT,ENVIRONMENT}
-
     private final OntologyManager ontologyManager;
     private final PlaceManager placeManager;
-    private ONTOLOGY_TYPE ontologyType = ONTOLOGY_TYPE.TRAIT;
+    private ConstEnums.ONTOLOGY_TYPE ontologyType = ConstEnums.ONTOLOGY_TYPE.TRAIT;
     private Term2TermProxy selectedTerm;
     private ListDataProvider<PhenotypeProxy> phenotypeDataProvider = new ListDataProvider<PhenotypeProxy>();
     private final PhenotypeManager phenotypeManager;
 
 
-	@Inject
-	public TraitOntologyPresenter(final EventBus eventBus, final MyView view,
+    @Inject
+    public TraitOntologyPresenter(final EventBus eventBus, final MyView view,
                                   final MyProxy proxy,
                                   final OntologyManager ontologyManager,
                                   final PlaceManager placeManager,
                                   final PhenotypeManager phenotypeManager) {
-		super(eventBus, view, proxy);
+        super(eventBus, view, proxy);
         this.phenotypeManager = phenotypeManager;
         this.placeManager = placeManager;
         this.ontologyManager = ontologyManager;
         getView().setUiHandlers(this);
         phenotypeDataProvider.addDataDisplay(getView().getPhenotypeDisplay());
-	}
+    }
 
-	@Override
-	protected void revealInParent() {
-		RevealContentEvent.fire(this, DiversityPresenter.TYPE_SetMainContent, this);
-	}
+    @Override
+    protected void revealInParent() {
+        RevealContentEvent.fire(this, DiversityPresenter.TYPE_SetMainContent, this);
+    }
 
-	@Override
-	protected void onBind() {
-		super.onBind();
-	}
+    @Override
+    protected void onBind() {
+        super.onBind();
+    }
 
     @Override
     protected void onReset() {
@@ -96,10 +93,9 @@ public class TraitOntologyPresenter
         PlaceRequest request = placeManager.getCurrentPlaceRequest();
         String acc = null;
         try {
-            ontologyType = ONTOLOGY_TYPE.valueOf(request.getParameter("ontology",ONTOLOGY_TYPE.TRAIT.name()).toUpperCase());
-            acc = request.getParameter("id",null);
-        }
-        catch (Exception e) {
+            ontologyType = ConstEnums.ONTOLOGY_TYPE.valueOf(request.getParameter("ontology", ConstEnums.ONTOLOGY_TYPE.TRAIT.name()).toUpperCase());
+            acc = request.getParameter("id", null);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -107,15 +103,14 @@ public class TraitOntologyPresenter
             getView().initNavigationTree(null);
             getView().openNavTreeAndSelectItem(null);
             selectedTerm = null;
-        }
-        else {
-           ontologyManager.findOneByAcc(new Receiver<TermProxy>() {
-               @Override
-               public void onSuccess(TermProxy response) {
-                   selectedTerm = Iterables.get(response.getParents(), 0);
-                   getView().initNavigationTree(null);
-               }
-           },acc);
+        } else {
+            ontologyManager.findOneByAcc(new Receiver<TermProxy>() {
+                @Override
+                public void onSuccess(TermProxy response) {
+                    selectedTerm = Iterables.get(response.getParents(), 0);
+                    getView().initNavigationTree(null);
+                }
+            }, acc);
         }
 
 
@@ -140,8 +135,7 @@ public class TraitOntologyPresenter
                     }
                 }
             }, term.getId());
-        }
-        else {
+        } else {
             ontologyManager.findRootTerm(new Receiver<TermProxy>() {
                 @Override
                 public void onSuccess(TermProxy response) {
@@ -162,24 +156,23 @@ public class TraitOntologyPresenter
         if (selectedTerm != null) {
             PlaceRequest request = placeManager.getCurrentPlaceRequest();
             //TODO doesn't work when it checks if nameTokens match
-            placeManager.updateHistory(request.with("id",selectedTerm.getChild().getAcc()),true);
+            placeManager.updateHistory(request.with("id", selectedTerm.getChild().getAcc()), true);
             loadTermDataAndDisplay(selectedTerm);
-            OntologyLoadedEvent.fire(getEventBus(),selectedTerm.getChild());
-        }
-        else {
-           resetView();
+            OntologyLoadedEvent.fire(getEventBus(), selectedTerm.getChild());
+        } else {
+            resetView();
         }
     }
 
     private void loadTermDataAndDisplay(Term2TermProxy selectedTerm) {
         getView().getDisplayDriver().display(selectedTerm.getChild());
-        getView().getPhenotypeDisplay().setVisibleRangeAndClearData(getView().getPhenotypeDisplay().getVisibleRange(),false);
+        getView().getPhenotypeDisplay().setVisibleRangeAndClearData(getView().getPhenotypeDisplay().getVisibleRange(), false);
         phenotypeManager.findAllByOntology(new Receiver<List<PhenotypeProxy>>() {
             @Override
             public void onSuccess(List<PhenotypeProxy> response) {
                 phenotypeDataProvider.setList(response);
                 getView().setPhenotypeCount(response.size());
             }
-        },ontologyType.name(),selectedTerm.getChild().getAcc(),true);
+        }, ontologyType.name(), selectedTerm.getChild().getAcc(), true);
     }
 }

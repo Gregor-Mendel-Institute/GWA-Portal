@@ -10,7 +10,6 @@ import com.gmi.nordborglab.browser.client.editors.ExperimentDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.ExperimentEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter.State;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.PhaseAnimation;
@@ -18,6 +17,7 @@ import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
@@ -33,9 +33,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.inject.Inject;
@@ -43,14 +41,12 @@ import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriv
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
-import com.googlecode.gwt.charts.client.corechart.LineChartOptions;
 import com.googlecode.gwt.charts.client.corechart.PieChart;
 import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
-import com.googlecode.gwt.charts.client.format.DateFormat;
-import com.googlecode.gwt.charts.client.format.DateFormatOptions;
 import com.googlecode.gwt.charts.client.options.*;
 import com.googlecode.gwt.charts.client.options.Legend;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums.ONTOLOGY_TYPE;
 
 import java.util.HashMap;
 import java.util.List;
@@ -109,10 +105,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     private Modal editPopup = new Modal(true);
     private Modal deletePopup = new Modal(true);
 
-    public enum ONTOLOGY_TYPE {TRAIT, ENVIRONMENT}
-
-    ;
-    private ONTOLOGY_TYPE currentOntologyType = ONTOLOGY_TYPE.TRAIT;
+    private ONTOLOGY_TYPE currentOntologyType = ConstEnums.ONTOLOGY_TYPE.TRAIT;
     private Map<ONTOLOGY_TYPE, DataTable> ontology2Map = new HashMap<ONTOLOGY_TYPE, DataTable>();
 
     public static class ResponsiveDataGrid extends DataGrid<PublicationProxy> {
@@ -538,8 +531,8 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 
     private void initDataTables(List<FacetProxy> stats) {
         ontology2Map.clear();
-        ontology2Map.put(ONTOLOGY_TYPE.TRAIT, getDataTableFromStats(stats.get(0)));
-        ontology2Map.put(ONTOLOGY_TYPE.ENVIRONMENT, getDataTableFromStats(stats.get(1)));
+        ontology2Map.put(ConstEnums.ONTOLOGY_TYPE.TRAIT, getDataTableFromStats(stats.get(0)));
+        ontology2Map.put(ConstEnums.ONTOLOGY_TYPE.ENVIRONMENT, getDataTableFromStats(stats.get(1)));
     }
 
     private DataTable getDataTableFromStats(FacetProxy stat) {
@@ -557,16 +550,16 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 
     @UiHandler("traitTypeBtn")
     public void onClickTraitTypeBtn(ClickEvent e) {
-        if (currentOntologyType != ONTOLOGY_TYPE.TRAIT) {
-            currentOntologyType = ONTOLOGY_TYPE.TRAIT;
+        if (currentOntologyType != ConstEnums.ONTOLOGY_TYPE.TRAIT) {
+            currentOntologyType = ConstEnums.ONTOLOGY_TYPE.TRAIT;
             drawDataTable();
         }
     }
 
     @UiHandler("envTypeBtn")
     public void onClickEnvironmentTypeBtn(ClickEvent e) {
-        if (currentOntologyType != ONTOLOGY_TYPE.ENVIRONMENT) {
-            currentOntologyType = ONTOLOGY_TYPE.ENVIRONMENT;
+        if (currentOntologyType != ConstEnums.ONTOLOGY_TYPE.ENVIRONMENT) {
+            currentOntologyType = ConstEnums.ONTOLOGY_TYPE.ENVIRONMENT;
             drawDataTable();
         }
     }
