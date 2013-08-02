@@ -43,6 +43,12 @@ public interface PhenotypeProxy extends SecureEntityProxy {
 
     TermProxy getTraitOntologyTerm();
 
+    void setTraitOntologyTerm(TermProxy term);
+
+    TermProxy getEnvironOntologyTerm();
+
+    void setEnvironOntologyTerm(TermProxy term);
+
     String getEoAccession();
 
     void setEoAccession(String eoAccession);

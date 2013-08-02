@@ -12,66 +12,64 @@ import com.gmi.nordborglab.jpaontology.model.BaseOntologyEntity;
 import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
 import com.google.web.bindery.requestfactory.shared.Locator;
 
-public class SpringOntologyEntityLocator extends Locator<BaseOntologyEntity,Long>{
-	
-	@PersistenceContext
-	private EntityManager em;
+public class SpringOntologyEntityLocator extends Locator<BaseOntologyEntity, Integer> {
 
-	
-	public SpringOntologyEntityLocator() {
-		
-	}
+    @PersistenceContext
+    private EntityManager em;
 
-	@Override
-	public BaseOntologyEntity create(Class<? extends BaseOntologyEntity> clazz) {
-		 try {
-		      return clazz.newInstance();
-		    } catch (InstantiationException e) {
-		      throw new RuntimeException(e);
-		    } catch (IllegalAccessException e) {
-		      throw new RuntimeException(e);
-		    }
-	}
 
-	@Override
-	public BaseOntologyEntity find(Class<? extends BaseOntologyEntity> clazz, Long id) {
-		//return getEM().find(clazz, id);
-		return null;
-	}
+    public SpringOntologyEntityLocator() {
 
-	@Override
-	public Class<BaseOntologyEntity> getDomainType() {
-		return null;
-	}
+    }
 
-	@Override
-	public Long getId(BaseOntologyEntity domainObject) {
-		return (long)domainObject.getId();
-	}
+    @Override
+    public BaseOntologyEntity create(Class<? extends BaseOntologyEntity> clazz) {
+        try {
+            return clazz.newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Override
-	public Class<Long> getIdType() {
-		return Long.class;
-	}
+    @Override
+    public BaseOntologyEntity find(Class<? extends BaseOntologyEntity> clazz, Integer id) {
+        return getEM().find(clazz, id);
+    }
 
-	@Override
-	public Object getVersion(BaseOntologyEntity domainObject) {
-		return domainObject.getId();
-	}
-	
-	
-	private EntityManager getEM() {
-		if (em == null) {
-			ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(RequestFactoryServlet.getThreadLocalServletContext());
-			SharedEntityManagerBean bean =  context.getBean("entityManagerOntology",SharedEntityManagerBean.class);
-			em = bean.getObject();
-		}
-		return em;
-	}
+    @Override
+    public Class<BaseOntologyEntity> getDomainType() {
+        return null;
+    }
 
-	@Override
-	public boolean isLive(BaseOntologyEntity domainObject) {
-		return true;
-	}
-	
+    @Override
+    public Integer getId(BaseOntologyEntity domainObject) {
+        return domainObject.getId();
+    }
+
+    @Override
+    public Class<Integer> getIdType() {
+        return Integer.class;
+    }
+
+    @Override
+    public Object getVersion(BaseOntologyEntity domainObject) {
+        return domainObject.getId();
+    }
+
+
+    private EntityManager getEM() {
+        if (em == null) {
+            ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(RequestFactoryServlet.getThreadLocalServletContext());
+            em = context.getBean("entityManagerOntology", EntityManager.class);
+        }
+        return em;
+    }
+
+    @Override
+    public boolean isLive(BaseOntologyEntity domainObject) {
+        return true;
+    }
+
 }

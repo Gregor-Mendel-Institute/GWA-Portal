@@ -6,8 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
 
+import com.gmi.nordborglab.browser.client.manager.OntologyManager;
+import com.gmi.nordborglab.browser.client.ui.OntologyTermSuggestOracle;
+import com.gmi.nordborglab.browser.shared.proxy.ontology.TermPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
+import com.google.common.base.Function;
+import com.google.common.collect.*;
+import com.google.gwt.user.client.ui.SuggestOracle;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gmi.nordborglab.browser.client.CurrentUser;
@@ -19,7 +27,6 @@ import com.gmi.nordborglab.browser.client.events.LoadPhenotypeEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeDetailUiHandlers;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter.State;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeDetailView.PhenotypeDisplayDriver;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeDetailView.PhenotypeEditDriver;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
@@ -27,14 +34,6 @@ import com.gmi.nordborglab.browser.shared.proxy.StatisticTypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.gmi.nordborglab.browser.shared.service.PhenotypeRequest;
-import com.google.common.collect.BoundType;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMultiset;
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.SortedMultiset;
-import com.google.common.collect.TreeMultiset;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -52,6 +51,7 @@ import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums.ONTOLOGY_TYPE;
 
 public class PhenotypeDetailPresenter
         extends
@@ -93,6 +93,7 @@ public class PhenotypeDetailPresenter
     protected PhenotypeProxy phenotype;
     protected boolean fireLoadEvent;
     protected final PlaceManager placeManager;
+    protected final OntologyManager ontologyManager;
     protected final PhenotypeManager phenotypeManager;
     protected final CurrentUser currentUser;
     protected final Receiver<PhenotypeProxy> receiver;
@@ -113,10 +114,11 @@ public class PhenotypeDetailPresenter
     public PhenotypeDetailPresenter(final EventBus eventBus, final MyView view,
                                     final MyProxy proxy, final PlaceManager placeManager,
                                     final PhenotypeManager phenotypeManager,
-                                    final CurrentUser currentUser) {
+                                    final CurrentUser currentUser, final OntologyManager ontologyManager) {
         super(eventBus, view, proxy);
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
+        this.ontologyManager = ontologyManager;
         this.phenotypeManager = phenotypeManager;
         this.currentUser = currentUser;
         getView().setAcceptableValuesForUnitOfMeasure(currentUser.getAppData().getUnitOfMeasureList());
@@ -218,7 +220,7 @@ public class PhenotypeDetailPresenter
         PhenotypeRequest ctx = phenotypeManager.getContext();
         getView().getEditDriver().edit(phenotype, ctx);
         ///TODO Fix this better.
-        List<String> paths = ImmutableList.<String>builder().addAll(Arrays.asList(getView().getEditDriver().getPaths())).add("userPermission").add("statisticTypes").add("traitOntologyTerm").build();
+        List<String> paths = ImmutableList.<String>builder().addAll(Arrays.asList(getView().getEditDriver().getPaths())).add("userPermission").add("statisticTypes").build();
         ctx.save(phenotype).with(paths.toArray(new String[0])).to(receiver);
         getView().showEditPopup(true);
     }
@@ -291,6 +293,37 @@ public class PhenotypeDetailPresenter
                 });
             }
         }
+    }
+
+    @Override
+    public void onSearchOntology(final SuggestOracle.Request request, final SuggestOracle.Callback callback, final ONTOLOGY_TYPE type) {
+        ontologyManager.findByQuery(new Receiver<TermPageProxy>() {
+            @Override
+            public void onSuccess(TermPageProxy termPage) {
+                SuggestOracle.Response response = new SuggestOracle.Response();
+                response.setMoreSuggestionsCount((int) termPage.getTotalElements() - request.getLimit());
+                switch (type) {
+                    case TRAIT:
+                        if (phenotype.getTraitOntologyTerm() != null) {
+                            termPage.getContents().add(0, phenotype.getTraitOntologyTerm());
+                        }
+                        break;
+                    case ENVIRONMENT:
+                        if (phenotype.getEnvironOntologyTerm() != null) {
+                            termPage.getContents().add(0, phenotype.getEnvironOntologyTerm());
+                        }
+                        break;
+                }
+                response.setSuggestions(Lists.transform(termPage.getContents(), new Function<TermProxy, SuggestOracle.Suggestion>() {
+                    @Nullable
+                    @Override
+                    public SuggestOracle.Suggestion apply(@Nullable TermProxy termProxy) {
+                        return new OntologyTermSuggestOracle.OntologySuggestion(termProxy);
+                    }
+                }));
+                callback.onSuggestionsReady(request, response);
+            }
+        }, request.getQuery(), type, request.getLimit());
     }
 
     @Override

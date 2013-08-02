@@ -15,10 +15,12 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.Phen
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDetailPresenter.LOWER_CHART_TYPE;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDetailPresenter.UPPER_CHART_TYPE;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
+import com.gmi.nordborglab.browser.client.ui.OntologyTermSuggestOracle;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedMap;
@@ -144,6 +146,12 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         this.editDriver = editDriver;
         this.displayDriver.initialize(phenotypeDisplayEditor);
         this.editDriver.initialize(phenotypeEditEditor);
+        phenotypeEditEditor.setOntologySearchCallback(new PhenotypeEditEditor.OntologySearchCallback() {
+            @Override
+            public void onRequestSearch(SuggestOracle.Request request, SuggestOracle.Callback callback, ConstEnums.ONTOLOGY_TYPE type) {
+                getUiHandlers().onSearchOntology(request, callback, type);
+            }
+        });
         editPopup.setBackdrop(BackdropType.STATIC);
         editPopup.setCloseVisible(true);
         editPopup.setTitle("Edit phenotype");

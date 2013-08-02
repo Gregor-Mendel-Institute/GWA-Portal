@@ -49,6 +49,9 @@ public class TraitUom extends SecureEntity {
     private Term traitOntologyTerm;
 
     @Transient
+    private Term environOntologyTerm;
+
+    @Transient
     private List<StatisticType> statisticTypes;
 
     @Transient
@@ -141,6 +144,11 @@ public class TraitUom extends SecureEntity {
 
     public void setTraitOntologyTerm(Term traitOntologyTerm) {
         this.traitOntologyTerm = traitOntologyTerm;
+        if (traitOntologyTerm == null) {
+            toAccession = null;
+        } else {
+            toAccession = traitOntologyTerm.getAcc();
+        }
     }
 
     public void addTrait(Trait trait) {
@@ -167,6 +175,19 @@ public class TraitUom extends SecureEntity {
 
     public Date getPublished() {
         return published;
+    }
+
+    public Term getEnvironOntologyTerm() {
+        return environOntologyTerm;
+    }
+
+    public void setEnvironOntologyTerm(Term environOntologyTerm) {
+        this.environOntologyTerm = environOntologyTerm;
+        if (environOntologyTerm == null) {
+            eoAccession = null;
+        } else {
+            eoAccession = environOntologyTerm.getAcc();
+        }
     }
 
     @PreRemove

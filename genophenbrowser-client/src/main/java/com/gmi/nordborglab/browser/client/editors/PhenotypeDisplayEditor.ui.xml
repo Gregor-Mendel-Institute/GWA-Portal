@@ -58,7 +58,7 @@
             </div>
             <div class="{style.row}">
                 <div class="{style.label}">Environment Ontology</div>
-                <g:Label ui:field="eoAccession" addStyleNames="{style.value}"/>
+                <g:ValueLabel addStyleNames="{style.value}" ui:field="environOntologyTerm"></g:ValueLabel>
             </div>
             <div class="{style.row}">
                 <div class="{style.label}">Protocol:</div>

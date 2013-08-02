@@ -1,7 +1,9 @@
 package com.gmi.nordborglab.browser.server.service;
 
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.gmi.nordborglab.jpaontology.model.Term;
 import com.gmi.nordborglab.jpaontology.model.Term2Term;
+import com.gmi.nordborglab.jpaontology.model.TermPage;
 
 import java.util.List;
 
@@ -17,7 +19,12 @@ import java.util.List;
 public interface OntologyService {
 
     public Term findOne(Integer id);
+
     public Term2Term findOneTerm2Term(Integer id);
+
     public Term findRootTerm(String type);
+
     public Term findOneByAcc(String acc);
+
+    public TermPage findByQuery(String query, ConstEnums.ONTOLOGY_TYPE type, int limit);
 }

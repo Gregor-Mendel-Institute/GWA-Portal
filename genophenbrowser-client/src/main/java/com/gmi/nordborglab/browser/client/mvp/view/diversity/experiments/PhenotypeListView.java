@@ -92,14 +92,16 @@ public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListViewUiHan
 
         dataGrid.addColumn(new PhenotypeListDataGridColumns.TitleColumn(placeManager, new ParameterizedPlaceRequest(NameTokens.phenotype)), "Name");
         dataGrid.addColumn(new PhenotypeListDataGridColumns.TraitOntologyColumn(), "Trait-Ontology");
+        dataGrid.addColumn(new PhenotypeListDataGridColumns.EnvironOntologyColumn(), "Env-Ontology");
         dataGrid.addColumn(new PhenotypeListDataGridColumns.ProtocolColumn(), "Protocol");
         dataGrid.addColumn(new OwnerColumn(), "Owner");
         dataGrid.addColumn(new AccessColumn(), "Access");
         dataGrid.setColumnWidth(0, 15, Unit.PCT);
         dataGrid.setColumnWidth(1, 15, Unit.PCT);
-        dataGrid.setColumnWidth(2, 70, Unit.PCT);
-        dataGrid.setColumnWidth(3, 100, Style.Unit.PX);
+        dataGrid.setColumnWidth(2, 15, Unit.PCT);
+        dataGrid.setColumnWidth(3, 55, Unit.PCT);
         dataGrid.setColumnWidth(4, 100, Style.Unit.PX);
+        dataGrid.setColumnWidth(5, 100, Style.Unit.PX);
     }
 
     @Override
