@@ -1,13 +1,17 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
 import com.gmi.nordborglab.browser.client.events.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASUploadWizardPresenterWidget;
+import com.gmi.nordborglab.browser.client.util.Statistics;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
+import com.gmi.nordborglab.browser.shared.util.PhenotypeHistogram;
+import com.google.common.collect.*;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gmi.nordborglab.browser.client.CurrentUser;
@@ -22,13 +26,6 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyDetailVi
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.service.CdvRequest;
-import com.google.common.collect.BoundType;
-import com.google.common.collect.ImmutableMultiset;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.SortedMultiset;
-import com.google.common.collect.TreeMultiset;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -248,34 +245,8 @@ public class StudyDetailPresenter extends
     }
 
     private void calculateHistogramData() {
-        SortedMultiset<Double> data = TreeMultiset.create();
-        for (TraitProxy trait : study.getTraits()) {
-            if (trait.getValue() != null) {
-                try {
-                    data.add(Double.parseDouble(trait.getValue()));
-                } catch (NumberFormatException e) {
-                }
-            }
-        }
-        if (data.size() == 0)
-            return;
-        Double min = data.elementSet().first();
-        Double max = data.elementSet().last();
-        if (min == max)
-            return;
-        Double binWidth = (max - min) / BIN_COUNT;
-        ImmutableSortedMap.Builder<Double, Integer> builder = ImmutableSortedMap
-                .naturalOrder();
-        for (int i = 0; i < BIN_COUNT; i++) {
-            Double lowBound = min + i * binWidth;
-            Double upperBound = lowBound + binWidth;
-            builder.put(
-                    lowBound,
-                    data.subMultiset(lowBound, BoundType.CLOSED,
-                            upperBound, BoundType.CLOSED).size());
-        }
-        builder.put(max, 0);
-        histogramData = builder.build();
+        List<Double> traitValues = Lists.transform(Lists.newArrayList(study.getTraits()), Statistics.traitToDouble);
+        histogramData = PhenotypeHistogram.getHistogram(traitValues, BIN_COUNT);
     }
 
     private void calculateGeoChartData() {
