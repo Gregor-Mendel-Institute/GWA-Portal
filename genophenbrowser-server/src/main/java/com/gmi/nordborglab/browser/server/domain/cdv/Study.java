@@ -56,13 +56,6 @@ public class Study extends SecureEntity {
     private TraitUom phenotype;
 
 
-    @Transient
-    private CustomAccessControlEntry userPermission = new CustomAccessControlEntry(0L, 0, true);
-
-    @Transient
-    boolean isOwner = false;
-
-
     public Set<Trait> getTraits() {
         return Collections.unmodifiableSet(traits);
     }
@@ -134,22 +127,6 @@ public class Study extends SecureEntity {
             trait.addStudy(this);
         }
         this.traits = traits;
-    }
-
-    public CustomAccessControlEntry getUserPermission() {
-        return userPermission;
-    }
-
-    public void setUserPermission(CustomAccessControlEntry userPermission) {
-        this.userPermission = userPermission;
-    }
-
-    public void setIsOwner(boolean isOwner) {
-        this.isOwner = isOwner;
-    }
-
-    public boolean isOwner() {
-        return isOwner;
     }
 
 
