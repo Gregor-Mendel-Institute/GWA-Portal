@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.gmi.nordborglab.browser.server.domain.AppData;
+import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
 import com.gmi.nordborglab.browser.server.domain.BreadcrumbItem;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TransformationData;
@@ -29,4 +30,6 @@ public interface HelperService {
     List<AppStat> getAppStats();
 
     List<DateStatHistogramFacet> findRecentTraitHistogram(DateStatHistogramProxy.INTERVAL interval);
+
+    Study applyTransformation(Study study);
 }

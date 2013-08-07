@@ -26,7 +26,7 @@ public class CdvManager extends RequestFactoryManager<CdvRequest> {
     }
 
     public void findStudiesByPhenotypeId(Receiver<StudyPageProxy> receiver, ConstEnums.TABLE_FILTER filter, String searchString, Long id, int start, int size) {
-        getContext().findAll(id, filter, searchString, start, size).with("content.alleleAssay", "content.protocol", "content.job", "facets", "content.ownerUser").fire(receiver);
+        getContext().findAll(id, filter, searchString, start, size).with("content.alleleAssay", "content.protocol", "content.job", "facets", "content.ownerUser", "content.transformation").fire(receiver);
     }
 
     public void findOne(Receiver<StudyProxy> receiver, Long id) {
@@ -35,7 +35,7 @@ public class CdvManager extends RequestFactoryManager<CdvRequest> {
     }
 
     public void findAll(Receiver<StudyPageProxy> receiver, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        getContext().findAll(filter, searchString, start, size).with("content.alleleAssay", "content.protocol", "content.phenotype.experiment", "content.job", "facets", "content.ownerUser").fire(receiver);
+        getContext().findAll(filter, searchString, start, size).with("content.alleleAssay", "content.protocol", "content.phenotype.experiment", "content.job", "facets", "content.ownerUser", "content.transformation").fire(receiver);
     }
 
 

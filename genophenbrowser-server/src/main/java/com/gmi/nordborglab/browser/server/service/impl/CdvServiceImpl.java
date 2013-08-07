@@ -12,6 +12,7 @@ import com.gmi.nordborglab.browser.server.repository.*;
 import com.gmi.nordborglab.browser.server.security.*;
 import com.gmi.nordborglab.browser.server.service.CdvService;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
+import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.base.Function;
 import com.google.common.collect.*;
@@ -75,6 +76,9 @@ public class CdvServiceImpl implements CdvService {
     protected GWASDataService gwasDataService;
 
     @Resource
+    protected HelperService helperService;
+
+    @Resource
     private Client client;
 
     @Resource
@@ -105,6 +109,7 @@ public class CdvServiceImpl implements CdvService {
     @Override
     public Study findStudy(Long id) {
         Study study = studyRepository.findOne(id);
+        study = helperService.applyTransformation(study);
         study = aclManager.setPermissionAndOwner(study);
         return study;
     }
@@ -212,7 +217,7 @@ public class CdvServiceImpl implements CdvService {
         request.setSize(size).setFrom(start).setTypes("study").setNoFields();
 
         if (searchString != null && !searchString.equalsIgnoreCase("")) {
-            request.setQuery(multiMatchQuery(searchString, "name^3.5", "name.partial^1.5", "protocol.analysis_method^3.5", "allele_assay.name^1.5", "allele_assay.producer", "owner.name", "experiment", "phenotype"));
+            request.setQuery(multiMatchQuery(searchString, "name^3.5", "name.partial^1.5", "protocol.analysis_method^3.5", "allele_assay.name^1.5", "allele_assay.producer", "owner.name", "experiment.name", "phenotype.name"));
         }
         FilterBuilder searchFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, false);
         FilterBuilder privateFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), true, false);

@@ -145,6 +145,18 @@ public interface StudyListDataGridColumns {
         }
     }
 
+    public static class TransformationColumn extends TextColumn<StudyProxy> {
+
+        @Override
+        public String getValue(StudyProxy object) {
+            String transformation = null;
+            if (object.getTransformation() != null) {
+                transformation = object.getTransformation().getName();
+            }
+            return transformation;
+        }
+    }
+
     public static class StatusCell implements HasCell<StudyJobProxy, String> {
 
         @Override

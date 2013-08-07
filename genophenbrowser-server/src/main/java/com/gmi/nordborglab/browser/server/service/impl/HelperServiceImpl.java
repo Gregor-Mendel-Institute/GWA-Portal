@@ -3,12 +3,13 @@ package com.gmi.nordborglab.browser.server.service.impl;
 import java.io.*;
 import java.util.*;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.phenotype.*;
 import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.cdv.Transformation;
-import com.gmi.nordborglab.browser.server.domain.phenotype.TransformationData;
 import com.gmi.nordborglab.browser.server.domain.stats.DateStatHistogram;
 import com.gmi.nordborglab.browser.server.domain.stats.DateStatHistogramFacet;
 import com.gmi.nordborglab.browser.server.domain.util.NewsItem;
@@ -24,7 +25,10 @@ import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramFacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -51,9 +55,6 @@ import com.gmi.nordborglab.browser.server.domain.germplasm.Sampstat;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
-import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
-import com.gmi.nordborglab.browser.server.domain.phenotype.UnitOfMeasure;
 import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.browser.shared.service.HelperFactory;
 import com.google.common.collect.Iterables;
@@ -516,6 +517,36 @@ public class HelperServiceImpl implements HelperService {
         histogram.add(new DateStatHistogramFacet(getHistogram(multiResponse.getResponses()[1].getResponse().getFacets(), interval), DateStatHistogramFacetProxy.TYPE.phenotype));
         histogram.add(new DateStatHistogramFacet(getHistogram(multiResponse.getResponses()[2].getResponse().getFacets(), interval), DateStatHistogramFacetProxy.TYPE.analysis));
         return histogram;
+    }
+
+    @Override
+    public Study applyTransformation(Study study) {
+        DescriptiveStatistics stats = Transformations.getDescriptiveStatistics(Collections2.transform(study.getTraits(), new Function<Trait, Double>() {
+
+            @Nullable
+            @Override
+            public Double apply(@Nullable Trait trait) {
+                Double value = null;
+                try {
+                    value = Double.parseDouble(trait.getValue());
+                } catch (Exception e) {
+
+                }
+                return value;
+            }
+        }));
+        Transformations.TransformFunc transFormFunc = Transformations.getTransformFunc(study.getTransformation().getName(), stats.getMin(), stats.getVariance());
+        if (transFormFunc != null) {
+            for (Trait trait : study.getTraits()) {
+                try {
+                    Double value = Double.parseDouble(trait.getValue());
+                    trait.setValue(transFormFunc.apply(value).toString());
+                } catch (Exception e) {
+
+                }
+            }
+        }
+        return study;
     }
 
 

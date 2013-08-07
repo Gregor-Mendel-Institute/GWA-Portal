@@ -4,18 +4,24 @@ import com.gmi.nordborglab.browser.server.data.annotation.*;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.server.math.Transformations;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.StudyGWASData;
 import com.gmi.nordborglab.browser.server.service.*;
+import com.gmi.nordborglab.browser.shared.util.PhenotypeHistogram;
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.render.JsonRenderer;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
@@ -77,12 +83,11 @@ public class RestProviderController {
     @ResponseBody
     StudyGWASData getStudyGWASData(@PathVariable("id") Long id) {
         Study study = cdvService.findStudy(id);
-        List<Trait> traits = cdvService.findTraitValues(id);
         String csvData = null;
         StringBuilder builder = new StringBuilder();
         Joiner joiner = Joiner.on(",").useForNull("NA");
         builder.append(joiner.join("ecotypeId", id));
-        for (Trait trait : traits) {
+        for (Trait trait : study.getTraits()) {
             builder.append("\n").append(joiner.join(trait.getObsUnit().getStock().getPassport().getId(), trait.getValue()));
         }
         csvData = builder.toString();

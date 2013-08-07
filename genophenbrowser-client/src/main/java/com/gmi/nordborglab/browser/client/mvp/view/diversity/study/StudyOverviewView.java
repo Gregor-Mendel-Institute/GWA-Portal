@@ -97,6 +97,7 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
         dataGrid.addColumn(new StudyListDataGridColumns.PhenotypeColumn(), "Phenotype");
         dataGrid.addColumn(new StudyListDataGridColumns.AlleleAssayColumn(), "Genotype");
         dataGrid.addColumn(new StudyListDataGridColumns.ProtocolColumn(), "Protocol");
+        dataGrid.addColumn(new StudyListDataGridColumns.TransformationColumn(), "Trans.");
         List<HasCell<StudyJobProxy, ?>> cells = Lists.newArrayList();
         cells.add(new StudyListDataGridColumns.StatusCell());
         cells.add(new StudyListDataGridColumns.ProgressCell());
@@ -108,9 +109,10 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
         dataGrid.setColumnWidth(2, 25, Unit.PCT);
         dataGrid.setColumnWidth(3, 25, Unit.PCT);
         dataGrid.setColumnWidth(4, 80, Unit.PX);
-        dataGrid.setColumnWidth(5, 200, Unit.PX);
-        dataGrid.setColumnWidth(6, 100, Style.Unit.PX);
+        dataGrid.setColumnWidth(5, 80, Unit.PX);
+        dataGrid.setColumnWidth(6, 200, Unit.PX);
         dataGrid.setColumnWidth(7, 100, Style.Unit.PX);
+        dataGrid.setColumnWidth(8, 100, Style.Unit.PX);
 
     }
 

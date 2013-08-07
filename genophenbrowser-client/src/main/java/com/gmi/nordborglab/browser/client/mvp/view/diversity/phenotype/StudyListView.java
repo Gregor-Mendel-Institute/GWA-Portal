@@ -102,6 +102,7 @@ public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> imple
         dataGrid.setEmptyTableWidget(new Label("No Records found"));
         dataGrid.addColumn(new StudyListDataGridColumns.TitleColumn(placeManager, request), "Title");
         dataGrid.addColumn(new StudyListDataGridColumns.ProtocolColumn(), "Protocol");
+        dataGrid.addColumn(new StudyListDataGridColumns.TransformationColumn(), "Trans.");
         dataGrid.addColumn(new StudyListDataGridColumns.AlleleAssayColumn(), "Genotype");
         dataGrid.addColumn(new StudyListDataGridColumns.StudyDateColumn(), "Study date");
         List<HasCell<StudyJobProxy, ?>> cells = Lists.newArrayList();
@@ -112,11 +113,12 @@ public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> imple
         dataGrid.addColumn(new AccessColumn(), "Access");
         dataGrid.setColumnWidth(0, 50, Style.Unit.PCT);
         dataGrid.setColumnWidth(1, 80, Style.Unit.PX);
-        dataGrid.setColumnWidth(2, 50, Style.Unit.PCT);
-        dataGrid.setColumnWidth(3, 150, Style.Unit.PX);
-        dataGrid.setColumnWidth(4, 200, Style.Unit.PX);
-        dataGrid.setColumnWidth(5, 100, Style.Unit.PX);
-        dataGrid.setColumnWidth(6, 120, Style.Unit.PX);
+        dataGrid.setColumnWidth(2, 80, Style.Unit.PX);
+        dataGrid.setColumnWidth(3, 50, Style.Unit.PCT);
+        dataGrid.setColumnWidth(4, 150, Style.Unit.PX);
+        dataGrid.setColumnWidth(5, 200, Style.Unit.PX);
+        dataGrid.setColumnWidth(6, 100, Style.Unit.PX);
+        dataGrid.setColumnWidth(7, 120, Style.Unit.PX);
     }
 
     @Override
