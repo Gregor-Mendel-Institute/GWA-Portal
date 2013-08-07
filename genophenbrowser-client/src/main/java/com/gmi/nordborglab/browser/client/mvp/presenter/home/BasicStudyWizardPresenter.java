@@ -155,9 +155,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     @ContentSlot
     public static final GwtEvent.Type<RevealContentHandler<?>> TYPE_SetPhenotypeUploadContent = new GwtEvent.Type<RevealContentHandler<?>>();
     private final PlaceManager placeManager;
-
     private ImmutableSortedMap<Double, Integer> histogram;
-
     private final ExperimentManager experimentManager;
     private final PhenotypeManager phenotypeManager;
     private final ListDataProvider<PhenotypeProxy> phenotypeDataProvider = new ListDataProvider<PhenotypeProxy>();
@@ -281,6 +279,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
             public void onSelectionChange(SelectionChangeEvent selectionChangeEvent) {
                 statisticPhenotypeValueCache.clear();
                 PhenotypeProxy selectedObj = phenotypeSelectionModel.getSelectedObject();
+                if (selectedObj == null)
+                    return;
                 if (selectedObj.getId() == null) {
                     phenotypeSelectionModel.setSelected(selectedObj, false);
                     getView().onShowPhenotypeUploadPanel(true);
@@ -304,6 +304,9 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
     private void showMissingGenotypeTraitValues() {
         final AlleleAssayProxy selectedAlleleAssay = genotypeSelectionModel.getSelectedObject();
+        if (selectedAlleleAssay == null) {
+            return;
+        }
         List<TraitProxy> traits = statisticPhenotypeValueCache.get(getView().getSelectedStatisticType());
         ImmutableList missingGenotypeTraitValues = ImmutableList.copyOf(Collections2
                 .filter(
@@ -416,6 +419,18 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
     private void resetState() {
         availableExperiments = null;
+        phenotypeList = null;
+        if (phenotypeSelectionModel.getSelectedObject() != null) {
+            phenotypeSelectionModel.setSelected(phenotypeSelectionModel.getSelectedObject(), false);
+        }
+        phenotypeDataProvider.setList(new ArrayList<PhenotypeProxy>());
+        selectedStudyProtocol = null;
+        selectedTransformation = null;
+        phenotypeNamePredicate.setQuery("");
+        if (genotypeSelectionModel.getSelectedObject() != null) {
+            genotypeSelectionModel.setSelected(genotypeSelectionModel.getSelectedObject(), false);
+        }
+        missingGenotypeDataProvider.setList(new ArrayList<TraitProxy>());
         getView().resetView();
     }
 
@@ -542,6 +557,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     }
 
     private void loadPhenotypesForExperiment(final Long phenotypeId) {
+        fireEvent(new LoadingIndicatorEvent(true));
         phenotypeManager.findAllByAcl(new Receiver<List<PhenotypeProxy>>() {
             @Override
             public void onSuccess(List<PhenotypeProxy> response) {
@@ -549,6 +565,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                 phenotypeList.add(0, phenotypeManager.getContext().create(PhenotypeProxy.class));
                 filterAndDisplayPhenotypeList(phenotypeId);
                 getView().showPhenotypeCharts();
+                fireEvent(new LoadingIndicatorEvent(false));
                 /*if (response.size() == 0) {
                     getView().onShowPhenotypeUploadPanel(true);
                 }

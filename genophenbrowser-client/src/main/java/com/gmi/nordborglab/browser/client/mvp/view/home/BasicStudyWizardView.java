@@ -693,12 +693,17 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @Override
     public void resetView() {
         phenotypeHistogramData = DataTableUtils.createPhenotypeHistogramTable(null);
+        activePhenotypeChartType = PHENTOYPE_CHART_TYPE.HISTOGRAM;
+        drawPhenotypeCharts();
+        resetStatisticTypeLinks();
+        onSelectTransformationCard(noTransformationCard);
+        onSelectMethodCard(null);
         phenotypeGeoChartData = null;
         phenotypeExplorerData = null;
-        selectedExperiment = null;
-        selectedTransformationCard = null;
-        selectedMethod = null;
-        activePhenotypeChartType = PHENTOYPE_CHART_TYPE.HISTOGRAM;
+        studyNameTb.setText("");
+        studyNameGroup.setType(ControlGroupType.NONE);
+        phenotypeSearchBox.setValue("");
+        studyJobCb.setValue(false);
         wizard.reset();
     }
 
@@ -811,7 +816,8 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
                     MethodCard availableCard = (MethodCard) widget;
                     availableCard.setSelected(false);
                 }
-                selectedMethod.setSelected(true);
+                if (selectedMethod != null)
+                    selectedMethod.setSelected(true);
             }
         }
     }

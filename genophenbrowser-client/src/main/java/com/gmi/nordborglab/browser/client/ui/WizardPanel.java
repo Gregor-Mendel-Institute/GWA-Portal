@@ -152,7 +152,10 @@ public class WizardPanel extends ResizeComposite {
     }
 
     public void reset() {
+        pageContainer.setAnimationDuration(0);
         pageContainer.showWidget(0);
+        pageContainer.setAnimationDuration(1000);
         updateWizardControls();
+
     }
 }
