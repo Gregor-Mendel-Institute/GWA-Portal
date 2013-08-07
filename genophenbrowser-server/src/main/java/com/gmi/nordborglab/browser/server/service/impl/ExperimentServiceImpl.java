@@ -344,22 +344,21 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
         FilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.termFilter("_parent", experimentId.toString()), esAclManager.getAclFilter(Lists.newArrayList("read")));
         //TODO change mapping so that term_name is not analyzed
         request.setQuery(QueryBuilders.constantScoreQuery(filter))
-                .addFacet(FacetBuilders.termsFacet("TO").field("to_accession.term_id"))
-                .addFacet(FacetBuilders.termsFacet("EO").field("eo_accession.term_id"));
+                .addFacet(FacetBuilders.termsFacet("TO").field("to_accession.term_name.raw"))
+                .addFacet(FacetBuilders.termsFacet("EO").field("eo_accession.term_name.raw"));
         SearchResponse response = request.execute().actionGet();
         List<ESFacet> facets = Lists.newArrayList();
         TermsFacet searchFacet = (TermsFacet) response.getFacets().facetsAsMap().get("TO");
         List<ESTermsFacet> terms = Lists.newArrayList();
         for (TermsFacet.Entry termEntry : searchFacet) {
-            //TODO inefficient change mapping and retrieve directly from ES
-            terms.add(new ESTermsFacet(termRepository.findByAcc(termEntry.getTerm().string()).getName(), termEntry.getCount()));
+            terms.add(new ESTermsFacet(termEntry.getTerm().string(), termEntry.getCount()));
         }
         facets.add(new ESFacet("TO", searchFacet.getMissingCount(), searchFacet.getTotalCount(), searchFacet.getOtherCount(), terms));
         // TO
         searchFacet = (TermsFacet) response.getFacets().facetsAsMap().get("EO");
         terms = Lists.newArrayList();
         for (TermsFacet.Entry termEntry : searchFacet) {
-            terms.add(new ESTermsFacet(termRepository.findByAcc(termEntry.getTerm().string()).getName(), termEntry.getCount()));
+            terms.add(new ESTermsFacet(termEntry.getTerm().string(), termEntry.getCount()));
         }
         facets.add(new ESFacet("EO", searchFacet.getMissingCount(), searchFacet.getTotalCount(), searchFacet.getOtherCount(), terms));
         return facets;

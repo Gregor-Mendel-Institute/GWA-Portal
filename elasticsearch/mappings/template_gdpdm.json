@@ -166,7 +166,16 @@
                             "index": "not_analyzed"
                         },
                         "term_name": {
-                            "type": "string"
+                            "type": "multi_field",
+                            "fields": {
+                                "term_name": {
+                                    "type": "string"
+                                },
+                                "raw": {
+                                    "type": "string",
+                                    "index": "not_analyzed"
+                                }
+                            }
                         },
                         "term_definition": {
                             "type": "string"
@@ -184,7 +193,16 @@
                             "index": "not_analyzed"
                         },
                         "term_name": {
-                            "type": "string"
+                            "type": "multi_field",
+                            "fields": {
+                                "term_name": {
+                                    "type": "string"
+                                },
+                                "raw": {
+                                    "type": "string",
+                                    "index": "not_analyzed"
+                                }
+                            }
                         },
                         "term_definition": {
                             "type": "string"
@@ -213,7 +231,15 @@
                     "type": "date"
                 },
                 "experiment": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
                 },
                 "acl": {
                     "type": "nested",
@@ -297,10 +323,26 @@
                     "type": "date"
                 },
                 "experiment": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
                 },
                 "phenotype": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
                 },
                 "acl": {
                     "type": "nested",

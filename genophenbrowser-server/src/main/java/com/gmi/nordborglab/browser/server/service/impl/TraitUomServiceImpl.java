@@ -222,7 +222,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         request.setSize(size).setFrom(start).setTypes("phenotype").setNoFields();
 
         if (searchString != null && !searchString.equalsIgnoreCase("")) {
-            request.setQuery(multiMatchQuery(searchString, "local_trait_name^3.5", "local_trait_name.partial^1.5", "trait_protocol", "to_accession.term_id^3.5", "to_accession.term_name^1.5", "eo_accession.term_id^3.5", "eo_accession.term_name^1.5", "owner.name", "experiment"));
+            request.setQuery(multiMatchQuery(searchString, "local_trait_name^3.5", "local_trait_name.partial^1.5", "trait_protocol", "to_accession.term_id^3.5", "to_accession.term_name^1.5", "eo_accession.term_id^3.5", "eo_accession.term_name^1.5", "owner.name", "experiment.name"));
         }
         FilterBuilder searchFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, false);
         FilterBuilder privateFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), true, false);
