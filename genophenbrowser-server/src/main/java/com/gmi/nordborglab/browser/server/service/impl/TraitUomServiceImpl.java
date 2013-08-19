@@ -387,7 +387,10 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
                     .field("modified", traitUom.getModified())
                     .field("created", traitUom.getCreated())
                     .field("trait_protocol", traitUom.getTraitProtocol())
-                    .field("experiment", traitUom.getExperiment().getName());
+                    .startObject("experiment")
+                    .field("name", traitUom.getExperiment().getName())
+                    .field("id", traitUom.getExperiment().getId())
+                    .endObject();
             if (traitUom.getTraitOntologyTerm() != null) {
                 builder.startObject("to_accession");
                 getOntologyBuilder(builder, traitUom.getTraitOntologyTerm());
