@@ -5,6 +5,10 @@ db_host="gdpdm.gmi.oeaw.ac.at"
 index=$2
 es_host=$1
 
+curl -XDELETE $es_host/_river/${index}_experiment_river
+
+echo "\n"
+
 curl -XPUT $es_host/_river/${index}_experiment_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
@@ -22,6 +26,11 @@ curl -XPUT $es_host/_river/${index}_experiment_river/_meta -d "{
 }"
 
 echo "\n"
+
+curl -XDELETE $es_host/_river/${index}_phenotype_river
+
+echo "\n"
+
 
 curl -XPUT $es_host/_river/${index}_phenotype_river/_meta -d "{
     \"type\" : \"jdbc\",
@@ -41,6 +50,11 @@ curl -XPUT $es_host/_river/${index}_phenotype_river/_meta -d "{
 
 echo "\n"
 
+curl -XDELETE $es_host/_river/${index}_study_river
+
+echo "\n"
+
+
 curl -XPUT $es_host/_river/${index}_study_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
@@ -58,6 +72,11 @@ curl -XPUT $es_host/_river/${index}_study_river/_meta -d "{
 }"
 
 echo "\n"
+
+curl -XDELETE $es_host/_river/${index}_publication_river
+
+echo "\n"
+
 
 curl -XPUT $es_host/_river/${index}_publication_river/_meta -d "{
     \"type\" : \"jdbc\",
@@ -79,6 +98,11 @@ curl -XPUT $es_host/_river/${index}_publication_river/_meta -d "{
 
 echo "\n"
 
+curl -XDELETE $es_host/_river/${index}_user_river
+
+echo "\n"
+
+
 curl -XPUT $es_host/_river/${index}_user_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
@@ -87,13 +111,17 @@ curl -XPUT $es_host/_river/${index}_user_river/_meta -d "{
         \"url\" : \"jdbc:postgresql://$db_host:5432/GDPDM\",
         \"user\" : \"$db_user\",
         \"password\" : \"$db_password\",
-        \"sql\" : \"SELECT username as _id,username,firstname,lastname,email, CASE WHEN enabled is true THEN 1 ELSE 0 END as enabled FROM acl.users\"
+        \"sql\" : \"SELECT id as _id,username,firstname,lastname,email, CASE WHEN enabled is true THEN 1 ELSE 0 END as enabled FROM acl.users\"
     },
     \"index\":{
        \"index\":\"$index\",
        \"type\":\"user\"
     }
 }"
+
+echo "\n"
+
+curl -XDELETE $es_host/_river/${index}_taxonomy_river
 
 echo "\n"
 
@@ -116,6 +144,11 @@ curl -XPUT $es_host/_river/${index}_taxonomy_river/_meta -d "{
 
 echo "\n"
 
+curl -XDELETE $es_host/_river/${index}_passport_river
+
+echo "\n"
+
+
 #parent child not supported by jdbc-river (workaround store the parent id)
 
 curl -XPUT $es_host/_river/${index}_passport_river/_meta -d "{
@@ -135,6 +168,11 @@ curl -XPUT $es_host/_river/${index}_passport_river/_meta -d "{
 }"
 
 echo "\n"
+
+curl -XDELETE $es_host/_river/${index}_stock_river
+
+echo "\n"
+
 
 curl -XPUT $es_host/_river/${index}_stock_river/_meta -d "{
     \"type\" : \"jdbc\",

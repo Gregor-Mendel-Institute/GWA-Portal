@@ -24,7 +24,7 @@ import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
 @Entity
 @Table(name = "div_trait", schema = "phenotype")
 @AttributeOverride(name = "id", column = @Column(name = "div_trait_id"))
-@SequenceGenerator(name = "idSequence", sequenceName = "phenotype.div_trait_div_trait_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "phenotype.div_trait_div_trait_id_seq", allocationSize = 1)
 public class Trait extends BaseEntity {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})

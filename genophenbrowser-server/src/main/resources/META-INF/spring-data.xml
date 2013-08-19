@@ -90,6 +90,7 @@
     <util:map id="jpaPropertyMap">
         <entry key="hibernate.hbm2ddl.auto" value="auto"/>
         <entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+        <entry key="hibernate.id.new_generator_mappings" value="true"/>
     </util:map>
 
     <bean id="dataSource"

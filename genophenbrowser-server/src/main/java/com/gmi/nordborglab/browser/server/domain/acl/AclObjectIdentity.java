@@ -14,22 +14,20 @@ import javax.persistence.Table;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 
 
-
 @Entity
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="object_id_class", discriminatorType=DiscriminatorType.INTEGER)
-@Table(name="acl_object_identity", schema="acl")
-@SequenceGenerator(name="idSequence", sequenceName="acl.acl_object_identity_id_seq")
-public class AclObjectIdentity extends BaseEntity{
-	
-	
-	@ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
-	@JoinColumn(name="owner_sid")
-	private AclSid owner;
-	
-	
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "object_id_class", discriminatorType = DiscriminatorType.INTEGER)
+@Table(name = "acl_object_identity", schema = "acl")
+@SequenceGenerator(name = "idSequence", sequenceName = "acl.acl_object_identity_id_seq", allocationSize = 1)
+public class AclObjectIdentity extends BaseEntity {
 
-	public AclSid getOwner() {
-		return owner;
-	}
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "owner_sid")
+    private AclSid owner;
+
+
+    public AclSid getOwner() {
+        return owner;
+    }
 }

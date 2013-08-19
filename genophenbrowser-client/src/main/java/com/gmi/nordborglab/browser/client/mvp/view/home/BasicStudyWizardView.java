@@ -636,6 +636,11 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         }
     }
 
+    @Override
+    public void setStepNumber(int stepNumber) {
+        wizard.setStepNumber(stepNumber);
+    }
+
     private void resetStatisticTypeLinks() {
         for (Map.Entry<StatisticTypeProxy, NavLink> entrySet : statisticTypeLinks.entrySet()) {
             NavLink link = entrySet.getValue();

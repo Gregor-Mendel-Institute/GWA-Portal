@@ -13,7 +13,7 @@ import com.gmi.nordborglab.browser.server.domain.util.Publication;
 @Entity
 @Table(name = "div_experiment", schema = "observation")
 @AttributeOverride(name = "id", column = @Column(name = "div_experiment_id"))
-@SequenceGenerator(name = "idSequence", sequenceName = "observation.div_experiment_div_experiment_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "observation.div_experiment_div_experiment_id_seq", allocationSize = 1)
 public class Experiment extends SecureEntity {
 
     @NotNull

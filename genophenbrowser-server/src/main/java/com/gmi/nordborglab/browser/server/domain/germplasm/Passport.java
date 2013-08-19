@@ -29,127 +29,127 @@ import com.google.common.collect.Sets;
 import com.mysema.query.annotations.QueryInit;
 
 
-@Entity 
-@Table(name="div_passport", schema="germplasm")
-@AttributeOverride(name="id", column=@Column(name="div_passport_id"))
-@SequenceGenerator(name="idSequence", sequenceName="germplasm.div_passport_div_passport_id_seq")
-public class Passport extends BaseEntity{
-	
-	@ManyToOne()
-	@JoinColumn(name="div_taxonomy_id")
-    private Taxonomy taxonomy;
-    
+@Entity
+@Table(name = "div_passport", schema = "germplasm")
+@AttributeOverride(name = "id", column = @Column(name = "div_passport_id"))
+@SequenceGenerator(name = "idSequence", sequenceName = "germplasm.div_passport_div_passport_id_seq", allocationSize = 1)
+public class Passport extends BaseEntity {
+
     @ManyToOne()
-    @JoinColumn(name="div_accession_collecting_id")
+    @JoinColumn(name = "div_taxonomy_id")
+    private Taxonomy taxonomy;
+
+    @ManyToOne()
+    @JoinColumn(name = "div_accession_collecting_id")
     @QueryInit("locality")
     private AccessionCollection collection;
-    
-    @OneToMany(mappedBy="passport",cascade={CascadeType.PERSIST,CascadeType.MERGE})
+
+    @OneToMany(mappedBy = "passport", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Stock> stocks = new ArrayList<Stock>();
-    
-    @OneToMany(mappedBy="passport",cascade={CascadeType.PERSIST,CascadeType.MERGE})
-	private Set<Allele> alleles = new HashSet<Allele>();
-    
+
+    @OneToMany(mappedBy = "passport", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Allele> alleles = new HashSet<Allele>();
+
     @ManyToOne()
-    @JoinColumn(name="cdv_source_id")
+    @JoinColumn(name = "cdv_source_id")
     private Source source;
-    
+
     @ManyToOne()
-    @JoinColumn(name="div_sampstat_id")
+    @JoinColumn(name = "div_sampstat_id")
     private Sampstat sampstat;
-    
+
     private String accename;
-    @Column(name="source")
+    @Column(name = "source")
     private String sourceText;
     private String accenumb;
     private String comments;
-    
+
     public Passport() {
-    
+
     }
-    
+
     public Source getSource() {
-    	return source;
+        return source;
     }
-    
+
     public void setSource(Source source) {
-    	this.source = source;
+        this.source = source;
     }
 
-	public Taxonomy getTaxonomy() {
-		return taxonomy;
-	}
+    public Taxonomy getTaxonomy() {
+        return taxonomy;
+    }
 
-	public void setTaxonomy(Taxonomy taxonomy) {
-		this.taxonomy = taxonomy;
-	}
+    public void setTaxonomy(Taxonomy taxonomy) {
+        this.taxonomy = taxonomy;
+    }
 
-	public AccessionCollection getCollection() {
-		return collection;
-	}
+    public AccessionCollection getCollection() {
+        return collection;
+    }
 
-	public void setCollection(AccessionCollection collection) {
-		this.collection = collection;
-	}
+    public void setCollection(AccessionCollection collection) {
+        this.collection = collection;
+    }
 
-	public String getAccename() {
-		return accename;
-	}
+    public String getAccename() {
+        return accename;
+    }
 
-	public void setAccename(String accename) {
-		this.accename = accename;
-	}
+    public void setAccename(String accename) {
+        this.accename = accename;
+    }
 
-	public String getSourceText() {
-		return sourceText;
-	}
+    public String getSourceText() {
+        return sourceText;
+    }
 
-	public void setSourceText(String sourceText) {
-		this.sourceText = sourceText;
-	}
+    public void setSourceText(String sourceText) {
+        this.sourceText = sourceText;
+    }
 
-	public String getAccenumb() {
-		return accenumb;
-	}
+    public String getAccenumb() {
+        return accenumb;
+    }
 
-	public void setAccenumb(String acceNumb) {
-		this.accenumb = acceNumb;
-	}
+    public void setAccenumb(String acceNumb) {
+        this.accenumb = acceNumb;
+    }
 
-	public Sampstat getSampstat() {
-		return sampstat;
-	}
+    public Sampstat getSampstat() {
+        return sampstat;
+    }
 
-	public void setSampstat(Sampstat sampstat) {
-		this.sampstat = sampstat;
-	}
+    public void setSampstat(Sampstat sampstat) {
+        this.sampstat = sampstat;
+    }
 
-	public String getComments() {
-		return comments;
-	}
+    public String getComments() {
+        return comments;
+    }
 
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
 
-	public List<Stock> getStocks() {
-		return Collections.unmodifiableList(stocks);
-	}
+    public List<Stock> getStocks() {
+        return Collections.unmodifiableList(stocks);
+    }
 
-	public Set<Allele> getAlleles() {
-		return alleles;
-	}
-	
-	public Set<AlleleAssay> getAlleleAssays() {
-		ImmutableSet<AlleleAssay> alleleAssays  = null;
-		alleleAssays = ImmutableSet.copyOf(Collections2
-				.transform(alleles,
-						new Function<Allele, AlleleAssay>() {
-							public AlleleAssay apply(Allele allele) {
-								return allele.getAlleleAssay();
-							}
-						}));
-		return alleleAssays;
-	}
-	
+    public Set<Allele> getAlleles() {
+        return alleles;
+    }
+
+    public Set<AlleleAssay> getAlleleAssays() {
+        ImmutableSet<AlleleAssay> alleleAssays = null;
+        alleleAssays = ImmutableSet.copyOf(Collections2
+                .transform(alleles,
+                        new Function<Allele, AlleleAssay>() {
+                            public AlleleAssay apply(Allele allele) {
+                                return allele.getAlleleAssay();
+                            }
+                        }));
+        return alleleAssays;
+    }
+
 }

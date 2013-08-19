@@ -18,6 +18,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.*;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -151,10 +152,17 @@ public class CdvServiceImpl implements CdvService {
                     .field("published", study.getPublished())
                     .field("modified", study.getModified())
                     .field("created", study.getCreated())
-                    .field("phenotype", study.getPhenotype().getLocalTraitName())
-                    .field("experiment", study.getPhenotype().getExperiment().getName())
                     .field("producer", study.getProducer())
-                    .field("study_date", study.getStudyDate());
+                    .field("study_date", study.getStudyDate())
+                    .startObject("phenotype")
+                    .field("name", study.getPhenotype().getLocalTraitName())
+                    .field("id", study.getPhenotype().getId())
+                    .endObject()
+                    .startObject("experiment")
+                    .field("name", study.getPhenotype().getExperiment().getName())
+                    .field("id", study.getPhenotype().getExperiment().getId())
+                    .endObject();
+
             if (study.getProtocol() != null) {
                 builder.startObject("protocol")
                         .field("analysis_method", study.getProtocol().getAnalysisMethod()).endObject();
@@ -169,7 +177,7 @@ public class CdvServiceImpl implements CdvService {
             builder.endObject();
             IndexRequestBuilder request = client.prepareIndex(esAclManager.getIndex(), "study", study.getId().toString())
                     .setSource(builder).setParent(study.getPhenotype().getId().toString()).setRouting(study.getPhenotype().getExperiment().getId().toString());
-            request.execute();
+            IndexResponse response = request.execute().actionGet();
         } catch (IOException e) {
             e.printStackTrace();
         }

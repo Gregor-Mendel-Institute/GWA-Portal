@@ -23,6 +23,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASPlotPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASViewerPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.genotype.genome.GenomeBrowserPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.GermplasmPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportListPresenter;
@@ -49,6 +50,7 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.*;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASPlotView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASUploadWizardView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASViewerView;
+import com.gmi.nordborglab.browser.client.mvp.view.genotype.genome.GenomeBrowserView;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.GermplasmView;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportListView;
@@ -263,6 +265,10 @@ public class ClientModule extends AbstractPresenterModule {
         bindPresenter(MetaAnalysisTopResultsPresenter.class,
                 MetaAnalysisTopResultsPresenter.MyView.class, MetaAnalysisTopResultsView.class,
                 MetaAnalysisTopResultsPresenter.MyProxy.class);
+
+        bindPresenter(GenomeBrowserPresenter.class,
+                GenomeBrowserPresenter.MyView.class, GenomeBrowserView.class,
+                GenomeBrowserPresenter.MyProxy.class);
 
         bindPresenter(HomeTabPresenter.class, HomeTabPresenter.MyView.class, HomeTabView.class, HomeTabPresenter.MyProxy.class);
 

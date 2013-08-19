@@ -27,4 +27,12 @@ public class ESTermsFacet {
     public double getValue() {
         return value;
     }
+
+    public void setTerm(String term) {
+        this.term = term;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
 }

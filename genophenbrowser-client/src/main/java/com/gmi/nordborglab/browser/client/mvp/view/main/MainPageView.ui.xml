@@ -308,7 +308,7 @@
                     </li>
                     <li>
                         <g:InlineHyperlink ui:field="genotypeLink"
-                                           targetHistoryToken="{nameTokens.getHome}">Genotype
+                                           targetHistoryToken="{nameTokens.getGenomebrowser}">Genotype
                         </g:InlineHyperlink>
                     </li>
                     <li class="{style.userItem}" id="userMenuItem">

@@ -21,6 +21,7 @@ import com.gmi.nordborglab.browser.shared.service.CdvRequest;
 import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
 import com.gmi.nordborglab.browser.shared.util.*;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.*;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.HasText;
@@ -128,6 +129,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
         HasValue<Boolean> getIsStudyJob();
 
         void showCallout(String callout, boolean show);
+
+        void setStepNumber(int stepNumber);
     }
 
     static class PhenotypeNamePredicate implements Predicate<PhenotypeProxy> {
@@ -177,6 +180,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     private final CdvManager cdvManager;
     private final HelperManager helperManager;
     protected HashMap<StatisticTypeProxy, List<TraitProxy>> statisticPhenotypeValueCache = new HashMap<StatisticTypeProxy, List<TraitProxy>>();
+    private Long experimentId = null;
+    private Long phenotypeId = null;
 
 
     private static class WizardStateIterator implements ListIterator<STATE> {
@@ -272,6 +277,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
         getView().setAvailableTransformations(currentUser.getAppData().getTransformationList());
         getView().setMethods(currentUser.getAppData().getStudyProtocolList());
         genotypeDataProvider.addDataDisplay(getView().getGenotypeListDisplay());
+        phenotypeDataProvider.addDataDisplay(getView().getPhenotypeListDisplay());
         missingGenotypeDataProvider.addDataDisplay(getView().getMissingGenotypeDisplay());
         this.phenotypeUploadWizard = phenotypeUploadWizard;
         phenotypeSelectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
@@ -393,6 +399,15 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
         resetState();
         stateIterator.reset();
         currentState = STATE.EXPERIMENT;
+        PlaceRequest currentRequest = placeManager.getCurrentPlaceRequest();
+        if (currentRequest.getParameterNames().contains("phenotype")) {
+            try {
+                phenotypeId = Long.parseLong(currentRequest.getParameter("phenotype", null));
+            } catch (Exception e) {
+            }
+        }
+
+
         if (availableExperiments == null) {
             fireEvent(new LoadingIndicatorEvent(true));
             experimentManager.findAllWithAccess(new Receiver<List<ExperimentProxy>>(
@@ -403,11 +418,43 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     availableExperiments = response;
                     fireEvent(new LoadingIndicatorEvent(false));
                     getView().setExperiments(availableExperiments);
+                    loadAndSelectPhenotype(phenotypeId);
                 }
             }, AccessControlEntryProxy.EDIT);
         } else {
             getView().setExperiments(availableExperiments);
+            loadAndSelectPhenotype(phenotypeId);
         }
+    }
+
+    private void loadAndSelectPhenotype(final Long phenotypeId) {
+        if (phenotypeId == null)
+            return;
+        phenotypeManager.getContext().findPhenotype(phenotypeId).with("experiment").fire(new Receiver<PhenotypeProxy>() {
+            @Override
+            public void onSuccess(PhenotypeProxy response) {
+                selectExperiment(response.getExperiment().getId());
+                loadPhenotypesForExperiment(phenotypeId);
+                currentState = stateIterator.next();
+                getView().setStepNumber(1);
+            }
+        });
+
+    }
+
+    private void selectExperiment(final Long experimentId) {
+        if (experimentId == null || availableExperiments == null)
+            return;
+        ExperimentProxy experiment = Iterables.find(availableExperiments, new Predicate<ExperimentProxy>() {
+            @Override
+            public boolean apply(@Nullable ExperimentProxy experimentProxy) {
+                if (experimentProxy != null && experimentId.equals(experimentProxy.getId())) {
+                    return true;
+                }
+                return false;
+            }
+        });
+        getView().setSelectedExperiment(experiment);
     }
 
     @Override
@@ -431,6 +478,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
             genotypeSelectionModel.setSelected(genotypeSelectionModel.getSelectedObject(), false);
         }
         missingGenotypeDataProvider.setList(new ArrayList<TraitProxy>());
+        phenotypeId = null;
+        experimentId = null;
         getView().resetView();
     }
 
@@ -444,9 +493,6 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     getView().showCallout("experiments", true);
                     //showError("You must select an experiment or create a new one");
                     break;
-                }
-                if (!phenotypeDataProvider.getDataDisplays().contains(getView().getPhenotypeListDisplay())) {
-                    phenotypeDataProvider.addDataDisplay(getView().getPhenotypeListDisplay());
                 }
                 loadPhenotypesForExperiment(null);
                 phenotypeUploadWizard.setExperiment(getView().getSelectedExperiment());
@@ -566,12 +612,6 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                 filterAndDisplayPhenotypeList(phenotypeId);
                 getView().showPhenotypeCharts();
                 fireEvent(new LoadingIndicatorEvent(false));
-                /*if (response.size() == 0) {
-                    getView().onShowPhenotypeUploadPanel(true);
-                }
-                else {
-                    getView().onShowPhenotypeUploadPanel(false);
-                } */
             }
         }, getView().getSelectedExperiment().getId(), AccessControlEntryProxy.EDIT);
     }
@@ -579,7 +619,26 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     private void filterAndDisplayPhenotypeList(final Long phenotypeId) {
         if (phenotypeList == null || phenotypeList.size() == 0)
             return;
-        List<PhenotypeProxy> filteredPhenotypeValues = ImmutableList.copyOf(Collections2.filter(phenotypeList, phenotypeNamePredicate));
+        List<PhenotypeProxy> filteredPhenotypeValues = FluentIterable.from(phenotypeList).filter(phenotypeNamePredicate).toSortedList(new Comparator<PhenotypeProxy>() {
+            @Override
+            public int compare(PhenotypeProxy o1, PhenotypeProxy o2) {
+                if (phenotypeId == null) {
+                    return 0;
+                }
+                if (o1.getId() == null) {
+                    return -1;
+                }
+                if (o2.getId() == null) {
+                    return 1;
+                }
+                if (o1.getId().equals(phenotypeId)) {
+                    return -1;
+                } else if (o2.getId().equals(phenotypeId)) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
         getView().setPhenotypeCount(phenotypeList.size(), filteredPhenotypeValues.size());
         getView().getPhenotypeSearchTerm().setValue(phenotypeNamePredicate.getQuery());
         phenotypeDataProvider.setList(filteredPhenotypeValues);
@@ -587,7 +646,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
             PhenotypeProxy proxy = Iterables.find(phenotypeList, new Predicate<PhenotypeProxy>() {
                 @Override
                 public boolean apply(@Nullable PhenotypeProxy input) {
-                    if (input == null && input.getId() != null)
+                    if (input == null || input.getId() == null)
                         return false;
                     return input.getId().equals(phenotypeId);
                 }

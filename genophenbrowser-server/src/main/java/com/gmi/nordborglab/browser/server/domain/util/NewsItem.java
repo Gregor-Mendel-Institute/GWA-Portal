@@ -17,7 +17,7 @@ import java.util.Date;
 @Entity
 @Table(name = "news", schema = "util")
 @AttributeOverride(name = "id", column = @Column(name = "id"))
-@SequenceGenerator(name = "idSequence", sequenceName = "util.news_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "util.news_id_seq", allocationSize = 1)
 public class NewsItem extends BaseEntity {
 
     private String title;

@@ -30,6 +30,7 @@ public class NameTokens {
     public static final String metaAnalysisTopResults = "!meta/topresults";
     public static final String dashboard = "!dashboard";
     public static final String news = "!news/{id}";
+    public static final String genomebrowser = "!genotype/genomebrowser";
 
 
     public static String getHome() {
@@ -136,5 +137,9 @@ public class NameTokens {
 
     public static String getMetaAnalysisTopResults() {
         return metaAnalysisTopResults;
+    }
+
+    public static String getGenomebrowser() {
+        return genomebrowser;
     }
 }

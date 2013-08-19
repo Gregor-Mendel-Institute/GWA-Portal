@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "acl_sid", schema = "acl")
-@SequenceGenerator(name = "idSequence", sequenceName = "acl.acl_sid_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "acl.acl_sid_id_seq", allocationSize = 1)
 public class AclSid {
 
     @Id

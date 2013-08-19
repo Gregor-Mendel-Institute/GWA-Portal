@@ -18,18 +18,19 @@ import java.util.Set;
 @Entity
 @Table(name = "cdv_phen_transformation", schema = "cdv")
 @AttributeOverride(name = "id", column = @Column(name = "cdv_phen_transformation_id"))
-@SequenceGenerator(name = "idSequence", sequenceName = "cdv.cdv_phen_transformation_cdv_phen_transformation_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "cdv.cdv_phen_transformation_cdv_phen_transformation_id_seq", allocationSize = 1)
 public class Transformation extends BaseEntity {
 
     public Transformation() {
     }
 
-    @OneToMany(fetch = FetchType.LAZY,cascade={CascadeType.PERSIST,CascadeType.MERGE},mappedBy= "transformation")
-    private Set<Study> studies  = new HashSet<Study>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "transformation")
+    private Set<Study> studies = new HashSet<Study>();
 
     private String name;
 
     private String description;
+
     public String getName() {
         return name;
     }

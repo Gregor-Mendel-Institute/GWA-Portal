@@ -32,6 +32,10 @@ public class ESFacet {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public long getMissing() {
         return missing;
     }
@@ -46,5 +50,21 @@ public class ESFacet {
 
     public List<ESTermsFacet> getTerms() {
         return terms;
+    }
+
+    public void setMissing(long missing) {
+        this.missing = missing;
+    }
+
+    public void setTotal(long total) {
+        this.total = total;
+    }
+
+    public void setOther(long other) {
+        this.other = other;
+    }
+
+    public void setTerms(List<ESTermsFacet> terms) {
+        this.terms = terms;
     }
 }
