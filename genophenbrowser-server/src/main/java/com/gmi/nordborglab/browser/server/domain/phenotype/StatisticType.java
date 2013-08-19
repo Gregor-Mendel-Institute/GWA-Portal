@@ -10,33 +10,33 @@ import javax.persistence.Transient;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 
 @Entity
-@Table(name="div_statistic_type",schema="phenotype")
-@AttributeOverride(name="id", column=@Column(name="div_statistic_type_id"))
-@SequenceGenerator(name="idSequence", sequenceName="phenotype.div_statistics_type_div_statistic_type_id_seq")
+@Table(name = "div_statistic_type", schema = "phenotype")
+@AttributeOverride(name = "id", column = @Column(name = "div_statistic_type_id"))
+@SequenceGenerator(name = "idSequence", sequenceName = "phenotype.div_statistics_type_div_statistic_type_id_seq", allocationSize = 1)
 public class StatisticType extends BaseEntity {
-	
-	private String stat_type;
-	
-	@Transient
-	private Long numberOfTraits;
+
+    private String stat_type;
+
+    @Transient
+    private Long numberOfTraits;
 
     public StatisticType() {
     }
 
     public Long getNumberOfTraits() {
-		return numberOfTraits;
-	}
+        return numberOfTraits;
+    }
 
-	public void setNumberOfTraits(Long numberOfTraits) {
-		this.numberOfTraits = numberOfTraits;
-	}
+    public void setNumberOfTraits(Long numberOfTraits) {
+        this.numberOfTraits = numberOfTraits;
+    }
 
-	public void setStatType(String statType) {
-		this.stat_type = statType;
-	}
-	
-	public String getStatType() {
-		return this.stat_type;
-	}
+    public void setStatType(String statType) {
+        this.stat_type = statType;
+    }
+
+    public String getStatType() {
+        return this.stat_type;
+    }
 
 }

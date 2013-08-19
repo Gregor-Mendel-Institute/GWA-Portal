@@ -17,7 +17,7 @@ import com.google.common.collect.Iterables;
 @Entity
 @Table(name = "cdv_g2p_study", schema = "cdv")
 @AttributeOverride(name = "id", column = @Column(name = "cdv_g2p_study_id"))
-@SequenceGenerator(name = "idSequence", sequenceName = "cdv.cdv_g2p_study_cdv_g2p_study_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "cdv.cdv_g2p_study_cdv_g2p_study_id_seq", allocationSize = 1)
 public class Study extends SecureEntity {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "studies")

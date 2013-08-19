@@ -16,54 +16,63 @@ import javax.persistence.TemporalType;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 
 @Entity
-@Table(name="div_obs_unit_sample",schema="observation")
-@AttributeOverride(name="id", column=@Column(name="div_obs_unit_sample_id"))
-@SequenceGenerator(name="idSequence", sequenceName="observation.div_obs_unit_sample_div_obs_unit_sample_id_seq")
+@Table(name = "div_obs_unit_sample", schema = "observation")
+@AttributeOverride(name = "id", column = @Column(name = "div_obs_unit_sample_id"))
+@SequenceGenerator(name = "idSequence", sequenceName = "observation.div_obs_unit_sample_div_obs_unit_sample_id_seq", allocationSize = 1)
 public class ObsUnitSample extends BaseEntity {
-	
-	@ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
-	@JoinColumn(name="div_obs_unit_id")
-	private ObsUnit obsUnit;
-	
-	private String name;
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date sample_date;
-	private String producer;
-	private String comments;
-	
-	public ObsUnitSample() {}
-	
-	public ObsUnit getObsUnit() {
-		return obsUnit;
-	}
-	public void setObsUnit(ObsUnit obsUnit) {
-		this.obsUnit = obsUnit;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public Date getSampleDate() {
-		return sample_date;
-	}
-	public void setSampleDate(Date sample_date) {
-		this.sample_date = sample_date;
-	}
-	public String getProducer() {
-		return producer;
-	}
-	public void setProducer(String producer) {
-		this.producer = producer;
-	}
-	public String getComments() {
-		return comments;
-	}
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
-	
-	
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "div_obs_unit_id")
+    private ObsUnit obsUnit;
+
+    private String name;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date sample_date;
+    private String producer;
+    private String comments;
+
+    public ObsUnitSample() {
+    }
+
+    public ObsUnit getObsUnit() {
+        return obsUnit;
+    }
+
+    public void setObsUnit(ObsUnit obsUnit) {
+        this.obsUnit = obsUnit;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Date getSampleDate() {
+        return sample_date;
+    }
+
+    public void setSampleDate(Date sample_date) {
+        this.sample_date = sample_date;
+    }
+
+    public String getProducer() {
+        return producer;
+    }
+
+    public void setProducer(String producer) {
+        this.producer = producer;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
 
 }

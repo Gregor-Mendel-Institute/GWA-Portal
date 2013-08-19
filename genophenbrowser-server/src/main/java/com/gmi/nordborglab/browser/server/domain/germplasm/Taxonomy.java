@@ -19,114 +19,113 @@ import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 @Entity
 @Table(name = "div_taxonomy", schema = "germplasm")
 @AttributeOverride(name = "id", column = @Column(name = "div_taxonomy_id"))
-@SequenceGenerator(name = "idSequence", sequenceName = "germplasm.div_taxonomy_div_taxonomy_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "germplasm.div_taxonomy_div_taxonomy_id_seq", allocationSize = 1)
 public class Taxonomy extends BaseEntity {
 
-	@NotNull
-	private String genus;
-	
-	@NotNull
-	private String species;
-	private String subspecies;
-	private String subtaxa;
-	private String race;
-	private String population;
-	
-	@Column(name="common_name")
-	private String commonName;
-	@Column(name="term_accession")
-	private String termAccession;
-	
-	@OneToMany(mappedBy = "taxonomy", cascade = { CascadeType.PERSIST,
-			CascadeType.MERGE })
-	private List<Passport> passports = new ArrayList<Passport>();
+    @NotNull
+    private String genus;
 
-	@Transient
-	private List<AlleleAssay> alleleAssays = new ArrayList<AlleleAssay>();
-	
-	public List<AlleleAssay> getAlleleAssays() {
-		return alleleAssays;
-	}
+    @NotNull
+    private String species;
+    private String subspecies;
+    private String subtaxa;
+    private String race;
+    private String population;
 
-	public void setAlleleAssays(List<AlleleAssay> alleleAssays) {
-		this.alleleAssays = alleleAssays;
-	}
+    @Column(name = "common_name")
+    private String commonName;
+    @Column(name = "term_accession")
+    private String termAccession;
 
-	
+    @OneToMany(mappedBy = "taxonomy", cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    private List<Passport> passports = new ArrayList<Passport>();
 
-	public List<Passport> getPassports() {
-		return passports;
-	}
+    @Transient
+    private List<AlleleAssay> alleleAssays = new ArrayList<AlleleAssay>();
 
-	public void setPassports(List<Passport> passports) {
-		this.passports = passports;
-	}
+    public List<AlleleAssay> getAlleleAssays() {
+        return alleleAssays;
+    }
 
-	public Taxonomy() {
+    public void setAlleleAssays(List<AlleleAssay> alleleAssays) {
+        this.alleleAssays = alleleAssays;
+    }
 
-	}
 
-	public String getGenus() {
-		return genus;
-	}
+    public List<Passport> getPassports() {
+        return passports;
+    }
 
-	public void setGenus(String genus) {
-		this.genus = genus;
-	}
+    public void setPassports(List<Passport> passports) {
+        this.passports = passports;
+    }
 
-	public String getSpecies() {
-		return species;
-	}
+    public Taxonomy() {
 
-	public void setSpecies(String species) {
-		this.species = species;
-	}
+    }
 
-	public String getSubspecies() {
-		return subspecies;
-	}
+    public String getGenus() {
+        return genus;
+    }
 
-	public void setSubspecies(String subspecies) {
-		this.subspecies = subspecies;
-	}
+    public void setGenus(String genus) {
+        this.genus = genus;
+    }
 
-	public String getSubtaxa() {
-		return subtaxa;
-	}
+    public String getSpecies() {
+        return species;
+    }
 
-	public void setSubtaxa(String subtaxa) {
-		this.subtaxa = subtaxa;
-	}
+    public void setSpecies(String species) {
+        this.species = species;
+    }
 
-	public String getRace() {
-		return race;
-	}
+    public String getSubspecies() {
+        return subspecies;
+    }
 
-	public void setRace(String race) {
-		this.race = race;
-	}
+    public void setSubspecies(String subspecies) {
+        this.subspecies = subspecies;
+    }
 
-	public String getPopulation() {
-		return population;
-	}
+    public String getSubtaxa() {
+        return subtaxa;
+    }
 
-	public void setPopulation(String population) {
-		this.population = population;
-	}
+    public void setSubtaxa(String subtaxa) {
+        this.subtaxa = subtaxa;
+    }
 
-	public String getCommonName() {
-		return commonName;
-	}
+    public String getRace() {
+        return race;
+    }
 
-	public void setCommonName(String commonName) {
-		this.commonName = commonName;
-	}
+    public void setRace(String race) {
+        this.race = race;
+    }
 
-	public String getTermAccession() {
-		return termAccession;
-	}
+    public String getPopulation() {
+        return population;
+    }
 
-	public void setTermAccession(String termAccession) {
-		this.termAccession = termAccession;
-	}
+    public void setPopulation(String population) {
+        this.population = population;
+    }
+
+    public String getCommonName() {
+        return commonName;
+    }
+
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
+    }
+
+    public String getTermAccession() {
+        return termAccession;
+    }
+
+    public void setTermAccession(String termAccession) {
+        this.termAccession = termAccession;
+    }
 }

@@ -20,7 +20,7 @@ import java.util.Map;
 @Entity
 @Table(name = "study_job", schema = "util")
 @AttributeOverride(name = "id", column = @Column(name = "id"))
-@SequenceGenerator(name = "idSequence", sequenceName = "util.study_job_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "util.study_job_id_seq", allocationSize = 1)
 public class StudyJob extends BaseEntity {
 
     public StudyJob() {

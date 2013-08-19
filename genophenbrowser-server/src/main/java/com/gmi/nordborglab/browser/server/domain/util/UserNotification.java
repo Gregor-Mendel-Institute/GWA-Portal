@@ -16,7 +16,7 @@ import java.util.Date;
 @Entity
 @Table(name = "user_notification", schema = "util")
 @AttributeOverride(name = "id", column = @Column(name = "id"))
-@SequenceGenerator(name = "idSequence", sequenceName = "util.user_notification_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "util.user_notification_id_seq", allocationSize = 1)
 public class UserNotification extends BaseEntity {
 
     private String type;

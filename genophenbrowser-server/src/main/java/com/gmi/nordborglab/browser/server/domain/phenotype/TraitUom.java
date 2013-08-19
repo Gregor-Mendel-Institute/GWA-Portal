@@ -12,7 +12,7 @@ import com.google.common.collect.Iterables;
 @Entity
 @Table(name = "div_trait_uom", schema = "phenotype")
 @AttributeOverride(name = "id", column = @Column(name = "div_trait_uom_id"))
-@SequenceGenerator(name = "idSequence", sequenceName = "phenotype.div_trait_uom_div_trait_uom_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "phenotype.div_trait_uom_div_trait_uom_id_seq", allocationSize = 1)
 public class TraitUom extends SecureEntity {
 
     @ManyToOne()

@@ -12,70 +12,70 @@ import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.observation.Locality;
 
 @Entity
-@Table(name="div_accession_collecting",schema="germplasm")
-@AttributeOverride(name="id", column=@Column(name="div_accession_collecting_id"))
-@SequenceGenerator(name="idSequence", sequenceName="germplasm.div_accession_collecting_div_accession_collecting_id_seq")
-public class AccessionCollection extends BaseEntity{
+@Table(name = "div_accession_collecting", schema = "germplasm")
+@AttributeOverride(name = "id", column = @Column(name = "div_accession_collecting_id"))
+@SequenceGenerator(name = "idSequence", sequenceName = "germplasm.div_accession_collecting_div_accession_collecting_id_seq", allocationSize = 1)
+public class AccessionCollection extends BaseEntity {
 
-	@ManyToOne
-	@JoinColumn(name="div_locality_id")
-	private Locality locality;
-	private String collector;
-	private String collNumb;
-	private String collSrc;
-	private String collCode;
-	private String collDate;
-	
-	public AccessionCollection() {
-		
-	}
+    @ManyToOne
+    @JoinColumn(name = "div_locality_id")
+    private Locality locality;
+    private String collector;
+    private String collNumb;
+    private String collSrc;
+    private String collCode;
+    private String collDate;
 
-	public Locality getLocality() {
-		return locality;
-	}
+    public AccessionCollection() {
 
-	public void setLocality(Locality locality) {
-		this.locality = locality;
-	}
+    }
 
-	public String getCollector() {
-		return collector;
-	}
+    public Locality getLocality() {
+        return locality;
+    }
 
-	public void setCollector(String collector) {
-		this.collector = collector;
-	}
+    public void setLocality(Locality locality) {
+        this.locality = locality;
+    }
 
-	public String getCollNumb() {
-		return collNumb;
-	}
+    public String getCollector() {
+        return collector;
+    }
 
-	public void setCollNumb(String collNumb) {
-		this.collNumb = collNumb;
-	}
+    public void setCollector(String collector) {
+        this.collector = collector;
+    }
 
-	public String getCollSrc() {
-		return collSrc;
-	}
+    public String getCollNumb() {
+        return collNumb;
+    }
 
-	public void setCollSrc(String collSrc) {
-		this.collSrc = collSrc;
-	}
+    public void setCollNumb(String collNumb) {
+        this.collNumb = collNumb;
+    }
 
-	public String getCollCode() {
-		return collCode;
-	}
+    public String getCollSrc() {
+        return collSrc;
+    }
 
-	public void setCollCode(String collCode) {
-		this.collCode = collCode;
-	}
+    public void setCollSrc(String collSrc) {
+        this.collSrc = collSrc;
+    }
 
-	public String getCollDate() {
-		return collDate;
-	}
+    public String getCollCode() {
+        return collCode;
+    }
 
-	public void setCollDate(String collDate) {
-		this.collDate = collDate;
-	}
-	
+    public void setCollCode(String collCode) {
+        this.collCode = collCode;
+    }
+
+    public String getCollDate() {
+        return collDate;
+    }
+
+    public void setCollDate(String collDate) {
+        this.collDate = collDate;
+    }
+
 }

@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "users", schema = "acl")
 @AttributeOverride(name = "id", column = @Column(name = "id"))
-@SequenceGenerator(name = "idSequence", sequenceName = "acl.users_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "acl.users_id_seq", allocationSize = 1)
 public class AppUser extends BaseEntity {
 
 

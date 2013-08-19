@@ -9,60 +9,59 @@ import javax.persistence.Table;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 
 @Entity
-@Table(name="div_generation",schema="germplasm")
-@AttributeOverride(name="id", column=@Column(name="div_generation_id"))
-@SequenceGenerator(name="idSequence", sequenceName="germplasm.div_generation_div_generation_id_seq")
-public class Generation extends BaseEntity{
-	
-	private String icisId;
-	private String comments;
-	private Integer selfingNumber;
-	private Integer sibbingNumber;
-	
-	public Generation() {
-		
-	}
+@Table(name = "div_generation", schema = "germplasm")
+@AttributeOverride(name = "id", column = @Column(name = "div_generation_id"))
+@SequenceGenerator(name = "idSequence", sequenceName = "germplasm.div_generation_div_generation_id_seq", allocationSize = 1)
+public class Generation extends BaseEntity {
+
+    private String icisId;
+    private String comments;
+    private Integer selfingNumber;
+    private Integer sibbingNumber;
+
+    public Generation() {
+
+    }
 
 
-	public String getIcisId() {
-		return icisId;
-	}
+    public String getIcisId() {
+        return icisId;
+    }
 
 
-	public void setIcisId(String icisId) {
-		this.icisId = icisId;
-	}
+    public void setIcisId(String icisId) {
+        this.icisId = icisId;
+    }
 
 
-	public String getComments() {
-		return comments;
-	}
+    public String getComments() {
+        return comments;
+    }
 
 
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
 
 
-	public Integer getSelfingNumber() {
-		return selfingNumber;
-	}
+    public Integer getSelfingNumber() {
+        return selfingNumber;
+    }
 
 
-	public void setSelfingNumber(Integer selfingNumber) {
-		this.selfingNumber = selfingNumber;
-	}
+    public void setSelfingNumber(Integer selfingNumber) {
+        this.selfingNumber = selfingNumber;
+    }
 
 
-	public Integer getSibbingNumber() {
-		return sibbingNumber;
-	}
+    public Integer getSibbingNumber() {
+        return sibbingNumber;
+    }
 
 
-	public void setSibbingNumber(Integer sibbingNumber) {
-		this.sibbingNumber = sibbingNumber;
-	}
-	
-	
+    public void setSibbingNumber(Integer sibbingNumber) {
+        this.sibbingNumber = sibbingNumber;
+    }
+
 
 }

@@ -18,100 +18,100 @@ import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
 
 
 @Entity
-@Table(name="div_stock",schema="germplasm")
-@AttributeOverride(name="id", column=@Column(name="div_stock_id"))
-@SequenceGenerator(name="idSequence", sequenceName="germplasm.div_stock_div_stock_id_seq")
-public class Stock extends BaseEntity{
+@Table(name = "div_stock", schema = "germplasm")
+@AttributeOverride(name = "id", column = @Column(name = "div_stock_id"))
+@SequenceGenerator(name = "idSequence", sequenceName = "germplasm.div_stock_div_stock_id_seq", allocationSize = 1)
+public class Stock extends BaseEntity {
 
-	@ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
-	@JoinColumn(name="div_generation_id")
-	private Generation generation;
-	
-	@ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
-	@JoinColumn(name="div_passport_id")
-	private Passport passport;
-	
-	@OneToMany(mappedBy="stock",cascade={CascadeType.PERSIST,CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "div_generation_id")
+    private Generation generation;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "div_passport_id")
+    private Passport passport;
+
+    @OneToMany(mappedBy = "stock", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ObsUnit> obsUnits = new ArrayList<ObsUnit>();
-	
-	@OneToMany(mappedBy="parent",cascade={CascadeType.PERSIST,CascadeType.MERGE})
+
+    @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<StockParent> parents = new HashSet<StockParent>();
-	
-	@OneToMany(mappedBy="child",cascade={CascadeType.PERSIST,CascadeType.MERGE})
+
+    @OneToMany(mappedBy = "child", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<StockParent> childs = new HashSet<StockParent>();
-	
-	@Column(name="seed_lot")
-	private String seedLot;
-	@Column(name="stock_source")
-	private String stockSource;
-	private String comments;
-	
-	@Transient
-	private String pedigreeData;
-	
-	public Stock() {
-		
-	}
 
-	public Generation getGeneration() {
-		return generation;
-	}
+    @Column(name = "seed_lot")
+    private String seedLot;
+    @Column(name = "stock_source")
+    private String stockSource;
+    private String comments;
 
-	public void setGeneration(Generation generation) {
-		this.generation = generation;
-	}
+    @Transient
+    private String pedigreeData;
 
-	public Passport getPassport() {
-		return passport;
-	}
+    public Stock() {
 
-	public void setPassport(Passport passport) {
-		this.passport = passport;
-	}
+    }
 
-	public String getSeedLot() {
-		return seedLot;
-	}
+    public Generation getGeneration() {
+        return generation;
+    }
 
-	public void setSeedLot(String seedLot) {
-		this.seedLot = seedLot;
-	}
+    public void setGeneration(Generation generation) {
+        this.generation = generation;
+    }
 
-	public String getStockSource() {
-		return stockSource;
-	}
+    public Passport getPassport() {
+        return passport;
+    }
 
-	public void setStockSource(String stockSource) {
-		this.stockSource = stockSource;
-	}
+    public void setPassport(Passport passport) {
+        this.passport = passport;
+    }
 
-	public String getComments() {
-		return comments;
-	}
+    public String getSeedLot() {
+        return seedLot;
+    }
 
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
+    public void setSeedLot(String seedLot) {
+        this.seedLot = seedLot;
+    }
 
-	public Set<StockParent> getParents() {
-		return parents;
-	}
+    public String getStockSource() {
+        return stockSource;
+    }
 
+    public void setStockSource(String stockSource) {
+        this.stockSource = stockSource;
+    }
 
-	public Set<StockParent> getChilds() {
-		return childs;
-	}
+    public String getComments() {
+        return comments;
+    }
 
-	public List<ObsUnit> getObsUnits() {
-		return obsUnits;
-	}
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public Set<StockParent> getParents() {
+        return parents;
+    }
 
 
-	public String getPedigreeData() {
-		return pedigreeData;
-	}
+    public Set<StockParent> getChilds() {
+        return childs;
+    }
 
-	public void setPedigreeData(String pedigreeData) {
-		this.pedigreeData = pedigreeData;
-	}
+    public List<ObsUnit> getObsUnits() {
+        return obsUnits;
+    }
+
+
+    public String getPedigreeData() {
+        return pedigreeData;
+    }
+
+    public void setPedigreeData(String pedigreeData) {
+        this.pedigreeData = pedigreeData;
+    }
 }

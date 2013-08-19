@@ -16,7 +16,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "gwas_results", schema = "util")
 @AttributeOverride(name = "id", column = @Column(name = "id"))
-@SequenceGenerator(name = "idSequence", sequenceName = "util.gwas_results_id_seq")
+@SequenceGenerator(name = "idSequence", sequenceName = "util.gwas_results_id_seq", allocationSize = 1)
 public class GWASResult extends SecureEntity {
 
     private String name;
