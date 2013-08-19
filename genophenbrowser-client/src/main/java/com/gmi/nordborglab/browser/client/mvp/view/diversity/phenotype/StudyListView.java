@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
+import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
@@ -70,6 +71,8 @@ public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> imple
     NavLink navPublished;
     @UiField
     NavLink navRecent;
+    @UiField
+    Button newAnalysisBtn;
     private final PlaceManager placeManager;
     private final BiMap<ConstEnums.TABLE_FILTER, NavLink> navLinkMap;
 
@@ -167,16 +170,16 @@ public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> imple
         }
     }
 
-    /*@UiHandler("newStudyBtn")
+    @UiHandler("newAnalysisBtn")
     public void onNewStudy(ClickEvent e) {
         getUiHandlers().onNewStudy();
-    } */
+    }
 
     @Override
     public void showAddBtn(boolean showAdd) {
         // TODO fix this
         //newStudyBtn.setVisible(false);
-        //newStudyBtn.setVisible(showAdd);
+        newAnalysisBtn.setVisible(showAdd);
     }
 
 }

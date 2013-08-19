@@ -215,7 +215,7 @@ public class StudyListPresenter extends
 
     @Override
     public void onNewStudy() {
-        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.studywizard).with("id", phenotypeId.toString());
+        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.basicstudywizard).with("phenotype", phenotypeId.toString());
         placeManager.revealPlace(request);
     }
 

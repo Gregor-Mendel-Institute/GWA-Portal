@@ -27,6 +27,11 @@
             margin-left: 0.5em;
         }
 
+        .newAnalysisBtn {
+            margin-top: 20px;
+            margin-right: 10px;
+        }
+
     </ui:style>
 
     <g:LayoutPanel>
@@ -36,6 +41,8 @@
                     <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
                         <b:TextBox ui:field="searchBox" placeholder="Search..."></b:TextBox>
                     </b:InputAddOn>
+                    <b:Button ui:field="newAnalysisBtn" icon="PLUS_SIGN" text="New analysis"
+                              addStyleNames="{style.newAnalysisBtn}" type="DANGER"/>
                 </div>
                 <div style="float:left;">
                     <b:NavPills addStyleNames="{style.navPills}">

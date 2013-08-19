@@ -100,7 +100,6 @@ public class WizardPanel extends ResizeComposite {
     }
 
     public void nextStep() {
-        previousBtn.setVisible(true);
         int visibleIndex = pageContainer.getVisibleWidgetIndex();
         if (visibleIndex < pageContainer.getWidgetCount() - 1)
             pageContainer.showWidget(visibleIndex + 1);
@@ -125,8 +124,11 @@ public class WizardPanel extends ResizeComposite {
             nextBtn.removeStyleName(mainRes.style().button_red());
             nextBtn.addStyleName(mainRes.style().button_blue());
         }
-        if (visibleIndex == 0)
+        if (visibleIndex == 0) {
             previousBtn.setVisible(false);
+        } else {
+            previousBtn.setVisible(true);
+        }
         indicator.getElement().getStyle().setTop(30 + visibleIndex * 95, Style.Unit.PX);
         for (int i = 0; i < stepWidgets.size(); i++) {
             HTMLPanel step = stepWidgets.get(i);
@@ -157,5 +159,12 @@ public class WizardPanel extends ResizeComposite {
         pageContainer.setAnimationDuration(1000);
         updateWizardControls();
 
+    }
+
+    public void setStepNumber(int stepNumber) {
+        if (stepNumber < pageContainer.getWidgetCount() - 1) {
+            pageContainer.showWidget(stepNumber);
+            updateWizardControls();
+        }
     }
 }
