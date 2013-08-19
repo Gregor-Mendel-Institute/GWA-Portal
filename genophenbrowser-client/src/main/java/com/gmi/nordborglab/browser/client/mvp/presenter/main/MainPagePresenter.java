@@ -153,6 +153,9 @@ public class MainPagePresenter extends
                 request.matchesNameToken(NameTokens.stock)
                 )
             menu = MENU.GERMPLASM;
+        else if (request.matchesNameToken(NameTokens.genomebrowser)) {
+            menu = MENU.GENOTYPE;
+        }
         return menu;
     }
 

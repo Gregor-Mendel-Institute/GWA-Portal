@@ -12,6 +12,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.Pu
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.PublicationOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASViewerPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.genotype.genome.GenomeBrowserPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.GermplasmPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportListPresenter;
@@ -116,6 +117,8 @@ public interface ClientGinjector extends Ginjector {
     AsyncProvider<MetaAnalysisGenePresenter> getMetaAnalysisGenePresenter();
 
     AsyncProvider<MetaAnalysisTopResultsPresenter> getMetaAnalysisTopResultsPresenter();
+
+    AsyncProvider<GenomeBrowserPresenter> getGenomeBrowserPresenter();
 
     Provider<HomeTabPresenter> getHomeTabPresenter();
 }

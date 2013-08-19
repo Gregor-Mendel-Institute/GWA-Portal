@@ -16,7 +16,7 @@
         <sec:authorize access="isAuthenticated()">
         var userData = {'user': '<sec:authentication htmlEscape="false" property="principal.json"/>'};
         </sec:authorize>
-        var appData = {'data': '${appData}'}
+        var appData = {'data': '${appData}', 'jBrowseUrl':${jbrowseUrl}}
     </script>
     <script type="text/javascript" src="<c:url value='/js/m-radio.min.js' />"></script>
     <!-- FIXME use until https://github.com/eemi2010/gwt-tour/issues/1 is fixed -->
