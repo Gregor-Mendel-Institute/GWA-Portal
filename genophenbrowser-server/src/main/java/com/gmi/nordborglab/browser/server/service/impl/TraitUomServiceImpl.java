@@ -403,7 +403,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
             }
             esAclManager.addACLAndOwnerContent(builder, aclManager.getAcl(traitUom));
             builder.endObject();
-            IndexRequestBuilder request = client.prepareIndex(esAclManager.getIndex(), "phenotype", traitUom.getId().toString())
+            IndexRequestBuilder request = client.prepareIndex(esAclManager.getIndex(), "phenotype", traitUom.getId().toString()).setRouting(traitUom.getExperiment().getId().toString())
                     .setSource(builder).setParent(traitUom.getExperiment().getId().toString());
 
             request.execute();

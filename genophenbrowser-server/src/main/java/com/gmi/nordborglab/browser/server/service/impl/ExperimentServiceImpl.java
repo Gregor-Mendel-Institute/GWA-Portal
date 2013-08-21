@@ -15,6 +15,7 @@ import com.gmi.nordborglab.browser.server.domain.pages.PublicationPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
+import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.security.*;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
@@ -88,6 +89,9 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
     private TraitUomService traitUomService;
 
     @Resource
+    private TraitUomRepository traitUomRepository;
+
+    @Resource
     private AclManager aclManager;
 
     @Resource
@@ -134,7 +138,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
         if (experiment.isPublic()) {
             throw new RuntimeException("Public studies can't be deleted");
         }
-        List<TraitUom> traitUoms = traitUomService.findPhenotypesByPassportId(experiment.getId());
+        List<TraitUom> traitUoms = traitUomRepository.findByExperimentId(experiment.getId());
         for (TraitUom traitUom : traitUoms) {
             traitUomService.delete(traitUom);
         }
@@ -144,7 +148,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
     }
 
     private void deleteFromIndex(Long experimentId) {
-
+        client.prepareDelete(esAclManager.getIndex(), "experiment", experimentId.toString()).setRouting(experimentId.toString()).execute();
     }
 
     private void indexExperiment(Experiment experiment) {
@@ -169,7 +173,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
             builder.endObject();
             String test = builder.string();
 
-            IndexRequestBuilder request = client.prepareIndex(esAclManager.getIndex(), "experiment", experiment.getId().toString())
+            IndexRequestBuilder request = client.prepareIndex(esAclManager.getIndex(), "experiment", experiment.getId().toString()).setRouting(experiment.getId().toString())
                     .setSource(builder);
 
             request.execute();
