@@ -17,7 +17,7 @@ curl -XPUT $es_host/_river/${index}_experiment_river/_meta -d "{
         \"url\" : \"jdbc:postgresql://$db_host:5432/GDPDM\",
         \"user\" : \"$db_user\",
         \"password\" : \"$db_password\",
-        \"sql\" : \"SELECT DISTINCT div_experiment_id as _id,  name, design, originator,comments, owner_id as \\\"owner.id\\\",owner_sid as \\\"owner.sid\\\", owner_name as \\\"owner.name\\\",\\\"publication.doi\\\",\\\"publication.volume\\\", \\\"publication.url\\\", \\\"publication.issue\\\",\\\"publication.page\\\", \\\"publication.journal\\\", \\\"publication.title\\\",\\\"publication.author\\\", \\\"publication.pubdate\\\", published, modified,created,permission as \\\"acl.permissions\\\",sid as \\\"acl.id\\\" FROM observation.view_search_div_experiment_acl order by div_experiment_id ASC\"
+        \"sql\" : \"SELECT DISTINCT div_experiment_id as _id, div_experiment_id as _routing, div_experiment_id as id,name, design, originator,comments, owner_id as \\\"owner.id\\\",owner_sid as \\\"owner.sid\\\", owner_name as \\\"owner.name\\\",\\\"publication.doi\\\",\\\"publication.volume\\\", \\\"publication.url\\\", \\\"publication.issue\\\",\\\"publication.page\\\", \\\"publication.journal\\\", \\\"publication.title\\\",\\\"publication.author\\\", \\\"publication.pubdate\\\", published, modified,created,permission as \\\"acl.permissions\\\",sid as \\\"acl.id\\\" FROM observation.view_search_div_experiment_acl order by div_experiment_id ASC\"
     },
     \"index\":{
        \"index\":\"$index\",

@@ -28,7 +28,14 @@
             "dynamic": "strict"
         },
         "experiment": {
+            "_routing": {
+                "required": true,
+                "path": "id"
+            },
             "properties": {
+                "id": {
+                    "type": "long"
+                },
                 "name": {
                     "type": "multi_field",
                     "fields": {
@@ -139,6 +146,10 @@
         "phenotype": {
             "_parent": {
                 "type": "experiment"
+            },
+            "_routing": {
+                "required": true,
+                "path": "experiment.id"
             },
             "properties": {
                 "local_trait_name": {
@@ -283,6 +294,10 @@
             "_parent": {
                 "type": "phenotype"
             },
+            "_routing": {
+                "required": true,
+                "path": "experiment.id"
+            },
             "properties": {
                 "name": {
                     "type": "multi_field",
@@ -419,6 +434,10 @@
         "meta_analysis_snps": {
             "_parent": {
                 "type": "study"
+            },
+            "_routing": {
+                "required": true,
+                "path": "studyid"
             },
             "properties": {
                 "chr": {
