@@ -131,6 +131,9 @@ public class EsAclManager {
                 builder.endArray();
                 builder.endObject();
             }
+            if (acl.isEntriesInheriting() && acl.getParentAcl() != null) {
+                return addACLContent(builder, acl.getParentAcl());
+            }
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
