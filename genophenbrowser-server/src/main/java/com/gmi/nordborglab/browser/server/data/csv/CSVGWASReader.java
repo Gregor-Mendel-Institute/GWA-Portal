@@ -8,10 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
 import com.google.common.primitives.Ints;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
-import org.supercsv.cellprocessor.CellProcessorAdaptor;
-import org.supercsv.cellprocessor.Optional;
-import org.supercsv.cellprocessor.ParseDouble;
-import org.supercsv.cellprocessor.ParseInt;
+import org.supercsv.cellprocessor.*;
 import org.supercsv.cellprocessor.constraint.Equals;
 import org.supercsv.cellprocessor.constraint.IsIncludedIn;
 import org.supercsv.cellprocessor.constraint.NotNull;
@@ -38,10 +35,10 @@ import java.util.Map;
 public class CSVGWASReader implements GWASReader {
 
     private static CellProcessor[] headerCellProcessors = new CellProcessor[]{
-            new Equals("chr"), new Equals("pos"), new IsIncludedIn(new String[]{"score", "pvalue"}),
-            new Optional(new Equals("maf")),
-            new Optional(new Equals("mac")),
-            new Optional(new Equals("GVE"))
+            new Trim(new Equals("chr")), new Trim(new Equals("pos")), new Trim(new IsIncludedIn(new String[]{"score", "pvalue"})),
+            new Optional(new Trim(new Equals("maf"))),
+            new Optional(new Trim(new Equals("mac"))),
+            new Optional(new Trim(new Equals("GVE")))
     };
 
     private static class ParseNAs extends CellProcessorAdaptor {
