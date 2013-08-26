@@ -57,7 +57,7 @@
         <b:Tooltip text='Ontology term of the trait' trigger="FOCUS" placement="RIGHT">
             <b:InputAddOn prependIcon="SEARCH">
                 <gui:OntologyTypeahead ui:field="traitOntologyTerm">
-                    <b:TextBox placeholder="Trait-ontology" alternateSize="XLARGE"/>
+                    <b:TextBox placeholder="Type to search.." alternateSize="XLARGE"/>
                 </gui:OntologyTypeahead>
             </b:InputAddOn>
         </b:Tooltip>
@@ -65,7 +65,7 @@
         <b:Tooltip text='Ontology term of the environment' trigger="FOCUS" placement="RIGHT">
             <b:InputAddOn prependIcon="SEARCH">
                 <gui:OntologyTypeahead ui:field="environOntologyTerm">
-                    <b:TextBox placeholder="Environment-ontology" alternateSize="XLARGE"/>
+                    <b:TextBox placeholder="Type to search.." alternateSize="XLARGE"/>
                 </gui:OntologyTypeahead>
             </b:InputAddOn>
         </b:Tooltip>
@@ -81,45 +81,4 @@
                         ui:field="traitProtocol"></b:TextArea>
         </b:Tooltip>
     </g:FlowPanel>
-    <!--	<g:HTMLPanel>
-            <div class="{style.container}">
-                <div class="{style.row}">
-                    <div class="{style.label}">Name</div>
-                    <e:ValueBoxEditorDecorator ui:field="localTraitName" addStyleNames="{style.value}">
-                        <e:valuebox>
-                            <g:TextBox visibleLength="40"/>
-                        </e:valuebox>
-                    </e:ValueBoxEditorDecorator>
-                </div>
-                <div class="{style.row}">
-                    <div class="{style.label}">Unit of measure</div>
-                    <g:ValueListBox ui:field="unitOfMeasure" addStyleNames="{style.value}" />
-                </div>
-                <div class="{style.row}">
-                    <div class="{style.label}">Trait Ontology</div>
-                    <e:ValueBoxEditorDecorator ui:field="toAccession" addStyleNames="{style.value}">
-                        <e:valuebox>
-                            <g:TextBox visibleLength="40"/>
-                        </e:valuebox>
-                    </e:ValueBoxEditorDecorator>
-                </div>
-                <div class="{style.row}">
-                    <div class="{style.label}">Environment Ontology</div>
-                    <e:ValueBoxEditorDecorator ui:field="eoAccession" addStyleNames="{style.value}">
-                        <e:valuebox>
-                            <g:TextBox visibleLength="40"/>
-                        </e:valuebox>
-                    </e:ValueBoxEditorDecorator>
-                </div>
-                <div class="{style.row}">
-                    <div class="{style.label}">Protocol:</div>
-                    <e:ValueBoxEditorDecorator ui:field="traitProtocol" addStyleNames="{style.value}">
-                        <e:valuebox>
-                            <g:TextArea characterWidth="80" visibleLines="10"></g:TextArea>
-                        </e:valuebox>
-                    </e:ValueBoxEditorDecorator>
-                </div>
-            </div>
-        </g:HTMLPanel>    -->
-
-</ui:UiBinder> 
+</ui:UiBinder>

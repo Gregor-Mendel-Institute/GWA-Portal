@@ -22,6 +22,7 @@ public class OntologyTypeahead extends Typeahead implements LeafValueEditor<Term
 
     public OntologyTypeahead(OntologyTermSuggestOracle oracle) {
         super(oracle);
+        setMinLength(0);
         setUpdaterCallback(new UpdaterCallback() {
             @Override
             public String onSelection(SuggestOracle.Suggestion selectedSuggestion) {
@@ -30,6 +31,7 @@ public class OntologyTypeahead extends Typeahead implements LeafValueEditor<Term
 
             }
         });
+        reconfigure();
     }
 
     @Override

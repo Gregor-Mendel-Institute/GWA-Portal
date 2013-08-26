@@ -19,6 +19,4 @@ public interface PhenotypeDetailUiHandlers extends UiHandlers {
     void onConfirmDelete();
 
     void onSelectStatisticType(StatisticTypeProxy statisticType);
-
-    void onSearchOntology(SuggestOracle.Request request, SuggestOracle.Callback callback, ConstEnums.ONTOLOGY_TYPE type);
 }

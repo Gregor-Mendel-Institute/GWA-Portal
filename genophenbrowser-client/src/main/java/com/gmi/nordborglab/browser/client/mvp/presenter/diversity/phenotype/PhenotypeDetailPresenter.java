@@ -295,36 +295,6 @@ public class PhenotypeDetailPresenter
         }
     }
 
-    @Override
-    public void onSearchOntology(final SuggestOracle.Request request, final SuggestOracle.Callback callback, final ONTOLOGY_TYPE type) {
-        ontologyManager.findByQuery(new Receiver<TermPageProxy>() {
-            @Override
-            public void onSuccess(TermPageProxy termPage) {
-                SuggestOracle.Response response = new SuggestOracle.Response();
-                response.setMoreSuggestionsCount((int) termPage.getTotalElements() - request.getLimit());
-                switch (type) {
-                    case TRAIT:
-                        if (phenotype.getTraitOntologyTerm() != null) {
-                            termPage.getContents().add(0, phenotype.getTraitOntologyTerm());
-                        }
-                        break;
-                    case ENVIRONMENT:
-                        if (phenotype.getEnvironOntologyTerm() != null) {
-                            termPage.getContents().add(0, phenotype.getEnvironOntologyTerm());
-                        }
-                        break;
-                }
-                response.setSuggestions(Lists.transform(termPage.getContents(), new Function<TermProxy, SuggestOracle.Suggestion>() {
-                    @Nullable
-                    @Override
-                    public SuggestOracle.Suggestion apply(@Nullable TermProxy termProxy) {
-                        return new OntologyTermSuggestOracle.OntologySuggestion(termProxy);
-                    }
-                }));
-                callback.onSuggestionsReady(request, response);
-            }
-        }, request.getQuery(), type, request.getLimit());
-    }
 
     @Override
     public boolean useManualReveal() {

@@ -15,6 +15,7 @@ import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.events.SelectMethodEvent;
 import com.gmi.nordborglab.browser.client.events.SelectTransformationEvent;
+import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.BasicStudyWizardUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.BasicStudyWizardPresenter;
 import com.gmi.nordborglab.browser.client.resources.CardCellListResources;
@@ -225,7 +226,8 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
                                 final MainResources mainRes,
                                 final CustomDataGridResources dataGridResources,
                                 final PhenotypeCard phenotypeCard,
-                                final FlagMap flagMap) {
+                                final FlagMap flagMap
+    ) {
         this.phenotypeCardCell = phenotypeCardCell;
         this.mainRes = mainRes;
         this.flagMap = flagMap;
@@ -296,7 +298,6 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         initMissingGenotypesDataGrid();
 
         initCallouts();
-
     }
 
     private void initCallouts() {

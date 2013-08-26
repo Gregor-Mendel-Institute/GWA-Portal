@@ -190,7 +190,7 @@
         </g:layer>
         <g:layer top="0" bottom="0">
             <g:LayoutPanel ui:field="phenotypeValuePanel">
-                <g:layer left="0" width="320px">
+                <g:layer left="0" width="340px">
                     <g:HTMLPanel ui:field="phenotypeFormPanel">
                         <div>
                             <b:WellForm ui:field="phenotypeForm">

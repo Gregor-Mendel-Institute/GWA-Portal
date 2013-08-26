@@ -82,6 +82,7 @@ public class OntologyServiceImpl implements OntologyService {
 
     @Override
     public TermPage findByQuery(String query, ConstEnums.ONTOLOGY_TYPE type, int limit) {
+        query = query.trim();
         List<Term> terms = Lists.newArrayList();
         long numberOfHits = 0;
         SearchRequestBuilder request = client.prepareSearch(SearchServiceImpl.ONTOLOGY_INDEX_NAME)

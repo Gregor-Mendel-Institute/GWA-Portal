@@ -9,6 +9,7 @@ import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeEditEditor;
+import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter.State;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailPresenter;
@@ -139,19 +140,16 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     };
 
     @Inject
-    public PhenotypeDetailView(final Binder binder, final PhenotypeDisplayDriver displayDriver, final PhenotypeEditDriver editDriver, final MainResources mainRes) {
+    public PhenotypeDetailView(final Binder binder, final PhenotypeDisplayDriver displayDriver,
+                               final PhenotypeEditDriver editDriver, final MainResources mainRes, final
+    OntologyManager ontologyManager) {
         this.mainRes = mainRes;
         widget = binder.createAndBindUi(this);
         this.displayDriver = displayDriver;
         this.editDriver = editDriver;
         this.displayDriver.initialize(phenotypeDisplayEditor);
         this.editDriver.initialize(phenotypeEditEditor);
-        phenotypeEditEditor.setOntologySearchCallback(new PhenotypeEditEditor.OntologySearchCallback() {
-            @Override
-            public void onRequestSearch(SuggestOracle.Request request, SuggestOracle.Callback callback, ConstEnums.ONTOLOGY_TYPE type) {
-                getUiHandlers().onSearchOntology(request, callback, type);
-            }
-        });
+        phenotypeEditEditor.setOntologyManager(ontologyManager);
         editPopup.setBackdrop(BackdropType.STATIC);
         editPopup.setCloseVisible(true);
         editPopup.setTitle("Edit phenotype");

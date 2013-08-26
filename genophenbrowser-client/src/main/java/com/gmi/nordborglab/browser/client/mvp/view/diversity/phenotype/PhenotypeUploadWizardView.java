@@ -9,6 +9,7 @@ import com.github.gwtbootstrap.client.ui.ValueListBox;
 import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeEditEditor;
+import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.client.ui.cells.BooleanIconCell;
 import com.gmi.nordborglab.browser.client.util.HTML5Helper;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
@@ -178,7 +179,8 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
     @Inject
     public PhenotypeUploadWizardView(final Binder binder,
-                                     final CustomDataGridResources dataGridResources, final PhenotypeDriver driver) {
+                                     final CustomDataGridResources dataGridResources, final PhenotypeDriver driver,
+                                     final OntologyManager ontologyManager) {
         this.driver = driver;
         phenotypeValuesDataGrid = new DataGrid<PhenotypeUploadValueProxy>(50, dataGridResources);
         initCellTable();
@@ -186,7 +188,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         uploadPhenotypePanel.setWidgetVisible(phenotypeValuePanel, false);
         phenotypeValuePager.setDisplay(phenotypeValuesDataGrid);
         driver.initialize(phenotypeEditor);
-
+        phenotypeEditor.setOntologyManager(ontologyManager);
         phenotypeFormPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
     }
 
