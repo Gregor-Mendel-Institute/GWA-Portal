@@ -436,8 +436,7 @@
                 "type": "study"
             },
             "_routing": {
-                "required": true,
-                "path": "studyid"
+                "required": true
             },
             "properties": {
                 "chr": {
