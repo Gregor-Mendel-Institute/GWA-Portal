@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
 
-    <ui:style >
+    <ui:style>
         .card {
             background: white;
             float: left;
@@ -22,8 +22,15 @@
             -moz-box-shadow: 0 2px 10px 2px #cdcecf;
             box-shadow: 0 2px 10px 2px #CDCECF;
             cursor: pointer;
-            box-sizing:border-box;
-            width:260px;
+            box-sizing: border-box;
+            width: 440px;
+        }
+
+        .card:hover {
+            -webkit-box-shadow: 0px 0px 5px 0px green !important;
+            -moz-box-shadow: 0px 0px 5px 0px green !important;
+            box-shadow: 0px 0px 5px 0px green !important;
+            cursor: text !important;
         }
 
         .card_selected {
@@ -40,7 +47,6 @@
         }
 
         .title {
-            margin-bottom: 0;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -70,37 +76,107 @@
             font-size: 80%;
             color: #666;
             margin-left: 5px;
-            height:20px;
+            height: 20px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .card_container {
-            margin-top:30px;
-            margin-right:30px;
-            float:left;
+            margin-top: 30px;
+            margin-right: 30px;
+            float: left;
         }
+
         .card_container:focus {
             -webkit-box-shadow: 0px 0px 5px 0px green !important;
             -moz-box-shadow: 0px 0px 5px 0px green !important;
             box-shadow: 0px 0px 5px 0px green !important;
-            outline:none;
+            outline: none;
         }
+
         .image {
-            padding:10px;
+            padding: 10px;
             margin: auto;
+        }
+
+        .stats_table {
+            margin-left: 10px;
+        }
+
+        .stats_table .icon {
+            font-family: EntypoRegular;
+            font-size: 38px;
+        }
+
+        .stats_table td {
+            padding: 18px 0;
+            border: none;
+            border-bottom: 1px dotted #CCC;
+            padding-top: 13px;
+            padding-bottom: 13px;
+        }
+
+        .stats_table .value {
+            font-size: 21px;
+            font-weight: 600;
+        }
+
+        .stats_table .full {
+            color: #666;
+            font-size: 13px;
         }
     </ui:style>
 
     <g:FocusPanel ui:field="focusPanel" addStyleNames="{style.card_container}">
-        <g:HTMLPanel >
+        <g:HTMLPanel>
             <div class="{style.card}" ui:field="card">
                 <h4 class="{style.title}" ui:field="title"></h4>
-                <g:Image ui:field="taxonomyImg" addStyleNames="{style.image}"/>
-               <p>
+                <table>
+                    <tr style="vertical-align:top;">
+                        <td style="width:50%;">
+                            <g:Image ui:field="taxonomyImg" addStyleNames="{style.image}"/>
+                        </td>
+                        <td>
+                            <table class="table {style.stats_table}">
+                                <tbody>
 
-               </p>
+                                    <tr>
+                                        <td class="{style.icon}">&#127810;</td>
+                                        <td class="{style.value}">
+                                            <span ui:field="statsPassports"/>
+                                        </td>
+                                        <td class="{style.full}">Accessions</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="{style.icon}">&#59148;</td>
+                                        <td class="{style.value}">
+                                            <span ui:field="statsStocks"/>
+                                        </td>
+                                        <td class="{style.full}">Stocks</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="{style.icon}">&#128248;</td>
+                                        <td class="{style.value}">
+                                            <span ui:field="statsGenotypes"/>
+                                        </td>
+                                        <td class="{style.full}">Genotypes</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="{style.icon}">&#10002;</td>
+                                        <td class="{style.value}">
+                                            <span ui:field="statsPhenotypes"/>
+                                        </td>
+                                        <td class="{style.full}">Phenotypes</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <p>
+
+                </p>
             </div>
         </g:HTMLPanel>
     </g:FocusPanel>

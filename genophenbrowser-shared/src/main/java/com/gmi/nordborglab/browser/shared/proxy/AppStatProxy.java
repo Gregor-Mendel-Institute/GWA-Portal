@@ -12,7 +12,7 @@ import com.google.web.bindery.requestfactory.shared.ValueProxy;
  */
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.stats.AppStat")
 public interface AppStatProxy extends ValueProxy {
-    public enum STAT {USER, STUDY, PHENOTYPE, ANALYSIS, ONTOLOGY, PUBLICATION}
+    public enum STAT {USER, STUDY, PHENOTYPE, ANALYSIS, ONTOLOGY, PUBLICATION, PASSPORT, GENOTYPES, STOCKS}
 
     public STAT getStat();
 

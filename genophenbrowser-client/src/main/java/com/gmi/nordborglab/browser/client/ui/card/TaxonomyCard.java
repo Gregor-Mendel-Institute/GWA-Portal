@@ -1,9 +1,12 @@
 package com.gmi.nordborglab.browser.client.ui.card;
 
+import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
+import com.google.common.collect.ImmutableMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.resources.client.ImageResource;
@@ -14,6 +17,9 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.web.bindery.event.shared.HandlerRegistration;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,14 +43,30 @@ public class TaxonomyCard extends Composite {
     HeadingElement title;
     @UiField
     FocusPanel focusPanel;
+    @UiField
+    SpanElement statsPhenotypes;
+    @UiField
+    SpanElement statsGenotypes;
+    @UiField
+    SpanElement statsStocks;
+    @UiField
+    SpanElement statsPassports;
+
+    private final Map<AppStatProxy.STAT, SpanElement> statMap;
 
 
     public TaxonomyCard() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        statMap = ImmutableMap.<AppStatProxy.STAT, SpanElement>builder()
+                .put(AppStatProxy.STAT.PHENOTYPE, statsPhenotypes)
+                .put(AppStatProxy.STAT.PASSPORT, statsPassports)
+                .put(AppStatProxy.STAT.STOCKS, statsStocks)
+                .put(AppStatProxy.STAT.GENOTYPES, statsGenotypes).build();
+
     }
 
 
-    public void setTaxonomy(TaxonomyProxy taxonomy,ImageResource imageRes) {
+    public void setTaxonomy(TaxonomyProxy taxonomy, ImageResource imageRes) {
         this.taxonomy = taxonomy;
         this.imageRes = imageRes;
         updateView();
@@ -52,8 +74,14 @@ public class TaxonomyCard extends Composite {
 
     private void updateView() {
         if (taxonomy != null)
-            title.setInnerText(taxonomy.getGenus()+" "+taxonomy.getSpecies());
-        taxonomyImg.setUrl(imageRes.getSafeUri());
+            title.setInnerText(taxonomy.getGenus() + " " + taxonomy.getSpecies());
+        taxonomyImg.setResource(imageRes);
+        List<AppStatProxy> stats = taxonomy.getStats();
+        if (stats != null) {
+            for (AppStatProxy stat : stats) {
+                statMap.get(stat.getStat()).setInnerText(String.valueOf(stat.getValue()));
+            }
+        }
     }
 
 

@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
+import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +36,33 @@ public class TaxonomyServiceImpl implements TaxonomyService {
         for (Taxonomy taxonomy : taxonomies) {
             List<AlleleAssay> alleleAssays = taxonomyRepository.findAlleleAssaysForTaxonomy(taxonomy.getId());
             taxonomy.setAlleleAssays(alleleAssays);
+            taxonomy.setStats(getTaxonomyStats(taxonomy));
         }
         return taxonomies;
     }
+
+    private List<AppStat> getTaxonomyStats(Taxonomy taxonomy) {
+        List<AppStat> stats = Lists.newArrayList();
+
+        // Get accessions
+        long passportCount = taxonomy.getPassports().size();
+        stats.add(new AppStat(AppStatProxy.STAT.PASSPORT, passportCount));
+
+        // Get Stocks
+        long stockCount = taxonomyRepository.countStocks(taxonomy.getId());
+        stats.add(new AppStat(AppStatProxy.STAT.STOCKS, stockCount));
+
+        // get genotypes
+        long genotypeCount = taxonomy.getAlleleAssays().size();
+        stats.add(new AppStat(AppStatProxy.STAT.GENOTYPES, genotypeCount));
+        //Get phenotypes
+
+        long phenotypeCount = taxonomyRepository.countPhenotypes(taxonomy.getId());
+        stats.add(new AppStat(AppStatProxy.STAT.PHENOTYPE, phenotypeCount));
+
+        return stats;
+    }
+
 
     @Override
     public Taxonomy findOne(Long id) {

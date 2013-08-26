@@ -11,26 +11,26 @@ import com.google.web.bindery.requestfactory.shared.Receiver;
 
 public class TaxonomyManager extends RequestFactoryManager<TaxonomyRequest> {
 
-	@Inject
-	public TaxonomyManager(CustomRequestFactory rf) {
-		super(rf);
-	}
+    @Inject
+    public TaxonomyManager(CustomRequestFactory rf) {
+        super(rf);
+    }
 
-	@Override
-	public TaxonomyRequest getContext() {
-		return rf.taxonomyRequest();
-	}
-	
-	public void findAll(Receiver<List<TaxonomyProxy>> receiver) {
-		rf.taxonomyRequest().findAll().with("alleleAssays").fire(receiver);
-	}
+    @Override
+    public TaxonomyRequest getContext() {
+        return rf.taxonomyRequest();
+    }
 
-	public void findOne(Receiver<TaxonomyProxy> receiver, Long taxonomyId) {
-		rf.taxonomyRequest().findOne(taxonomyId).fire(receiver);
-	}
-	
-	public void findStats(Receiver<TaxonomyStatsProxy> receiver,Long taxonomyId) {
-		rf.taxonomyRequest().findStats(taxonomyId).fire(receiver);
-	}
-	
+    public void findAll(Receiver<List<TaxonomyProxy>> receiver) {
+        rf.taxonomyRequest().findAll().with("alleleAssays", "stats").fire(receiver);
+    }
+
+    public void findOne(Receiver<TaxonomyProxy> receiver, Long taxonomyId) {
+        rf.taxonomyRequest().findOne(taxonomyId).fire(receiver);
+    }
+
+    public void findStats(Receiver<TaxonomyStatsProxy> receiver, Long taxonomyId) {
+        rf.taxonomyRequest().findStats(taxonomyId).fire(receiver);
+    }
+
 }

@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
+import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
 
 @Entity
 @Table(name = "div_taxonomy", schema = "germplasm")
@@ -43,6 +44,9 @@ public class Taxonomy extends BaseEntity {
 
     @Transient
     private List<AlleleAssay> alleleAssays = new ArrayList<AlleleAssay>();
+
+    @Transient
+    private List<AppStat> stats = new ArrayList<AppStat>();
 
     public List<AlleleAssay> getAlleleAssays() {
         return alleleAssays;
@@ -127,5 +131,13 @@ public class Taxonomy extends BaseEntity {
 
     public void setTermAccession(String termAccession) {
         this.termAccession = termAccession;
+    }
+
+    public List<AppStat> getStats() {
+        return stats;
+    }
+
+    public void setStats(List<AppStat> stats) {
+        this.stats = stats;
     }
 }
