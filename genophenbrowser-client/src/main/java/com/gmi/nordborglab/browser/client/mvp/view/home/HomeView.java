@@ -115,7 +115,7 @@ public class HomeView extends ViewWithUiHandlers<HomeUiHandlers> implements Home
 
         String gwappCookieUrl = "";
         if (Cookies.getCookieNames().contains("GWAS_USER_ID")) {
-            gwappCookieUrl = "http://gwapp.gmi.oeaw.ac.at?id=" + Cookies.getCookie("GWAS_USER_ID");
+            gwappCookieUrl = "http://gwapp.gmi.oeaw.ac.at?datasetkey=" + Cookies.getCookie("GWAS_USER_ID");
         }
         gwappCookieImg.setSrc(gwappCookieUrl);
     }

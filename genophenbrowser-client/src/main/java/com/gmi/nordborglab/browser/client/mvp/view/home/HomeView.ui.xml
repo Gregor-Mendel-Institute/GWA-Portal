@@ -212,11 +212,12 @@
                                             </p>
                                             <p>
 
-                                                <a class="btn btn-primary" href="#">
+                                                <a class="btn btn-primary" href="http://gwapp.gmi.oeaw.ac.at"
+                                                   target="_blank">
                                                     <i class="icon-cloud"/>
                                                     Open
                                                 </a>
-                                                <img src="" ui:field="gwappCookieImg"></img>
+                                                <img src="" style="display:none" ui:field="gwappCookieImg"></img>
                                             </p>
                                         </div>
                                     </div>
