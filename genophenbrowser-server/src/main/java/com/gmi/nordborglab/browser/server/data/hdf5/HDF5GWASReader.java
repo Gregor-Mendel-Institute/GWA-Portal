@@ -142,7 +142,7 @@ public class HDF5GWASReader implements GWASReader {
                 String macsDataSet = pValueGroup + chr + "/macs";
                 String mafsDataSet = pValueGroup + chr + "/mafs";
                 String gveDataSet = pValueGroup + chr + "/GVEs";
-                writer.createGroup(pValueGroup + chr);
+                writer.createGroup(pValueGroup + chr.toLowerCase());
                 writer.writeFloatArray(scoresDataSet, chrGWAData.getPvalues());
                 writer.writeIntArray(positionDataSet, chrGWAData.getPositions());
                 if (chrGWAData.getMacs() != null) {
