@@ -80,9 +80,11 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 import com.gwtplatform.dispatch.client.actionhandler.caching.Cache;
 import com.gwtplatform.dispatch.client.actionhandler.caching.DefaultCacheImpl;
 import com.gwtplatform.mvp.client.RootPresenter;
+import com.gwtplatform.mvp.client.annotations.GaAccount;
 import com.gwtplatform.mvp.client.gin.AbstractPresenterModule;
 import com.gwtplatform.mvp.client.googleanalytics.GoogleAnalytics;
 import com.gwtplatform.mvp.client.googleanalytics.GoogleAnalyticsImpl;
+import com.gwtplatform.mvp.client.googleanalytics.GoogleAnalyticsNavigationTracker;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.TokenFormatter;
@@ -102,9 +104,13 @@ public class ClientModule extends AbstractPresenterModule {
 
         bind(IsLoggedInGatekeeper.class).in(Singleton.class);
 
+        bind(GoogleAnalytics.class).to(GoogleAnalyticsImpl.class).in(Singleton.class);
+        bindConstant().annotatedWith(GaAccount.class).to("UA-26150757-2");
+        bind(GoogleAnalyticsNavigationTracker.class).asEagerSingleton();
+
         //bind(TokenFormatter.class).to(ParameterTokenFormatter.class).in(Singleton.class);
         bind(RootPresenter.class).asEagerSingleton();
-        bind(GoogleAnalytics.class).to(GoogleAnalyticsImpl.class).in(Singleton.class);
+
         bind(PlaceManager.class).to(ClientPlaceManager.class).in(Singleton.class);
 
         bind(TokenFormatter.class).to(ParameterizedParameterTokenFormatter.class).in(Singleton.class);
