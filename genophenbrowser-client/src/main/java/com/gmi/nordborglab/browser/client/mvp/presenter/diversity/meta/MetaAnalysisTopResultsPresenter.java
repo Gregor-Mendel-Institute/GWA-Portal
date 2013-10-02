@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.mvp.handlers.MetaAnalysisTopResultsUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
+import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.*;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.MetaAnalysisRequest;
@@ -131,7 +132,7 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
         for (FacetProxy facet : stats) {
             STATS stat = STATS.valueOf(facet.getName().toUpperCase());
             if (!currentFilters.contains(stat)) {
-                DataTable dataTable = getDataTableFromFacet(facet);
+                DataTable dataTable = DataTableUtils.createFroMFacets(facet);
                 stats2DataTable.put(stat, dataTable);
                 getView().setStatsData(dataTable, stat);
             }
@@ -139,18 +140,6 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
         getView().scheduleLayout();
     }
 
-    private DataTable getDataTableFromFacet(FacetProxy facet) {
-        DataTable dataTable = DataTable.create();
-        dataTable.addColumn(ColumnType.STRING, facet.getName());
-        dataTable.addColumn(ColumnType.NUMBER, "count");
-        int rowCount = dataTable.addRows(facet.getTerms().size());
-        for (int i = 0; i <= rowCount; i++) {
-            FacetTermProxy term = facet.getTerms().get(i);
-            dataTable.setValue(i, 0, term.getTerm());
-            dataTable.setValue(i, 1, term.getValue());
-        }
-        return dataTable;
-    }
 
     @Override
     protected void onHide() {

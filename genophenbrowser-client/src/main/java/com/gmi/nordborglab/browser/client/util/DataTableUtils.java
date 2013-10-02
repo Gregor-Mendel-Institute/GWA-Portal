@@ -1,8 +1,6 @@
 package com.gmi.nordborglab.browser.client.util;
 
-import com.gmi.nordborglab.browser.shared.proxy.LocalityProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
-import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
+import com.gmi.nordborglab.browser.shared.proxy.*;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.ImmutableSortedMap;
@@ -13,18 +11,19 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.visualizations.corechart.Options;
+import com.googlecode.gwt.charts.client.ColumnType;
 
 public class DataTableUtils {
-	
-	public static CustomDataTable createDataTableFromString(String json) {
-		CustomDataTable dataTable = null;
-		try {
-			JavaScriptObject jsData = JsonUtils.unsafeEval(json);
-			dataTable = (CustomDataTable) DataTable.create(jsData);
-		}
-		catch (Exception e) {}
-		return dataTable;
-	}
+
+    public static CustomDataTable createDataTableFromString(String json) {
+        CustomDataTable dataTable = null;
+        try {
+            JavaScriptObject jsData = JsonUtils.unsafeEval(json);
+            dataTable = (CustomDataTable) DataTable.create(jsData);
+        } catch (Exception e) {
+        }
+        return dataTable;
+    }
 
     public static DataTable createPhentoypeExplorerTable(ImmutableList<TraitProxy> traits) {
         DataTable dataTable = DataTable.create();
@@ -92,8 +91,7 @@ public class DataTableUtils {
                 histogramData.setValue(i, 0, numberFormat.format(keys.get(i)) + " - " + numberFormat.format(keys.get(i + 1)));
                 histogramData.setValue(i, 1, values.get(i));
             }
-        }
-        else {
+        } else {
             histogramData.addRows(3);
             histogramData.setValue(0, 0, "A");
             histogramData.setValue(0, 1, 5);
@@ -117,6 +115,19 @@ public class DataTableUtils {
             }
         }
         return geoChartData;
+    }
+
+    public static com.googlecode.gwt.charts.client.DataTable createFroMFacets(FacetProxy facet) {
+        com.googlecode.gwt.charts.client.DataTable dataTable = com.googlecode.gwt.charts.client.DataTable.create();
+        dataTable.addColumn(ColumnType.STRING, facet.getName());
+        dataTable.addColumn(ColumnType.NUMBER, "count");
+        int rowCount = dataTable.addRows(facet.getTerms().size());
+        for (int i = 0; i <= rowCount; i++) {
+            FacetTermProxy term = facet.getTerms().get(i);
+            dataTable.setValue(i, 0, term.getTerm());
+            dataTable.setValue(i, 1, term.getValue());
+        }
+        return dataTable;
     }
 
     public static Options getDefaultPhenotypeHistogramOptions() {
