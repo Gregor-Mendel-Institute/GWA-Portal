@@ -104,7 +104,7 @@ public class AclManager {
     private <T extends SecureEntity> T setPermission(T entity, Acl acl, List<Sid> authorities) {
         for (AccessControlEntry ace : acl.getEntries()) {
             if ((ace.getSid() instanceof GrantedAuthoritySid && ((GrantedAuthoritySid) ace.getSid()).getGrantedAuthority().equalsIgnoreCase("ROLE_ANONYMOUS"))) {
-                entity.setIsPublic(true);
+                entity.setIsPublic(ace.getPermission().getMask() == 0 ? false : true);
             }
             if (authorities.contains(ace.getSid())) {
                 entity.setUserPermission(new CustomAccessControlEntry((Long) ace.getId(), ace.getPermission().getMask(), ace.isGranting()));
