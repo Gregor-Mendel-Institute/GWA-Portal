@@ -12,6 +12,7 @@ import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.cdv.Transformation;
 import com.gmi.nordborglab.browser.server.domain.stats.DateStatHistogram;
 import com.gmi.nordborglab.browser.server.domain.stats.DateStatHistogramFacet;
+import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
 import com.gmi.nordborglab.browser.server.domain.util.NewsItem;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
@@ -77,11 +78,12 @@ public class HelperServiceImpl implements HelperService {
 
     private static HelperFactory helperFactory = AutoBeanFactorySource.create(HelperFactory.class);
 
-
     private static class ParsePhenotypeValue extends CellProcessorAdaptor {
+
 
         public static enum PHENOTYPE_VALUE_TYPES {
             MEASURE, MEAN, STD, VARIANCE, MODE, MEDIAN, COUNT;
+
         }
 
         private ParsePhenotypeValue() {
@@ -102,8 +104,11 @@ public class HelperServiceImpl implements HelperService {
             }
             throw new SuperCsvCellProcessorException(String.format("Could not parse '%s' as a phenotype value type", value), context, this);
         }
+
     }
 
+    @Resource
+    private CandidateGeneListRepository candidateGeneListRepository;
 
     @Resource
     private UserRepository userRepository;
@@ -205,6 +210,9 @@ public class HelperServiceImpl implements HelperService {
         } else if (object.equalsIgnoreCase("publication")) {
             Publication publication = publicationRepository.findOne(id);
             breadcrumbs.add(new BreadcrumbItem(publication.getId(), publication.getFirstAuthor() + " - " + publication.getTitle(), "publication"));
+        } else if (object.equalsIgnoreCase("candidategenelist")) {
+            CandidateGeneList candidateGeneList = candidateGeneListRepository.findOne(id);
+            breadcrumbs.add(new BreadcrumbItem(candidateGeneList.getId(), candidateGeneList.getName(), "candidategenelist"));
         }
         return breadcrumbs;
     }

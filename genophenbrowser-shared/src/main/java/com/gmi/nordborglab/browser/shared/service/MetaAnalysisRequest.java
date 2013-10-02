@@ -1,9 +1,8 @@
 package com.gmi.nordborglab.browser.shared.service;
 
-import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
-import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisTopResultsCriteriaProxy;
-import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisPageProxy;
-import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
+import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServiceName;
@@ -24,4 +23,18 @@ public interface MetaAnalysisRequest extends RequestContext {
     Request<List<FacetProxy>> findMetaStats(MetaAnalysisTopResultsCriteriaProxy criteria);
 
     Request<MetaSNPAnalysisPageProxy> findTopAnalysis(MetaAnalysisTopResultsCriteriaProxy criteria, int start, int size);
+
+    Request<CandidateGeneListPageProxy> findCandidateGeneLists(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
+
+    Request<CandidateGeneListProxy> saveCandidateGeneList(CandidateGeneListProxy candidateGeneList);
+
+    Request<Void> deleteCandidateGeneList(CandidateGeneListProxy candidateGeneList);
+
+    Request<CandidateGeneListProxy> findOneCandidateGeneList(Long id);
+
+    Request<GenePageProxy> getGenesInCandidateGeneList(Long id, ConstEnums.GENE_FILTER filter, String searchString, int start, int size);
+
+    Request<GeneProxy> addGeneToCandidateGeneList(CandidateGeneListProxy candidateGeneList, String geneId);
+
+    Request<Void> removeGeneFromCandidateGeneList(CandidateGeneListProxy candidateGeneList, String geneId);
 }

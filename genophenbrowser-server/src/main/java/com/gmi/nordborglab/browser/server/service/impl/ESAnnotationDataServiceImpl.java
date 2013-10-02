@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
+import com.gmi.nordborglab.browser.server.data.annotation.GoTerm;
 import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
@@ -14,6 +15,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,11 +81,31 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
         Gene gene = null;
         if (matcher.matches()) {
             String chr = "chr" + matcher.group(1);
-            GetRequestBuilder builder = client.prepareGet(String.format(INDEX_PREFIX, chr), "gene", id).setFields("name", "chr", "start_pos", "end_pos", "annotation", "strand");
+            GetRequestBuilder builder = client.prepareGet(String.format(INDEX_PREFIX, chr), "gene", id).setFields("name", "chr", "start_pos", "end_pos", "annotation", "strand", "isoforms");
             GetResponse response = builder.execute().actionGet();
             if (response != null) {
                 //TODO fix long int boolean stuff
                 gene = new Gene(Long.valueOf((Integer) response.getField("start_pos").getValue()), Long.valueOf((Integer) response.getField("end_pos").getValue()), ((Boolean) response.getField("strand").getValue() ? 1 : 0), (String) response.getField("name").getValue(), null);
+                gene.setAnnotation((String) response.getField("annotation").getValue());
+                if (response.getFields().containsKey("isoforms")) {
+                    List<Object> isoForms = response.getField("isoforms").getValues();
+                    if (isoForms != null && isoForms.size() > 0) {
+                        Map<String, Object> isoFormFields = (Map<String, Object>) isoForms.get(0);
+                        gene.setShortDescription((String) isoFormFields.get("short_description"));
+                        gene.setCuratorSummary((String) isoFormFields.get("curator_summary"));
+                        gene.setDescription((String) isoFormFields.get("description"));
+                    }
+                }
+                if (response.getFields().containsKey("GO")) {
+                    List<Object> goTerms = response.getField("GO").getValues();
+                    if (goTerms != null && goTerms.size() > 0) {
+                        Iterator<Object> iterator = goTerms.iterator();
+                        while (iterator.hasNext()) {
+                            Map<String, Object> goTermFields = (Map<String, Object>) iterator.next();
+                            gene.getGoTerms().add(new GoTerm((String) goTermFields.get("relation"), (String) goTermFields.get("exact"), (String) goTermFields.get("narrow")));
+                        }
+                    }
+                }
             }
         }
         return gene;

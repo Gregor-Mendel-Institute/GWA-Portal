@@ -24,4 +24,6 @@ public interface GeneProxy extends ValueProxy {
 
     public String getChr();
 
+    String getAnnotation();
+
 }
