@@ -110,7 +110,7 @@ public class CSVGWASReader implements GWASReader {
             List<Float> GVEs = Lists.newArrayList();
             while ((row = reader.read(cellProcessors)) != null) {
                 if (chr != (Integer) row.get(0)) {
-                    String key = "Chr" + chr;
+                    String key = "chr" + chr;
                     chrGWAData = ChrGWAData.sortAndConvertToScores(new ChrGWAData(Ints.toArray(positions), Floats.toArray(pvalues), Ints.toArray(macs), Floats.toArray(mafs), Floats.toArray(GVEs), key));
                     data.put(key, chrGWAData);
                     positions.clear();
@@ -132,7 +132,7 @@ public class CSVGWASReader implements GWASReader {
                     }
                 }
             }
-            String key = "Chr" + chr;
+            String key = "chr" + chr;
             data.put(key, ChrGWAData.sortAndConvertToScores(new ChrGWAData(Ints.toArray(positions), Floats.toArray(pvalues), Ints.toArray(macs), Floats.toArray(mafs), Floats.toArray(GVEs), key)));
             return data;
         } catch (Exception e) {
