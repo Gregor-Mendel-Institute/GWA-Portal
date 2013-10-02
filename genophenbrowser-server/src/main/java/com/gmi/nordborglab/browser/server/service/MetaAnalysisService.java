@@ -1,9 +1,16 @@
 package com.gmi.nordborglab.browser.server.service;
 
+import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.domain.meta.MetaAnalysisTopResultsCriteria;
 import com.gmi.nordborglab.browser.server.domain.meta.MetaSNPAnalysis;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import com.gmi.nordborglab.browser.server.domain.pages.CandidateGeneListPage;
+import com.gmi.nordborglab.browser.server.domain.pages.GenePage;
 import com.gmi.nordborglab.browser.server.domain.pages.MetaSNPAnalysisPage;
+import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -21,4 +28,24 @@ public interface MetaAnalysisService {
     public List<ESFacet> findMetaStats(MetaAnalysisTopResultsCriteria criteria);
 
     public MetaSNPAnalysisPage findTopAnalysis(MetaAnalysisTopResultsCriteria criteria, int start, int size);
+
+    CandidateGeneListPage findCandidateGeneLists(ConstEnums.TABLE_FILTER filter, String searchString, int page, int size);
+
+    @PreAuthorize("hasRole('ROLE_USER') and (#candidateGeneList.id == null or hasPermission(#candidateGeneList,'EDIT') or hasPermission(#candidateGeneList,'ADMINISTRATION'))")
+    CandidateGeneList saveCandidateGeneList(CandidateGeneList candidateGeneList);
+
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#candidateGeneList,'EDIT') or hasPermission(#candidateGeneList,'ADMINISTRATION'))")
+    void deleteCandidateGeneList(CandidateGeneList candidateGeneList);
+
+    @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList','READ')")
+    CandidateGeneList findOneCandidateGeneList(Long id);
+
+    @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList','READ')")
+    GenePage getGenesInCandidateGeneList(Long id, ConstEnums.GENE_FILTER filter, String searchString, int page, int size);
+
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#candidateGeneList,'EDIT') or hasPermission(#candidateGeneList,'ADMINISTRATION'))")
+    Gene addGeneToCandidateGeneList(CandidateGeneList candidateGeneList, String geneId);
+
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#candidateGeneList,'EDIT') or hasPermission(#candidateGeneList,'ADMINISTRATION'))")
+    void removeGeneFromCandidateGeneList(CandidateGeneList candidateGeneList, String geneId);
 }

@@ -10,7 +10,7 @@ import com.google.web.bindery.requestfactory.shared.ServiceName;
 import java.util.List;
 
 @ServiceName(value = "com.gmi.nordborglab.browser.server.service.PermissionService", locator = "com.gmi.nordborglab.browser.server.service.SpringServiceLocator")
-@ExtraTypes({GWASResultProxy.class, ExperimentProxy.class, PhenotypeProxy.class, StudyProxy.class})
+@ExtraTypes({GWASResultProxy.class, ExperimentProxy.class, PhenotypeProxy.class, StudyProxy.class, CandidateGeneListProxy.class})
 public interface PermissionRequest extends RequestContext {
 
     public Request<CustomAclProxy> getPermissions(SecureEntityProxy experiment);

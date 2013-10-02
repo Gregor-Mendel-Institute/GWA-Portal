@@ -13,6 +13,8 @@ import com.gmi.nordborglab.browser.client.manager.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.*;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListDetailPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisGenePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisTopResultsPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.TraitOntologyPresenter;
@@ -40,6 +42,8 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.main.UserInfoPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.PermissionDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.*;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListDetailView;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.MetaAnalysisGeneView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.MetaAnalysisTopResultsView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.ontology.TraitOntologyView;
@@ -279,6 +283,10 @@ public class ClientModule extends AbstractPresenterModule {
         bindPresenter(HomeTabPresenter.class, HomeTabPresenter.MyView.class, HomeTabView.class, HomeTabPresenter.MyProxy.class);
 
         bindPresenter(GWASViewerPresenter.class, GWASViewerPresenter.MyView.class, GWASViewerView.class, GWASViewerPresenter.MyProxy.class);
+
+        bindPresenter(CandidateGeneListPresenter.class, CandidateGeneListPresenter.MyView.class, CandidateGeneListView.class, CandidateGeneListPresenter.MyProxy.class);
+        bindPresenter(CandidateGeneListDetailPresenter.class, CandidateGeneListDetailPresenter.MyView.class, CandidateGeneListDetailView.class, CandidateGeneListDetailPresenter.MyProxy.class);
+
         bindPresenterWidget(GWASPlotPresenterWidget.class, GWASPlotPresenterWidget.MyView.class, GWASPlotView.class);
 
         bindSingletonPresenterWidget(PhenotypeUploadWizardPresenterWidget.class, PhenotypeUploadWizardPresenterWidget.MyView.class, PhenotypeUploadWizardView.class);

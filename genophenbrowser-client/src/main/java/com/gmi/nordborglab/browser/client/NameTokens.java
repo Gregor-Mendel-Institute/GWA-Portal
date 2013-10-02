@@ -31,6 +31,8 @@ public class NameTokens {
     public static final String dashboard = "!dashboard";
     public static final String news = "!news/{id}";
     public static final String genomebrowser = "!genotype/genomebrowser";
+    public static final String candidateGeneList = "!meta/candidategenelists";
+    public static final String candidateGeneListDetail = "!meta/candidategenelist/{id}";
 
 
     public static String getHome() {
@@ -141,5 +143,13 @@ public class NameTokens {
 
     public static String getGenomebrowser() {
         return genomebrowser;
+    }
+
+    public static String getCandidateGeneList() {
+        return candidateGeneList;
+    }
+
+    public static String getCandidateGeneListDetail() {
+        return candidateGeneListDetail;
     }
 }

@@ -4,6 +4,8 @@ import com.gmi.nordborglab.browser.client.CurrentUser;
 import com.gmi.nordborglab.browser.client.IsLoggedInGatekeeper;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.*;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListDetailPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisGenePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisTopResultsPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.TraitOntologyPresenter;
@@ -121,4 +123,8 @@ public interface ClientGinjector extends Ginjector {
     AsyncProvider<GenomeBrowserPresenter> getGenomeBrowserPresenter();
 
     Provider<HomeTabPresenter> getHomeTabPresenter();
+
+    AsyncProvider<CandidateGeneListPresenter> getCandidateGeneListPresenter();
+
+    AsyncProvider<CandidateGeneListDetailPresenter> getCandidateGeneListDetailPresenter();
 }

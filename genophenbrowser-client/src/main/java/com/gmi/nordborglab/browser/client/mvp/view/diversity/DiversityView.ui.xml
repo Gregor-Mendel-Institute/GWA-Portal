@@ -248,7 +248,10 @@
                                         <g:InlineHyperlink text="Genes"
                                                            targetHistoryToken="{nameTokens.getMetaAnalysisGenes}"></g:InlineHyperlink>
                                     </base:ListItem>
-
+                                    <base:ListItem addStyleNames="{style.submenu_item}">
+                                        <g:InlineHyperlink text="Candidate Genes"
+                                                           targetHistoryToken="{nameTokens.getCandidateGeneList}"></g:InlineHyperlink>
+                                    </base:ListItem>
                                 </base:UnorderedList>
                             </b:AccordionGroup>
 

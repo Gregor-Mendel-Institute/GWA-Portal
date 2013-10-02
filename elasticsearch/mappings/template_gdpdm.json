@@ -842,6 +842,130 @@
                     "index": "not_analyzed"
                 }
             }
+        },
+        "candidate_gene_list": {
+            "properties": {
+                "name": {
+                    "type": "multi_field",
+                    "fields": {
+                        "name": {
+                            "type": "string",
+                            "boost": 2
+                        },
+                        "partial": {
+                            "type": "string",
+                            "boost": 1.5,
+                            "index_analyzer": "my_ngram"
+                        }
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "published": {
+                    "type": "date"
+                },
+                "created": {
+                    "type": "date"
+                },
+                "modified": {
+                    "type": "date"
+                },
+                "acl": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "permissions": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        }
+                    }
+                },
+                "owner": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "sid": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "name": {
+                            "type": "multi_field",
+                            "fields": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "partial": {
+                                    "type": "string",
+                                    "index_analyzer": "my_ngram"
+                                }
+                            }
+                        }
+                    }
+                },
+                "genes": {
+                    "type": "nested",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "symbol": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "synonyms": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "annotation": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "chr": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "start_pos": {
+                            "type": "integer"
+                        },
+                        "end_pos": {
+                            "type": "integer"
+                        },
+                        "strand": {
+                            "type": "boolean"
+                        },
+                        "description": {
+                            "type": "string"
+                        },
+                        "short_description": {
+                            "type": "string"
+                        },
+                        "curator_summary": {
+                            "type": "string"
+                        },
+                        "GO": {
+                            "type": "nested",
+                            "properties": {
+                                "relation": {
+                                    "type": "string",
+                                    "index": "not_analyzed"
+                                },
+                                "exact": {
+                                    "type": "string"
+                                },
+                                "narrow": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -171,16 +171,19 @@ public class DiversityPresenter extends
             subItem = null;
             getView().setActiveMenuItem(MENU_ITEM.ONTOLOGY, request);
         } else if (request.matchesNameToken(NameTokens.study)) {
+            getView().clearBreadcrumbs(0);
             title = "Analysis";
             type = "study";
             subItem = null;
             getView().setActiveMenuItem(MENU_ITEM.STUDY, request);
         } else if (request.matchesNameToken(NameTokens.studywizard)) {
+            getView().clearBreadcrumbs(0);
             title = "Analysis";
             type = "studywizard";
             subItem = null;
             getView().setActiveMenuItem(MENU_ITEM.STUDY, request);
         } else if (request.matchesNameToken(NameTokens.gwasViewer)) {
+            getView().clearBreadcrumbs(0);
             title = "GWAS Viewer";
             getView().setActiveMenuItem(MENU_ITEM.TOOLS, request);
             getView().clearBreadcrumbs(0);
@@ -191,13 +194,21 @@ public class DiversityPresenter extends
             subItem = null;
             getView().setActiveMenuItem(MENU_ITEM.PUBLICATION, request);
         } else if (request.matchesNameToken((NameTokens.publication))) {
+            getView().clearBreadcrumbs(0);
             title = "Publication";
             type = "publication";
             subItem = null;
             getView().setActiveMenuItem(MENU_ITEM.PUBLICATION, request);
         } else if (request.matchesNameToken(NameTokens.metaAnalysisGenes) || request.matchesNameToken(NameTokens.metaAnalysisTopResults)) {
+            getView().clearBreadcrumbs(0);
             title = "Meta-analysis";
             type = "meta";
+            subItem = null;
+            getView().setActiveMenuItem(MENU_ITEM.META_ANALYSIS, request);
+        } else if (request.matchesNameToken(NameTokens.candidateGeneList) || request.matchesNameToken(NameTokens.getCandidateGeneListDetail())) {
+            getView().clearBreadcrumbs(0);
+            title = "Candidate gene lists";
+            type = "candidategenelist";
             subItem = null;
             getView().setActiveMenuItem(MENU_ITEM.META_ANALYSIS, request);
         }
@@ -230,6 +241,8 @@ public class DiversityPresenter extends
                         nameToken = NameTokens.studywizard;
                     else if (item.getType().equals("publication"))
                         nameToken = NameTokens.publication;
+                    else if (item.getType().equals("candidategenelist"))
+                        nameToken = NameTokens.candidateGeneListDetail;
                     PlaceRequest request = new ParameterizedPlaceRequest(nameToken).with("id", item.getId().toString());
                     getView().setBreadcrumbs(i + 1, item.getText(), placeManager.buildHistoryToken(request));
                 }
