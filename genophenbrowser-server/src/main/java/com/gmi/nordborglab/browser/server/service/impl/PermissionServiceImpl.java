@@ -1,9 +1,6 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
-import static com.gmi.nordborglab.browser.server.domain.specifications.AppUserSpecifications.firstNameIsLike;
-import static com.gmi.nordborglab.browser.server.domain.specifications.AppUserSpecifications.lastNameIsLike;
-import static org.springframework.data.jpa.domain.Specifications.where;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,14 +11,21 @@ import javax.annotation.Resource;
 
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.errai.ClientComService;
 import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
+import com.gmi.nordborglab.browser.server.security.*;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.update.UpdateRequestBuilder;
+import org.elasticsearch.action.update.UpdateResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.*;
 import org.springframework.security.acls.model.AccessControlEntry;
@@ -36,10 +40,6 @@ import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.acl.PermissionPrincipal;
 import com.gmi.nordborglab.browser.server.domain.acl.SearchPermissionUserRole;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
-import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
-import com.gmi.nordborglab.browser.server.security.CustomAcl;
-import com.gmi.nordborglab.browser.server.security.CustomPermission;
-import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.PermissionService;
 
 @Service
@@ -54,6 +54,15 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Resource
     protected UserNotificationRepository userNotificationRepository;
+
+    @Resource
+    protected Client client;
+
+    @Resource
+    protected AclManager aclManager;
+
+    @Resource
+    protected EsAclManager esAclManager;
 
 
     @Resource
@@ -101,20 +110,43 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public CustomAcl getPermissions(SecureEntity object) {
-        return getGenericPermissions(object);
+    public CustomAcl getPermissions(SecureEntity entity) {
+        return getGenericPermissions(entity);
     }
 
 
     @Override
     @Transactional(readOnly = false)
-    public CustomAcl updatePermissions(SecureEntity experiment, CustomAcl acl) {
-        List<UserNotification> notifications = updateGenericPermissions(experiment, acl);
+    public CustomAcl updatePermissions(SecureEntity entity, CustomAcl acl) {
+        List<UserNotification> notifications = updateGenericPermissions(entity, acl);
         for (UserNotification notification : notifications) {
             userNotificationRepository.save(notification);
             ClientComService.pushUserNotification(notification.getAppUser().getId().toString(), notification.getAppUser().getEmail(), "permission", 0L);
         }
-        return getGenericPermissions(experiment);
+        indexPermissions(entity);
+        return getGenericPermissions(entity);
+    }
+
+    private void indexPermissions(SecureEntity entity) {
+        if (entity.getIndexType() == null)
+            return;
+        try {
+            XContentBuilder builder = XContentFactory.jsonBuilder();
+
+            builder.startObject();
+            esAclManager.addACLAndOwnerContent(builder, aclManager.getAcl(entity));
+            builder.endObject();
+            UpdateRequestBuilder request = client.prepareUpdate(esAclManager.getIndex(), entity.getIndexType(), entity.getId().toString())
+                    .setDoc(builder);
+            if (entity.getRouting() != null) {
+                request.setRouting(entity.getRouting());
+            }
+            request.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
 
@@ -197,8 +229,11 @@ public class PermissionServiceImpl implements PermissionService {
                         link = "#!gwasViewer;id=" + entity.getId();
                         objType = "GWAS-result";
                         objName = ((GWASResult) entity).getName();
+                    } else if (entity instanceof CandidateGeneList) {
+                        link = "#!meta/candidategenelist/" + entity.getId();
+                        objType = "candidategenelist";
+                        objName = ((CandidateGeneList) entity).getName();
                     }
-
                     String notificationText = "<b>%s</b> shared a <a href=\"%s\">%s (%s)</a> with you";
                     notification.setText(String.format(notificationText, owner.getFirstname() + " " + owner.getLastname(), link, objType, objName));
                     notifications.add(notification);
@@ -220,7 +255,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public SearchPermissionUserRole searchUserAndRoles(String query) {
         /*PermissionPrincipal principal = null;
-		SearchPermissionUserRole result = new SearchPermissionUserRole();
+        SearchPermissionUserRole result = new SearchPermissionUserRole();
 		List<PermissionPrincipal> principals = new ArrayList<PermissionPrincipal>();
 		if ("ROLE_ADMIN".toLowerCase().contains(query.toLowerCase()))
 			principals.add(new PermissionPrincipal("ROLE_ADMIN", "ROLE ADMIN", false));

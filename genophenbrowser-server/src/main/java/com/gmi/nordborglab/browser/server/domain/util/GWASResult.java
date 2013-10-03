@@ -77,4 +77,14 @@ public class GWASResult extends SecureEntity {
     public int getNumberOfSNPs() {
         return numberOfSNPs;
     }
+
+    @Override
+    public String getIndexType() {
+        return null;
+    }
+
+    @Override
+    public String getRouting() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

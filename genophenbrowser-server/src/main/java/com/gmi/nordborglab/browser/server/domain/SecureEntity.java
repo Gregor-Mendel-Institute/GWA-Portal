@@ -1,9 +1,14 @@
 package com.gmi.nordborglab.browser.server.domain;
 
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
+import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.persistence.Transient;
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,7 +17,7 @@ import javax.persistence.Transient;
  * Time: 1:07 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SecureEntity extends BaseEntity {
+public abstract class SecureEntity extends BaseEntity {
 
     @Transient
     private boolean isPublic = false;
@@ -61,4 +66,9 @@ public class SecureEntity extends BaseEntity {
     public AppUser getOwnerUser() {
         return owner;
     }
+
+
+    public abstract String getIndexType();
+
+    public abstract String getRouting();
 }

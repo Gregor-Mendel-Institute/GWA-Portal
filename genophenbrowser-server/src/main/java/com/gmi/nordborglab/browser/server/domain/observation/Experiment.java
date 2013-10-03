@@ -151,4 +151,14 @@ public class Experiment extends SecureEntity {
     public List<ESFacet> getStats() {
         return stats;
     }
+
+    @Override
+    public String getIndexType() {
+        return "experiment";
+    }
+
+    @Override
+    public String getRouting() {
+        return getId().toString();
+    }
 }

@@ -99,4 +99,14 @@ public class CandidateGeneList extends SecureEntity {
     public int getGeneCount() {
         return genes != null ? genes.size() : 0;
     }
+
+    @Override
+    public String getIndexType() {
+        return "candidate_gene_list";
+    }
+
+    @Override
+    public String getRouting() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

@@ -13,15 +13,15 @@ import java.util.List;
 
 public interface PermissionService {
 
-	@PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#object,'ADMINISTRATION'))")
-	CustomAcl getPermissions(SecureEntity object);
-	
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#entity,'ADMINISTRATION'))")
+    CustomAcl getPermissions(SecureEntity entity);
 
-	@PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#experiment,'ADMINISTRATION'))")
-	CustomAcl updatePermissions(SecureEntity object,CustomAcl acl);
-	
-	@PreAuthorize("hasRole('ROLE_USER')")
-	SearchPermissionUserRole searchUserAndRoles(String query);
+
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#entity,'ADMINISTRATION'))")
+    CustomAcl updatePermissions(SecureEntity entity, CustomAcl acl);
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    SearchPermissionUserRole searchUserAndRoles(String query);
 
     List<AppUser> findAllUsers();
 }

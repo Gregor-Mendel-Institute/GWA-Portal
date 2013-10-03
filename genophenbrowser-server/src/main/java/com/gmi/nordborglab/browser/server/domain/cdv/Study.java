@@ -159,4 +159,14 @@ public class Study extends SecureEntity {
     public Date getModified() {
         return modified;
     }
+
+    @Override
+    public String getIndexType() {
+        return "study";
+    }
+
+    @Override
+    public String getRouting() {
+        return getPhenotype().getExperiment().getId().toString();
+    }
 }

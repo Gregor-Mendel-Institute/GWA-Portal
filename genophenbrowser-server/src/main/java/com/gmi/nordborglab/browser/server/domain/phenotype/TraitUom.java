@@ -196,4 +196,14 @@ public class TraitUom extends SecureEntity {
         statisticTypes = null;
         experiment = null;
     }
+
+    @Override
+    public String getIndexType() {
+        return "phenotype";
+    }
+
+    @Override
+    public String getRouting() {
+        return getExperiment().getId().toString();
+    }
 }
