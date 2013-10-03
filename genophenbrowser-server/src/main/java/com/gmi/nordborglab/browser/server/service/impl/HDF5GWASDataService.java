@@ -160,7 +160,7 @@ public class HDF5GWASDataService implements GWASDataService {
             file.delete();
         }
         gwasResultRepository.delete(gwasResult);
-        List<GWASResult> gwasResults = gwasResultRepository.findAllByAppUserUsername(SecurityUtil.getUsername());
+        List<GWASResult> gwasResults = findAllGWASResults();
         return gwasResults;
     }
 
