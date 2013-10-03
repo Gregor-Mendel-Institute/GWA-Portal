@@ -56,6 +56,7 @@ public class UserServiceImpl implements UserService {
             Authority authority = new Authority();
             authority.setAuthority(SecurityUtil.DEFAULT_AUTHORITY);
             authorities.add(authority);
+            appUser.setAuthorities(authorities);
             appUser.setPassword("TEMPORARY");
             userRepository.save(appUser);
             appUser.setPassword(encoder.encodePassword(registration.getPassword(), appUser.getId().toString()));
