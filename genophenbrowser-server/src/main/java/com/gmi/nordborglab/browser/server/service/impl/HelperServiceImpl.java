@@ -43,6 +43,7 @@ import org.elasticsearch.search.facet.Facets;
 import org.elasticsearch.search.facet.datehistogram.DateHistogramFacet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -261,7 +262,7 @@ public class HelperServiceImpl implements HelperService {
         List<Sampstat> sampStatValues = sampstatRepository.findAll();
         List<Transformation> transformationValues = transformationRepository.findAll();
         List<UserNotification> userNotifications = getUserNotifications(10);
-        Page<NewsItem> page = newsRepository.findAll(new PageRequest(0, 10));
+        Page<NewsItem> page = newsRepository.findAll(new PageRequest(0, 10, Sort.Direction.DESC,"createDate"));
 
         AppData appData = new AppData();
         appData.setStatisticTypeList(statisticTypeValues);
