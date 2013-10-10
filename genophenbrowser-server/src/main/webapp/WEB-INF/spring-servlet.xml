@@ -14,42 +14,44 @@
 	   	http://www.springframework.org/schema/security
 		http://www.springframework.org/schema/security/spring-security-3.1.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd"
         >
-	
-	<context:annotation-config />
-	<context:component-scan base-package="com.gmi.nordborglab.browser.server" />
+
+    <context:annotation-config/>
+    <context:component-scan base-package="com.gmi.nordborglab.browser.server"/>
 
     <!-- needs a separate global-method-security decleration here, so that hasPermission and hasRole work when incocating services from a controller -->
-    <security:global-method-security pre-post-annotations="enabled" access-decision-manager-ref="methodAccessDecisionManager">
+    <security:global-method-security pre-post-annotations="enabled"
+                                     access-decision-manager-ref="methodAccessDecisionManager">
         <security:expression-handler ref="expressionHandler"/>
     </security:global-method-security>
 
 
-	<mvc:annotation-driven validator="validator">
+    <mvc:annotation-driven validator="validator">
     </mvc:annotation-driven>
 
 
+    <mvc:resources mapping="/browser/**" location="/browser/"/>
+    <mvc:resources mapping="/font/**" location="/font/"/>
+    <mvc:resources mapping="/js/**" location="/js/"/>
+    <mvc:resources mapping="/images/**" location="/images/"/>
+    <mvc:resources mapping="/img/**" location="/img/"/>
+    <mvc:resources mapping="/css/**" location="/css/"/>
 
-	<mvc:resources mapping="/browser/**" location="/browser/" />
-	<mvc:resources mapping="/js/**" location="/js/" />
-	<mvc:resources mapping="/images/**" location="/images/" />
-	<mvc:resources mapping="/img/**" location="/img/" />
-	<mvc:resources mapping="/css/**" location="/css/" />
-	
-	<mvc:default-servlet-handler/>
-	
-	<mvc:interceptors>
-    <mvc:interceptor>
-      <mvc:mapping path="/browser/browser.nocache.js" />
-        <bean id="responseCachingFilter" class="org.springframework.web.servlet.mvc.WebContentInterceptor">
-          <property name="cacheSeconds" value="0" />
-          <property name="useExpiresHeader" value="true" />
-          <property name="useCacheControlHeader" value="true" />
-          <property name="useCacheControlNoStore" value="true" />
-    	</bean>
-    </mvc:interceptor>
+    <mvc:default-servlet-handler/>
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/browser/browser.nocache.js"/>
+            <bean id="responseCachingFilter" class="org.springframework.web.servlet.mvc.WebContentInterceptor">
+                <property name="cacheSeconds" value="0"/>
+                <property name="useExpiresHeader" value="true"/>
+                <property name="useCacheControlHeader" value="true"/>
+                <property name="useCacheControlNoStore" value="true"/>
+            </bean>
+        </mvc:interceptor>
     </mvc:interceptors>
 
-    <context:property-placeholder location="classpath:META-INF/persistence_${spring.profiles.active}.properties,classpath:META-INF/application_${spring.profiles.active}.properties"/>
+    <context:property-placeholder
+            location="classpath:META-INF/persistence_${spring.profiles.active}.properties,classpath:META-INF/application_${spring.profiles.active}.properties"/>
 
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -58,10 +60,10 @@
         <property name="maxUploadSize" value="500000000"/>
     </bean>
 
-	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
-	p:prefix="/WEB-INF/jsp/" p:suffix=".jsp"  p:order="3" />
-	
-	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
-		p:basename="/WEB-INF/resources/messages">
-	</bean>
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+          p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" p:order="3"/>
+
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+          p:basename="/WEB-INF/resources/messages">
+    </bean>
 </beans>

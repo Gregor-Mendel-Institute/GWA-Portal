@@ -66,8 +66,7 @@
         }
 
         .stats_icon {
-            font-family: EntypoRegular;
-            font-size: 38px;
+            font-size: 20px;
             margin-right: 5px;
             margin-left: 6px;
         }
@@ -104,13 +103,17 @@
             </p>
             <ul class="unstyled">
                 <li>
-                    <span class="{style.stats_icon}">&#59148;</span>
+                    <span class="{style.stats_icon}">
+                        <i class="e_icon-tag"/>
+                    </span>
                     <span>
                         <ui:text from="{scoringTechType}"/>
                     </span>
                 </li>
                 <li>
-                    <span class="{style.stats_icon}">&#128214;</span>
+                    <span class="{style.stats_icon}">
+                        <i class="e_icon-database"/>
+                    </span>
                     <span>
                         <ui:text from="{polyType}"/>
                     </span>

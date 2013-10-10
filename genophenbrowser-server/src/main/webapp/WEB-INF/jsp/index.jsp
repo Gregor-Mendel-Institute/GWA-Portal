@@ -8,9 +8,9 @@
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <title>Browser</title>
+    <title>GWA-Portal</title>
     <link rel="stylesheet" href="<c:url value='/css/m-styles.min.css'/>"/>
-    <link rel="stylesheet" href="<c:url value='/css/main.css'/>"/>
+    <link rel="stylesheet" href="<c:url value='/css/entypo.css'/>"/>
     <link rel="stylesheet" href="<c:url value='/css/animate.min.css'/>"/>
     <script type="text/javascript">
         <sec:authorize access="isAuthenticated()">

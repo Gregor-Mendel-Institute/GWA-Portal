@@ -70,10 +70,10 @@
         }
 
         .stats_icon {
-            font-family: EntypoRegular;
-            font-size: 38px;
+            font-size: 20px;
             margin-right: 10px;
             margin-left: 6px;
+            line-height: 25px;
         }
 
         .sub_title {
@@ -162,7 +162,9 @@
                         <li>
                             <b:Tooltip text="Number of phenotypes" placement="RIGHT">
                                 <g:HTML>
-                                    <span class="{style.stats_icon} ">&#10002;</span>
+                                    <span class="{style.stats_icon} ">
+                                        <i class="e_icon-feather"/>
+                                    </span>
                                     <span ui:field="phenotypeCountLabel"></span>
                                 </g:HTML>
                             </b:Tooltip>

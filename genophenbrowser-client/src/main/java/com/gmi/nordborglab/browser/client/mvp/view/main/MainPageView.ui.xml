@@ -212,8 +212,7 @@
         }
 
         .login_icon {
-            font-family: EntypoRegular;
-            font-size: 30px;
+            font-size: 16px;
         }
 
         .login_menu {
@@ -265,8 +264,7 @@
         }
 
         .notification_icon {
-            font-family: EntypoRegular;
-            font-size: 38px;
+            font-size: 19px;
         }
 
         .unread_notification {
@@ -314,7 +312,9 @@
                     <li class="{style.userItem}" id="userMenuItem">
                         <g:Anchor ui:field="userLink" addStyleNames="{style.login_menu}" href="">
                             <span style="position: absolute;left: 15px;">
-                                <span class="{style.login_icon}">&#128100;</span>
+                                <span class="{style.login_icon}">
+                                    <i class="e_icon-user"/>
+                                </span>
                                 <span class="{style.notify_bubble} animated" ui:field="notifyBubble"></span>
                             </span>
                             <span ui:field="loginTextLb">Login</span>
