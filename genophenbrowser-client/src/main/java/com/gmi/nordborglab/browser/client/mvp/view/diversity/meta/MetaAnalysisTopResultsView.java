@@ -17,6 +17,7 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.visualization.client.visualizations.corechart.Options;
@@ -71,6 +72,8 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
     DataGrid<MetaSNPAnalysisProxy> dataGrid;
     @UiField
     CustomPager pager;
+    @UiField
+    SimplePanel filterContainer;
 
     BiMap<MetaAnalysisTopResultsPresenter.STATS, PieChart> stats2Chart;
     Map<MetaAnalysisTopResultsPresenter.STATS, DataTable> stats2DataTable;
@@ -279,6 +282,15 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
             }
         }
 
+    }
+
+    @Override
+    public void setInSlot(Object slot, Widget content) {
+        if (slot == MetaAnalysisTopResultsPresenter.TYPE_FilterContent) {
+            filterContainer.setWidget(content);
+        } else {
+            super.setInSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
+        }
     }
 
     @Override

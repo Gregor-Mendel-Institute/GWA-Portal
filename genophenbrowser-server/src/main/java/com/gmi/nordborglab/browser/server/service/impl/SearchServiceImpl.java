@@ -8,6 +8,7 @@ import com.gmi.nordborglab.browser.server.security.EsAclManager;
 import com.gmi.nordborglab.browser.server.service.SearchService;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.Lists;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchResponse;
@@ -58,6 +59,8 @@ public class SearchServiceImpl implements SearchService {
 
             PublicationSearchProcessor publicationSearchProcessor = new PublicationSearchProcessor(term);
 
+            CandidategenelistSearchProcessor candidategenelistSearchProcessor = new CandidategenelistSearchProcessor(term);
+
             GeneSearchProcessor geneSearchprocessor = new GeneSearchProcessor(term);
 
             requestBuilder.add(experimentProcessor.getSearchBuilder(client
@@ -74,6 +77,8 @@ public class SearchServiceImpl implements SearchService {
 
             requestBuilder.add(publicationSearchProcessor.getSearchBuilder(client
                     .prepareSearch(esAclManager.getIndex())));
+
+            requestBuilder.add(candidategenelistSearchProcessor.getSearchBuilder(client.prepareSearch(esAclManager.getIndex())));
 
             requestBuilder.add(geneSearchprocessor.getSearchBuilder(client.prepareSearch(GENE_INDEX_NAME)));
 
@@ -107,8 +112,13 @@ public class SearchServiceImpl implements SearchService {
             if (facetPage != null)
                 searchResults.add(facetPage);
 
+            // Get results from candidate gene lists
+            facetPage = candidategenelistSearchProcessor.extractSearchFacetPage(response.getResponses()[5].getResponse());
+            if (facetPage != null)
+                searchResults.add(facetPage);
+
             // Get resutls from gene
-            facetPage = geneSearchprocessor.extractSearchFacetPage(response.getResponses()[5].getResponse());
+            facetPage = geneSearchprocessor.extractSearchFacetPage(response.getResponses()[6].getResponse());
             if (facetPage != null)
                 searchResults.add(facetPage);
 
@@ -161,5 +171,32 @@ public class SearchServiceImpl implements SearchService {
         SearchResponse response = builder.execute().actionGet();
         facetPage = processor.extractSearchFacetPage(response);
         return facetPage;
+    }
+
+    @Override
+    public SearchFacetPage searchByFilter(String query, ConstEnums.FILTERS filter) {
+        SearchFacetPage searchFacetPage = null;
+        FilterBuilder aclFilter = esAclManager.getAclFilter(Lists.newArrayList("read"));
+        SearchProcessor searchProcessor = getSearchProcessorFromFilter(query, filter);
+        if (searchProcessor != null) {
+            SearchRequestBuilder request = searchProcessor.getSearchBuilder(client.prepareSearch(esAclManager.getIndex()).setFilter(aclFilter));
+            SearchResponse response = request.execute().actionGet();
+            searchFacetPage = searchProcessor.extractSearchFacetPage(response);
+        }
+        return searchFacetPage;
+    }
+
+    private SearchProcessor getSearchProcessorFromFilter(String query, ConstEnums.FILTERS filter) {
+        switch (filter) {
+            case STUDY:
+                return new ExperimentSearchProcessor(query);
+            case PHENOTYPE:
+                return new PhenotypeSearchProcessor(query);
+            case ANALYSIS:
+                return new StudySearchProcessor(query);
+            case CANDIDATE_GENE_LIST:
+                return new CandidategenelistSearchProcessor(query);
+        }
+        return null;
     }
 }

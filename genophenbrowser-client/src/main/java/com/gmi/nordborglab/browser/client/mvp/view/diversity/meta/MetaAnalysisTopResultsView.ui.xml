@@ -4,6 +4,13 @@
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
              xmlns:gchart='urn:import:com.googlecode.gwt.charts.client.corechart'
         >
+
+    <ui:style>
+        .filterContainer {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    </ui:style>
     <g:LayoutPanel>
         <g:layer top="0" height="40%">
             <g:LayoutPanel>
@@ -31,10 +38,10 @@
         </g:layer>
         <g:layer bottom="0" height="60%">
             <g:LayoutPanel>
-                <g:layer top="0" height="50px">
-                    <g:HTMLPanel>Filter</g:HTMLPanel>
+                <g:layer top="0" height="100px">
+                    <g:SimplePanel ui:field="filterContainer" addStyleNames="{style.filterContainer}"/>
                 </g:layer>
-                <g:layer top="50px" bottom="30px">
+                <g:layer top="100px" bottom="30px">
                     <c:DataGrid ui:field="dataGrid"/>
                 </g:layer>
                 <g:layer bottom="0" height="30px">

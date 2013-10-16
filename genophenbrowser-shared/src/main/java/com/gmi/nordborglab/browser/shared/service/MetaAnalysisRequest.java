@@ -20,9 +20,9 @@ import java.util.List;
 public interface MetaAnalysisRequest extends RequestContext {
     Request<List<MetaSNPAnalysisProxy>> findAllAnalysisForRegion(int start, int end, String chr);
 
-    Request<List<FacetProxy>> findMetaStats(MetaAnalysisTopResultsCriteriaProxy criteria);
+    Request<List<FacetProxy>> findMetaStats(MetaAnalysisTopResultsCriteriaProxy criteria, List<FilterItemProxy> filterItems);
 
-    Request<MetaSNPAnalysisPageProxy> findTopAnalysis(MetaAnalysisTopResultsCriteriaProxy criteria, int start, int size);
+    Request<MetaSNPAnalysisPageProxy> findTopAnalysis(MetaAnalysisTopResultsCriteriaProxy criteria, List<FilterItemProxy> filterItems, int start, int size);
 
     Request<CandidateGeneListPageProxy> findCandidateGeneLists(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
 

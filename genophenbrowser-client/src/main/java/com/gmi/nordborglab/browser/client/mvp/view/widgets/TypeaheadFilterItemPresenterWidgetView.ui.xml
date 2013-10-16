@@ -1,0 +1,28 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+
+    <ui:style>
+        @external .typeahead;
+        .typeahead {
+            z-index: 1051 !important;
+        }
+    </ui:style>
+    <g:HTMLPanel>
+        <div>
+            <g:Anchor ui:field="filterLabel"/>
+        </div>
+        <g:HTMLPanel ui:field="container" visible="false">
+            <div>
+                <div ui:field="controlContainer">
+                    <div ui:field="filterName"></div>
+                    <b:InputAddOn appendIcon="SEARCH">
+                        <b:Typeahead ui:field="searchTa">
+                            <b:TextBox placeholder="search for a gene" ui:field="searchTb"/>
+                        </b:Typeahead>
+                    </b:InputAddOn>
+                </div>
+            </div>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

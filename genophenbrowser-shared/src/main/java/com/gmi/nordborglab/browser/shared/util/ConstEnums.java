@@ -14,4 +14,6 @@ public interface ConstEnums {
     public static enum GENE_FILTER {ALL, PROTEIN, PSEUDO, TRANSPOSON}
 
     public static enum ONTOLOGY_TYPE {TRAIT, ENVIRONMENT}
+
+    public static enum FILTERS {STUDY, PHENOTYPE, METHOD, GENOTYPE, ANALYSIS, CANDIDATE_GENE_LIST}
 }
