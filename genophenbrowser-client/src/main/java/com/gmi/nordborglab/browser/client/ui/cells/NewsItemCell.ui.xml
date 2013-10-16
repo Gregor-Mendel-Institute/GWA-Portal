@@ -4,7 +4,7 @@
     <ui:with field="icon" type="java.lang.String"/>
     <ui:with field="iconClass" type="java.lang.String"/>
     <ui:with field="title" type="java.lang.String"/>
-    <ui:with field="content" type="java.lang.String"/>
+    <ui:with field="content" type='com.google.gwt.safehtml.shared.SafeHtml'/>
     <ui:with field="author" type="java.lang.String"/>
     <ui:with field="date" type="java.lang.String"/>
 
@@ -65,7 +65,7 @@
                 <ui:text from="{date}"/>
             </p>
             <p class="{style.preview}">
-                <ui:text from="{content}"/>
+                <ui:safehtml from="{content}"/>
             </p>
         </div>
 

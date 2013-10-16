@@ -42,7 +42,7 @@ public class NewsItemCell extends AbstractCell<NewsItemProxy> {
     public interface Renderer extends UiRenderer {
         MyStyle getStyle();
 
-        void render(SafeHtmlBuilder sb, SafeUri link, String icon, String iconClass, String title, String content, String date, String author);
+        void render(SafeHtmlBuilder sb, SafeUri link, String icon, String iconClass, String title, SafeHtml content, String date, String author);
     }
 
     private final Renderer uiRenderer;
@@ -69,7 +69,7 @@ public class NewsItemCell extends AbstractCell<NewsItemProxy> {
         PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.news).with("id", value.getId().toString());
         SafeUri link = UriUtils.fromSafeConstant("#" + placeManager.buildHistoryToken(request));
         String title = value.getTitle();
-        String content = value.getContent();
+        SafeHtml content = SafeHtmlUtils.fromTrustedString(value.getContent());
         String date = value.getCreateDate().toString();
         String author = "";
         String iconClass = "";
