@@ -31,7 +31,7 @@ public class ExperimentManager extends RequestFactoryManager<ExperimentRequest> 
 
 
     public void findAll(Receiver<ExperimentPageProxy> receiver, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        rf.experimentRequest().findByAclAndFilter(filter, searchString, start, size).with("content.acl", "content.ownerUser", "facets").fire(receiver);
+        rf.experimentRequest().findByAclAndFilter(filter, searchString, start, size).with("contents.ownerUser", "facets").fire(receiver);
     }
 
     public void findOne(Receiver<ExperimentProxy> receiver, Long id) {

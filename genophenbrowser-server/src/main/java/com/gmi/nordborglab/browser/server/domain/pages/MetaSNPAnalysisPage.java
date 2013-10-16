@@ -25,4 +25,8 @@ public class MetaSNPAnalysisPage extends PageImpl<MetaSNPAnalysis> {
     public MetaSNPAnalysisPage(List<MetaSNPAnalysis> content, Pageable pageable, long total) {
         super(content, pageable, total);
     }
+
+    public List<MetaSNPAnalysis> getContents() {
+        return getContent();
+    }
 }

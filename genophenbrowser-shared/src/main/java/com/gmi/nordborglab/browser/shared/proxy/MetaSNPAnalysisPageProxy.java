@@ -14,7 +14,7 @@ import java.util.List;
  */
 @ProxyForName("com.gmi.nordborglab.browser.server.domain.pages.MetaSNPAnalysisPage")
 public interface MetaSNPAnalysisPageProxy extends ValueProxy {
-    List<MetaSNPAnalysisProxy> getContent();
+    List<MetaSNPAnalysisProxy> getContents();
 
     int getNumber();
 

@@ -33,13 +33,6 @@
             cursor: text !important;
         }
 
-        .card_selected {
-            -webkit-box-shadow: 0px 0px 5px 0px green !important;
-            -moz-box-shadow: 0px 0px 5px 0px green !important;
-            box-shadow: 0px 0px 5px 0px green !important;
-            cursor: text !important;
-        }
-
         .card li {
             display: inline-block;
             padding-right: 25px;
@@ -47,36 +40,6 @@
         }
 
         .title {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .ok {
-            color: green;
-            font-weight: bold;
-            font-size: 200%;
-        }
-
-        .empty_ok {
-            color: #EEE;
-            font-weight: bold;
-            font-size: 200%;
-            cursor: pointer;
-        }
-
-        .stats_icon {
-            font-family: EntypoRegular;
-            font-size: 38px;
-            margin-right: 10px;
-            margin-left: 6px;
-        }
-
-        .sub_title {
-            font-size: 80%;
-            color: #666;
-            margin-left: 5px;
-            height: 20px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -105,8 +68,7 @@
         }
 
         .stats_table .icon {
-            font-family: EntypoRegular;
-            font-size: 38px;
+            font-size: 20px;
         }
 
         .stats_table td {
@@ -142,28 +104,36 @@
                                 <tbody>
 
                                     <tr>
-                                        <td class="{style.icon}">&#127810;</td>
+                                        <td class="{style.icon}">
+                                            <i class="e_icon-leaf"/>
+                                        </td>
                                         <td class="{style.value}">
                                             <span ui:field="statsPassports"/>
                                         </td>
                                         <td class="{style.full}">Accessions</td>
                                     </tr>
                                     <tr>
-                                        <td class="{style.icon}">&#59148;</td>
+                                        <td class="{style.icon}">
+                                            <i class="e_icon-tag"/>
+                                        </td>
                                         <td class="{style.value}">
                                             <span ui:field="statsStocks"/>
                                         </td>
                                         <td class="{style.full}">Stocks</td>
                                     </tr>
                                     <tr>
-                                        <td class="{style.icon}">&#128248;</td>
+                                        <td class="{style.icon}">
+                                            <i class="e_icon-database"/>
+                                        </td>
                                         <td class="{style.value}">
                                             <span ui:field="statsGenotypes"/>
                                         </td>
                                         <td class="{style.full}">Genotypes</td>
                                     </tr>
                                     <tr>
-                                        <td class="{style.icon}">&#10002;</td>
+                                        <td class="{style.icon}">
+                                            <i class="e_icon-feather"/>
+                                        </td>
                                         <td class="{style.value}">
                                             <span ui:field="statsPhenotypes"/>
                                         </td>

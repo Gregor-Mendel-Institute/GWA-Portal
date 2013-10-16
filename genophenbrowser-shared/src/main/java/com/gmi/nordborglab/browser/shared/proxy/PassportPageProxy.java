@@ -7,8 +7,11 @@ import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
 @ProxyForName("com.gmi.nordborglab.browser.server.domain.pages.PassportPage")
 public interface PassportPageProxy extends ValueProxy {
-	List<PassportProxy> getContent();
-	int getNumber();
-	long getTotalElements();
-	int getTotalPages();
+    List<PassportProxy> getContents();
+
+    int getNumber();
+
+    long getTotalElements();
+
+    int getTotalPages();
 }

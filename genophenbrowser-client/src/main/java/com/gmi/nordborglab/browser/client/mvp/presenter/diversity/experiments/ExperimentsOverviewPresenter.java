@@ -84,7 +84,7 @@ public class ExperimentsOverviewPresenter
             public void onSuccess(ExperimentPageProxy experiments) {
                 fireEvent(new LoadingIndicatorEvent(false));
                 dataProvider.updateRowCount((int) experiments.getTotalElements(), true);
-                dataProvider.updateRowData(getView().getDisplay().getVisibleRange().getStart(), experiments.getContent());
+                dataProvider.updateRowData(getView().getDisplay().getVisibleRange().getStart(), experiments.getContents());
                 facets = experiments.getFacets();
                 getView().displayFacets(facets);
             }

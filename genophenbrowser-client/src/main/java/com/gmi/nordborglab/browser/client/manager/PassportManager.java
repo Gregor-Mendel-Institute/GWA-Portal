@@ -18,44 +18,44 @@ import com.google.web.bindery.requestfactory.shared.Receiver;
 
 public class PassportManager extends RequestFactoryManager<PassportRequest> {
 
-	@Inject
-	public PassportManager(CustomRequestFactory rf) {
-		super(rf);
-	}
+    @Inject
+    public PassportManager(CustomRequestFactory rf) {
+        super(rf);
+    }
 
-	@Override
-	public PassportRequest getContext() {
-		return rf.passportRequest();
-	}
-	
-	public void findAll(Receiver<PassportPageProxy> receiver,Long taxonomyId,PassportProxyFilter filter,int start, int size) {
-		PassportRequest ctx = rf.passportRequest();
-		PassportSearchCriteriaProxy passportProxyFilter = ctx.create(PassportSearchCriteriaProxy.class);
-		filter.apply(passportProxyFilter);
-		ctx.findAll(taxonomyId,passportProxyFilter,start,size).with("content.collection.locality","content.source","content.sampstat","content.alleleAssays").fire(receiver);
-	}
+    @Override
+    public PassportRequest getContext() {
+        return rf.passportRequest();
+    }
 
-	public void findOne(Receiver<PassportProxy> receiver, Long passportId) {
-		rf.passportRequest().findOne(passportId).with("collection.locality","source","sampstat","alleleAssays","taxonomy").fire(receiver);
-	}
-	
-	public void findStats(Receiver<PassportStatsProxy> receiver,Long passportId) {
-		rf.passportRequest().findStats(passportId).fire(receiver);
-	}
-	
-	public void findAllStocks(Long passportId,	Receiver<List<StockProxy>> receiver) {
-		rf.passportRequest().findAllStocks(passportId).with("generation").fire(receiver);
-	}
+    public void findAll(Receiver<PassportPageProxy> receiver, Long taxonomyId, PassportProxyFilter filter, int start, int size) {
+        PassportRequest ctx = rf.passportRequest();
+        PassportSearchCriteriaProxy passportProxyFilter = ctx.create(PassportSearchCriteriaProxy.class);
+        filter.apply(passportProxyFilter);
+        ctx.findAll(taxonomyId, passportProxyFilter, start, size).with("contents.collection.locality", "contents.source", "contents.sampstat", "contents.alleleAssays").fire(receiver);
+    }
 
-	public void findAllPhenotypes(Long passportId,
-			Receiver<List<PhenotypeProxy>> receiver) {
-		rf.phenotypeRequest().findPhenotypesByPassportId(passportId).with("statisticTypes","unitOfMeasure").fire(receiver);
-		
-	}
-	
-	public void findAllStudies(Long passportId,Receiver<List<StudyProxy>> receiver) {
-		rf.cdvRequest().findStudiesByPassportId(passportId).with("alleleAssay","protocol").fire(receiver);
-	}
-	
+    public void findOne(Receiver<PassportProxy> receiver, Long passportId) {
+        rf.passportRequest().findOne(passportId).with("collection.locality", "source", "sampstat", "alleleAssays", "taxonomy").fire(receiver);
+    }
+
+    public void findStats(Receiver<PassportStatsProxy> receiver, Long passportId) {
+        rf.passportRequest().findStats(passportId).fire(receiver);
+    }
+
+    public void findAllStocks(Long passportId, Receiver<List<StockProxy>> receiver) {
+        rf.passportRequest().findAllStocks(passportId).with("generation").fire(receiver);
+    }
+
+    public void findAllPhenotypes(Long passportId,
+                                  Receiver<List<PhenotypeProxy>> receiver) {
+        rf.phenotypeRequest().findPhenotypesByPassportId(passportId).with("statisticTypes", "unitOfMeasure").fire(receiver);
+
+    }
+
+    public void findAllStudies(Long passportId, Receiver<List<StudyProxy>> receiver) {
+        rf.cdvRequest().findStudiesByPassportId(passportId).with("alleleAssay", "protocol").fire(receiver);
+    }
+
 }
 

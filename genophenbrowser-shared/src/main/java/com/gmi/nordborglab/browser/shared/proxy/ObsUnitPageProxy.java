@@ -7,8 +7,11 @@ import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
 @ProxyForName("com.gmi.nordborglab.browser.server.domain.pages.ObsUnitPage")
 public interface ObsUnitPageProxy extends ValueProxy {
-	List<ObsUnitProxy> getContent();
-	int getNumber();
-	long getTotalElements();
-	int getTotalPages();
+    List<ObsUnitProxy> getContents();
+
+    int getNumber();
+
+    long getTotalElements();
+
+    int getTotalPages();
 }

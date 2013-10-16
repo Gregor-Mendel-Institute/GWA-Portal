@@ -39,6 +39,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.home.dashboard.Dashboard
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.SearchPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.UserInfoPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.*;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.PermissionDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.*;
@@ -68,12 +69,18 @@ import com.gmi.nordborglab.browser.client.mvp.view.home.dashboard.DashboardView;
 import com.gmi.nordborglab.browser.client.mvp.view.main.MainPageView;
 import com.gmi.nordborglab.browser.client.mvp.view.main.SearchView;
 import com.gmi.nordborglab.browser.client.mvp.view.main.UserInfoView;
+import com.gmi.nordborglab.browser.client.mvp.view.widgets.DropDownFilterItemPresenterWidgetView;
+import com.gmi.nordborglab.browser.client.mvp.view.widgets.FilterPresenterWidgetView;
+import com.gmi.nordborglab.browser.client.mvp.view.widgets.TextBoxFilterItemPresenterWidgetView;
+import com.gmi.nordborglab.browser.client.mvp.view.widgets.TypeaheadFilterItemPresenterWidgetView;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.validation.ClientValidatorFactory;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.HelperFactory;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.storage.client.Storage;
 import com.google.inject.Provides;
@@ -96,7 +103,9 @@ import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.framework.MessageBus;
 import org.jboss.errai.bus.client.framework.RequestDispatcher;
 
+import javax.inject.Provider;
 import javax.validation.ValidatorFactory;
+import java.util.List;
 
 public class ClientModule extends AbstractPresenterModule {
 
@@ -288,9 +297,25 @@ public class ClientModule extends AbstractPresenterModule {
         bindPresenter(CandidateGeneListDetailPresenter.class, CandidateGeneListDetailPresenter.MyView.class, CandidateGeneListDetailView.class, CandidateGeneListDetailPresenter.MyProxy.class);
 
         bindPresenterWidget(GWASPlotPresenterWidget.class, GWASPlotPresenterWidget.MyView.class, GWASPlotView.class);
+        bindPresenterWidget(FilterPresenterWidget.class, FilterPresenterWidget.MyView.class, FilterPresenterWidgetView.class);
+        bindPresenterWidget(TextBoxFilterItemPresenterWidget.class, TextBoxFilterItemPresenterWidget.MyView.class, TextBoxFilterItemPresenterWidgetView.class);
+        bindPresenterWidget(DropDownFilterItemPresenterWidget.class, DropDownFilterItemPresenterWidget.MyView.class, DropDownFilterItemPresenterWidgetView.class);
+        bindPresenterWidget(TypeaheadFilterItemPresenterWidget.class, TypeaheadFilterItemPresenterWidget.MyView.class, TypeaheadFilterItemPresenterWidgetView.class);
 
         bindSingletonPresenterWidget(PhenotypeUploadWizardPresenterWidget.class, PhenotypeUploadWizardPresenterWidget.MyView.class, PhenotypeUploadWizardView.class);
         bindSingletonPresenterWidget(GWASUploadWizardPresenterWidget.class, GWASUploadWizardPresenterWidget.MyView.class, GWASUploadWizardView.class);
+    }
+
+
+    @Provides
+    @Singleton
+    @Named("metatopsnps")
+    public List<FilterItemPresenterWidget> getFiltersForMetaTopSnps(Provider<TextBoxFilterItemPresenterWidget> textBoxFilterProvider) {
+        List<FilterItemPresenterWidget> filters = Lists.newArrayList();
+        FilterItemPresenterWidget studyFilterWidget = textBoxFilterProvider.get();
+        studyFilterWidget.setFilterType(ConstEnums.FILTERS.STUDY);
+        filters.add(studyFilterWidget);
+        return filters;
     }
 
 

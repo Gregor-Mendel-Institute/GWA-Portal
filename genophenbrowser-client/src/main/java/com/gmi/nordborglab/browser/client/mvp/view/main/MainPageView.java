@@ -288,7 +288,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
         StringBuilder builder = new StringBuilder("<tr class=\"" + (isRead ? "" : style.unread_notification()) + "\">");
         String icon = getNotificationIconFromType(notification.getType());
         builder.append("<td><div class=\"" + style.circle() + " " + (!isRead ? style.circle_red() : "") + "\"></div></td>");
-        builder.append("<td class=\"" + style.notification_icon() + "\">" + icon + "</td>");
+        builder.append("<td class=\"" + style.notification_icon() + "\"><i class=\"" + icon + "\" /></td>");
         builder.append("<td>" + notification.getText() + "</td>");
         builder.append("<td style=\"font-size:10px;white-space: nowrap;font-style:italic;\">" + DateUtils.formatTimeElapsedSinceMillisecond(System.currentTimeMillis() - notification.getCreateDate().getTime(), 1) + " ago</td>");
         builder.append("</tr>");
@@ -296,11 +296,11 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
     }
 
     private String getNotificationIconFromType(String type) {
-        String icon = "&#8505;";
+        String icon = "e_icon-info";
         if (type.equalsIgnoreCase("gwasjob")) {
-            icon = "&#128248;";
+            icon = "e_icon-database;";
         } else if (type.equalsIgnoreCase("permission")) {
-            icon = "&#59196;";
+            icon = "e_icon-share";
         }
         return icon;
     }

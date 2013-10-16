@@ -167,7 +167,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
                     return new HyperlinkPlaceManagerColumn.HyperlinkParam(object.getDOI(), object.getURL());
                 }
             };
-            actionColumn = new IdentityColumn<PublicationProxy>(new EntypoIconActionCell<PublicationProxy>("&#59177;", actionDelegate)) {
+            actionColumn = new IdentityColumn<PublicationProxy>(new EntypoIconActionCell<PublicationProxy>("e_icon-trash", actionDelegate)) {
 
                 @Override
                 public PublicationProxy getValue(PublicationProxy object) {
@@ -368,7 +368,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
                 return new HyperlinkPlaceManagerColumn.HyperlinkParam(object.getDOI(), object.getURL());
             }
         }, "Doi");
-        publicationDataGrid.addColumn(new IdentityColumn<PublicationProxy>(new EntypoIconActionCell<PublicationProxy>("&#59177;", new ActionCell.Delegate<PublicationProxy>() {
+        publicationDataGrid.addColumn(new IdentityColumn<PublicationProxy>(new EntypoIconActionCell<PublicationProxy>("e_icon-trash;", new ActionCell.Delegate<PublicationProxy>() {
             @Override
             public void execute(PublicationProxy object) {
                 getUiHandlers().onDeletePublication(object);

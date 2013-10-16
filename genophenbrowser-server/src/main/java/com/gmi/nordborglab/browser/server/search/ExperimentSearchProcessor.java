@@ -53,6 +53,7 @@ public class ExperimentSearchProcessor extends TermSearchProcessor {
                     searchTitle = hit.getHighlightFields().get("name.partial").getFragments()[0].string();
                 else
                     searchTitle = (String) hit.getFields().get("name").getValue();
+                searchAddText = (String) hit.getFields().get("name").getValue();
                 searchItems.add(new SearchItem(hit.getId(), searchTitle,
                         searchAddText, CATEGORY.DIVERSITY, SUB_CATEGORY.STUDY));
             }

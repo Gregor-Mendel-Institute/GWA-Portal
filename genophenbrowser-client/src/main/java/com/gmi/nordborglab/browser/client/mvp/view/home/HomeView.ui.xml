@@ -99,8 +99,7 @@
         }
 
         .stats_table .icon {
-            font-family: EntypoRegular;
-            font-size: 38px;
+            font-size: 20px;
         }
 
         .stats_table td {
@@ -252,42 +251,54 @@
                                             <table class="table {style.stats_table}">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="{style.icon}">&#128100;</td>
+                                                        <td class="{style.icon}">
+                                                            <i class="e_icon-user"/>
+                                                        </td>
                                                         <td class="{style.value}">
                                                             <span ui:field="statsUsers"/>
                                                         </td>
                                                         <td class="{style.full}">Users</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="{style.icon}">&#128255;</td>
+                                                        <td class="{style.icon}">
+                                                            <i class="e_icon-thermometer"/>
+                                                        </td>
                                                         <td class="{style.value}">
                                                             <span ui:field="statsStudies"/>
                                                         </td>
                                                         <td class="{style.full}">Studies</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="{style.icon}">&#10002;</td>
+                                                        <td class="{style.icon}">
+                                                            <i class="e_icon-feather"/>
+                                                        </td>
                                                         <td class="{style.value}">
                                                             <span ui:field="statsPhenotypes"/>
                                                         </td>
                                                         <td class="{style.full}">Phenotypes</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="{style.icon}">&#128187;</td>
+                                                        <td class="{style.icon}">
+                                                            <i class="e_icon-monitor"/>
+                                                        </td>
                                                         <td class="{style.value}">
                                                             <span ui:field="statsAnalysis"/>
                                                         </td>
                                                         <td class="{style.full}">Analysis</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="{style.icon}">&#128362;</td>
+                                                        <td class="{style.icon}">
+                                                            <i class="e_icon-flow-tree"/>
+                                                        </td>
                                                         <td class="{style.value}">
                                                             <span ui:field="statsOntologies"/>
                                                         </td>
                                                         <td class="{style.full}">Ontologies</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="{style.icon}">&#128214;</td>
+                                                        <td class="{style.icon}">
+                                                            <i class="e_icon-book-open"/>
+                                                        </td>
                                                         <td class="{style.value}">
                                                             <span ui:field="statsPublications"/>
                                                         </td>

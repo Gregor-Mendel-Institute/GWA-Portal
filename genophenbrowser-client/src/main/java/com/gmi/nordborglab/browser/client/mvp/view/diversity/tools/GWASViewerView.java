@@ -210,21 +210,21 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         }, "Max Score");
 
         List<HasCell<GWASResultProxy, ?>> hasCells = Lists.newArrayList();
-        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("&#9998;", new ActionCell.Delegate<GWASResultProxy>() {
+        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("e_icon-pencil", new ActionCell.Delegate<GWASResultProxy>() {
             @Override
             public void execute(GWASResultProxy object) {
                 getUiHandlers().onEdit(object);
             }
         }, true)));
 
-        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("&#128273", new ActionCell.Delegate<GWASResultProxy>() {
+        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("e_icon-key", new ActionCell.Delegate<GWASResultProxy>() {
             @Override
             public void execute(GWASResultProxy object) {
                 getUiHandlers().onShowPermissions(object);
             }
         }, true)));
 
-        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("&#59177;", new ActionCell.Delegate<GWASResultProxy>() {
+        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("e_icon-trash", new ActionCell.Delegate<GWASResultProxy>() {
             @Override
             public void execute(GWASResultProxy object) {
                 getUiHandlers().onDelete(object);

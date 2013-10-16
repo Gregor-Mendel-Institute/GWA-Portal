@@ -33,21 +33,22 @@ public class EntypoIconActionCell<C> extends AbstractCell<C> {
 
     interface Template extends SafeHtmlTemplates {
 
-        @SafeHtmlTemplates.Template("<span style=\"{0}\">{1}</span>")
-        SafeHtml cell(SafeStyles styles,SafeHtml icon);
+        @SafeHtmlTemplates.Template("<span style=\"{0}\"><i class=\"{1}\" ></i></span>")
+        SafeHtml cell(SafeStyles styles, String iconClass);
 
     }
+
     private static Template templates = GWT.create(Template.class);
 
-    public EntypoIconActionCell(String entypoString, ActionCell.Delegate<C> delegate,boolean hasMargin) {
+    public EntypoIconActionCell(String entypoString, ActionCell.Delegate<C> delegate, boolean hasMargin) {
         super("click");
         this.entypoString = entypoString;
         this.delegate = delegate;
         this.hasMargin = hasMargin;
     }
 
-    public EntypoIconActionCell(final String entypoString,ActionCell.Delegate<C> delegate) {
-        this(entypoString,delegate,false);
+    public EntypoIconActionCell(final String entypoString, ActionCell.Delegate<C> delegate) {
+        this(entypoString, delegate, false);
     }
 
 
@@ -65,13 +66,12 @@ public class EntypoIconActionCell<C> extends AbstractCell<C> {
     @Override
     public void render(Context context, C value, SafeHtmlBuilder sb) {
         SafeStylesBuilder builder = new SafeStylesBuilder();
-        builder.append(SafeStylesUtils.fromTrustedNameAndValue("font-family", "EntypoRegular"));
-        builder.append(SafeStylesUtils.forFontSize(38, Style.Unit.PX));
+        builder.append(SafeStylesUtils.forFontSize(19, Style.Unit.PX));
         if (hasMargin) {
-            builder.append(SafeStylesUtils.forMarginRight(15, Style.Unit.PX));
+            builder.append(SafeStylesUtils.forMarginRight(5, Style.Unit.PX));
         }
         builder.append(SafeStylesUtils.forCursor(Style.Cursor.POINTER));
-        SafeHtml rendered = templates.cell(builder.toSafeStyles(), SafeHtmlUtils.fromTrustedString(entypoString));
+        SafeHtml rendered = templates.cell(builder.toSafeStyles(), entypoString);
         sb.append(rendered);
     }
 }

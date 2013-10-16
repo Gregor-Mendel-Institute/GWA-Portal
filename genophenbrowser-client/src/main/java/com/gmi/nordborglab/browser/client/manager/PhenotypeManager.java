@@ -22,11 +22,11 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
     }
 
     public void findAll(Receiver<PhenotypePageProxy> receiver, Long id, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        rf.phenotypeRequest().findAll(id, filter, searchString, start, size).with("content.traitOntologyTerm", "content.environOntologyTerm", "content.ownerUser", "facets").fire(receiver);
+        rf.phenotypeRequest().findAll(id, filter, searchString, start, size).with("contents.traitOntologyTerm", "contents.environOntologyTerm", "contents.ownerUser", "facets").fire(receiver);
     }
 
     public void findAll(Receiver<PhenotypePageProxy> receiver, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        rf.phenotypeRequest().findAll(filter, searchString, start, size).with("content.traitOntologyTerm", "content.environOntologyTerm", "content.experiment", "content.ownerUser", "facets").fire(receiver);
+        rf.phenotypeRequest().findAll(filter, searchString, start, size).with("contents.traitOntologyTerm", "contents.environOntologyTerm", "contents.experiment", "contents.ownerUser", "facets").fire(receiver);
     }
 
     @Override

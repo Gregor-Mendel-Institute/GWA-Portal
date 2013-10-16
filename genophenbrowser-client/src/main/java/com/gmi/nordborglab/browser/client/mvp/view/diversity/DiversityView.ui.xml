@@ -57,8 +57,7 @@
         }
 
         .icon_header {
-            font-family: EntypoRegular;
-            font-size: 38px;
+            font-size: 20px;
             float: left;
             margin-right: 10px;
             margin-left: 6px;
@@ -133,7 +132,9 @@
                                                 text="Studies are the starting category. Studies are used to group one or more phenotypes together."
                                                 placement="BOTTOM">
                                             <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">&#128255;</div>
+                                                <div class="{style.icon_header}">
+                                                    <i class="e_icon-thermometer"/>
+                                                </div>
                                                 <span>Studies</span>
                                             </g:HTMLPanel>
                                         </b:Tooltip>
@@ -153,7 +154,9 @@
                                     <g:SimplePanel>
                                         <b:Tooltip text="Access personal and public phenotypes" placement="BOTTOM">
                                             <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">&#10002;</div>
+                                                <div class="{style.icon_header}">
+                                                    <i class="e_icon-feather"/>
+                                                </div>
                                                 <span>Phenotypes</span>
                                             </g:HTMLPanel>
                                         </b:Tooltip>
@@ -171,7 +174,9 @@
                                     <g:SimplePanel>
                                         <b:Tooltip text="Access personal and public GWAS analyses" placement="BOTTOM">
                                             <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">&#128187;</div>
+                                                <div class="{style.icon_header}">
+                                                    <i class="e_icon-monitor"/>
+                                                </div>
                                                 <span>Analysis</span>
                                             </g:HTMLPanel>
                                         </b:Tooltip>
@@ -190,7 +195,9 @@
                                         <b:Tooltip text="Access various ontologies (trait, environment)"
                                                    placement="BOTTOM">
                                             <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">&#128362;</div>
+                                                <div class="{style.icon_header}">
+                                                    <i class="e_icon-flow-tree"/>
+                                                </div>
                                                 <span>Ontologies</span>
                                             </g:HTMLPanel>
                                         </b:Tooltip>
@@ -213,7 +220,9 @@
                                         <b:Tooltip text="Shows publications and related experiments and phenotypes"
                                                    placement="BOTTOM">
                                             <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">&#128214;</div>
+                                                <div class="{style.icon_header}">
+                                                    <i class="e_icon-book-open"/>
+                                                </div>
                                                 <span>Publications</span>
                                             </g:HTMLPanel>
                                         </b:Tooltip>
@@ -233,7 +242,9 @@
                                                 text="Meta-analysis allows to view relation between genes and phenotypes"
                                                 placement="BOTTOM">
                                             <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">&#59254;</div>
+                                                <div class="{style.icon_header}">
+                                                    <i class="e_icon-network"/>
+                                                </div>
                                                 <span>Meta-analysis</span>
                                             </g:HTMLPanel>
                                         </b:Tooltip>
@@ -260,7 +271,9 @@
                                     <g:SimplePanel>
                                         <b:Tooltip text="Various tools for visualization" placement="BOTTOM">
                                             <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">&#9874;</div>
+                                                <div class="{style.icon_header}">
+                                                    <i class="e_icon-tools"/>
+                                                </div>
                                                 <span>Tools</span>
                                             </g:HTMLPanel>
                                         </b:Tooltip>

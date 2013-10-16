@@ -42,18 +42,18 @@ public class NewsItemCell extends AbstractCell<NewsItemProxy> {
     public interface Renderer extends UiRenderer {
         MyStyle getStyle();
 
-        void render(SafeHtmlBuilder sb, SafeUri link, SafeHtml icon, String iconClass, String title, String content, String date, String author);
+        void render(SafeHtmlBuilder sb, SafeUri link, String icon, String iconClass, String title, String content, String date, String author);
     }
 
     private final Renderer uiRenderer;
     private final PlaceManager placeManager;
     private final CurrentUser currentUser;
     private static Map<String, String> type2Icon = ImmutableMap.<String, String>builder()
-            .put("site", "&#8962;")
-            .put("downtime", "&#128712;")
-            .put("visualization", "&#59146;")
-            .put("database", "&#128248;")
-            .put("function", "&#128640;")
+            .put("site", "e_icon-home")
+            .put("downtime", "e_icon-traffic-cone")
+            .put("visualization", "e_icon-eye")
+            .put("database", "e_icon-database")
+            .put("function", "e_icon-rocket")
             .build();
 
     @Inject
@@ -83,15 +83,15 @@ public class NewsItemCell extends AbstractCell<NewsItemProxy> {
     }
 
 
-    private SafeHtml getIconFromType(String type) {
+    private String getIconFromType(String type) {
 
         String icon = null;
         if (type != null && !type.equalsIgnoreCase("")) {
             icon = type2Icon.get(type.toLowerCase());
         }
         if (icon == null) {
-            icon = "&#8505;";
+            icon = "e_icon-info;";
         }
-        return SafeHtmlUtils.fromSafeConstant(icon);
+        return icon;
     }
 }

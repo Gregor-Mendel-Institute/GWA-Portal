@@ -9,6 +9,7 @@ import com.gmi.nordborglab.browser.server.domain.pages.CandidateGeneListPage;
 import com.gmi.nordborglab.browser.server.domain.pages.GenePage;
 import com.gmi.nordborglab.browser.server.domain.pages.MetaSNPAnalysisPage;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
+import com.gmi.nordborglab.browser.shared.dto.FilterItem;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -25,9 +26,9 @@ import java.util.List;
 public interface MetaAnalysisService {
     public List<MetaSNPAnalysis> findAllAnalysisForRegion(int start, int end, String chr);
 
-    public List<ESFacet> findMetaStats(MetaAnalysisTopResultsCriteria criteria);
+    public List<ESFacet> findMetaStats(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems);
 
-    public MetaSNPAnalysisPage findTopAnalysis(MetaAnalysisTopResultsCriteria criteria, int start, int size);
+    public MetaSNPAnalysisPage findTopAnalysis(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems, int start, int size);
 
     CandidateGeneListPage findCandidateGeneLists(ConstEnums.TABLE_FILTER filter, String searchString, int page, int size);
 

@@ -7,7 +7,7 @@ import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
 @ProxyForName("com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage")
 public interface PhenotypePageProxy extends ValueProxy {
-    List<PhenotypeProxy> getContent();
+    List<PhenotypeProxy> getContents();
 
     int getNumber();
 

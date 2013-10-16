@@ -8,7 +8,6 @@ import com.gmi.nordborglab.browser.client.events.LoadCandidateGeneListEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CanidateGeneListUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.genotype.genome.GenomeBrowserPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListView;
 import com.gmi.nordborglab.browser.shared.proxy.*;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
@@ -121,16 +120,16 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
         fireEvent(new LoadingIndicatorEvent(true));
         Receiver<CandidateGeneListPageProxy> receiver = new Receiver<CandidateGeneListPageProxy>() {
             @Override
-            public void onSuccess(CandidateGeneListPageProxy experiments) {
+            public void onSuccess(CandidateGeneListPageProxy candidateGeneLists) {
                 fireEvent(new LoadingIndicatorEvent(false));
-                dataProvider.updateRowCount((int) experiments.getTotalElements(), true);
-                dataProvider.updateRowData(getView().getDisplay().getVisibleRange().getStart(), experiments.getContent());
-                facets = experiments.getFacets();
+                dataProvider.updateRowCount((int) candidateGeneLists.getTotalElements(), true);
+                dataProvider.updateRowData(getView().getDisplay().getVisibleRange().getStart(), candidateGeneLists.getContents());
+                facets = candidateGeneLists.getFacets();
                 getView().displayFacets(facets);
             }
         };
         Range range = getView().getDisplay().getVisibleRange();
-        rf.metaAnalysisRequest().findCandidateGeneLists(currentFilter, searchString, range.getStart(), range.getLength()).with("content.acl", "content.ownerUser").fire(receiver);
+        rf.metaAnalysisRequest().findCandidateGeneLists(currentFilter, searchString, range.getStart(), range.getLength()).with("contents.acl", "contents.ownerUser").fire(receiver);
     }
 
     @Override

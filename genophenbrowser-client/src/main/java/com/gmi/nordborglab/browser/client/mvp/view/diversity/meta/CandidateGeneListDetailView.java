@@ -280,7 +280,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
             }
         }, "Type");
         List<HasCell<GeneProxy, ?>> hasCells = Lists.newArrayList();
-        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GeneProxy>("&#59177;", new ActionCell.Delegate<GeneProxy>() {
+        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GeneProxy>("e_icon-trash", new ActionCell.Delegate<GeneProxy>() {
             @Override
             public void execute(GeneProxy object) {
                 getUiHandlers().onDeleteGene(object);

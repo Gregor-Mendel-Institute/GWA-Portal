@@ -8,9 +8,13 @@ import org.springframework.data.domain.Pageable;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
 
 public class PassportPage extends PageImpl<Passport> {
-	
-	public PassportPage(List<Passport> content, Pageable pageable, long total) {
-		super(content, pageable, total);
-	}
+
+    public PassportPage(List<Passport> content, Pageable pageable, long total) {
+        super(content, pageable, total);
+    }
+
+    public List<Passport> getContents() {
+        return getContent();
+    }
 
 }

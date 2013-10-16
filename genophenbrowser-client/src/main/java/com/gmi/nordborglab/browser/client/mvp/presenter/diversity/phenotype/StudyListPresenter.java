@@ -194,7 +194,7 @@ public class StudyListPresenter extends
             public void onSuccess(StudyPageProxy studyPage) {
                 dataProvider.updateRowCount(
                         (int) studyPage.getTotalElements(), true);
-                dataProvider.updateRowData(range.getStart(), studyPage.getContent());
+                dataProvider.updateRowData(range.getStart(), studyPage.getContents());
                 studiesLoaded = true;
                 facets = studyPage.getFacets();
                 getView().displayFacets(facets);

@@ -23,6 +23,10 @@ public class StudyPage extends PageImpl<Study> {
         this.facets = facets;
     }
 
+    public List<Study> getContents() {
+        return getContent();
+    }
+
     public List<ESFacet> getFacets() {
         return facets;
     }

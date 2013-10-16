@@ -38,13 +38,11 @@
             border-radius: 2px;
             float: left;
             margin-right: 10px;
-            font-family: EntypoRegular;
-            font-size: 60px
+            font-size: 40px
         }
 
         .icon {
-            font-family: EntypoRegular;
-            font-size: 38px;
+            font-size: 20px;
             display: inline-block;
         }
 
@@ -171,7 +169,7 @@
                             <g:HTMLPanel>
                                 <div class="{style.box}">
                                     <span class="{style.stats_item_icon} {style.green}">
-                                        &#10002;
+                                        <i class="e_icon-feather"/>
                                     </span>
                                     <span class="{style.stats_item_text}">
                                         Phenotypes
@@ -187,7 +185,7 @@
                                 <!-- Traffic data -->
                                 <div class="{style.box}">
                                     <span class="{style.stats_item_icon} {style.yellow}">
-                                        &#128187;
+                                        <i class="e_icon-monitor"/>
                                     </span>
                                     <span class="{style.stats_item_text}">
                                         Analysis
@@ -203,7 +201,9 @@
             <g:layer top="510px" left="0" width="35em" height="400px">
                 <g:HTMLPanel addStyleNames="{style.widget}">
                     <div class="{style.widget_header}">
-                        <span class="{style.icon}">&#128362;</span>
+                        <span class="{style.icon}">
+                            <i class="e_icon-flow-tree"/>
+                        </span>
                         <h2>
                             Ontologies
                         </h2>

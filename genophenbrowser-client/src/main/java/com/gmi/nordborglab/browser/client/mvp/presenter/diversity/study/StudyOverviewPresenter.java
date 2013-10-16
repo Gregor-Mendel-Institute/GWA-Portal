@@ -78,7 +78,7 @@ public class StudyOverviewPresenter
             public void onSuccess(StudyPageProxy studies) {
                 fireEvent(new LoadingIndicatorEvent(false));
                 dataProvider.updateRowCount((int) studies.getTotalElements(), true);
-                dataProvider.updateRowData(range.getStart(), studies.getContent());
+                dataProvider.updateRowData(range.getStart(), studies.getContents());
                 facets = studies.getFacets();
                 getView().displayFacets(facets);
             }

@@ -100,7 +100,7 @@ public class PhenotypeListPresenter
             public void onSuccess(PhenotypePageProxy phenotypes) {
                 dataProvider.updateRowCount(
                         (int) phenotypes.getTotalElements(), true);
-                dataProvider.updateRowData(range.getStart(), phenotypes.getContent());
+                dataProvider.updateRowData(range.getStart(), phenotypes.getContents());
                 phenotypesLoaded = true;
                 facets = phenotypes.getFacets();
                 getView().displayFacets(facets);
