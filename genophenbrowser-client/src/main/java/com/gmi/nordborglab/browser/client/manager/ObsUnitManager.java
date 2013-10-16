@@ -11,22 +11,22 @@ import com.google.web.bindery.requestfactory.shared.Receiver;
 
 public class ObsUnitManager extends RequestFactoryManager<ObsUnitRequest> {
 
-	@Inject
-	public ObsUnitManager(CustomRequestFactory rf) {
-		super(rf);
-	}
+    @Inject
+    public ObsUnitManager(CustomRequestFactory rf) {
+        super(rf);
+    }
 
-	@Override
-	public ObsUnitRequest getContext() {
-		return rf.obsUnitRequest();
-	}
-	
-	public void findObsUnitsByPhenotypeId(Receiver<ObsUnitPageProxy> receiver,Long id,int start,int size) {
-		getContext().findObsUnits(id, start, size).with("content.stock.passport.collection.locality").fire(receiver);
-	}
-	
-	public void findObsUnitsWithNoGenotype(Receiver<List<ObsUnitProxy>> receiver,Long phenotypeId,Long alleleAssayId) {
-		getContext().findObsUnitWithNoGenotype(phenotypeId, alleleAssayId).with("stock.passport.collection.locality").fire(receiver);
-	}
+    @Override
+    public ObsUnitRequest getContext() {
+        return rf.obsUnitRequest();
+    }
+
+    public void findObsUnitsByPhenotypeId(Receiver<ObsUnitPageProxy> receiver, Long id, int start, int size) {
+        getContext().findObsUnits(id, start, size).with("contents.stock.passport.collection.locality").fire(receiver);
+    }
+
+    public void findObsUnitsWithNoGenotype(Receiver<List<ObsUnitProxy>> receiver, Long phenotypeId, Long alleleAssayId) {
+        getContext().findObsUnitWithNoGenotype(phenotypeId, alleleAssayId).with("stock.passport.collection.locality").fire(receiver);
+    }
 
 }

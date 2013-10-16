@@ -17,6 +17,10 @@ public class TraitUomPage extends PageImpl<TraitUom> {
         this.facets = facets;
     }
 
+    public List<TraitUom> getContents() {
+        return getContent();
+    }
+
     public List<ESFacet> getFacets() {
         return facets;
     }

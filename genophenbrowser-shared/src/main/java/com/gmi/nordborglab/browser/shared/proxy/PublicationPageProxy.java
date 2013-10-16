@@ -13,9 +13,12 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @ProxyForName("com.gmi.nordborglab.browser.server.domain.pages.PublicationPage")
-public interface PublicationPageProxy extends ValueProxy{
-    List<PublicationProxy> getContent();
+public interface PublicationPageProxy extends ValueProxy {
+    List<PublicationProxy> getContents();
+
     int getNumber();
+
     long getTotalElements();
+
     int getTotalPages();
 }

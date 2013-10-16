@@ -8,7 +8,7 @@ import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
 @ProxyForName("com.gmi.nordborglab.browser.server.domain.pages.StudyPage")
 public interface StudyPageProxy extends ValueProxy {
-    List<StudyProxy> getContent();
+    List<StudyProxy> getContents();
 
     int getNumber();
 

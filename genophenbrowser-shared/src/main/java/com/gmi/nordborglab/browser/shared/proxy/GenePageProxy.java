@@ -16,7 +16,7 @@ import java.util.List;
 @ProxyForName("com.gmi.nordborglab.browser.server.domain.pages.GenePage")
 public interface GenePageProxy extends ValueProxy {
 
-    List<GeneProxy> getContent();
+    List<GeneProxy> getContents();
 
     int getNumber();
 

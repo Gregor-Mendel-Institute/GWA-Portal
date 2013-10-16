@@ -36,6 +36,10 @@ public class GenePage extends PageImpl<Gene> {
     }
 
 
+    public List<Gene> getContents() {
+        return getContent();
+    }
+
     public List<ESFacet> getFacets() {
         return facets;
     }

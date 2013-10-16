@@ -413,16 +413,16 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     private void filterAndDisplayGenes(final GeneProxy newGeneProxy) {
         Range range = getView().getGenesDisplay().getVisibleRange();
         if (newGeneProxy != null) {
-            if (Iterables.find(genesPage.getContent(), new Predicate<GeneProxy>() {
+            if (Iterables.find(genesPage.getContents(), new Predicate<GeneProxy>() {
                 @Override
                 public boolean apply(@Nullable GeneProxy geneProxy) {
                     return newGeneProxy.equals(geneProxy);
                 }
             }, null) == null) {
-                genesPage.getContent().add(0, newGeneProxy);
+                genesPage.getContents().add(0, newGeneProxy);
             }
         }
-        List<GeneProxy> filteredList = ImmutableList.copyOf(Iterables.filter(genesPage.getContent(), new Predicate<GeneProxy>() {
+        List<GeneProxy> filteredList = ImmutableList.copyOf(Iterables.filter(genesPage.getContents(), new Predicate<GeneProxy>() {
             @Override
             public boolean apply(@Nullable GeneProxy geneProxy) {
                 if (!filter2Annotation.containsKey(currentFilter))

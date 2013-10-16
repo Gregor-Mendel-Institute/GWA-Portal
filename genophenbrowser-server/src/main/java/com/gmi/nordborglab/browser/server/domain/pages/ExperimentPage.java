@@ -27,6 +27,11 @@ public class ExperimentPage extends PageImpl<Experiment> {
         super(content, pageable, total);
     }
 
+    //NOTE required because there is a hasContent() getter ->  https://code.google.com/p/google-web-toolkit/issues/detail?id=6587
+    public List<Experiment> getContents() {
+        return getContent();
+    }
+
 
     public List<ESFacet> getFacets() {
         return facets;

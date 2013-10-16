@@ -34,6 +34,10 @@ public class CandidateGeneListPage extends PageImpl<CandidateGeneList> {
         super(content, pageable, total);
     }
 
+    public List<CandidateGeneList> getContents() {
+        return getContent();
+    }
+
 
     public List<ESFacet> getFacets() {
         return facets;

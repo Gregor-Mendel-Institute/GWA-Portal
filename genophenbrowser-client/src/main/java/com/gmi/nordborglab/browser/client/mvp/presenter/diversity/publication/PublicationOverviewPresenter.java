@@ -71,11 +71,11 @@ public class PublicationOverviewPresenter extends
             @Override
             public void onSuccess(PublicationPageProxy studies) {
                 fireEvent(new LoadingIndicatorEvent(false));
-                dataProvider.updateRowCount((int)studies.getTotalElements(), true);
-                dataProvider.updateRowData(range.getStart(), studies.getContent());
+                dataProvider.updateRowCount((int) studies.getTotalElements(), true);
+                dataProvider.updateRowData(range.getStart(), studies.getContents());
             }
         };
-        experimentManager.findAllPublications(receiver,range.getStart(), range.getLength());
+        experimentManager.findAllPublications(receiver, range.getStart(), range.getLength());
     }
 
 }

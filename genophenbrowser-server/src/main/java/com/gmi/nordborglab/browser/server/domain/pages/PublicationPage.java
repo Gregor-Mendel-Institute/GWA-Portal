@@ -20,4 +20,8 @@ public class PublicationPage extends PageImpl<Publication> {
         super(content, pageable, total);
     }
 
+
+    public List<Publication> getContents() {
+        return getContent();
+    }
 }
