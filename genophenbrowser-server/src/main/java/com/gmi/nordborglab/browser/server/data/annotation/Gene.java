@@ -59,6 +59,7 @@ public class Gene {
         return features;
     }
 
+    //TODO optimize use field chr instead
     public String getChr() {
         if (name != null && name.length() >= 3) {
             return name.substring(2, 3);
