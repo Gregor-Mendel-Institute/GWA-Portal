@@ -112,6 +112,13 @@ public class SearchPresenter extends PresenterWidget<SearchPresenter.MyView> imp
                 break;
             case PUBLICATION:
                 nameToken = NameTokens.publication;
+                break;
+            case GENE:
+                nameToken = NameTokens.getMetaAnalysisGenes();
+                break;
+            case CANDIDATE_GENE_LIST:
+                nameToken = NameTokens.getCandidateGeneListDetail();
+                break;
         }
         if (nameToken == null)
             return;
