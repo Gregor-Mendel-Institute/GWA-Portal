@@ -507,10 +507,13 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                         .setGenotype(study.getAlleleAssay().getName())
                         .setOverFDR((Boolean) fields.get("overFDR").getValue())
                         .setPhenotypeId(study.getPhenotype().getId())
-                        .setStudyId(study.getPhenotype().getExperiment().getId())
-                        .setMac((Integer) fields.get("mac").getValue())
-                        .setMaf((Double) fields.get("maf").getValue());
-
+                        .setStudyId(study.getPhenotype().getExperiment().getId());
+                if (fields.containsKey("mac")) {
+                    metaAnalysisBuilder.setMac((Integer) fields.get("mac").getValue());
+                }
+                if (fields.containsKey("maf")) {
+                    metaAnalysisBuilder.setMaf((Double) fields.get("maf").getValue());
+                }
                 metaSNPAnalysises.add(metaAnalysisBuilder.build());
             } catch (Exception e) {
                 e.printStackTrace();
