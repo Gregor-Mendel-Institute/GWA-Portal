@@ -5,6 +5,8 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter.MENU;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.NotificationPopup;
+import com.gmi.nordborglab.browser.client.ui.favicon.Favico;
+import com.gmi.nordborglab.browser.client.ui.favicon.FavicoOptions;
 import com.gmi.nordborglab.browser.client.util.DateUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UserNotificationProxy;
@@ -82,6 +84,9 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
     SpanElement arrorIcon;
     @UiField
     SpanElement notifyBubble;
+
+    private final Favico favIco;
+
     @UiField
     DivElement footerContentPanel;
     @UiField
@@ -119,6 +124,9 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
         this.resources = resources;
         loadingIndicator.getStyle().setDisplay(Display.NONE);
         this.placeManager = placeManager;
+        FavicoOptions options = FavicoOptions.create();
+        options.setAnimation(FavicoOptions.ANIMATION.SLIDE).setPosition(FavicoOptions.POSITION.UP);
+        this.favIco = new Favico(options);
     }
 
     @Override
@@ -258,6 +266,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
                     e.addClassName("wiggle");
                 }
             });
+            favIco.badge(newCount);
         }
         notifyBubble.setInnerText(String.valueOf(newCount));
     }
@@ -267,6 +276,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
         notifyBubble.setInnerText("0");
         notifyBubble.getStyle().setDisplay(Display.NONE);
         notifyBubble.removeClassName("wiggle");
+        favIco.reset();
     }
 
     @UiHandler("userLink")
