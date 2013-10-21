@@ -156,6 +156,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
             XContentBuilder builder = XContentFactory.jsonBuilder();
 
             builder.startObject()
+                    .field("id", experiment.getId().toString())
                     .field("name", experiment.getName())
                     .field("published", experiment.getPublished())
                     .field("originator", experiment.getOriginator())
