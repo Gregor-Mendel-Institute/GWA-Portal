@@ -1,0 +1,192 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:style type="com.gmi.nordborglab.browser.client.ui.CircularProgressBar.MyStyle">
+        .loader {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -o-user-select: none;
+            user-select: none;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -o-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        .loader_bg {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 10px solid rgba(0, 0, 0, 0.2);
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -o-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        .spiner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            width: 50%;
+            height: 50%;
+            background: transparent;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -o-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        .spiner_inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -o-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        .loader_spiner {
+            width: 200%;
+            height: 200%;
+            border-radius: 50%;
+            border: 10px solid rgba(255, 255, 255, 0.3);
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -o-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        .animate_0_25_a {
+            -webkit-transform: rotate(90deg);
+            -moz-transform: rotate(90deg);
+            -o-transform: rotate(90deg);
+            transform: rotate(90deg);
+            -webkit-transform-origin: 100% 100%;
+            -moz-transform-origin: 100% 100%;
+            -o-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+        }
+
+        .animate_0_25_b {
+            -webkit-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+            -webkit-transform-origin: 100% 100%;
+            -moz-transform-origin: 100% 100%;
+            -o-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+        }
+
+        .animate_25_50_a {
+            -webkit-transform: rotate(180deg);
+            -moz-transform: rotate(180deg);
+            -o-transform: rotate(180deg);
+            transform: rotate(180deg);
+            -webkit-transform-origin: 100% 100%;
+            -moz-transform-origin: 100% 100%;
+            -o-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+        }
+
+        .animate_25_50_b {
+            -webkit-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+            -webkit-transform-origin: 100% 100%;
+            -moz-transform-origin: 100% 100%;
+            -o-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+        }
+
+        .animate_50_75_a {
+            -webkit-transform: rotate(270deg);
+            -moz-transform: rotate(270deg);
+            -o-transform: rotate(270deg);
+            transform: rotate(270deg);
+            -webkit-transform-origin: 100% 100%;
+            -moz-transform-origin: 100% 100%;
+            -o-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+        }
+
+        .animate_50_75_b {
+            -webkit-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+            -webkit-transform-origin: 100% 100%;
+            -moz-transform-origin: 100% 100%;
+            -o-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+        }
+
+        .animate_75_100_a {
+            -webkit-transform: rotate(0deg);
+            -moz-transform: rotate(0deg);
+            -o-transform: rotate(0deg);
+            transform: rotate(0deg);
+            -webkit-transform-origin: 100% 100%;
+            -moz-transform-origin: 100% 100%;
+            -o-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+        }
+
+        .animate_75_100_b {
+            -webkit-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+            -webkit-transform-origin: 100% 100%;
+            -moz-transform-origin: 100% 100%;
+            -o-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+        }
+
+        .text {
+            text-align: center;
+            padding-top: 30px;
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+        }
+
+    </ui:style>
+
+    <g:HTMLPanel addStyleNames="{style.loader}">
+        <div class="{style.loader_bg}" ui:field="loaderbg">
+            <div class="{style.text}" ui:field="percentageLb"></div>
+        </div>
+        <div class="{style.spiner} {style.animate_0_25_a}">
+            <div class="{style.spiner_inner} {style.animate_0_25_b}" ui:field="animate25">
+                <div class="{style.loader_spiner}" ui:field="spinner25"></div>
+            </div>
+        </div>
+        <div class="{style.spiner} {style.animate_25_50_a}">
+            <div class="{style.spiner_inner} {style.animate_25_50_b}" ui:field="animate50">
+                <div class="{style.loader_spiner}" ui:field="spinner50"></div>
+            </div>
+        </div>
+        <div class="{style.spiner}  {style.animate_50_75_a}">
+            <div class="{style.spiner_inner} {style.animate_50_75_b}" ui:field="animate75">
+                <div class="{style.loader_spiner}" ui:field="spinner75"></div>
+            </div>
+        </div>
+        <div class="{style.spiner}  {style.animate_75_100_a}">
+            <div class="{style.spiner_inner} {style.animate_75_100_b}" ui:field="animate100">
+                <div class="{style.loader_spiner}" ui:field="spinner100"></div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>
