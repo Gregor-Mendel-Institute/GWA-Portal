@@ -18,7 +18,7 @@ import java.util.List;
  */
 @ServiceName(value = "com.gmi.nordborglab.browser.server.service.MetaAnalysisService", locator = "com.gmi.nordborglab.browser.server.service.SpringServiceLocator")
 public interface MetaAnalysisRequest extends RequestContext {
-    Request<List<MetaSNPAnalysisProxy>> findAllAnalysisForRegion(int start, int end, String chr);
+    Request<MetaSNPAnalysisPageProxy> findAllAnalysisForRegion(int startPos, int endPos, String chr, int start, int size, List<FilterItemProxy> filterItems);
 
     Request<List<FacetProxy>> findMetaStats(MetaAnalysisTopResultsCriteriaProxy criteria, List<FilterItemProxy> filterItems);
 

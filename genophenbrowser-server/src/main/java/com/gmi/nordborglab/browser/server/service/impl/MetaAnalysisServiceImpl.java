@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
-import com.gmi.nordborglab.browser.server.data.annotation.GeneAnnotation;
 import com.gmi.nordborglab.browser.server.data.annotation.GoTerm;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
@@ -9,14 +8,10 @@ import com.gmi.nordborglab.browser.server.data.es.ESTermsFacet;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.meta.MetaAnalysisTopResultsCriteria;
 import com.gmi.nordborglab.browser.server.domain.meta.MetaSNPAnalysis;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.pages.CandidateGeneListPage;
-import com.gmi.nordborglab.browser.server.domain.pages.ExperimentPage;
 import com.gmi.nordborglab.browser.server.domain.pages.GenePage;
 import com.gmi.nordborglab.browser.server.domain.pages.MetaSNPAnalysisPage;
-import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
-import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.security.AclManager;
@@ -27,14 +22,10 @@ import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
 import com.gmi.nordborglab.browser.shared.dto.FilterItem;
 import com.gmi.nordborglab.browser.shared.dto.FilterItemValue;
-import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import org.apache.lucene.queryparser.xml.builders.RangeFilterBuilder;
-import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -102,14 +93,14 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
     protected AnnotationDataService annotationService;
 
     @Override
-    public List<MetaSNPAnalysis> findAllAnalysisForRegion(int start, int end, String chr) {
+    public MetaSNPAnalysisPage findAllAnalysisForRegion(int startPos, int endPos, String chr, int start, int size, List<FilterItem> filterItems) {
         List<MetaSNPAnalysis> metaSNPAnalysises = Lists.newArrayList();
         // GET all studyids
         SearchRequestBuilder builder = client.prepareSearch(esAclManager.getIndex());
-        FilterBuilder filter = FilterBuilders.boolFilter().must(
+        BoolFilterBuilder filter = FilterBuilders.boolFilter().must(
                 FilterBuilders.hasChildFilter("meta_analysis_snps", FilterBuilders.boolFilter().
                         must(
-                                FilterBuilders.numericRangeFilter("position").from(start).to(end),
+                                FilterBuilders.numericRangeFilter("position").from(startPos).to(endPos),
                                 FilterBuilders.termFilter("chr", chr)
                         )
                 ),
@@ -121,7 +112,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
             ids.add(Long.parseLong(hit.getId()));
         }
         if (ids.size() == 0) {
-            return metaSNPAnalysises;
+            return new MetaSNPAnalysisPage(metaSNPAnalysises, new PageRequest(start / size, size), 0);
         }
         Iterable<Study> studies = studyRepository.findAll(ids);
         Map<Long, Study> studyCache = Maps.uniqueIndex(studies, new Function<Study, Long>() {
@@ -131,11 +122,6 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 return study.getId();
             }
         });
-        // Check permission
-        /*for (String id : ids) {
-
-        } */
-
 
         // GET  all SNPs
         builder = client.prepareSearch(esAclManager.getIndex());
@@ -149,9 +135,13 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                                 return String.valueOf(aLong);
                             }
                         }).toArray(new String[]{})))
-                        , FilterBuilders.numericRangeFilter("position").from(start).to(end),
+                        , FilterBuilders.numericRangeFilter("position").from(startPos).to(endPos),
                         FilterBuilders.termFilter("chr", chr));
-        builder.addSort("score", SortOrder.DESC).addFields("position", "mac", "maf", "_parent", "score", "overFDR", "studyid", "gene", "annotation", "inGene").setTypes("meta_analysis_snps").setQuery(QueryBuilders.constantScoreQuery(filter));
+        FilterBuilder filterItemFilter = getFilterFromFilterItems(filterItems);
+        if (filterItemFilter != null) {
+            filter.must(filterItemFilter);
+        }
+        builder.setSize(size).setFrom(start).addSort("score", SortOrder.DESC).addFields("position", "mac", "maf", "_parent", "score", "overFDR", "studyid", "gene", "annotation", "inGene").setTypes("meta_analysis_snps").setQuery(QueryBuilders.constantScoreQuery(filter));
         response = builder.execute().actionGet();
         for (SearchHit searchHit : response.getHits()) {
             try {
@@ -181,16 +171,19 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                         .setGenotype(study.getAlleleAssay().getName())
                         .setOverFDR((Boolean) fields.get("overFDR").getValue())
                         .setPhenotypeId(study.getPhenotype().getId())
-                        .setStudyId(study.getPhenotype().getExperiment().getId())
-                        .setMac((Integer) fields.get("mac").getValue())
-                        .setMaf((Double) fields.get("maf").getValue());
-
+                        .setStudyId(study.getPhenotype().getExperiment().getId());
+                if (fields.containsKey("mac")) {
+                    metaAnalysisBuilder.setMac((Integer) fields.get("mac").getValue());
+                }
+                if (fields.containsKey("maf")) {
+                    metaAnalysisBuilder.setMaf((Double) fields.get("maf").getValue());
+                }
                 metaSNPAnalysises.add(metaAnalysisBuilder.build());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return metaSNPAnalysises;
+        return new MetaSNPAnalysisPage(metaSNPAnalysises, new PageRequest(start / size, size), response.getHits().getTotalHits());
     }
 
 

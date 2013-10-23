@@ -63,6 +63,11 @@
             z-index: 9999999;
         }
 
+        .filterContainer {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
     </ui:style>
 
     <g:LayoutPanel>
@@ -99,7 +104,7 @@
                 <g:layer top="300px" bottom="0">
                     <g:LayoutPanel addStyleNames="{style.tableContainer}" ui:field="tableContainer">
                         <g:layer top="0" height="100px">
-                            <g:HTMLPanel>Filter</g:HTMLPanel>
+                            <g:SimplePanel ui:field="filterContainer" addStyleNames="{style.filterContainer}"/>
                         </g:layer>
                         <g:layer top="100px" bottom="30px">
                             <c:DataGrid ui:field="dataGrid"/>

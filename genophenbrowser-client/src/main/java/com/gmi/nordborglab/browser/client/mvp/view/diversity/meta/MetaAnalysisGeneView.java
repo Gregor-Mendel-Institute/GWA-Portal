@@ -5,6 +5,7 @@ import at.gmi.nordborglab.widgets.geneviewer.client.datasource.DataSource;
 import com.github.gwtbootstrap.client.ui.Typeahead;
 import com.gmi.nordborglab.browser.client.mvp.handlers.MetaAnalysisGeneUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisGenePresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisTopResultsPresenter;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
@@ -107,6 +108,8 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
     LayoutPanel contentPanel;
     @UiField(provided = true)
     Typeahead searchGeneTa;
+    @UiField
+    SimplePanel filterContainer;
 
     private final PlaceManager placeManger;
 
@@ -169,6 +172,15 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
             geneViewer.load(null);
         } catch (Exception ex) {
 
+        }
+    }
+
+    @Override
+    public void setInSlot(Object slot, Widget content) {
+        if (slot == MetaAnalysisGenePresenter.TYPE_FilterContent) {
+            filterContainer.setWidget(content);
+        } else {
+            super.setInSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
         }
     }
 

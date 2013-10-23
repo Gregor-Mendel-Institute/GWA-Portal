@@ -24,7 +24,7 @@ import java.util.List;
  */
 
 public interface MetaAnalysisService {
-    public List<MetaSNPAnalysis> findAllAnalysisForRegion(int start, int end, String chr);
+    public MetaSNPAnalysisPage findAllAnalysisForRegion(int startPos, int endPost, String chr, int start, int size, List<FilterItem> filterItems);
 
     public List<ESFacet> findMetaStats(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems);
 
