@@ -22,6 +22,8 @@ public interface HelperService {
 
     PhenotypeUploadData getPhenotypeUploadData(byte[] inputStream) throws IOException;
 
+    List<String> getGenesFromCanddiateGeneListUpload(byte[] inputStream) throws IOException;
+
     List<TransformationData> calculateTransformations(List<Double> values);
 
     @PreAuthorize("hasRole('ROLE_USER')")

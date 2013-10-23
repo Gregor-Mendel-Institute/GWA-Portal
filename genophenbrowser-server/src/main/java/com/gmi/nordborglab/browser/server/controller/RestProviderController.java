@@ -41,6 +41,10 @@ public class RestProviderController {
     private HelperService helperService;
 
     @Resource
+    private MetaAnalysisService metaAnalysisService;
+
+
+    @Resource
     private GWASDataService gwasService;
 
     @Resource(name = "jbrowse")
@@ -104,6 +108,24 @@ public class RestProviderController {
         Study study = gwasService.uploadStudyGWASResult(id, file);
         studyId = study.getId();
         return studyId;
+    }
+
+
+    @RequestMapping(method = RequestMethod.POST, value = "/candidategenelist/{id}/upload")
+    public
+    @ResponseBody
+    String uploadCandidateGeneList(@PathVariable("id") Long candidateGeneListId, @RequestParam("file") CommonsMultipartFile file) {
+        String result = null;
+        try {
+            byte[] csvData = IOUtils.toByteArray(file.getInputStream());
+            List<String> geneIds = helperService.getGenesFromCanddiateGeneListUpload(csvData);
+            List<Gene> genes = metaAnalysisService.addGenesToCandidateGeneList(candidateGeneListId, geneIds);
+            result = String.format("%s/%s", geneIds.size(), genes.size());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+        }
+        return result;
     }
 
 

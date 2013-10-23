@@ -781,6 +781,27 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
 
     @Transactional(readOnly = false)
     @Override
+    public List<Gene> addGenesToCandidateGeneList(Long id, List<String> geneIds) {
+        CandidateGeneList candidateGeneList = candidateGeneListRepository.findOne(id);
+        if (candidateGeneList == null)
+            return null;
+        candidateGeneList.setGenesWithInfo(getGeneInfos(candidateGeneList));
+        List<Gene> genes = Lists.newArrayList();
+        for (String geneId : geneIds) {
+            Gene gene = annotationService.getGeneById(geneId);
+            if (gene != null && !candidateGeneList.getGenes().contains(geneId)) {
+                genes.add(gene);
+                candidateGeneList.getGenes().add(geneId);
+                candidateGeneList.getGenesWithInfo().add(gene);
+            }
+        }
+        candidateGeneListRepository.save(candidateGeneList);
+        indexCandidateGeneList(candidateGeneList);
+        return genes;
+    }
+
+    @Transactional(readOnly = false)
+    @Override
     public void removeGeneFromCandidateGeneList(CandidateGeneList candidateGeneList, String geneId) {
         candidateGeneList.getGenes().remove(geneId);
         candidateGeneListRepository.save(candidateGeneList);

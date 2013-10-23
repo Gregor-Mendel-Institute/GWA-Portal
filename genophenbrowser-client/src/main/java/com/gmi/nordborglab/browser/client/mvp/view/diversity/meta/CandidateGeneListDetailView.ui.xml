@@ -134,12 +134,16 @@
 
         .addBtn {
             margin-top: 20px;
-            margin-right: 10px;
+            margin-right: 5px;
         }
 
         .navPills {
             margin-top: 20px;
             margin-left: 0.5em;
+        }
+
+        .fileinput {
+            visibility: hidden;
         }
     </ui:style>
 
@@ -183,6 +187,13 @@
                                     </b:InputAddOn>
                                     <b:Button ui:field="addGeneBtn" icon="PLUS_SIGN" text="Add"
                                               addStyleNames="{style.addBtn}" type="DANGER" enabled="false"/>
+
+                                    <b:Button ui:field="uploadBtn" icon="UPLOAD_ALT"
+                                              addStyleNames="{style.addBtn}" type="DANGER"/>
+                                    <g:FormPanel ui:field="formPanel">
+                                        <b:FileUpload ui:field="fileUpload"
+                                                      addStyleNames="{style.fileinput}"></b:FileUpload>
+                                    </g:FormPanel>
                                 </div>
                                 <div style="float:left;">
                                     <b:NavPills addStyleNames="{style.navPills}">

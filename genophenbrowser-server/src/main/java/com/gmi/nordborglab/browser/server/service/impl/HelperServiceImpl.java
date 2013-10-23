@@ -262,7 +262,7 @@ public class HelperServiceImpl implements HelperService {
         List<Sampstat> sampStatValues = sampstatRepository.findAll();
         List<Transformation> transformationValues = transformationRepository.findAll();
         List<UserNotification> userNotifications = getUserNotifications(10);
-        Page<NewsItem> page = newsRepository.findAll(new PageRequest(0, 10, Sort.Direction.DESC,"createDate"));
+        Page<NewsItem> page = newsRepository.findAll(new PageRequest(0, 10, Sort.Direction.DESC, "createDate"));
 
         AppData appData = new AppData();
         appData.setStatisticTypeList(statisticTypeValues);
@@ -333,6 +333,30 @@ public class HelperServiceImpl implements HelperService {
         }
 
         return data;
+    }
+
+    @Override
+    public List<String> getGenesFromCanddiateGeneListUpload(byte[] inputStream) throws IOException {
+        List<String> geneIds = Lists.newArrayList();
+        ICsvListReader csvReader = null;
+        try {
+            csvReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(inputStream)), CsvPreference.STANDARD_PREFERENCE);
+            CellProcessor[] cellProcessors = {new NotNull()};
+            List<String> phenotypeValues = null;
+            while ((phenotypeValues = csvReader.read()) != null) {
+                geneIds.add(phenotypeValues.get(0));
+            }
+
+        } catch (SuperCsvCellProcessorException e) {
+            geneIds = null;
+
+        } catch (Exception e) {
+            geneIds = null;
+        } finally {
+            if (csvReader != null)
+                csvReader.close();
+        }
+        return geneIds;
     }
 
     @Override

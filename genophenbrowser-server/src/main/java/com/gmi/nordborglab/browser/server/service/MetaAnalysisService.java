@@ -47,6 +47,9 @@ public interface MetaAnalysisService {
     @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#candidateGeneList,'EDIT') or hasPermission(#candidateGeneList,'ADMINISTRATION'))")
     Gene addGeneToCandidateGeneList(CandidateGeneList candidateGeneList, String geneId);
 
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList','EDIT') or hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList','ADMINISTRATION'))")
+    List<Gene> addGenesToCandidateGeneList(Long id, List<String> geneIds);
+
     @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#candidateGeneList,'EDIT') or hasPermission(#candidateGeneList,'ADMINISTRATION'))")
     void removeGeneFromCandidateGeneList(CandidateGeneList candidateGeneList, String geneId);
 }

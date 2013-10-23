@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.meta;
 
 import com.github.gwtbootstrap.client.ui.*;
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.FileUpload;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
@@ -29,7 +30,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.cell.client.*;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -51,6 +54,7 @@ import com.googlecode.gwt.charts.client.corechart.PieChart;
 import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
 import com.googlecode.gwt.charts.client.options.Animation;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import elemental.html.FileList;
 
 import java.util.List;
 import java.util.Map;
@@ -136,6 +140,12 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     PieChart chrPieChart;
     @UiField
     PieChart strandPieChart;
+    @UiField
+    FileUpload fileUpload;
+    @UiField
+    FormPanel formPanel;
+    @UiField
+    Button uploadBtn;
     private int minCharSize = 3;
     private final BiMap<ConstEnums.GENE_FILTER, NavLink> navLinkMap;
     private final CandidateGeneListDisplayDriver candidateGeneListDisplayDriver;
@@ -239,6 +249,32 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         deleteBtn.setType(ButtonType.DANGER);
         deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
         shareBtn.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+
+        fileUpload.setName("file");
+        formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
+        formPanel.setMethod(FormPanel.METHOD_POST);
+        formPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
+            @Override
+            public void onSubmit(FormPanel.SubmitEvent event) {
+                if (fileUpload.getText().equals("")) {
+                    event.cancel();
+                    ;
+                }
+            }
+        });
+        formPanel.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+            @Override
+            public void onSubmitComplete(FormPanel.SubmitCompleteEvent event) {
+                // Todo read result and display message if error
+                formPanel.reset();
+                getUiHandlers().refresh();
+            }
+        });
+    }
+
+    @Override
+    public void setUploadActionUrl(String url) {
+        formPanel.setAction(url);
     }
 
     private void initGeneDataGrid() {
@@ -420,6 +456,8 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     public void showActionBtns(boolean show) {
         editBtn.setVisible(show);
         deleteBtn.setVisible(show);
+        addGeneBtn.setVisible(show);
+        uploadBtn.setVisible(show);
     }
 
     @Override
@@ -501,5 +539,17 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     public void refreshStats() {
         drawCharts();
     }
+
+    @UiHandler("uploadBtn")
+    public void onClickUploadBtn(ClickEvent e) {
+        fileUpload.getElement().<InputElement>cast().click();
+    }
+
+
+    @UiHandler("fileUpload")
+    public void onHandleFileSelect(ChangeEvent e) {
+        formPanel.submit();
+    }
+
 
 }

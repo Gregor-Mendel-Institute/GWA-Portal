@@ -94,6 +94,8 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         void setStatsData(DataTable dataTable, STATS stat);
 
         void refreshStats();
+
+        void setUploadActionUrl(String url);
     }
 
     @ProxyCodeSplit
@@ -386,10 +388,18 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         });
     }
 
+    @Override
+    public void refresh() {
+        genesPage = null;
+        getView().getGenesDisplay().setVisibleRangeAndClearData(getView().getGenesDisplay().getVisibleRange(), true);
+    }
+
     private void refreshView() {
         getView().getDisplayDriver().display(candidateGeneList);
         getView().showActionBtns(currentUser.hasEdit(candidateGeneList));
         getView().showShareBtn(currentUser.hasAdmin(candidateGeneList));
+
+        getView().setUploadActionUrl("/provider/candidategenelist/" + candidateGeneList.getId() + "/upload");
 
         String toolTipText = "Public - Anyone on the Internet can find and access";
         IconType toolTipIcon = IconType.GLOBE;

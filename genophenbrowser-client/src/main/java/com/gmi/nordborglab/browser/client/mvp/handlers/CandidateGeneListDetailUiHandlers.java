@@ -35,4 +35,6 @@ public interface CandidateGeneListDetailUiHandlers extends UiHandlers {
     void onShare();
 
     void onDeleteGene(GeneProxy gene);
+
+    void refresh();
 }
