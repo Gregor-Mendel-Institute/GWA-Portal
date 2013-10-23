@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta;
 import com.gmi.nordborglab.browser.client.CurrentUser;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.FilterModifiedEvent;
+import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.MetaAnalysisTopResultsUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.*;
@@ -83,9 +84,11 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
         @Override
         protected void onRangeChanged(HasData<MetaSNPAnalysisProxy> display) {
             final Range range = display.getVisibleRange();
+            fireEvent(new LoadingIndicatorEvent(true));
             getContext().findTopAnalysis(criteria, filterItems, range.getStart(), range.getLength()).fire(new Receiver<MetaSNPAnalysisPageProxy>() {
                 @Override
                 public void onSuccess(MetaSNPAnalysisPageProxy response) {
+                    fireEvent(new LoadingIndicatorEvent(false));
                     updateRowCount((int) response.getTotalElements(), true);
                     updateRowData(range.getStart(), response.getContents());
                     ctx = null;
@@ -93,6 +96,7 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
 
                 @Override
                 public void onFailure(ServerFailure error) {
+                    fireEvent(new LoadingIndicatorEvent(false));
                     ctx = null;
                     super.onFailure(error);    //To change body of overridden methods use File | Settings | File Templates.
                 }
@@ -192,9 +196,11 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
 
     private void fetchData() {
         filterItems = getProxyFromFilter(filterPresenterWidget.getActiveFilterItems());
+        fireEvent(new LoadingIndicatorEvent(true));
         getContext().findMetaStats(criteria, filterItems).fire(new Receiver<List<FacetProxy>>() {
             @Override
             public void onSuccess(List<FacetProxy> response) {
+                fireEvent(new LoadingIndicatorEvent(false));
                 stats = response;
                 displayStats();
                 ctx = null;
