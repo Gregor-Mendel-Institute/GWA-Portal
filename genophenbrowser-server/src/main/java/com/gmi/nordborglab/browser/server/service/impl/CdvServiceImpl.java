@@ -340,6 +340,39 @@ public class CdvServiceImpl implements CdvService {
 
     @Transactional(readOnly = false)
     @Override
+    public Study deleteStudyJob(Long studyId) {
+        Study study = studyRepository.findOne(studyId);
+        study = aclManager.setPermissionAndOwner(study);
+        if (study.getJob() == null) {
+            return study;
+        }
+        study.removeJob();
+        studyRepository.save(study);
+        gwasDataService.deleteStudyFile(studyId);
+        deleteMetaAnalysisFromIndex(studyId);
+        return study;
+    }
+
+    @Transactional(readOnly = false)
+    @Override
+    public Study rerunAnalysis(Long studyId) {
+        Study study = studyRepository.findOne(studyId);
+        study = aclManager.setPermissionAndOwner(study);
+        if (study.getJob() == null || !study.getJob().getStatus().equalsIgnoreCase("Error")) {
+            return study;
+        }
+        study.getJob().setProgress(1);
+        study.getJob().setStatus("Waiting");
+        study.getJob().setModificationDate(new Date());
+        study.getJob().setTask("Waiting for workflow to start");
+        study.getJob().setPayload(null);
+        studyRepository.save(study);
+        return study;
+    }
+
+
+    @Transactional(readOnly = false)
+    @Override
     public void delete(Study study) {
         aclManager.setPermissionAndOwner(study);
         if (study.isPublic()) {

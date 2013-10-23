@@ -16,17 +16,17 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.Ex
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDetailPresenter;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
+import com.gmi.nordborglab.browser.client.ui.CircularProgressBar;
+import com.gmi.nordborglab.browser.client.ui.EnableDropdownButton;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.client.util.DateUtils;
 import com.gmi.nordborglab.browser.shared.proxy.*;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.Multiset;
+import com.google.common.collect.*;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -43,6 +43,8 @@ import com.google.gwt.visualization.client.visualizations.corechart.PieChart.Pie
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+
+import java.util.Map;
 
 public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> implements
         StudyDetailPresenter.MyView {
@@ -117,18 +119,36 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     NavLink uploadBtn;
     @UiField
     NavLink startBtn;
-    @UiField
-    Label jobStatusLb;
-    @UiField
-    ProgressBar jobStatusProgress;
+
+    /*@UiField
+    Label jobStatusLb;*/
+
+
+    /*@UiField
+    ProgressBar jobStatusProgress;*/
     @UiField
     com.google.gwt.user.client.ui.Label modifiedLb;
     @UiField
     com.google.gwt.user.client.ui.Label createdLb;
     @UiField
     com.google.gwt.user.client.ui.Label taskLb;
-    @UiField
+
+    /*@UiField
     NavPills actionDd;
+    */
+
+    @UiField
+    CircularProgressBar jobProgress;
+    @UiField
+    EnableDropdownButton jobNABtn;
+    @UiField
+    EnableDropdownButton jobERRORBtn;
+    @UiField
+    EnableDropdownButton jobFinishedBtn;
+    @UiField
+    Button jobWaitingBtn;
+    @UiField
+    HTMLPanel gwasJobContainer;
 
     @Inject
     public StudyDetailView(final Binder binder, final StudyDisplayDriver displayDriver, final StudyEditDriver editDriver, final MainResources mainRes) {
@@ -177,6 +197,16 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         });
         deleteBtn.setType(ButtonType.DANGER);
         deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
+
+        gwasJobContainer.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        gwasJobContainer.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+
+        Map<Range<Integer>, String> colorRanges = ImmutableMap.<Range<Integer>, String>builder()
+                .put(Range.closedOpen(0, 1), "rgba(0,0,0,0.4)")
+                .put(Range.closedOpen(1, 99), "#faa732")
+                .put(Range.closed(100, 100), "#5bb75b")
+                .build();
+        jobProgress.setThresholds(colorRanges);
     }
 
     @Override
@@ -212,60 +242,62 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     }
 
     @Override
-    public void showGWASBtns(boolean show) {
-        actionDd.setVisible(show);
-    }
-
-    @Override
     public void showJobInfo(StudyJobProxy job, int permission) {
-        String jobStatusText = "";
-        LabelType jobLabelType = null;
-        ProgressBar.Color progresBarColor = null;
+        boolean hasPermission = (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT;
+        jobERRORBtn.setVisible(false);
+        jobNABtn.setVisible(false);
+        jobFinishedBtn.setVisible(false);
+        jobWaitingBtn.setVisible(false);
+        createdLb.setVisible(false);
+        modifiedLb.setVisible(false);
+
         String jobTask = "";
         boolean showJobActionBtns = false;
         boolean showProgress = false;
         Integer progress = 0;
+        jobProgress.setHasError(false);
         if (job == null) {
-            jobStatusText = "NA";
-            jobLabelType = LabelType.DEFAULT;
             showProgress = false;
             showJobActionBtns = true;
+            progress = 0;
+            if (hasPermission) {
+                jobTask = "Click on N/A to start";
+            }
+            jobNABtn.setVisible(true);
+            jobNABtn.setEnable(hasPermission);
         } else {
-            jobStatusText = job.getStatus();
             jobTask = job.getTask();
             progress = job.getProgress();
-            jobStatusLb.setText(job.getStatus());
+            //jobStatusLb.setText(job.getStatus());
             if (job.getStatus().equalsIgnoreCase("Finished")) {
-                jobLabelType = LabelType.SUCCESS;
-                showProgress = false;
+                jobFinishedBtn.setVisible(true);
+                jobFinishedBtn.setEnable(hasPermission);
+            } else if (job.getStatus().equalsIgnoreCase("Waiting")) {
+                jobWaitingBtn.setVisible(true);
+                jobWaitingBtn.setText("Waiting");
             } else if (job.getStatus().equalsIgnoreCase("Pending")) {
-                jobLabelType = LabelType.WARNING;
-                showProgress = true;
-                progresBarColor = ProgressBarBase.Color.WARNING;
+                jobWaitingBtn.setVisible(true);
+                jobWaitingBtn.setText("Pending");
             } else if (job.getStatus().equalsIgnoreCase("Running")) {
-                jobLabelType = LabelType.INFO;
-                showProgress = true;
-                progresBarColor = ProgressBarBase.Color.INFO;
+                jobWaitingBtn.setVisible(true);
+                jobWaitingBtn.setText("Running");
             } else if (job.getStatus().equalsIgnoreCase("Error")) {
-                jobLabelType = LabelType.IMPORTANT;
-                showProgress = false;
+                jobERRORBtn.setVisible(true);
+                jobERRORBtn.setEnable(hasPermission);
+                jobProgress.setHasError(true);
             }
             Long currentTimeMillis = System.currentTimeMillis();
             if (job.getCreateDate() != null) {
-                createdLb.setText(DateUtils.formatTimeElapsedSinceMillisecond(currentTimeMillis - job.getCreateDate().getTime()) + " ago");
+                createdLb.setVisible(true);
+                createdLb.setText("Created: " + DateUtils.formatTimeElapsedSinceMillisecond(currentTimeMillis - job.getCreateDate().getTime(), 1) + " ago");
             }
             if (job.getModificationDate() != null) {
-                modifiedLb.setText(DateUtils.formatTimeElapsedSinceMillisecond(currentTimeMillis - job.getModificationDate().getTime()) + " ago");
+                modifiedLb.setVisible(true);
+                modifiedLb.setText("Modified: " + DateUtils.formatTimeElapsedSinceMillisecond(currentTimeMillis - job.getModificationDate().getTime(), 1) + " ago");
             }
         }
-        jobStatusProgress.setPercent(progress);
-        jobStatusProgress.setVisible(showProgress);
-        jobStatusProgress.setColor(progresBarColor);
-        jobStatusProgress.setText(progress.toString());
-        jobStatusLb.setText(jobStatusText);
-        jobStatusLb.setType(jobLabelType);
+        jobProgress.setProgress(progress);
         taskLb.setText(jobTask);
-        actionDd.setVisible((permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT && showJobActionBtns);
     }
 
 
@@ -429,6 +461,17 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         gwasUploadPopup.setMaxHeigth(widget.getOffsetHeight() + "px");
         gwasUploadPopup.setWidth(widget.getOffsetWidth());
         gwasUploadPopup.show();
+    }
+
+
+    @UiHandler({"deleteJobBtn", "deleteFinishedJobBtn"})
+    public void onClickDeleteJobBtn(ClickEvent e) {
+        getUiHandlers().onDeleteJob();
+    }
+
+    @UiHandler("rerunJobBtn")
+    public void onClickRerunJobBtn(ClickEvent e) {
+        getUiHandlers().onReRunAnalysis();
     }
 
     @UiHandler("startBtn")

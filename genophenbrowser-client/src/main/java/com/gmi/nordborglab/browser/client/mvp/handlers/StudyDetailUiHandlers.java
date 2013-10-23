@@ -17,4 +17,9 @@ public interface StudyDetailUiHandlers extends UiHandlers {
     void onClickUpload();
 
     void onConfirmDelete();
+
+    void onDeleteJob();
+
+    void onReRunAnalysis();
+
 }

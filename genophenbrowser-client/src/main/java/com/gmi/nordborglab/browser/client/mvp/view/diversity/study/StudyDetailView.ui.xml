@@ -92,12 +92,30 @@
             float: left;
         }
 
+        .gwas_dropdown {
+            text-align: left;
+        }
+
+        .gwas_container {
+        }
+
+        .job_dates {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .job_task {
+            font-size: 12px;
+            text-align: center;
+        }
+
     </ui:style>
     <g:ScrollPanel>
         <g:LayoutPanel>
             <g:layer left="0" top="0" height="28em" right="0">
                 <g:LayoutPanel>
-                    <g:layer left="0" top="0" bottom="0" width="30em">
+                    <g:layer left="0" top="0" bottom="0" width="26em">
                         <g:LayoutPanel>
                             <g:layer top="5px" height="40px" left="0" right="0">
                                 <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
@@ -114,70 +132,58 @@
                             <g:layer top="47px" bottom="0" left="0" right="0">
                                 <g:FlowPanel>
                                     <ed:StudyDisplayEditor ui:field="studyDisplayEditor"/>
-                                    <g:HTMLPanel addStyleNames="{style.subheader_container}">
-                                        <div class="{style.subheader}">
-                                            <h1>
-                                                GWAS Status
-                                            </h1>
-                                            <!--<div class="{style.job_action_container}">
-                                                 <g:Anchor addStyleNames="{style.job_actions}" text="Upload"></g:Anchor>
-                                             </div>-->
-                                        </div>
-                                        <div>
-                                            <table class="{style.job_table}">
-                                                <colgroup>
-                                                    <col style="width:90px"></col>
-                                                    <col></col>
-                                                </colgroup>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <span>Status</span>
-                                                        </td>
-                                                        <td>
-                                                            <b:Label addStyleNames="{style.statusLabel}"
-                                                                     ui:field="jobStatusLb"/>
-                                                            <b:ProgressBar ui:field="jobStatusProgress"
-                                                                           addStyleNames="{style.progressBar}"></b:ProgressBar>
-                                                            <b:NavPills addStyleNames="{style.actionDropDownContainer}"
-                                                                        ui:field="actionDd">
-                                                                <b:Dropdown text="Action"
-                                                                            addStyleNames="{style.actionDropDown}">
-                                                                    <b:NavLink text="Upload" icon="UPLOAD"
-                                                                               ui:field="uploadBtn"/>
-                                                                    <b:NavLink text="Run analysis" icon="CLOUD"
-                                                                               ui:field="startBtn"/>
-                                                                </b:Dropdown>
-                                                            </b:NavPills>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Task</td>
-                                                        <td>
-                                                            <g:Label ui:field="taskLb"/>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Modified</td>
-                                                        <td>
-                                                            <g:Label ui:field="modifiedLb"/>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Created</td>
-                                                        <td>
-                                                            <g:Label ui:field="createdLb"/>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </g:HTMLPanel>
                                 </g:FlowPanel>
                             </g:layer>
                         </g:LayoutPanel>
                     </g:layer>
-                    <g:layer left="35em" top="0" bottom="0" right="0">
+                    <g:layer left="27em" width="11em" top="0" bottom="0">
+                        <g:LayoutPanel>
+                            <g:layer top="5px" height="40px" left="0" right="0">
+                                <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                                    <div style="text-align:center;">GWAS Status</div>
+                                </g:HTMLPanel>
+                            </g:layer>
+                            <g:layer top="47px" bottom="0" left="0" right="0">
+                                <g:HTMLPanel addStyleNames="{style.gwas_container}" ui:field="gwasJobContainer">
+                                    <div style="margin-top:20px">
+                                        <g:Label ui:field="taskLb" addStyleNames="{style.job_task}"/>
+                                    </div>
+                                    <div style="margin-top:20px;padding-left:28px;">
+                                        <gui:CircularProgressBar ui:field="jobProgress" size="100" circleSize="10"
+                                                                 progress="70"/>
+                                    </div>
+                                    <div style="margin-top:20px;text-align: center;">
+                                        <gui:EnableDropdownButton ui:field="jobNABtn" text="N/A"
+                                                                  addStyleNames="{style.gwas_dropdown}">
+                                            <b:NavLink text="Upload" icon="UPLOAD"
+                                                       ui:field="uploadBtn"/>
+                                            <b:NavLink text="Run analysis" icon="CLOUD"
+                                                       ui:field="startBtn"/>
+                                        </gui:EnableDropdownButton>
+                                        <gui:EnableDropdownButton ui:field="jobERRORBtn" type="DANGER" text="Error"
+                                                                  addStyleNames="{style.gwas_dropdown}">
+                                            <b:NavLink text="Delete" icon="REMOVE"
+                                                       ui:field="deleteJobBtn"/>
+                                            <b:NavLink text="Re-run" icon="CLOUD"
+                                                       ui:field="rerunJobBtn"/>
+                                        </gui:EnableDropdownButton>
+                                        <gui:EnableDropdownButton ui:field="jobFinishedBtn" type="SUCCESS"
+                                                                  text="Finished" addStyleNames="{style.gwas_dropdown}">
+                                            <b:NavLink text="Delete" icon="REMOVE"
+                                                       ui:field="deleteFinishedJobBtn"/>
+                                        </gui:EnableDropdownButton>
+                                        <b:Button active="false" enabled="false" type="WARNING" ui:field="jobWaitingBtn"
+                                                  text="Waiting"/>
+                                    </div>
+                                    <div class="{style.job_dates}">
+                                        <g:Label ui:field="modifiedLb"/>
+                                        <g:Label ui:field="createdLb"/>
+                                    </div>
+                                </g:HTMLPanel>
+                            </g:layer>
+                        </g:LayoutPanel>
+                    </g:layer>
+                    <g:layer left="39em" top="0" bottom="0" right="0">
                         <g:LayoutPanel>
                             <g:layer top="5px" height="40px" left="0" right="0">
                                 <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">

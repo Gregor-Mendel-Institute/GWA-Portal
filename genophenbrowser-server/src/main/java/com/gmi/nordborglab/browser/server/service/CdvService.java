@@ -7,6 +7,7 @@ import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,4 +39,10 @@ public interface CdvService {
 
     @PreAuthorize("hasRole('ROLE_USER') and (#study.id == null or hasPermission(#study,'EDIT') or hasPermission(#study,'ADMINISTRATION'))")
     public void delete(Study study);
+
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','EDIT') or hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','ADMINISTRATION'))")
+    Study deleteStudyJob(Long studyId);
+
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','EDIT') or hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','ADMINISTRATION'))")
+    Study rerunAnalysis(Long studyId);
 }

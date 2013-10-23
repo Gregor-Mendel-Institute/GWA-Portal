@@ -51,4 +51,11 @@ public class CdvManager extends RequestFactoryManager<CdvRequest> {
         getContext().delete(study).fire(receiver);
     }
 
+    public void deleteStudyJob(Receiver<StudyProxy> receiver, Long id) {
+        getContext().deleteStudyJob(id).with(FULL_PATH).fire(receiver);
+    }
+
+    public void rerunAnalysis(Receiver<StudyProxy> receiver, Long id) {
+        getContext().rerunAnalysis(id).with(FULL_PATH).fire(receiver);
+    }
 }

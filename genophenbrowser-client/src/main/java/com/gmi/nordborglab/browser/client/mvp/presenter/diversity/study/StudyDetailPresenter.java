@@ -59,10 +59,7 @@ public class StudyDetailPresenter extends
 
         StudyEditDriver getEditDriver();
 
-
         void showGWASUploadPopup(boolean show);
-
-        void showGWASBtns(boolean show);
 
         void showJobInfo(StudyJobProxy job, int permissionMask);
 
@@ -149,7 +146,6 @@ public class StudyDetailPresenter extends
             @Override
             public void onGWASUploaded(GWASUploadedEvent event) {
                 getView().showGWASUploadPopup(false);
-                getView().showGWASBtns(false);
                 cdvManager.findOne(new Receiver<StudyProxy>() {
                     @Override
                     public void onSuccess(StudyProxy response) {
@@ -301,7 +297,6 @@ public class StudyDetailPresenter extends
             public void onSuccess(StudyProxy response) {
                 study = response;
                 getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
-                getView().showGWASBtns(false);
                 StudyModifiedEvent.fire(getEventBus(), response);
             }
         }, study.getId());
@@ -336,6 +331,37 @@ public class StudyDetailPresenter extends
                 super.onFailure(error);    //To change body of overridden methods use File | Settings | File Templates.
             }
         }, study);
+    }
+
+    @Override
+    public void onDeleteJob() {
+        if (study.getJob() == null)
+            return;
+        cdvManager.deleteStudyJob(new Receiver<StudyProxy>() {
+
+            @Override
+            public void onSuccess(StudyProxy response) {
+                study = response;
+                getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
+                StudyModifiedEvent.fire(getEventBus(), response);
+            }
+        }, study.getId());
+    }
+
+    @Override
+    public void onReRunAnalysis() {
+        if (study.getJob() == null || !study.getJob().getStatus().equalsIgnoreCase("Error")) {
+            return;
+        }
+        cdvManager.rerunAnalysis(new Receiver<StudyProxy>() {
+
+            @Override
+            public void onSuccess(StudyProxy response) {
+                study = response;
+                getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
+                StudyModifiedEvent.fire(getEventBus(), response);
+            }
+        }, study.getId());
     }
 
 

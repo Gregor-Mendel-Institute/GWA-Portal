@@ -35,7 +35,7 @@ public class Study extends SecureEntity {
     @JoinColumn(name = "cdv_phen_transformation_id", nullable = false)
     private Transformation transformation;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "study")
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "study", orphanRemoval = true)
     private StudyJob job;
 
     private String name;
@@ -146,6 +146,10 @@ public class Study extends SecureEntity {
     public void setJob(StudyJob job) {
         this.job = job;
         job.setStudy(this);
+    }
+
+    public void removeJob() {
+        this.job = null;
     }
 
     public Date getCreated() {
