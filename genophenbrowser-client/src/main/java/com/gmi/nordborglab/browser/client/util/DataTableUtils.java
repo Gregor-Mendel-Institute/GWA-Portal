@@ -25,6 +25,15 @@ public class DataTableUtils {
         return dataTable;
     }
 
+    public static com.googlecode.gwt.charts.client.DataTable createChartDataTableFromString(String json) {
+        com.googlecode.gwt.charts.client.DataTable dataTable = null;
+        try {
+            dataTable = (com.googlecode.gwt.charts.client.DataTable) com.googlecode.gwt.charts.client.DataTable.create(json);
+        } catch (Exception e) {
+        }
+        return dataTable;
+    }
+
     public static DataTable createPhentoypeExplorerTable(ImmutableList<TraitProxy> traits) {
         DataTable dataTable = DataTable.create();
         dataTable.addColumn(AbstractDataTable.ColumnType.STRING, "ID Name Phenotype");
