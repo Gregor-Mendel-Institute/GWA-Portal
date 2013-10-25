@@ -11,12 +11,23 @@ import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.google.gwt.cell.client.AbstractSafeHtmlCell;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.client.SafeHtmlTemplates;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.text.shared.SafeHtmlRenderer;
 import com.google.gwt.user.cellview.client.Column;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Set;
 
 public interface PassportDataGridColumns {
 
@@ -160,27 +171,61 @@ public interface PassportDataGridColumns {
         }
     }
 
-    public static class AlleleAssayColumn extends Column<PassportProxy, String> {
+
+    public static class AlleleAssayRenderer extends AbstractSafeHtmlRenderer<Set<AlleleAssayProxy>> {
+
+        interface Template extends SafeHtmlTemplates {
+
+            @Template("<li >{0}</li>")
+            SafeHtml item(String text);
+        }
+
+        private static Template template = GWT.create(Template.class);
+        private static AlleleAssayRenderer instance;
+
+        public static AlleleAssayRenderer getInstance() {
+            if (instance == null) {
+                instance = new AlleleAssayRenderer();
+            }
+            return instance;
+        }
+
+        @Override
+        public SafeHtml render(Set<AlleleAssayProxy> object) {
+            SafeHtmlBuilder builder = new SafeHtmlBuilder();
+            builder.appendHtmlConstant("<ul style=\"\">");
+            for (AlleleAssayProxy alleleAssayProxy : object) {
+                builder.append(template.item(alleleAssayProxy.getName()));
+            }
+            builder.appendHtmlConstant("</ul>");
+            return builder.toSafeHtml();
+        }
+    }
+
+    public static class AlleleAssayCell extends AbstractSafeHtmlCell<Set<AlleleAssayProxy>> {
+
+        public AlleleAssayCell() {
+            super(AlleleAssayRenderer.getInstance());
+        }
+
+        @Override
+        protected void render(Context context, SafeHtml data, SafeHtmlBuilder sb) {
+            sb.append(data);
+        }
+
+    }
+
+
+    public static class AlleleAssayColumn extends Column<PassportProxy, Set<AlleleAssayProxy>> {
 
         public AlleleAssayColumn() {
-            super(new TextCell());
+            super(new AlleleAssayCell());
             // TODO Auto-generated constructor stub
         }
 
         @Override
-        public String getValue(PassportProxy object) {
-            return Joiner.on(',').skipNulls().join(Iterables.transform(object.getAlleleAssays(), new Function<AlleleAssayProxy, String>() {
-
-                @Override
-                @Nullable
-                public String apply(@Nullable AlleleAssayProxy input) {
-                    String name = null;
-                    if (input != null)
-                        name = input.getName();
-                    return name;
-                }
-
-            }));
+        public Set<AlleleAssayProxy> getValue(PassportProxy object) {
+            return object.getAlleleAssays();
         }
 
     }

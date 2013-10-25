@@ -1,87 +1,96 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-	xmlns:g='urn:import:com.google.gwt.user.client.ui'
-	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
-	xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
-	xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-	xmlns:chzn="urn:import:com.watopi.chosen.client.gwt"
-	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
-	ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
-	ui:generateLocales='default'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:chzn="urn:import:com.watopi.chosen.client.gwt"
+             ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+             ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+             ui:generateLocales='default'>
 
 
-	<ui:style>
-		.filter_container {
-			width:100%;
-		}
-		.filter_textbox_container {
-			display:inline-block !important;
-			margin-left:10px !important;
-		}
-		.filter_textbox {
-			font-size:12px !important;
-			margin-bottom: 0 !important;
-			/*padding: 2px 6px !important;
-			height:19px !important;*/
-			vertical-align:middle;	
-		}
-		.filter_id_textbox {
-			width:40px;
-		}
-		.filter_name_textbox {
-			width:136px;
-		}
-		.filter_collector_textbox {
-			width:186px;
-		}
-		.filter_country_textbox {
-			width:60px;
-		}
-	</ui:style>
+    <ui:style>
+        .filter_container {
+            width: 100%;
+        }
 
-	<g:DockLayoutPanel unit="PX" >
-		<g:north size="39">
-			<g:HTMLPanel addStyleNames="{style.filter_container}" ui:field="northContainer">
-				<div style="margin-top:5px;">
-					<b:TextBox ui:field="filterId" placeholder="ID..." addStyleNames="{style.filter_textbox} {style.filter_id_textbox}"/>
-					<b:TextBox ui:field="filterName" placeholder="Name..." addStyleNames="{style.filter_textbox} {style.filter_name_textbox}"/>
-					<b:TextBox ui:field="filterAccNumber" placeholder="Number..." addStyleNames="{style.filter_textbox} {style.filter_name_textbox}"/>
-					<b:TextBox ui:field="filterCollector" placeholder="Collector..." addStyleNames="{style.filter_textbox} {style.filter_collector_textbox}"/>
-				
-					<b:TextBox ui:field="filterCountry" placeholder="Country..." addStyleNames="{style.filter_textbox} {style.filter_country_textbox}"/>
-				<div style="width:120px;" class="{style.filter_textbox_container}" />
+        .filter_textbox_container {
+            display: inline-block !important;
+            margin-left: 10px !important;
+        }
 
-					<chzn:ChosenListBox ui:field="filterSampStat" width="255px" placeholderText="Filter types..." />
-					<b:TextBox ui:field="filterSource" placeholder="Source..." addStyleNames="{style.filter_textbox} {style.filter_name_textbox}"/>
+        .filter_textbox {
+            font-size: 12px !important;
+            margin-bottom: 0 !important;
+            /*padding: 2px 6px !important;
+            height:19px !important;*/
+            vertical-align: middle;
+        }
 
-					<chzn:ChosenListBox ui:field="filterAlleleAssay"  width="300px" placeholderText="Filter genotypes..." />
-				</div>
-			</g:HTMLPanel>
-		</g:north>
-		<g:center>
-			<g:LayoutPanel>
-				<g:layer top="0" bottom="50%" left="5px" right="0">
-					<g:LayoutPanel>
-						<g:layer top="0" left="0" right="0" bottom="30px">
-							<c:DataGrid ui:field="passportDataGrid" />
-						</g:layer>
-						<g:layer bottom="0" left="0" right="0" height="30px"> 
-							<gui:CustomPager ui:field="pager"/>
-						</g:layer>
-					</g:LayoutPanel>
-				</g:layer>
-				<g:layer top="50%" bottom="0" left="5px" right="0">
-					<g:LayoutPanel>
-						<g:layer top="0" left="0" width="50%" bottom="0">
-							<g:SimpleLayoutPanel ui:field="mapContainer" />
-						</g:layer>
-						<g:layer top="0" bottom="0" left="50%" right="0">
-							<g:HTMLPanel>Geochart</g:HTMLPanel>
-						</g:layer>
-					</g:LayoutPanel>
-				</g:layer>
-			</g:LayoutPanel>
-		</g:center>
-	</g:DockLayoutPanel>
+        .filter_id_textbox {
+            width: 40px;
+        }
+
+        .filter_name_textbox {
+            width: 136px;
+        }
+
+        .filter_collector_textbox {
+            width: 186px;
+        }
+
+        .filter_country_textbox {
+            width: 60px;
+        }
+
+        .container {
+            min-height: 750px;
+        }
+
+        .filterContainer {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    </ui:style>
+
+    <g:DockLayoutPanel unit="PX">
+        <g:north size="100">
+            <g:SimplePanel ui:field="filterContainer" addStyleNames="{style.filterContainer}"/>
+            <!--<g:HTMLPanel addStyleNames="{style.filter_container}" ui:field="northContainer">
+                <div style="margin-top:5px;">
+                    <b:TextBox ui:field="filterId" placeholder="ID..." addStyleNames="{style.filter_textbox} {style.filter_id_textbox}"/>
+                    <b:TextBox ui:field="filterName" placeholder="Name..." addStyleNames="{style.filter_textbox} {style.filter_name_textbox}"/>
+                    <b:TextBox ui:field="filterAccNumber" placeholder="Number..." addStyleNames="{style.filter_textbox} {style.filter_name_textbox}"/>
+                    <b:TextBox ui:field="filterCollector" placeholder="Collector..." addStyleNames="{style.filter_textbox} {style.filter_collector_textbox}"/>
+
+                    <b:TextBox ui:field="filterCountry" placeholder="Country..." addStyleNames="{style.filter_textbox} {style.filter_country_textbox}"/>
+                <div style="width:120px;" class="{style.filter_textbox_container}" />
+
+                    <chzn:ChosenListBox ui:field="filterSampStat" width="255px" placeholderText="Filter types..." />
+                    <b:TextBox ui:field="filterSource" placeholder="Source..." addStyleNames="{style.filter_textbox} {style.filter_name_textbox}"/>
+
+                    <chzn:ChosenListBox ui:field="filterAlleleAssay"  width="300px" placeholderText="Filter genotypes..." />
+                </div>
+            </g:HTMLPanel>-->
+        </g:north>
+        <g:center>
+            <g:LayoutPanel addStyleNames="{style.container}" ui:field="lowerContainer">
+                <g:layer top="0" bottom="50%" left="5px" right="0">
+                    <g:LayoutPanel>
+                        <g:layer top="0" left="0" right="0" bottom="30px">
+                            <c:DataGrid ui:field="passportDataGrid"/>
+                        </g:layer>
+                        <g:layer bottom="0" left="0" right="0" height="30px">
+                            <gui:CustomPager ui:field="pager"/>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+                <g:layer top="50%" bottom="0" left="5px" right="0">
+                    <g:SimpleLayoutPanel ui:field="mapContainer"/>
+                </g:layer>
+            </g:LayoutPanel>
+        </g:center>
+    </g:DockLayoutPanel>
 </ui:UiBinder>

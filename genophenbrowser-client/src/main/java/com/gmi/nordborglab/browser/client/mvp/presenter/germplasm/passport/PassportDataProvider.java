@@ -25,7 +25,7 @@ public class PassportDataProvider extends AsyncDataProvider<PassportProxy> imple
     private PassportPageProxy data;
     private ImmutableList<PassportProxy> filteredView;
     private Long taxonomyId;
-    private int size = 250;
+    private int size = 50;
     private boolean isPolling = false;
     int start = 0;
     private PassportProxyFilter passportProxyFilter;
