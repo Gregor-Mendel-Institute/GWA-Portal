@@ -6,27 +6,28 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 
 public class FlagCell extends IconCellDecorator<String> {
-	
-	private final FlagMap flagMap;
-	
-	
-	public FlagCell(FlagMap flagMap) {
-		super(flagMap.getMap().get("UNK"), new TextCell());
-		this.flagMap = flagMap;
-	}
+
+    private final FlagMap flagMap;
 
 
-	@Override
-	protected SafeHtml getIconHtml(String value) {
-		ImageResource img = flagMap.getMap().get("UNK");
-		if (flagMap.getMap().containsKey(value))
-			img = flagMap.getMap().get(value);
-		AbstractImagePrototype image  = AbstractImagePrototype.create(img);
-		SafeHtml imageHTML = image.getSafeHtml();
-		return imageHTML;
-	}
-	
+    public FlagCell(FlagMap flagMap) {
+        super(flagMap.getMap().get("UNK"), new TextCell(), HasVerticalAlignment.ALIGN_MIDDLE, -30);
+        this.flagMap = flagMap;
+    }
+
+
+    @Override
+    protected SafeHtml getIconHtml(String value) {
+        ImageResource img = flagMap.getMap().get("UNK");
+        if (flagMap.getMap().containsKey(value))
+            img = flagMap.getMap().get(value);
+        AbstractImagePrototype image = AbstractImagePrototype.create(img);
+        SafeHtml imageHTML = image.getSafeHtml();
+        return imageHTML;
+    }
+
 
 }
