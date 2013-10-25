@@ -26,13 +26,15 @@ public abstract class FilterItemPresenterWidget<C extends FilterItemPresenterWid
     protected ConstEnums.FILTERS filterType;
 
     protected FilterItem filterItem;
+    protected boolean hasMultiple;
 
     public interface MyView extends View, HasUiHandlers<FilterItemPresenterUiHandlers> {
 
         void showPopup(boolean show);
 
-
         void setFilterLabel(String name);
+
+
     }
 
     protected FilterItemPresenterWidget(EventBus eventBus, C view) {
@@ -69,15 +71,22 @@ public abstract class FilterItemPresenterWidget<C extends FilterItemPresenterWid
         if (filterItem == null) {
             filterItem = new FilterItem(filterType, newFiltervalues);
         } else {
-            filterItem.getValues().addAll(newFiltervalues);
+            if (hasMultiple) {
+                filterItem.getValues().addAll(newFiltervalues);
+            } else {
+                filterItem.setValues(newFiltervalues);
+            }
         }
         reset();
-        getEventBus().fireEventFromSource(new FilterAddedEvent(), this);
+        fireEvent();
         getView().showPopup(false);
     }
 
-    public void setActiveFilterItem(FilterItem filterItem) {
-        this.filterItem = filterItem;
+    public void resetActiveFilterItem(boolean fireEvent) {
+        this.filterItem = null;
+        if (fireEvent) {
+            fireEvent();
+        }
     }
 
     public FilterItem getActiveFilterItem() {
@@ -89,11 +98,38 @@ public abstract class FilterItemPresenterWidget<C extends FilterItemPresenterWid
 
     }
 
-
     abstract List<FilterItemValue> createFilterItemValue();
 
-    abstract void init();
 
-    abstract void reset();
+    protected abstract void init();
+
+    protected abstract void reset();
+
+    public void setHasMultiple(boolean hasMultiple) {
+        this.hasMultiple = hasMultiple;
+    }
+
+    public void setFilterItemValue(List<FilterItemValue> values) {
+        setFilterItemValue(values, true, true);
+    }
+
+    public void setFilterItemValue(List<FilterItemValue> values, boolean isAdd, boolean fireEvent) {
+        if (filterItem == null) {
+            filterItem = new FilterItem(filterType, values);
+        } else {
+            if (isAdd) {
+                filterItem.getValues().addAll(values);
+            } else {
+                filterItem.setValues(values);
+            }
+        }
+        if (fireEvent) {
+            fireEvent();
+        }
+    }
+
+    protected void fireEvent() {
+        getEventBus().fireEventFromSource(new FilterAddedEvent(), this);
+    }
 
 }
