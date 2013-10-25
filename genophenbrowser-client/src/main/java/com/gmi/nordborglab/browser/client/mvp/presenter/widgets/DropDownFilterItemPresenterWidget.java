@@ -2,12 +2,15 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.widgets;
 
 import com.gmi.nordborglab.browser.shared.dto.FilterItemValue;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,7 +29,10 @@ public class DropDownFilterItemPresenterWidget extends FilterItemPresenterWidget
         void setFilterName(String name);
 
         void clearSelection();
+
+        void setHasMultiple(boolean hasMultiple);
     }
+
 
     @Inject
     public DropDownFilterItemPresenterWidget(EventBus eventBus, MyView view) {
@@ -48,12 +54,13 @@ public class DropDownFilterItemPresenterWidget extends FilterItemPresenterWidget
     }
 
     @Override
-    void init() {
+    protected void init() {
         getView().setFilterName(filterType.name());
+        getView().setHasMultiple(hasMultiple);
     }
 
     @Override
-    void reset() {
+    protected void reset() {
         getView().clearSelection();
     }
 

@@ -18,6 +18,7 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.maps.client.MapOptions;
 import com.google.gwt.maps.client.MapTypeId;
@@ -100,6 +101,8 @@ public class PassportDetailView extends ViewImpl implements
     Button statisticTypeBtn;
     @UiField
     Button unitOfMeasureBtn;
+    @UiField
+    LayoutPanel container;
 
 
     public enum STATS_TYPE {TRAIT_ONTOLOGY, ENV_ONTOLOGY, STATISTIC_TYPE, UNIT_OF_MEASURE}
@@ -187,6 +190,12 @@ public class PassportDetailView extends ViewImpl implements
         mapWidget.setSize("100%", "100%");
         mapContainer.add(mapWidget);
         marker.setMap(mapWidget);
+    }
+
+    @Override
+    public void setInSlot(Object slot, Widget content) {
+        super.setInSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
+
     }
 
     @Override
@@ -377,6 +386,7 @@ public class PassportDetailView extends ViewImpl implements
     private void forceLayout() {
         if (!widget.isAttached() || !widget.isVisible())
             return;
+        container.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.AUTO);
         drawStatsChart(STATS_TYPE.TRAIT_ONTOLOGY);
     }
 

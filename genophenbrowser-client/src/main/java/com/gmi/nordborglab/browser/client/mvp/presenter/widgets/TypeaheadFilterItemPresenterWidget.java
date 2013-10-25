@@ -52,12 +52,12 @@ public class TypeaheadFilterItemPresenterWidget extends FilterItemPresenterWidge
     }
 
     @Override
-    void init() {
+    protected void init() {
         getView().setFilterName(filterType.name());
     }
 
     @Override
-    void reset() {
+    protected void reset() {
         getView().getSearchTb().setText("");
     }
 

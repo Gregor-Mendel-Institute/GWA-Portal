@@ -52,6 +52,7 @@ public class SearchView extends ViewWithUiHandlers<SearchUiHandlers> implements 
         });
         // for TOur
         suggestBox.getElement().setId("globalSearchBox");
+        suggestBox.getElement().setAttribute("placeholder", "Global search...");
     }
 
     @Override

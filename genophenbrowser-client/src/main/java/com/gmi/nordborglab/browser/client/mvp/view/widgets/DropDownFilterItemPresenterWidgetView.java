@@ -69,6 +69,12 @@ public class DropDownFilterItemPresenterWidgetView extends FilterItemPresenterWi
         filterDD.setSelectedIndex(-1);
     }
 
+    @Override
+    public void setHasMultiple(boolean hasMultiple) {
+        filterDD.setMultipleSelect(hasMultiple);
+        filterDD.update();
+    }
+
 
     @Override
     public List<String[]> getSelectedValues() {

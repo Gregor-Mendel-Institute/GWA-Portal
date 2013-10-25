@@ -11,212 +11,202 @@ import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.SimpleLayoutPanel;
-import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.visualization.client.DataTable;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
+import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
+import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
+import com.googlecode.gwt.charts.client.options.Legend;
+import com.googlecode.gwt.charts.client.options.LegendAlignment;
+import com.googlecode.gwt.charts.client.options.LegendPosition;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 
 public class TaxonomyDetailView extends ViewWithUiHandlers<TaxonomyDetailUiHandlers> implements
-		TaxonomyDetailPresenter.MyView {
+        TaxonomyDetailPresenter.MyView {
 
-	private final Widget widget;
+    private final Widget widget;
 
-	public interface Binder extends UiBinder<Widget, TaxonomyDetailView> {
-	}
-	
-	public interface TaxonomyDisplayDriver extends RequestFactoryEditorDriver<TaxonomyProxy, TaxonomyDisplayEditor> {}
-	public interface TaxonomyEditDriver extends RequestFactoryEditorDriver<TaxonomyProxy, TaxonomyEditEditor> {}
-	
-	@UiField TaxonomyDisplayEditor taxonomyDisplayEditor;
-	@UiField TaxonomyEditEditor taxonomyEditEditor;
-	@UiField ToggleButton edit; 
-	@UiField ToggleButton save;
-	@UiField Anchor cancel;
-	@UiField SimpleLayoutPanel lowerChartContainer;
-	@UiField SimpleLayoutPanel lowerLeftChartContainer;
-	@UiField SimpleLayoutPanel upperLeftChartContainer;
-	@UiField SimpleLayoutPanel upperRightChartContainer;
-	
-	protected State state = State.DISPLAYING;
-	private final TaxonomyDisplayDriver displayDriver;
-	private final TaxonomyEditDriver editDriver;
-	private boolean layoutScheduled = false;
-	private DataTable geoChartData;
-	private DataTable alleleAssayData;
-	private DataTable sampStatData;
-	private DataTable stockGenerationData;
-	
-	private final ScheduledCommand layoutCmd = new ScheduledCommand() {
-		public void execute() {
-			layoutScheduled = false;
-			forceLayout();
-		}
-	};
+    public interface Binder extends UiBinder<Widget, TaxonomyDetailView> {
+    }
 
-	@Inject
-	public TaxonomyDetailView(final Binder binder, final TaxonomyDisplayDriver displayDriver, final TaxonomyEditDriver editDriver) {
-		widget = binder.createAndBindUi(this);
-		this.displayDriver = displayDriver;
-		this.editDriver = editDriver;
-		this.displayDriver.initialize(taxonomyDisplayEditor);
-		this.editDriver.initialize(taxonomyEditEditor);
-	}
+    public interface TaxonomyDisplayDriver extends RequestFactoryEditorDriver<TaxonomyProxy, TaxonomyDisplayEditor> {
+    }
 
-	@Override
-	public Widget asWidget() {
-		return widget;
-	}
-	
-	@Override
-	public TaxonomyDisplayDriver getDisplayDriver() {
-		return displayDriver;
-	}
-	
-	@Override
-	public TaxonomyEditDriver getEditDriver() {
-		return editDriver;
-	}
+    public interface TaxonomyEditDriver extends RequestFactoryEditorDriver<TaxonomyProxy, TaxonomyEditEditor> {
+    }
 
-	@Override
-	public void setState(State state, int permission) {
-		this.state = state;
-		taxonomyDisplayEditor.setVisible(state == State.DISPLAYING);
-		taxonomyEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-		edit.setVisible(state == State.DISPLAYING &&
-				(permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-		save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-		cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-	}
-	
-	
-	@UiHandler("edit") 
-	public void onEdit(ClickEvent e){
-		if (state == State.DISPLAYING) {
-			getUiHandlers().onEdit();
-		}
-	}
-	
-	@UiHandler("save") 
-	public void onSave(ClickEvent e) {
-		if (state == State.EDITING) {
-			getUiHandlers().onSave();
-		}
-	}
-	
-	@UiHandler("cancel") 
-	public void onCancel(ClickEvent e) {
-		if (state == State.EDITING) {
-			getUiHandlers().onCancel();
-		}
-	}
+    @UiField
+    TaxonomyDisplayEditor taxonomyDisplayEditor;
+    @UiField
+    TaxonomyEditEditor taxonomyEditEditor;
+    @UiField
+    ToggleButton edit;
+    @UiField
+    ToggleButton save;
+    @UiField
+    Anchor cancel;
+    @UiField
+    com.googlecode.gwt.charts.client.corechart.PieChart stockChart;
+    @UiField
+    com.googlecode.gwt.charts.client.corechart.PieChart accessionTypeChart;
+    @UiField
+    com.googlecode.gwt.charts.client.corechart.PieChart genotypeChart;
+    @UiField
+    com.googlecode.gwt.charts.client.geochart.GeoChart geoChart;
+    @UiField
+    LayoutPanel container;
 
-	@Override
-	public void setGeoChartData(DataTable geoChartData) {
-		this.geoChartData = geoChartData;
-		
-	}
+    protected State state = State.DISPLAYING;
+    private final TaxonomyDisplayDriver displayDriver;
+    private final TaxonomyEditDriver editDriver;
+    private boolean layoutScheduled = false;
+    private DataTable geoChartData;
+    private DataTable alleleAssayData;
+    private DataTable sampStatData;
+    private DataTable stockGenerationData;
 
-	@Override
-	public void setAlleleAssayData(DataTable alleleAssayData) {
-		this.alleleAssayData = alleleAssayData;
-	}
+    private final ScheduledCommand layoutCmd = new ScheduledCommand() {
+        public void execute() {
+            layoutScheduled = false;
+            forceLayout();
+        }
+    };
 
-	@Override
-	public void setSampStatData(DataTable sampStatData) {
-		this.sampStatData = sampStatData;
-	}
-	
-	@Override
-	public void setStockGenerationData(DataTable stockGenerationData) {
-		this.stockGenerationData = stockGenerationData;
-		
-	}
+    @Inject
+    public TaxonomyDetailView(final Binder binder, final TaxonomyDisplayDriver displayDriver, final TaxonomyEditDriver editDriver) {
+        widget = binder.createAndBindUi(this);
+        this.displayDriver = displayDriver;
+        this.editDriver = editDriver;
+        this.displayDriver.initialize(taxonomyDisplayEditor);
+        this.editDriver.initialize(taxonomyEditEditor);
+    }
 
-	@Override
-	public void scheduleLayout() {
-		if (widget.isAttached() && !layoutScheduled) {
-			layoutScheduled = true;
-			Scheduler.get().scheduleDeferred(layoutCmd);
-		}
-	}
-	
-	private void forceLayout() {
-		if (!widget.isAttached() || !widget.isVisible())
-			return;
-		drawAlleleAssayChart();
-		drawGeoChart();
-		drawSampStatChart();
-		drawStockDataChart();
-	}
-	
-	private GeoChart.Options createGeoChartOptions() {
-		GeoChart.Options options = GeoChart.Options.create();
-		options.setTitle("Geographic distribution");
-		options.setWidth(lowerChartContainer.getOffsetWidth());
-		options.setHeight(lowerChartContainer.getOffsetHeight());
-		options.set("keepAspectRatio",false);
-		return options;
-	}
-	
-	private void drawStockDataChart() {
-		PieOptions options = PieOptions.create();
-		//options.setTitle("Geographic distribution");
-		options.setHeight(lowerLeftChartContainer.getOffsetHeight());
-		options.setWidth(lowerLeftChartContainer.getOffsetWidth());
-		if (lowerLeftChartContainer.getWidget() == null) {
-			lowerLeftChartContainer.add(new PieChart(stockGenerationData, options));
-		}
-		else {
-			PieChart pieChart  = (PieChart)lowerLeftChartContainer.getWidget();
-			pieChart.draw(stockGenerationData,options);
-		}
-	}
-	
-	private void drawGeoChart() {
-		if (lowerChartContainer.getWidget() == null) {
-			lowerChartContainer.add(new GeoChart(geoChartData,createGeoChartOptions()));
-		}
-		else {
-			GeoChart geoChart = (GeoChart)lowerChartContainer.getWidget();
-			geoChart.draw(geoChartData,createGeoChartOptions());
-		}
-	}
-	private void drawAlleleAssayChart() {
-		PieOptions options = PieOptions.create();
-		options.setHeight(upperLeftChartContainer.getOffsetHeight());
-		options.setWidth(upperLeftChartContainer.getOffsetWidth());
-		if (upperLeftChartContainer.getWidget() == null) {
-			upperLeftChartContainer.add(new PieChart(alleleAssayData, options));
-		}
-		else {
-			PieChart pieChart  = (PieChart)upperLeftChartContainer.getWidget();
-			pieChart.draw(alleleAssayData,options);
-		}
-	}
-	
-	private void drawSampStatChart() {
-		PieOptions options = PieOptions.create();
-		options.setHeight(upperRightChartContainer.getOffsetHeight());
-		options.setWidth(upperRightChartContainer.getOffsetWidth());
-		if (upperRightChartContainer.getWidget() == null) {
-			upperRightChartContainer.add(new PieChart(sampStatData, options));
-		}
-		else {
-			PieChart pieChart  = (PieChart)upperRightChartContainer.getWidget();
-			pieChart.draw(sampStatData,options);
-		}
-	}
+    @Override
+    public Widget asWidget() {
+        return widget;
+    }
 
-	
-	
+    @Override
+    public TaxonomyDisplayDriver getDisplayDriver() {
+        return displayDriver;
+    }
+
+    @Override
+    public TaxonomyEditDriver getEditDriver() {
+        return editDriver;
+    }
+
+    @Override
+    public void setState(State state, int permission) {
+        this.state = state;
+        taxonomyDisplayEditor.setVisible(state == State.DISPLAYING);
+        taxonomyEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+        edit.setVisible(state == State.DISPLAYING &&
+                (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+        save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+        cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
+    }
+
+
+    @UiHandler("edit")
+    public void onEdit(ClickEvent e) {
+        if (state == State.DISPLAYING) {
+            getUiHandlers().onEdit();
+        }
+    }
+
+    @UiHandler("save")
+    public void onSave(ClickEvent e) {
+        if (state == State.EDITING) {
+            getUiHandlers().onSave();
+        }
+    }
+
+    @UiHandler("cancel")
+    public void onCancel(ClickEvent e) {
+        if (state == State.EDITING) {
+            getUiHandlers().onCancel();
+        }
+    }
+
+    @Override
+    public void setGeoChartData(DataTable geoChartData) {
+        this.geoChartData = geoChartData;
+
+    }
+
+    @Override
+    public void setAlleleAssayData(DataTable alleleAssayData) {
+        this.alleleAssayData = alleleAssayData;
+    }
+
+    @Override
+    public void setSampStatData(DataTable sampStatData) {
+        this.sampStatData = sampStatData;
+    }
+
+    @Override
+    public void setStockGenerationData(DataTable stockGenerationData) {
+        this.stockGenerationData = stockGenerationData;
+
+    }
+
+    @Override
+    public void scheduleLayout() {
+        if (widget.isAttached() && !layoutScheduled) {
+            layoutScheduled = true;
+            Scheduler.get().scheduleDeferred(layoutCmd);
+        }
+    }
+
+    private void forceLayout() {
+        if (!widget.isAttached() || !widget.isVisible())
+            return;
+        container.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.AUTO);
+        drawAlleleAssayChart();
+        drawGeoChart();
+        drawSampStatChart();
+        drawStockDataChart();
+    }
+
+    private GeoChart.Options createGeoChartOptions() {
+        GeoChart.Options options = GeoChart.Options.create();
+        options.setTitle("Geographic distribution");
+        options.set("keepAspectRatio", false);
+        return options;
+    }
+
+    private void drawStockDataChart() {
+        PieChartOptions options = PieChartOptions.create();
+        Legend legend = Legend.create();
+        legend.setAligment(LegendAlignment.START);
+        legend.setPosition(LegendPosition.TOP);
+        options.setLegend(legend);
+        stockChart.draw(stockGenerationData, options);
+    }
+
+    private void drawGeoChart() {
+        GeoChartOptions options = GeoChartOptions.create();
+        geoChart.draw(geoChartData, options);
+    }
+
+    private void drawAlleleAssayChart() {
+        PieChartOptions options = PieChartOptions.create();
+        genotypeChart.draw(alleleAssayData, options);
+    }
+
+    private void drawSampStatChart() {
+        PieChartOptions options = PieChartOptions.create();
+        accessionTypeChart.draw(sampStatData, options);
+    }
+
+
 }

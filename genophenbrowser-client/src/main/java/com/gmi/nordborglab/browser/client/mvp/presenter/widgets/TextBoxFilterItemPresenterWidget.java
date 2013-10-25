@@ -41,12 +41,12 @@ public class TextBoxFilterItemPresenterWidget extends FilterItemPresenterWidget<
     }
 
     @Override
-    void init() {
+    protected void init() {
         getView().setFilterName(filterType.name());
     }
 
     @Override
-    void reset() {
+    protected void reset() {
         getView().getFlterTB().setText("");
     }
 

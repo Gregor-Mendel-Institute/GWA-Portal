@@ -34,9 +34,9 @@ public class FilterPresenterWidget extends PresenterWidget<FilterPresenterWidget
     }
 
     public static final Object TYPE_FilterItemsContent = new Object();
-    private List<FilterItemPresenterWidget> filterItemWidgets;
 
-    // private final EventBus localEventBus;
+    private List<FilterItemPresenterWidget> filterItemWidgets;
+    private Boolean hasMultiple = null;
 
     @Inject
     public FilterPresenterWidget(EventBus eventBus, MyView view) {
@@ -45,12 +45,14 @@ public class FilterPresenterWidget extends PresenterWidget<FilterPresenterWidget
         //  this.localEventBus = new SimpleEventBus();
     }
 
-
     public void setFilterItemWidgets(List<FilterItemPresenterWidget> filterItemWidgets) {
         this.filterItemWidgets = filterItemWidgets;
         getView().resetActiveFilters();
         getView().resetAvailableFilters();
         for (FilterItemPresenterWidget filterItem : filterItemWidgets) {
+            if (hasMultiple != null) {
+                filterItem.setHasMultiple(hasMultiple);
+            }
             addToSlot(TYPE_FilterItemsContent, filterItem);
         }
     }
@@ -82,7 +84,7 @@ public class FilterPresenterWidget extends PresenterWidget<FilterPresenterWidget
     public void removeFilter(FilterItem filterItem) {
         for (FilterItemPresenterWidget filterItemWidget : filterItemWidgets) {
             if (filterItem.equals(filterItemWidget.getActiveFilterItem())) {
-                filterItemWidget.setActiveFilterItem(null);
+                filterItemWidget.resetActiveFilterItem(false);
                 break;
             }
         }
@@ -98,6 +100,28 @@ public class FilterPresenterWidget extends PresenterWidget<FilterPresenterWidget
             }
         }
         return activeFilterItems;
+    }
+
+    public void setHasMultiple(Boolean hasMultiple) {
+        if (this.hasMultiple != hasMultiple && hasMultiple != null) {
+            if (filterItemWidgets != null) {
+                for (FilterItemPresenterWidget filterWidget : filterItemWidgets) {
+                    filterWidget.setHasMultiple(hasMultiple);
+                }
+            }
+        }
+        this.hasMultiple = hasMultiple;
+    }
+
+    // private final EventBus localEventBus;
+    public void reset(boolean fireEvent) {
+        for (FilterItemPresenterWidget filterWidget : filterItemWidgets) {
+            filterWidget.resetActiveFilterItem(false);
+        }
+        getView().resetActiveFilters();
+        if (fireEvent) {
+            getEventBus().fireEventFromSource(new FilterModifiedEvent(), FilterPresenterWidget.this);
+        }
     }
 
 }
