@@ -35,6 +35,7 @@ public class CurrentUser {
     private boolean isComChannelOpen = false;
     private final CustomRequestFactory rf;
 
+    private final static String GRAVATAR_URL = "http://www.gravatar.com/avatar/";
 
     @Inject
     public CurrentUser(RequestDispatcher dispatcher, MessageBus messageBus, EventBus eventBus, CustomRequestFactory rf) {
@@ -118,9 +119,15 @@ public class CurrentUser {
     public boolean isAdmin() {
         if (!isLoggedIn())
             return false;
-        if (appUser.getAuthorities() == null)
+        return isAdmin(appUser);
+    }
+
+    public static boolean isAdmin(AppUserProxy user) {
+        if (user == null)
             return false;
-        AuthorityProxy authority = Iterables.find(appUser.getAuthorities(), new Predicate<AuthorityProxy>() {
+        if (user.getAuthorities() == null)
+            return false;
+        AuthorityProxy authority = Iterables.find(user.getAuthorities(), new Predicate<AuthorityProxy>() {
 
             @Override
             public boolean apply(@Nullable AuthorityProxy input) {
@@ -130,7 +137,7 @@ public class CurrentUser {
                     return true;
                 return false;
             }
-        });
+        }, null);
         if (authority == null)
             return false;
         return true;
@@ -180,5 +187,20 @@ public class CurrentUser {
                 .withValue(date)
                 .noErrorHandling()
                 .sendNowWith(dispatcher);
+    }
+
+    public String getGravatarUrl(int size) {
+        String url = getGravatarUrl(appUser, size, true);
+        return url;
+    }
+
+    public static String getGravatarUrl(AppUserProxy user, int size, boolean check) {
+        if (user == null)
+            return "";
+        String url = GRAVATAR_URL + user.getGravatarHash() + ".jpg?s=" + size + "&d=identicon";
+        if (check) {
+            url = url + (user.getAvatarSource() == AppUserProxy.AVATAR_SOURCE.IDENTICON ? "&f=1" : "");
+        }
+        return url;
     }
 }
