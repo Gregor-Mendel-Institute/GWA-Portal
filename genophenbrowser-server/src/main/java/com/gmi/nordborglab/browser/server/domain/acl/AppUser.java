@@ -4,27 +4,58 @@ package com.gmi.nordborglab.browser.server.domain.acl;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
+import com.gmi.nordborglab.browser.server.validation.PasswordsEqual;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.hibernate.validator.constraints.Email;
 
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 
 @Entity
 @Table(name = "users", schema = "acl")
 @AttributeOverride(name = "id", column = @Column(name = "id"))
 @SequenceGenerator(name = "idSequence", sequenceName = "acl.users_id_seq", allocationSize = 1)
+@PasswordsEqual
 public class AppUser extends BaseEntity {
 
 
     private String username;
     private String password;
     @Column(unique = true)
+    @Email
     private String email;
+    @NotNull
     private String firstname;
+    @NotNull
     private String lastname;
     private boolean enabled = true;
     private boolean openidUser;
+
+    private Date registrationdate;
+
+    @Enumerated(EnumType.ORDINAL)
+    private AppUserProxy.AVATAR_SOURCE avatarSource;
+
+    @Transient
+    private String newPassword;
+    @Transient
+    private String newPasswordConfirm;
+
+    @Transient
+    private String gravatarHash;
+
+    @Transient
+    private int numberOfStudies = 0;
+
+    @Transient
+    private int numberOfPhenotypes = 0;
+
+    @Transient
+    private int numberOfAnalysis = 0;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Authority> authorities;
@@ -61,6 +92,7 @@ public class AppUser extends BaseEntity {
 
     public void setEmail(String email) {
         this.email = email;
+        setGravatarHash(DigestUtils.md5Hex(getEmail().toLowerCase().trim()));
     }
 
     public String getFirstname() {
@@ -159,5 +191,69 @@ public class AppUser extends BaseEntity {
 
     public void setNotificationCheckDate(Date notificationCheckDate) {
         this.notificationCheckDate = notificationCheckDate;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public String getNewPasswordConfirm() {
+        return newPasswordConfirm;
+    }
+
+    public void setNewPasswordConfirm(String newPasswordConfirm) {
+        this.newPasswordConfirm = newPasswordConfirm;
+    }
+
+    public AppUserProxy.AVATAR_SOURCE getAvatarSource() {
+        return avatarSource;
+    }
+
+    public void setAvatarSource(AppUserProxy.AVATAR_SOURCE avatarSource) {
+        this.avatarSource = avatarSource;
+    }
+
+    public String getGravatarHash() {
+        return gravatarHash;
+    }
+
+    public void setGravatarHash(String gravatarHash) {
+        this.gravatarHash = gravatarHash;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public int getNumberOfStudies() {
+        return numberOfStudies;
+    }
+
+    public void setNumberOfStudies(int numberOfStudies) {
+        this.numberOfStudies = numberOfStudies;
+    }
+
+    public int getNumberOfPhenotypes() {
+        return numberOfPhenotypes;
+    }
+
+    public void setNumberOfPhenotypes(int numberOfPhenotypes) {
+        this.numberOfPhenotypes = numberOfPhenotypes;
+    }
+
+    public int getNumberOfAnalysis() {
+        return numberOfAnalysis;
+    }
+
+    public void setNumberOfAnalysis(int numberOfAnalysis) {
+        this.numberOfAnalysis = numberOfAnalysis;
+    }
+
+    public Date getRegistrationdate() {
+        return registrationdate;
     }
 }
