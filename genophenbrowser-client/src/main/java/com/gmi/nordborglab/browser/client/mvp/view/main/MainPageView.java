@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.view.main;
 
+import com.gmi.nordborglab.browser.client.CurrentUser;
 import com.gmi.nordborglab.browser.client.mvp.handlers.MainUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter.MENU;
@@ -14,6 +15,7 @@ import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -93,6 +95,8 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
     HTMLPanel footerPanel;
     @UiField
     DockLayoutPanel mainContainer;
+    @UiField
+    ImageElement avatarImg;
     //@UiField FlowPanel userInfoContainer;
     protected final NotificationPopup notificationPopup = new NotificationPopup();
     private final PlaceManager placeManager;
@@ -138,8 +142,6 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
     public void setInSlot(Object slot, Widget content) {
         if (slot == MainPagePresenter.TYPE_SetMainContent) {
             setMainContent(content);
-        } else if (slot == MainPagePresenter.TYPE_SetUserInfoContent) {
-            setUserInfoContent(content);
         } else {
             super.setInSlot(slot, content);
         }
@@ -147,10 +149,6 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
 
     private void setMainContent(Widget content) {
         container.setWidget(content);
-    }
-
-    private void setUserInfoContent(Widget content) {
-        //userInfoContainer.add(content);
     }
 
     @Override
@@ -176,9 +174,11 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
             //userLink.setText("Log In");
             arrorIcon.getStyle().setDisplay(Display.NONE);
             userInfoContainer.setVisible(false);
+            avatarImg.setSrc("");
 
         } else {
             userLink.setHref("");
+            avatarImg.setSrc(CurrentUser.getGravatarUrl(user, 40, true));
             //userLink.setHTML("My Account<span class=\""+resources.style().arrow_down()+"\" />");
             loginTextLb.setInnerText("My Account");
             arrorIcon.getStyle().setDisplay(Display.INLINE);
@@ -318,6 +318,4 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
     private void updateCheckNotificationDate() {
         getUiHandlers().onOpenAccountInfo();
     }
-
-
 }

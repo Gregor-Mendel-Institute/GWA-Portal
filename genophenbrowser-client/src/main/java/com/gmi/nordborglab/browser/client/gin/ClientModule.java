@@ -36,9 +36,10 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.home.BasicStudyWizardPre
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.HomePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.HomeTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.dashboard.DashboardPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.main.AccountPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.main.ProfilePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.SearchPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.main.UserInfoPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.*;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.PermissionDetailView;
@@ -66,15 +67,17 @@ import com.gmi.nordborglab.browser.client.mvp.view.home.BasicStudyWizardView;
 import com.gmi.nordborglab.browser.client.mvp.view.home.HomeTabView;
 import com.gmi.nordborglab.browser.client.mvp.view.home.HomeView;
 import com.gmi.nordborglab.browser.client.mvp.view.home.dashboard.DashboardView;
+import com.gmi.nordborglab.browser.client.mvp.view.main.AccountView;
 import com.gmi.nordborglab.browser.client.mvp.view.main.MainPageView;
+import com.gmi.nordborglab.browser.client.mvp.view.main.ProfileView;
 import com.gmi.nordborglab.browser.client.mvp.view.main.SearchView;
-import com.gmi.nordborglab.browser.client.mvp.view.main.UserInfoView;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.DropDownFilterItemPresenterWidgetView;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.FilterPresenterWidgetView;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.TextBoxFilterItemPresenterWidgetView;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.TypeaheadFilterItemPresenterWidgetView;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
+import com.gmi.nordborglab.browser.client.validation.ClientValidation;
 import com.gmi.nordborglab.browser.client.validation.ClientValidatorFactory;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
@@ -128,7 +131,8 @@ public class ClientModule extends AbstractPresenterModule {
 
         bind(TokenFormatter.class).to(ParameterizedParameterTokenFormatter.class).in(Singleton.class);
         bind(CurrentUser.class).asEagerSingleton();
-        bind(ValidatorFactory.class).to(ClientValidatorFactory.class);
+        bind(ClientValidation.class).in(Singleton.class);
+        //bind(ValidatorFactory.class).to(ClientValidatorFactory.class);
         bind(Cache.class).to(DefaultCacheImpl.class).in(Singleton.class);
 
         bind(MainResources.class).in(Singleton.class);
@@ -149,8 +153,8 @@ public class ClientModule extends AbstractPresenterModule {
         bindPresenter(HomePresenter.class, HomePresenter.MyView.class,
                 HomeView.class, HomePresenter.MyProxy.class);
 
-        bindPresenterWidget(UserInfoPresenter.class,
-                UserInfoPresenter.MyView.class, UserInfoView.class);
+        bindPresenter(AccountPresenter.class,
+                AccountPresenter.MyView.class, AccountView.class, AccountPresenter.MyProxy.class);
 
         bindPresenter(DashboardPresenter.class,
                 DashboardPresenter.MyView.class, DashboardView.class,
@@ -290,6 +294,8 @@ public class ClientModule extends AbstractPresenterModule {
                 GenomeBrowserPresenter.MyProxy.class);
 
         bindPresenter(HomeTabPresenter.class, HomeTabPresenter.MyView.class, HomeTabView.class, HomeTabPresenter.MyProxy.class);
+
+        bindPresenter(ProfilePresenter.class, ProfilePresenter.MyView.class, ProfileView.class, ProfilePresenter.MyProxy.class);
 
         bindPresenter(GWASViewerPresenter.class, GWASViewerPresenter.MyView.class, GWASViewerView.class, GWASViewerPresenter.MyProxy.class);
 

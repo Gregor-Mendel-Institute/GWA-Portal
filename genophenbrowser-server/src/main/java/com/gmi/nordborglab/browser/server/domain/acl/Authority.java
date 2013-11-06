@@ -32,6 +32,14 @@ public class Authority {
         this.id.setAuthority(authority);
     }
 
+    public Long getUserId() {
+        return this.id.getUserId();
+    }
+
+    public void setUserId(Long id) {
+        this.id.setUserId(id);
+    }
+
     public AppUser getUser() {
         return user;
     }

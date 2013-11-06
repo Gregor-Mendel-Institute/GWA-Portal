@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.google.common.base.Function;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
@@ -15,6 +16,7 @@ import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Sid;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -74,13 +76,7 @@ public class SecurityUtil {
     }
 
     public static CustomUser getUserFromAppUser(AppUser appUser) {
-        return new CustomUser(appUser.getFirstname(), appUser.getLastname(), appUser.getEmail(),
-                appUser.getId().toString(),
-                appUser.getPassword().toLowerCase(),
-                appUser.isEnabled(),
-                appUser.isAccountNonExpired(),
-                appUser.isCredentialsNonExpired(),
-                appUser.isAccountNonLocked(),
+        return new CustomUser(appUser,
                 getGrantedAuthorities(appUser.getAuthorities()));
     }
 
@@ -98,6 +94,9 @@ public class SecurityUtil {
         appUserProxy.setFirstname(user.getFirstname());
         appUserProxy.setLastname(user.getLastname());
         appUserProxy.setEmail(user.getEmail());
+        appUserProxy.setId(user.getId());
+        appUserProxy.setAvatarSource(user.getAppUser().getAvatarSource());
+        appUserProxy.setGravatarHash(DigestUtils.md5Hex(user.getEmail().toLowerCase().trim()));
         AutoBean<AppUserProxy> bean = appUserFactory.appuser(appUserProxy);
         json = AutoBeanCodex.encode(bean).getPayload();
         return json;
@@ -130,6 +129,18 @@ public class SecurityUtil {
         return authorities;
     }
 
+    public static boolean isAdmin(RoleHierarchy roleHierarchy) {
+        Collection<? extends GrantedAuthority> grantedAuthorities = roleHierarchy.getReachableGrantedAuthorities(getAuthentication().getAuthorities());
+        boolean isAdmin = false;
+        for (GrantedAuthority auth : grantedAuthorities) {
+            if (auth.getAuthority().equals("ROLE_ADMIN")) {
+                isAdmin = true;
+                break;
+            }
+        }
+        return isAdmin;
+    }
+
     public static List<Sid> getSids(RoleHierarchy roleHierarchy) {
         List<Sid> sids = new ArrayList<Sid>();
         Authentication user = getAuthentication();
@@ -143,4 +154,8 @@ public class SecurityUtil {
         return sids;
     }
 
+    public static void updateAppUser(AppUser appUser) {
+        CustomUser user = getUserFromAppUser(appUser);
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities()));
+    }
 }

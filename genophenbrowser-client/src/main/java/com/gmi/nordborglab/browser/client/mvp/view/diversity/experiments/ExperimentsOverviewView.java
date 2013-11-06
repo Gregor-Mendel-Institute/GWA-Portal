@@ -12,6 +12,7 @@ import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
+import com.gmi.nordborglab.browser.client.ui.cells.OwnerLinkColumn;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
@@ -87,7 +88,7 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
 
         table.addColumn(new ExperimentListDataGridColumns.TitleColumn(placeManager, new ParameterizedPlaceRequest(NameTokens.experiment)), "Name");
         table.addColumn(new ExperimentListDataGridColumns.DesignColumn(), "Design");
-        table.addColumn(new OwnerColumn(), "Owner");
+        table.addColumn(new OwnerLinkColumn(placeManager), "Owner");
         table.addColumn(new AccessColumn(), "Access");
 
         table.setColumnWidth(2, 150, Style.Unit.PX);

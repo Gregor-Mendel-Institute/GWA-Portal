@@ -7,6 +7,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.text.shared.SimpleSafeHtmlRenderer;
 
 public class HyperlinkCell extends AbstractCell<HyperlinkPlaceManagerColumn.HyperlinkParam> {
 
@@ -16,7 +17,6 @@ public class HyperlinkCell extends AbstractCell<HyperlinkPlaceManagerColumn.Hype
     }
 
     private static Template template = GWT.create(Template.class);
-    ;
     private final boolean isNewWindow;
 
     public static final int LINK_INDEX = 0, URL_INDEX = 1;
@@ -36,12 +36,17 @@ public class HyperlinkCell extends AbstractCell<HyperlinkPlaceManagerColumn.Hype
     @Override
     public void render(Context context, HyperlinkPlaceManagerColumn.HyperlinkParam value, SafeHtmlBuilder sb) {
         if (value != null) {
-            String target = "";
-            if (isNewWindow)
-                target = "_blank";
-            // The template will sanitize the URI.
-            sb.append(template.hyperText(
-                    UriUtils.fromString(value.getUrl()), value.getName(), target));
+            if (value.getUrl() == null) {
+                SimpleSafeHtmlRenderer.getInstance().render(value.getName(), sb);
+            } else {
+                String target = "";
+                if (isNewWindow)
+                    target = "_blank";
+                // The template will sanitize the URI.
+                sb.append(template.hyperText(
+                        UriUtils.fromString(value.getUrl()), value.getName(), target));
+            }
         }
+
     }
 }

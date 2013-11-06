@@ -86,6 +86,10 @@ public class EsAclManager {
         return filter;
     }
 
+    public FilterBuilder getOwnerFilter(List<Long> ids) {
+        return FilterBuilders.termsFilter("owner.sid", ids);
+    }
+
 
     public XContentBuilder addACLAndOwnerContent(XContentBuilder builder, Acl acl) {
         try {

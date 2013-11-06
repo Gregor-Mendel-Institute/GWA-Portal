@@ -33,6 +33,8 @@ public class NameTokens {
     public static final String genomebrowser = "!genotype/genomebrowser";
     public static final String candidateGeneList = "!meta/candidategenelists";
     public static final String candidateGeneListDetail = "!meta/candidategenelist/{id}";
+    public static final String profile = "!profile/{id}";
+    public static final String account = "!account";
 
 
     public static String getHome() {
@@ -151,5 +153,13 @@ public class NameTokens {
 
     public static String getCandidateGeneListDetail() {
         return candidateGeneListDetail;
+    }
+
+    public static String getProfile() {
+        return profile;
+    }
+
+    public static String getAccount() {
+        return account;
     }
 }

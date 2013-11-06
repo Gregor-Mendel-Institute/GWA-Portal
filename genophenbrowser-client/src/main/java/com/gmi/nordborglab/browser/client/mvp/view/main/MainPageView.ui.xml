@@ -326,7 +326,9 @@
                             <ul class="{style.userDetailLinks}">
                                 <li>
                                     <div class="{style.userDetailsContainer}">
-                                        <div class="{mainRes.style.avatar}"></div>
+                                        <div style="float:left;">
+                                            <img ui:field="avatarImg"/>
+                                        </div>
                                         <div class="{style.userDetails}">
                                             <g:Label ui:field="userName" addStyleNames="{style.userName}"></g:Label>
                                             <g:Label ui:field="userEmail"></g:Label>
@@ -335,7 +337,7 @@
                                     <hr class="{style.divider}"/>
                                 </li>
                                 <li>
-                                    <a href="#{nameTokens.getHome}">
+                                    <a href="#{nameTokens.getAccount}">
                                         <span class="{mainRes.style.profile}"/>
                                         Profile
                                     </a>

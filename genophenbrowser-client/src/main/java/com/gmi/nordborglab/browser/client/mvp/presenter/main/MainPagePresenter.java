@@ -5,6 +5,7 @@ import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadUserNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
+import com.gmi.nordborglab.browser.client.events.UserChangeEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.MainUiHandlers;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UserNotificationProxy;
@@ -50,14 +51,11 @@ public class MainPagePresenter extends
     @ContentSlot
     public static final Type<RevealContentHandler<?>> TYPE_SetMainContent = new Type<RevealContentHandler<?>>();
 
-    public static final Object TYPE_SetUserInfoContent = new Object();
-
     @ProxyStandard
     public interface MyProxy extends Proxy<MainPagePresenter> {
 
     }
 
-    private final UserInfoPresenter userInfoPresenter;
     private List<UserNotificationProxy> userNotificationList;
 
     private final AppUserFactory appUserFactory;
@@ -70,13 +68,12 @@ public class MainPagePresenter extends
 
     @Inject
     public MainPagePresenter(final EventBus eventBus, final MyView view,
-                             final MyProxy proxy, final UserInfoPresenter userInfoPresenter,
+                             final MyProxy proxy,
                              final AppUserFactory appUserFactory, final CurrentUser currentUser,
                              final PlaceManager placeManager,
                              final CustomRequestFactory rf) {
         super(eventBus, view, proxy);
         getView().setUiHandlers(this);
-        this.userInfoPresenter = userInfoPresenter;
         this.appUserFactory = appUserFactory;
         this.currentUser = currentUser;
         this.placeManager = placeManager;
@@ -113,8 +110,13 @@ public class MainPagePresenter extends
                 refreshUserNotifications();
             }
         }));
-        // registerHandler(getEventBus().addHandler(LoadNotificationEvent.getType(),new )
-        //setInSlot(TYPE_SetUserInfoContent, userInfoPresenter);
+
+        registerHandler(getEventBus().addHandler(UserChangeEvent.TYPE, new UserChangeEvent.Handler() {
+            @Override
+            public void onChanged(UserChangeEvent event) {
+                getView().showUserInfo(currentUser.getAppUser());
+            }
+        }));
     }
 
     private void refreshUserNotifications() {
@@ -175,7 +177,6 @@ public class MainPagePresenter extends
     @Override
     protected void onUnbind() {
         super.onUnbind();
-        clearSlot(TYPE_SetUserInfoContent);
     }
 
     @Override
