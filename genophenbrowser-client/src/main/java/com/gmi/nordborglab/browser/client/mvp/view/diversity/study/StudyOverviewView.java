@@ -13,6 +13,7 @@ import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
+import com.gmi.nordborglab.browser.client.ui.cells.OwnerLinkColumn;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
@@ -102,7 +103,7 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
         cells.add(new StudyListDataGridColumns.StatusCell());
         cells.add(new StudyListDataGridColumns.ProgressCell());
         dataGrid.addColumn(new StudyListDataGridColumns.StatusColumn(cells), "Status");
-        dataGrid.addColumn(new OwnerColumn(), "Owner");
+        dataGrid.addColumn(new OwnerLinkColumn(placeManger), "Owner");
         dataGrid.addColumn(new AccessColumn(), "Access");
         dataGrid.setColumnWidth(0, 25, Unit.PCT);
         dataGrid.setColumnWidth(1, 25, Unit.PCT);

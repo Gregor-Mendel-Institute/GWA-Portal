@@ -1,0 +1,247 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
+             xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base">
+
+    <ui:style>
+        .container {
+        }
+
+        .avatar_container {
+
+        }
+
+        .memberSince {
+            color: #7d848c;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .box {
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            border-radius: 2px;
+            -webkit-box-shadow: 0 1px 0 1px #e4e6eb;
+            -moz-box-shadow: 0 1px 0 1px #e4e6eb;
+            box-shadow: 0 1px 0 1px #e4e6eb;
+            overflow: hidden;
+            margin: 0 0 28px 0;
+            background: #fff;
+            padding: 10px;
+            position: relative;
+            background: #f5f5f5;
+            max-width: 220px;
+            /*width: 250px;
+            display: inline-block;
+            margin-right: 50px;*/
+        }
+
+        .stats_item_value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .stats_item_text {
+            top: 12px;
+            color: #7E7E7E;
+            display: block;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .bred {
+            background: #ff5d5e;
+        }
+
+        .yellow {
+            background: #eae874;
+        }
+
+        .green {
+            background: #bdea74;
+        }
+
+        .stats_item_icon {
+            text-align: center;
+            display: block;
+            color: #fff;
+            width: 50px;
+            font-size: 22px;
+            padding: 14px 0;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            border-radius: 2px;
+            float: left;
+            margin-right: 10px;
+            font-size: 30px
+        }
+
+        .avatar_img {
+            display: inline-block;
+            margin-right: 25px;
+        }
+
+        .user_type {
+            color: #7d848c;
+            font-style: normal;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .name {
+            color: #29323d;
+        }
+
+        .name_container {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .header {
+            background-color: #f9fff4;
+            border-bottom: 1px solid #dde2e9;
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        .widget {
+
+        }
+
+        .widget_header {
+            margin-bottom: -5px;
+            padding: 10px 10px 0 10px;
+        }
+
+        .widget_header h2 {
+            display: inline-block;
+            color: #1d1d1b;
+            margin-left: 10px;
+            font-size: 18px !important;
+            line-height: 18px !important;
+            text-shadow: 0 1px 0 #fff;
+            font-weight: 300;
+            margin-bottom: 0;
+        }
+
+        .widget_header i {
+            display: inline-block;
+            font-size: 20px;
+        }
+
+        .widget_content {
+
+        }
+
+        .grid_container {
+
+        }
+
+    </ui:style>
+
+    <g:SimpleLayoutPanel ui:field="container">
+        <g:ScrollPanel>
+            <g:HTMLPanel addStyleNames="{style.container}">
+                <div class="{style.header}">
+                    <h3>Profile
+                        <span style="font-size: 20px;float: right;margin-right: 10px;">
+                            <a ui:field="editLink" class="btn btn-success">
+                                <i class="icon-edit"></i>
+                                Edit this user
+                            </a>
+                        </span>
+                    </h3>
+                </div>
+                <div class="container-fluid">
+                    <div class="row-fluid">
+                        <div class="span5" style="margin-bottom:20px;">
+                            <div class="{style.avatar_container}">
+                                <div class="{style.avatar_img}">
+                                    <img ui:field="avatarImg"/>
+                                    <div ui:field="userTypeLb" class="{style.user_type}"/>
+                                </div>
+                                <div class="{style.name_container}">
+                                    <h3 ui:field="nameLb" class="{style.name}"></h3>
+                                    <p ui:field="memberSinceLb" class="{style.memberSince}"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span7">
+                            <div class="row-fluid">
+                                <div class="span4">
+                                    <div class="{style.box}">
+                                        <span class="{style.stats_item_icon} {style.bred}">
+                                            <i class="e_icon-thermometer"/>
+                                        </span>
+                                        <span class="{style.stats_item_text}">
+                                            Studies
+                                        </span>
+
+                                        <span class="{style.stats_item_value}" ui:field="studyCountLb"/>
+                                    </div>
+                                </div>
+                                <div class="span4">
+                                    <div class="{style.box}">
+                                        <span class="{style.stats_item_icon} {style.green}">
+                                            <i class="e_icon-feather"/>
+                                        </span>
+                                        <span class="{style.stats_item_text}">
+                                            Phenotypes
+                                        </span>
+
+                                        <span class="{style.stats_item_value}" ui:field="phenotypeCountLb"/>
+                                    </div>
+                                </div>
+                                <div class="span4">
+                                    <div class="{style.box}">
+                                        <span class="{style.stats_item_icon} {style.yellow}">
+                                            <i class="e_icon-monitor"/>
+                                        </span>
+                                        <span class="{style.stats_item_text}">
+                                            Analysis
+                                        </span>
+
+                                        <span class="{style.stats_item_value}" ui:field="analysisCountLb"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="{style.widget}" id="charts">
+                                <div class="{style.widget_header}">
+                                    <i class="e_icon-thermometer" ui:field="typeIcon"/>
+                                    <h2>
+                                        <span ui:field="typeLb"/>
+                                    </h2>
+                                    <b:ButtonGroup ui:field="typeBtnGroup" toggle="radio"
+                                                   addStyleNames="pull-right">
+                                        <b:Button ui:field="studyTypeBtn" size="SMALL">Studies</b:Button>
+                                        <b:Button ui:field="phenotypeBtn" size="SMALL">Phenotypes</b:Button>
+                                        <b:Button ui:field="analysisBtn" size="SMALL">Analyses</b:Button>
+                                    </b:ButtonGroup>
+                                </div>
+                                <hr></hr>
+                                <div class="{style.widget_content} {style.grid_container}">
+                                    <g:LayoutPanel>
+                                        <g:layer top="0" left="0.5em" right="0" height="500px">
+                                            <g:SimpleLayoutPanel ui:field="dataGridContainer"
+                                                                 addStyleNames="{style.grid_container}"/>
+                                        </g:layer>
+                                        <g:layer top="500" left="0.5em" right="0" height="30px">
+                                            <g:SimpleLayoutPanel ui:field="pagerContainer"/>
+                                        </g:layer>
+                                    </g:LayoutPanel>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </g:HTMLPanel>
+        </g:ScrollPanel>
+    </g:SimpleLayoutPanel>
+</ui:UiBinder>

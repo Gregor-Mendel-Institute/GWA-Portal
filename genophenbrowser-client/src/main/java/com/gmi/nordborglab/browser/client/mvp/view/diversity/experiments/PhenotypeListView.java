@@ -11,6 +11,7 @@ import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
+import com.gmi.nordborglab.browser.client.ui.cells.OwnerLinkColumn;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
@@ -94,7 +95,7 @@ public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListViewUiHan
         dataGrid.addColumn(new PhenotypeListDataGridColumns.TraitOntologyColumn(), "Trait-Ontology");
         dataGrid.addColumn(new PhenotypeListDataGridColumns.EnvironOntologyColumn(), "Env-Ontology");
         dataGrid.addColumn(new PhenotypeListDataGridColumns.ProtocolColumn(), "Protocol");
-        dataGrid.addColumn(new OwnerColumn(), "Owner");
+        dataGrid.addColumn(new OwnerLinkColumn(placeManager), "Owner");
         dataGrid.addColumn(new AccessColumn(), "Access");
         dataGrid.setColumnWidth(0, 15, Unit.PCT);
         dataGrid.setColumnWidth(1, 15, Unit.PCT);
