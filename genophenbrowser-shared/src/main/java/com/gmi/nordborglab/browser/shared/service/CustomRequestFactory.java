@@ -33,4 +33,6 @@ public interface CustomRequestFactory extends RequestFactory {
     AnnotationDataRequest annotationDataRequest();
 
     MetaAnalysisRequest metaAnalysisRequest();
+
+    UserRequest userRequest();
 }
