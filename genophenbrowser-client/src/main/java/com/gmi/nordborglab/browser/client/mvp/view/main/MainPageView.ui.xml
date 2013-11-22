@@ -327,7 +327,7 @@
                                 <li>
                                     <div class="{style.userDetailsContainer}">
                                         <div style="float:left;">
-                                            <img ui:field="avatarImg"/>
+                                            <img class="img-circle" ui:field="avatarImg"/>
                                         </div>
                                         <div class="{style.userDetails}">
                                             <g:Label ui:field="userName" addStyleNames="{style.userName}"></g:Label>
