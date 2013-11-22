@@ -12,6 +12,7 @@ import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.domain.acl.AclSid;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import com.gmi.nordborglab.browser.server.domain.pages.AppUserPage;
 import com.gmi.nordborglab.browser.server.domain.pages.ExperimentPage;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
 import com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage;
@@ -125,24 +126,20 @@ public class UserServiceImpl implements UserService {
             //FIXME workaround because exception is thrown when AclSid doesnt exist and first time permission is added
             AclSid aclSid = new AclSid(true, appUser.getId().toString());
             aclSidRepository.save(aclSid);
+            indexUser(appUser);
         }
     }
 
     @Override
     public AppUser findUser(Long id) {
         AppUser user = userRepository.findOne(id);
-        //cache in database
-        user.setGravatarHash(DigestUtils.md5Hex(user.getEmail().toLowerCase().trim()));
         return user;
     }
 
     @Override
     public AppUser findUserWithStats(Long id) {
         AppUser user = findUser(id);
-        int[] stats = getStats(id);
-        user.setNumberOfStudies(stats[0]);
-        user.setNumberOfPhenotypes(stats[1]);
-        user.setNumberOfAnalysis(stats[2]);
+        initStats(user);
         return user;
     }
 
@@ -326,6 +323,87 @@ public class UserServiceImpl implements UserService {
         }
         aclManager.setPermissionAndOwners(studies);
         return new StudyPage(studies, new PageRequest(start, size), response.getHits().getTotalHits(), null);
+    }
+
+    @Override
+    public AppUserPage findUsers(String searchString, ConstEnums.USER_FILTER filter, int start, int size) {
+        FilterBuilder searchFilter = null;
+        FilterBuilder adminFilter = FilterBuilders.termFilter("authorities", "ROLE_ADMIN");
+        FilterBuilder userFilter = FilterBuilders.termFilter("authorities", "ROLE_USER");
+        SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
+        request.setSize(size).setFrom(start).setTypes("user").setNoFields();
+
+        if (searchString != null && !searchString.equalsIgnoreCase("")) {
+            request.setQuery(multiMatchQuery(searchString, "firstname^3.5", "firstname.partial^1.5", "lastname^3.5", "lastname.partial^1.5", "email"));
+        }
+        // set facets
+        request.addFacet(FacetBuilders.filterFacet(ConstEnums.USER_FILTER.ALL.name()).filter(FilterBuilders.matchAllFilter()));
+        request.addFacet(FacetBuilders.filterFacet(ConstEnums.USER_FILTER.ADMIN.name()).filter(adminFilter));
+        request.addFacet(FacetBuilders.filterFacet(ConstEnums.USER_FILTER.USER.name()).filter(userFilter));
+
+        switch (filter) {
+            case ADMIN:
+                searchFilter = adminFilter;
+                break;
+            case USER:
+                searchFilter = userFilter;
+                break;
+            default:
+                if (searchString == null || searchString.isEmpty())
+                    request.addSort("firstname.name", SortOrder.ASC);
+        }
+        // set filter
+        request.setFilter(searchFilter);
+
+        SearchResponse response = request.execute().actionGet();
+        long totalCount = response.getHits().getTotalHits();
+        List<Long> idsToFetch = Lists.newArrayList();
+        for (SearchHit hit : response.getHits()) {
+            idsToFetch.add(Long.parseLong(hit.getId()));
+        }
+        List<AppUser> users = Lists.newArrayList();
+        //Neded because ids are not sorted
+        Map<Long, AppUser> id2Map = Maps.uniqueIndex(userRepository.findAll(idsToFetch), new Function<AppUser, Long>() {
+            @Nullable
+            @Override
+            public Long apply(@Nullable AppUser experiment) {
+                return experiment.getId();
+            }
+        });
+        for (Long id : idsToFetch) {
+            if (id2Map.containsKey(id)) {
+                users.add(id2Map.get(id));
+            }
+        }
+
+        //extract facets
+        Facets searchFacets = response.getFacets();
+        List<ESFacet> facets = Lists.newArrayList();
+
+        FilterFacet filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.TABLE_FILTER.ALL.name());
+        facets.add(new ESFacet(ConstEnums.USER_FILTER.ALL.name(), 0, filterFacet.getCount(), 0, null));
+
+        filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.USER_FILTER.ADMIN.name());
+        facets.add(new ESFacet(ConstEnums.USER_FILTER.ADMIN.name(), 0, filterFacet.getCount(), 0, null));
+
+        filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.USER_FILTER.USER.name());
+        facets.add(new ESFacet(ConstEnums.USER_FILTER.USER.name(), 0, filterFacet.getCount(), 0, null));
+
+        addStatsAndGravatarHash(users);
+        return new AppUserPage(users, new PageRequest(start, size), totalCount, facets);
+    }
+
+    private void addStatsAndGravatarHash(List<AppUser> users) {
+        for (AppUser user : users) {
+            initStats(user);
+        }
+    }
+
+    private void initStats(AppUser user) {
+        int[] stats = getStats(user.getId());
+        user.setNumberOfStudies(stats[0]);
+        user.setNumberOfPhenotypes(stats[1]);
+        user.setNumberOfAnalysis(stats[2]);
     }
 
     private void deleteFromIndex(Long userId) {

@@ -11,6 +11,8 @@ public interface ConstEnums {
 
     public static enum TABLE_FILTER {ALL, PRIVATE, PUBLISHED, RECENT}
 
+    public static enum USER_FILTER {ALL, ADMIN, USER}
+
     public static enum GENE_FILTER {ALL, PROTEIN, PSEUDO, TRANSPOSON}
 
     public static enum ONTOLOGY_TYPE {TRAIT, ENVIRONMENT}

@@ -1,0 +1,67 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
+             xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base">
+
+    <ui:style>
+        .header {
+            background-color: #f9fff4;
+            border-bottom: 1px solid #dde2e9;
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        .navPills {
+            margin-top: 20px;
+            margin-left: 0.5em;
+        }
+
+        .searchBox {
+            display: inline-block;
+            margin-top: 20px;
+            margin-right: 20px;
+        }
+
+        .pager {
+            padding-right: 50px;
+        }
+    </ui:style>
+
+    <g:LayoutPanel>
+        <g:layer top="0" height="60px">
+            <g:HTMLPanel addStyleNames="{style.header}">
+                <h3>Users</h3>
+            </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="60px" bottom="0">
+            <g:LayoutPanel>
+                <g:layer top="0" height="5em">
+                    <g:HTMLPanel>
+                        <div style="float:right;">
+                            <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
+                                <b:TextBox ui:field="searchBox" placeholder="Search..."></b:TextBox>
+                            </b:InputAddOn>
+                        </div>
+                        <div style="float:left;">
+                            <b:NavPills addStyleNames="{style.navPills}">
+                                <b:NavLink ui:field="navAll" active="true">All</b:NavLink>
+                                <b:NavLink ui:field="navAdmins">Admins</b:NavLink>
+                                <b:NavLink ui:field="navUsers">Users</b:NavLink>
+                            </b:NavPills>
+                        </div>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="5em" left="0.5em" right="0" bottom="100px">
+                    <c:DataGrid ui:field="table"/>
+                </g:layer>
+                <g:layer bottom="0" left="0.5em" right="0" height="100px">
+                    <g:FlowPanel addStyleNames="{style.pager}">
+                        <gui:NumberedPager ui:field="pager" alignment="RIGHT"/>
+                    </g:FlowPanel>
+                </g:layer>
+            </g:LayoutPanel>
+        </g:layer>
+    </g:LayoutPanel>
+</ui:UiBinder>

@@ -35,6 +35,7 @@ public class NameTokens {
     public static final String candidateGeneListDetail = "!meta/candidategenelist/{id}";
     public static final String profile = "!profile/{id}";
     public static final String account = "!account";
+    public static final String userlist = "!users";
 
 
     public static String getHome() {
@@ -161,5 +162,9 @@ public class NameTokens {
 
     public static String getAccount() {
         return account;
+    }
+
+    public static String getUserlist() {
+        return userlist;
     }
 }

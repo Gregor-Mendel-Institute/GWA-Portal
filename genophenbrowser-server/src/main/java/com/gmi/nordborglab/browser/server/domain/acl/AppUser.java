@@ -46,7 +46,7 @@ public class AppUser extends BaseEntity {
     private String newPasswordConfirm;
 
     @Transient
-    private String gravatarHash;
+    private String gravatarHash = null;
 
     @Transient
     private int numberOfStudies = 0;
@@ -81,8 +81,10 @@ public class AppUser extends BaseEntity {
 
     public void setAuthorities(List<Authority> authorities) {
         this.authorities = authorities;
-        for (Authority authority : this.authorities) {
-            authority.setUser(this);
+        if (authorities != null) {
+            for (Authority authority : this.authorities) {
+                authority.setUser(this);
+            }
         }
     }
 
@@ -92,7 +94,7 @@ public class AppUser extends BaseEntity {
 
     public void setEmail(String email) {
         this.email = email;
-        setGravatarHash(DigestUtils.md5Hex(getEmail().toLowerCase().trim()));
+        gravatarHash = null;
     }
 
     public String getFirstname() {
@@ -111,6 +113,7 @@ public class AppUser extends BaseEntity {
         this.lastname = lastname;
     }
 
+    @Transient
     public String getName() {
         StringBuilder fullNameBldr = new StringBuilder();
 
@@ -218,6 +221,9 @@ public class AppUser extends BaseEntity {
     }
 
     public String getGravatarHash() {
+        if (gravatarHash == null && getEmail() != null) {
+            gravatarHash = DigestUtils.md5Hex(getEmail().toLowerCase().trim());
+        }
         return gravatarHash;
     }
 
@@ -255,5 +261,18 @@ public class AppUser extends BaseEntity {
 
     public Date getRegistrationdate() {
         return registrationdate;
+    }
+
+    public void setRegistrationdate(Date registrationdate) {
+        this.registrationdate = registrationdate;
+    }
+
+    @Transient
+    public String getAvatarHash() {
+        String url = getGravatarHash() + "?d=identicon";
+        if (getAvatarSource() == AppUserProxy.AVATAR_SOURCE.IDENTICON) {
+            url = url + "?&=1";
+        }
+        return url;
     }
 }
