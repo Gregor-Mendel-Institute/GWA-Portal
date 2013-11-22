@@ -35,7 +35,7 @@ public class CurrentUser {
     private boolean isComChannelOpen = false;
     private final CustomRequestFactory rf;
 
-    private final static String GRAVATAR_URL = "http://www.gravatar.com/avatar/";
+    public final static String GRAVATAR_URL = "http://www.gravatar.com/avatar/";
 
     @Inject
     public CurrentUser(RequestDispatcher dispatcher, MessageBus messageBus, EventBus eventBus, CustomRequestFactory rf) {
