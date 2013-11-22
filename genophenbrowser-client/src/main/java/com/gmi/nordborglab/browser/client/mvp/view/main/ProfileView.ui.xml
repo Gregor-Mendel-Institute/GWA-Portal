@@ -160,7 +160,7 @@
                         <div class="span5" style="margin-bottom:20px;">
                             <div class="{style.avatar_container}">
                                 <div class="{style.avatar_img}">
-                                    <img ui:field="avatarImg"/>
+                                    <img class="img-circle" ui:field="avatarImg"/>
                                     <div ui:field="userTypeLb" class="{style.user_type}"/>
                                 </div>
                                 <div class="{style.name_container}">
