@@ -94,7 +94,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     private Modal editPopup = new Modal(true);
     private Modal deletePopup = new Modal(true);
 
-    @UiField
+    @UiField(provided = true)
     StudyDisplayEditor studyDisplayEditor;
     private StudyEditEditor studyEditEditor = new StudyEditEditor();
     @UiField
@@ -151,8 +151,10 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     HTMLPanel gwasJobContainer;
 
     @Inject
-    public StudyDetailView(final Binder binder, final StudyDisplayDriver displayDriver, final StudyEditDriver editDriver, final MainResources mainRes) {
+    public StudyDetailView(final Binder binder, final StudyDisplayDriver displayDriver, final StudyEditDriver editDriver,
+                           final MainResources mainRes, final StudyDisplayEditor studyDisplayEditor) {
         this.mainRes = mainRes;
+        this.studyDisplayEditor = studyDisplayEditor;
         widget = binder.createAndBindUi(this);
         this.displayDriver = displayDriver;
         this.displayDriver.initialize(studyDisplayEditor);

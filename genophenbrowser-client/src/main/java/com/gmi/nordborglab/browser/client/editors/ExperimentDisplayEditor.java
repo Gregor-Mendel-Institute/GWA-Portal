@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
 
 public class ExperimentDisplayEditor extends Composite implements Editor<ExperimentProxy> {
 
@@ -30,9 +31,12 @@ public class ExperimentDisplayEditor extends Composite implements Editor<Experim
     @UiField
     @Path("public")
     AccessLabel access;
+    @UiField(provided = true)
+    AvatarOwnerDisplayEditor ownerUser;
 
-
-    public ExperimentDisplayEditor() {
+    @Inject
+    public ExperimentDisplayEditor(final AvatarOwnerDisplayEditor ownerUser) {
+        this.ownerUser = ownerUser;
         initWidget(uiBinder.createAndBindUi(this));
     }
 

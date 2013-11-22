@@ -8,6 +8,7 @@ import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.gmi.nordborglab.browser.client.editors.AvatarOwnerDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.CandidateGeneListDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.CandidateGeneListEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CandidateGeneListDetailUiHandlers;
@@ -108,9 +109,9 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     @UiField
     CustomPager genesPager;
 
-    @UiField
+    @UiField(provided = true)
     CandidateGeneListDisplayEditor candidateGeneListDisplayEditor;
-    CandidateGeneListEditEditor candidateGeneListEditEditor = new CandidateGeneListEditEditor();
+    private CandidateGeneListEditEditor candidateGeneListEditEditor = new CandidateGeneListEditEditor();
 
     @UiField(provided = true)
     Typeahead searchGeneTa;
@@ -167,8 +168,10 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     public CandidateGeneListDetailView(final Binder binder,
                                        final CandidateGeneListDisplayDriver candidateGeneListDisplayDriver,
                                        final CandidateGeneListView.CandidateGeneListEditDriver candidateGeneListEditDriver,
-                                       final CustomDataGridResources dataGridResources) {
+                                       final CustomDataGridResources dataGridResources,
+                                       final CandidateGeneListDisplayEditor candidateGeneListDisplayEditor) {
         this.candidateGeneListDisplayDriver = candidateGeneListDisplayDriver;
+        this.candidateGeneListDisplayEditor = candidateGeneListDisplayEditor;
         this.candidateGeneListEditDriver = candidateGeneListEditDriver;
         genesDataGrid = new DataGrid<GeneProxy>(50, dataGridResources, geneProvidesKey);
         searchGeneTa = new Typeahead(new SuggestOracle() {

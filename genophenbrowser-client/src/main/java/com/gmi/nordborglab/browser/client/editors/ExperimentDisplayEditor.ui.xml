@@ -3,7 +3,10 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
              xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
-             xmlns:e="urn:import:com.google.gwt.editor.ui.client">
+             xmlns:e="urn:import:com.google.gwt.editor.ui.client"
+             xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+
+        >
     <ui:style>
         .container {
             float: left;
@@ -39,6 +42,11 @@
             display: inline-block;
         }
 
+        .avatar_label {
+            line-height: 60px;
+            vertical-align: middle;
+        }
+
         .access_value {
             margin-left: 13px;
         }
@@ -60,6 +68,10 @@
             <div class="{style.row}">
                 <div class="{style.label}">Comments</div>
                 <g:Label ui:field="comments" addStyleNames="{style.value}"/>
+            </div>
+            <div class="{style.row}">
+                <div class="{style.label} {style.avatar_label}">Owner</div>
+                <ed:AvatarOwnerDisplayEditor ui:field="ownerUser" addStyleNames="{style.value}"/>
             </div>
             <div class="{style.row}">
                 <div class="{style.label}">Access</div>

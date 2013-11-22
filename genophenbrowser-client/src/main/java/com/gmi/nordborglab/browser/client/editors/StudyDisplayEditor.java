@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DateLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
 
 public class StudyDisplayEditor extends Composite implements Editor<StudyProxy> {
 
@@ -20,12 +21,9 @@ public class StudyDisplayEditor extends Composite implements Editor<StudyProxy> 
             UiBinder<Widget, StudyDisplayEditor> {
     }
 
-    public StudyDisplayEditor() {
-        initWidget(uiBinder.createAndBindUi(this));
-    }
-
     @UiField
     Label name;
+
     @UiField
     Label producer;
     @Path("protocol.analysisMethod")
@@ -39,5 +37,13 @@ public class StudyDisplayEditor extends Composite implements Editor<StudyProxy> 
     @UiField
     @Path("public")
     AccessLabel access;
+    @UiField(provided = true)
+    AvatarOwnerDisplayEditor ownerUser;
+
+    @Inject
+    public StudyDisplayEditor(final AvatarOwnerDisplayEditor ownerUser) {
+        this.ownerUser = ownerUser;
+        initWidget(uiBinder.createAndBindUi(this));
+    }
 
 }

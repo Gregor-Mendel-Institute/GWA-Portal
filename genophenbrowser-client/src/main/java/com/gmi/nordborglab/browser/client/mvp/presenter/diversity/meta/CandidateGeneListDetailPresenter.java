@@ -239,7 +239,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
             Long id = Long.valueOf(placeRequest.getParameter("id", null));
             if (candidateGeneList == null || !candidateGeneList.getId().equals(id)) {
                 MetaAnalysisRequest ctx = rf.metaAnalysisRequest();
-                ctx.findOneCandidateGeneList(id).with("userPermission").to(new Receiver<CandidateGeneListProxy>() {
+                ctx.findOneCandidateGeneList(id).with("userPermission", "ownerUser").to(new Receiver<CandidateGeneListProxy>() {
                     @Override
                     public void onSuccess(CandidateGeneListProxy response) {
                         candidateGeneList = response;
