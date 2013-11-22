@@ -46,6 +46,8 @@ import com.gmi.nordborglab.browser.server.service.PermissionService;
 @Transactional(readOnly = true)
 public class PermissionServiceImpl implements PermissionService {
 
+    public static final String GRAVATAR_URL = "http://www.gravatar.com/avatar/";
+
     @Resource
     protected MutableAclService aclService;
 
@@ -89,10 +91,11 @@ public class PermissionServiceImpl implements PermissionService {
                 principal = new PermissionPrincipal(authSid.getGrantedAuthority(), name, false, false);
             } else if (sid instanceof PrincipalSid) {
                 user = userRepository.findOne(Long.parseLong(((PrincipalSid) sid).getPrincipal()));
-                principal = new PermissionPrincipal(user.getUsername(), user.getFirstname() + " " + user.getLastname() + " (" + user.getEmail() + ")", true, sid.equals(owner));
+                principal = new PermissionPrincipal(user.getUsername(), user.getFirstname() + " " + user.getLastname() + " (" + user.getEmail() + ")", true, sid.equals(owner), user.getAvatarHash());
             }
-            if (principal != null)
+            if (principal != null) {
                 customEntries.add(new CustomAccessControlEntry((Long) entry.getId(), entry.getPermission().getMask(), entry.isGranting(), principal));
+            }
         }
         Collections.sort(customEntries, new Comparator<CustomAccessControlEntry>() {
             @Override
@@ -219,8 +222,10 @@ public class PermissionServiceImpl implements PermissionService {
                     notification.setAppUser(user);
                     notification.setType("permission");
                     String link = "";
+                    String userIcon = "<img class=\"img-circle\" src=\"" + GRAVATAR_URL + owner.getAvatarHash() + "&s=29\" />";
                     String objType = "";
                     String objName = "";
+
                     if (entity instanceof Experiment) {
                         link = "#!study/" + entity.getId() + "/overview";
                         objType = "study";
@@ -234,7 +239,7 @@ public class PermissionServiceImpl implements PermissionService {
                         objType = "candidategenelist";
                         objName = ((CandidateGeneList) entity).getName();
                     }
-                    String notificationText = "<b>%s</b> shared a <a href=\"%s\">%s (%s)</a> with you";
+                    String notificationText = userIcon + " <span><a href=\"#!profile/" + owner.getId().toString() + "\">%s</a> shared a <a href=\"%s\">%s (%s)</a> with you</span>";
                     notification.setText(String.format(notificationText, owner.getFirstname() + " " + owner.getLastname(), link, objType, objName));
                     notifications.add(notification);
                 }
