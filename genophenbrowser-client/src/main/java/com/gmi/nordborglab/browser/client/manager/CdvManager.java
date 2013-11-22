@@ -13,7 +13,7 @@ import java.util.List;
 
 public class CdvManager extends RequestFactoryManager<CdvRequest> {
 
-    public static String[] FULL_PATH = {"traits.obsUnit.stock.passport.collection.locality", "alleleAssay", "protocol", "userPermission", "job"};
+    public static String[] FULL_PATH = {"traits.obsUnit.stock.passport.collection.locality", "alleleAssay", "protocol", "userPermission", "job", "ownerUser"};
 
     @Inject
     public CdvManager(CustomRequestFactory rf) {

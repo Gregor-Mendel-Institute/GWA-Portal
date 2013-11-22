@@ -28,6 +28,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.home.dashboard.Dashboard
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.AccountPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.ProfilePresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.main.UserListPresenter;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.SimpleTabPanel;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
@@ -133,4 +134,6 @@ public interface ClientGinjector extends Ginjector {
     Provider<ProfilePresenter> getProfilePresenter();
 
     Provider<AccountPresenter> getAccountPresenter();
+
+    AsyncProvider<UserListPresenter> getUserListPresenter();
 }

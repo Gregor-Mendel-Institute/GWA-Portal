@@ -7,6 +7,7 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
+import com.gmi.nordborglab.browser.client.editors.ExperimentDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeEditEditor;
 import com.gmi.nordborglab.browser.client.manager.OntologyManager;
@@ -69,7 +70,7 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     public interface PhenotypeEditDriver extends RequestFactoryEditorDriver<PhenotypeProxy, PhenotypeEditEditor> {
     }
 
-    @UiField
+    @UiField(provided = true)
     PhenotypeDisplayEditor phenotypeDisplayEditor;
 
     private PhenotypeEditEditor phenotypeEditEditor = new PhenotypeEditEditor();
@@ -141,9 +142,10 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 
     @Inject
     public PhenotypeDetailView(final Binder binder, final PhenotypeDisplayDriver displayDriver,
-                               final PhenotypeEditDriver editDriver, final MainResources mainRes, final
-    OntologyManager ontologyManager) {
+                               final PhenotypeEditDriver editDriver, final MainResources mainRes,
+                               final OntologyManager ontologyManager, final PhenotypeDisplayEditor phenotypeDisplayEditor) {
         this.mainRes = mainRes;
+        this.phenotypeDisplayEditor = phenotypeDisplayEditor;
         widget = binder.createAndBindUi(this);
         this.displayDriver = displayDriver;
         this.editDriver = editDriver;

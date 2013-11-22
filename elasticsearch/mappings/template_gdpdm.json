@@ -581,6 +581,13 @@
                 "email": {
                     "type": "string",
                     "index": "not_analyzed"
+                },
+                "authorities": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "registrationdate": {
+                    "type": "date"
                 }
             }
         },

@@ -308,7 +308,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
     private String getNotificationIconFromType(String type) {
         String icon = "e_icon-info";
         if (type.equalsIgnoreCase("gwasjob")) {
-            icon = "e_icon-database;";
+            icon = "e_icon-database";
         } else if (type.equalsIgnoreCase("permission")) {
             icon = "e_icon-share";
         }

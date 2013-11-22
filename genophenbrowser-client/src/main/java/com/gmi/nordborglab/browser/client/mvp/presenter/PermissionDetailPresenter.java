@@ -196,7 +196,9 @@ public class PermissionDetailPresenter extends
                 PermissionPrincipalProxy principal = editContext.create(PermissionPrincipalProxy.class);
                 principal.setId(user);
                 principal.setIsUser(true);
-                principal.setName(getDisplayName(userMap.get(user)));
+                AppUserProxy appUser = userMap.get(user);
+                principal.setName(getDisplayName(appUser));
+                principal.setAvatarHash(appUser.getGravatarHash() + "?d=identicon" + (appUser.getAvatarSource() == AppUserProxy.AVATAR_SOURCE.IDENTICON ? "&f=1" : ""));
                 newPermission.setPrincipal(principal);
                 newPermission.setMask(newPermissionPlaceHolder.getMask());
                 getView().getPermissionList().add(newPermission);

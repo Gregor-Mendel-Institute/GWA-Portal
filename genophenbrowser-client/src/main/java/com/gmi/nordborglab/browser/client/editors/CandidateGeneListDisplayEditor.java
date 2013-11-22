@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DateLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,7 +40,12 @@ public class CandidateGeneListDisplayEditor extends Composite implements Editor<
     @UiField
     DateLabel published;
 
-    public CandidateGeneListDisplayEditor() {
+    @UiField(provided = true)
+    AvatarOwnerDisplayEditor ownerUser;
+
+    @Inject
+    public CandidateGeneListDisplayEditor(AvatarOwnerDisplayEditor ownerUser) {
+        this.ownerUser = ownerUser;
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 }

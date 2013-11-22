@@ -11,8 +11,10 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.Ex
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
+import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
 import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.OwnerLinkColumn;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
@@ -25,6 +27,7 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
@@ -44,6 +47,7 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
 
     private final Widget widget;
     private final PlaceManager placeManager;
+    private final AvatarNameCell avatarNameCell;
 
     @UiField(provided = true)
     DataGrid<ExperimentProxy> table;
@@ -65,8 +69,10 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
 
     @Inject
     public ExperimentsOverviewView(final Binder binder,
-                                   final PlaceManager placeManager, final CustomDataGridResources dataGridResources) {
+                                   final PlaceManager placeManager, final CustomDataGridResources dataGridResources,
+                                   final AvatarNameCell avatarNameCell) {
         this.placeManager = placeManager;
+        this.avatarNameCell = avatarNameCell;
         table = new DataGrid<ExperimentProxy>(50, dataGridResources, new EntityProxyKeyProvider<ExperimentProxy>());
         initCellTable();
         widget = binder.createAndBindUi(this);
@@ -88,10 +94,16 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
 
         table.addColumn(new ExperimentListDataGridColumns.TitleColumn(placeManager, new ParameterizedPlaceRequest(NameTokens.experiment)), "Name");
         table.addColumn(new ExperimentListDataGridColumns.DesignColumn(), "Design");
-        table.addColumn(new OwnerLinkColumn(placeManager), "Owner");
+        /*table.addColumn(new OwnerLinkColumn(placeManager), "Owner");*/
+        table.addColumn(new Column<ExperimentProxy, AppUserProxy>(avatarNameCell) {
+            @Override
+            public AppUserProxy getValue(ExperimentProxy object) {
+                return object.getOwnerUser();
+            }
+        }, "Owner");
         table.addColumn(new AccessColumn(), "Access");
 
-        table.setColumnWidth(2, 150, Style.Unit.PX);
+        table.setColumnWidth(2, 250, Style.Unit.PX);
         table.setColumnWidth(3, 150, Style.Unit.PX);
 
     }

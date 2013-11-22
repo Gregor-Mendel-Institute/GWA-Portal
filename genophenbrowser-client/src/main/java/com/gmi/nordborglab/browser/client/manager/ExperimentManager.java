@@ -35,7 +35,7 @@ public class ExperimentManager extends RequestFactoryManager<ExperimentRequest> 
     }
 
     public void findOne(Receiver<ExperimentProxy> receiver, Long id) {
-        rf.experimentRequest().findExperiment(id).with("userPermission", "publications", "stats").fire(receiver);
+        rf.experimentRequest().findExperiment(id).with("userPermission", "publications", "stats", "ownerUser").fire(receiver);
     }
 
     public void findAllWithAccess(Receiver<List<ExperimentProxy>> receiver, Integer permission) {

@@ -36,10 +36,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.home.BasicStudyWizardPre
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.HomePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.HomeTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.dashboard.DashboardPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.main.AccountPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.main.ProfilePresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.main.SearchPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.main.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.*;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.PermissionDetailView;
@@ -67,10 +64,7 @@ import com.gmi.nordborglab.browser.client.mvp.view.home.BasicStudyWizardView;
 import com.gmi.nordborglab.browser.client.mvp.view.home.HomeTabView;
 import com.gmi.nordborglab.browser.client.mvp.view.home.HomeView;
 import com.gmi.nordborglab.browser.client.mvp.view.home.dashboard.DashboardView;
-import com.gmi.nordborglab.browser.client.mvp.view.main.AccountView;
-import com.gmi.nordborglab.browser.client.mvp.view.main.MainPageView;
-import com.gmi.nordborglab.browser.client.mvp.view.main.ProfileView;
-import com.gmi.nordborglab.browser.client.mvp.view.main.SearchView;
+import com.gmi.nordborglab.browser.client.mvp.view.main.*;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.DropDownFilterItemPresenterWidgetView;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.FilterPresenterWidgetView;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.TextBoxFilterItemPresenterWidgetView;
@@ -296,6 +290,10 @@ public class ClientModule extends AbstractPresenterModule {
         bindPresenter(HomeTabPresenter.class, HomeTabPresenter.MyView.class, HomeTabView.class, HomeTabPresenter.MyProxy.class);
 
         bindPresenter(ProfilePresenter.class, ProfilePresenter.MyView.class, ProfileView.class, ProfilePresenter.MyProxy.class);
+
+        bindPresenter(UserListPresenter.class,
+                UserListPresenter.MyView.class, UserListView.class,
+                UserListPresenter.MyProxy.class);
 
         bindPresenter(GWASViewerPresenter.class, GWASViewerPresenter.MyView.class, GWASViewerView.class, GWASViewerPresenter.MyProxy.class);
 

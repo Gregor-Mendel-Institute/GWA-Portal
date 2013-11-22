@@ -106,12 +106,12 @@ echo "\n"
 curl -XPUT $es_host/_river/${index}_user_river/_meta -d "{
     \"type\" : \"jdbc\",
     \"jdbc\" : {
-        \"strategy\":\"simple\",
+        \"strategy\":\"oneshot\",
         \"driver\" : \"org.postgresql.Driver\",
         \"url\" : \"jdbc:postgresql://$db_host:5432/GDPDM\",
         \"user\" : \"$db_user\",
         \"password\" : \"$db_password\",
-        \"sql\" : \"SELECT id as _id,username,firstname,lastname,email, CASE WHEN enabled is true THEN 1 ELSE 0 END as enabled FROM acl.users\"
+        \"sql\" : \"SELECT id as  _id,username,firstname,lastname,email, CASE WHEN enabled is true THEN 1 ELSE 0 END as enabled, registrationdate, authority as authorities FROM acl.users LEFT JOIN acl.authorities ON authorities.user_id = users.id\"
     },
     \"index\":{
        \"index\":\"$index\",

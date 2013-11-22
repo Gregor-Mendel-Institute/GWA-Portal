@@ -14,11 +14,9 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.Experim
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
+import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
 import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
-import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
-import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
-import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
-import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
+import com.gmi.nordborglab.browser.shared.proxy.*;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
@@ -91,6 +89,7 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
     private final BiMap<ConstEnums.TABLE_FILTER, NavLink> navLinkMap;
     private final PlaceManager placeManager;
     private final CandidateGeneListEditDriver candidateGeneListEditDriver;
+    private final AvatarNameCell avatarNameCell;
     private Modal editPopup = new Modal(true);
 
     public static class TitleCell extends AbstractCell<CandidateGeneListProxy> {
@@ -133,8 +132,10 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
     @Inject
     public CandidateGeneListView(Binder binder, final CustomDataGridResources dataGridResources,
                                  final PlaceManager placeManager,
-                                 final CandidateGeneListEditDriver candidateGeneListEditDriver) {
+                                 final CandidateGeneListEditDriver candidateGeneListEditDriver,
+                                 final AvatarNameCell avatarNameCell) {
         this.placeManager = placeManager;
+        this.avatarNameCell = avatarNameCell;
         dataGrid = new DataGrid<CandidateGeneListProxy>(50, dataGridResources, new EntityProxyKeyProvider<CandidateGeneListProxy>());
         initCellTable();
         widget = binder.createAndBindUi(this);
@@ -187,9 +188,14 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
                 return object.getGeneCount();
             }
         }, "# Genes");
-        dataGrid.addColumn(new OwnerColumn(), "Owner");
+        dataGrid.addColumn(new Column<CandidateGeneListProxy, AppUserProxy>(avatarNameCell) {
+            @Override
+            public AppUserProxy getValue(CandidateGeneListProxy object) {
+                return object.getOwnerUser();
+            }
+        }, "Owner");
         dataGrid.addColumn(new AccessColumn(), "Access");
-        dataGrid.setColumnWidth(3, 150, Style.Unit.PX);
+        dataGrid.setColumnWidth(3, 250, Style.Unit.PX);
         dataGrid.setColumnWidth(4, 150, Style.Unit.PX);
     }
 

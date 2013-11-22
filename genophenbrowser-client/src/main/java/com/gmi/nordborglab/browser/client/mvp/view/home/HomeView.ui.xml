@@ -257,7 +257,9 @@
                                                         <td class="{style.value}">
                                                             <span ui:field="statsUsers"/>
                                                         </td>
-                                                        <td class="{style.full}">Users</td>
+                                                        <td class="{style.full}">
+                                                            <a href="#{nameTokens.getUserlist}">Users</a>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="{style.icon}">
@@ -266,7 +268,9 @@
                                                         <td class="{style.value}">
                                                             <span ui:field="statsStudies"/>
                                                         </td>
-                                                        <td class="{style.full}">Studies</td>
+                                                        <td class="{style.full}">
+                                                            <a href="#{nameTokens.getExperiments}">Studies</a>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="{style.icon}">
@@ -275,7 +279,9 @@
                                                         <td class="{style.value}">
                                                             <span ui:field="statsPhenotypes"/>
                                                         </td>
-                                                        <td class="{style.full}">Phenotypes</td>
+                                                        <td class="{style.full}">
+                                                            <a href="#{nameTokens.getPhenotypeoverview}">Phenotypes</a>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="{style.icon}">
@@ -284,7 +290,9 @@
                                                         <td class="{style.value}">
                                                             <span ui:field="statsAnalysis"/>
                                                         </td>
-                                                        <td class="{style.full}">Analysis</td>
+                                                        <td class="{style.full}">
+                                                            <a href="#{nameTokens.getStudyoverview}">Analysis</a>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="{style.icon}">
@@ -293,7 +301,9 @@
                                                         <td class="{style.value}">
                                                             <span ui:field="statsOntologies"/>
                                                         </td>
-                                                        <td class="{style.full}">Ontologies</td>
+                                                        <td class="{style.full}">
+                                                            <a href="javascript:;">Ontologies</a>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="{style.icon}">
@@ -302,7 +312,9 @@
                                                         <td class="{style.value}">
                                                             <span ui:field="statsPublications"/>
                                                         </td>
-                                                        <td class="{style.full}">Publications</td>
+                                                        <td class="{style.full}">
+                                                            <a href="#{nameTokens.getPublications}">Publications</a>
+                                                        </td>
                                                     </tr>
 
                                                 </tbody>

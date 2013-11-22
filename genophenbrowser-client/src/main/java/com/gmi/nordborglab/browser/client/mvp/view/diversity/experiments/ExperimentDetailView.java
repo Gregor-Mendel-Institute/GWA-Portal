@@ -67,7 +67,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     }
 
     private ExperimentEditEditor experimentEditEditor = new ExperimentEditEditor();
-    @UiField
+    @UiField(provided = true)
     ExperimentDisplayEditor experimentDisplayEditor;
     @UiField
     ToggleButton edit;
@@ -270,8 +270,10 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
                                 final ExperimentEditDriver experimentEditDriver,
                                 final ExperimentDisplayDriver experimentDisplayDriver,
                                 final MainResources resources,
-                                final CustomDataGridResources customDataGridResources) {
+                                final CustomDataGridResources customDataGridResources,
+                                final ExperimentDisplayEditor experimentDisplayEditor) {
         this.resources = resources;
+        this.experimentDisplayEditor = experimentDisplayEditor;
         publicationDataGrid = new ResponsiveDataGrid(50, customDataGridResources, new ActionCell.Delegate<PublicationProxy>() {
             @Override
             public void execute(PublicationProxy object) {

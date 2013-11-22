@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ValueLabel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
 
 public class PhenotypeDisplayEditor extends Composite implements Editor<PhenotypeProxy> {
 
@@ -35,12 +36,6 @@ public class PhenotypeDisplayEditor extends Composite implements Editor<Phenotyp
 
     }
 
-    public PhenotypeDisplayEditor() {
-        traitOntologyTerm = new ValueLabel<TermProxy>(new OntologyRenderer());
-        environOntologyTerm = new ValueLabel<TermProxy>(new OntologyRenderer());
-        initWidget(uiBinder.createAndBindUi(this));
-    }
-
     @UiField
     Label localTraitName;
     //@UiField Label toAccession;
@@ -58,6 +53,16 @@ public class PhenotypeDisplayEditor extends Composite implements Editor<Phenotyp
     @UiField
     @Path("public")
     AccessLabel access;
+    @UiField(provided = true)
+    AvatarOwnerDisplayEditor ownerUser;
+
+    @Inject
+    public PhenotypeDisplayEditor(final AvatarOwnerDisplayEditor ownerUser) {
+        traitOntologyTerm = new ValueLabel<TermProxy>(new OntologyRenderer());
+        environOntologyTerm = new ValueLabel<TermProxy>(new OntologyRenderer());
+        this.ownerUser = ownerUser;
+        initWidget(uiBinder.createAndBindUi(this));
+    }
 
 
 }

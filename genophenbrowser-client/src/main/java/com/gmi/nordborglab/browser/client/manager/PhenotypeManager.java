@@ -14,7 +14,7 @@ import com.google.web.bindery.requestfactory.shared.Receiver;
 
 public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
 
-    public static String[] PATHS = {"statisticTypes", "unitOfMeasure", "userPermission", "traitOntologyTerm", "environOntologyTerm"};
+    public static String[] PATHS = {"statisticTypes", "unitOfMeasure", "userPermission", "traitOntologyTerm", "environOntologyTerm", "ownerUser"};
 
     @Inject
     public PhenotypeManager(CustomRequestFactory rf) {
