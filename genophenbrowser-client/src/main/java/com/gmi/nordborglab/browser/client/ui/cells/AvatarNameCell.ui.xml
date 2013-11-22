@@ -1,0 +1,47 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:with field="name" type="java.lang.String"/>
+    <ui:with field="type" type="java.lang.String"/>
+    <ui:with field="link" type="com.google.gwt.safehtml.shared.SafeUri"/>
+    <ui:with field="avatarUrl" type="com.google.gwt.safehtml.shared.SafeUri"/>
+    <ui:style>
+        .avatar {
+            margin-right: 10px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .name_container {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .name {
+
+            color: #3389d1;
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .type {
+            font-size: 12px;
+            margin-left: 0;
+            color: #778391;
+            font-style: italic;
+            margin-top: 0;
+        }
+    </ui:style>
+
+    <div>
+        <img src="{avatarUrl}" class="img-circle {style.avatar}"/>
+        <div class="{style.name_container}">
+            <a href="{link}" class="{style.name}">
+                <ui:text from="{name}"/>
+            </a>
+            <span class="{style.type}">
+                <ui:text from="{type}"/>
+            </span>
+        </div>
+    </div>
+</ui:UiBinder>

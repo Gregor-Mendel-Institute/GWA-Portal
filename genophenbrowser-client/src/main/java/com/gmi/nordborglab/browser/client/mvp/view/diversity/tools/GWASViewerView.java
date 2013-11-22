@@ -11,9 +11,11 @@ import com.gmi.nordborglab.browser.client.mvp.handlers.GWASViewerUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASViewerPresenter;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
+import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
 import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
 import com.google.common.collect.Lists;
 import com.google.gwt.cell.client.*;
@@ -49,14 +51,17 @@ import java.util.List;
 public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> implements GWASViewerPresenter.MyView {
 
     interface Binder extends UiBinder<Widget, GWASViewerView> {
+
     }
 
     public interface GWASResultEditDriver extends RequestFactoryEditorDriver<GWASResultProxy, GWASResultEditEditor> {
+
     }
 
     public static class ActionHasCell implements HasCell<GWASResultProxy, GWASResultProxy> {
 
-        public enum ACTION {EDIT, DELETE, PERMISSION}
+
+        public enum ACTION {EDIT, DELETE, PERMISSION;}
 
         private final Cell<GWASResultProxy> cell;
 
@@ -78,9 +83,11 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         public GWASResultProxy getValue(GWASResultProxy object) {
             return object;
         }
+
     }
 
     private final Widget widget;
+    private final AvatarNameCell avatarNameCell;
     private final PlaceManager placeManager;
     @UiField
     LayoutPanel tabPaneContainer;
@@ -114,10 +121,12 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     @Inject
     public GWASViewerView(final Binder binder, final CustomDataGridResources dataGridResources,
                           final PlaceManager placeManager, final GWASResultEditDriver editDriver,
-                          final CurrentUser currentUser) {
+                          final CurrentUser currentUser,
+                          final AvatarNameCell avatarNameCell) {
         this.placeManager = placeManager;
         this.currentUser = currentUser;
         this.editDriver = editDriver;
+        this.avatarNameCell = avatarNameCell;
         gwasResultDataGrid = new DataGrid<GWASResultProxy>(50, dataGridResources, new EntityProxyKeyProvider<GWASResultProxy>());
         widget = binder.createAndBindUi(this);
         gwasResultPager.setDisplay(gwasResultDataGrid);
@@ -181,17 +190,10 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
                 return object.getType();
             }
         }, "Type");
-        gwasResultDataGrid.addColumn(new Column<GWASResultProxy, String>(new TextCell()) {
+        gwasResultDataGrid.addColumn(new Column<GWASResultProxy, AppUserProxy>(avatarNameCell) {
             @Override
-            public String getValue(GWASResultProxy object) {
-                if (object.getAppUser() == null) {
-                    return "N/A";
-                }
-                if (currentUser.getAppUser().getEmail().equals(object.getAppUser().getEmail())) {
-                    return "me";
-                } else {
-                    return object.getAppUser().getFirstname() + " " + object.getAppUser().getLastname();
-                }
+            public AppUserProxy getValue(GWASResultProxy object) {
+                return object.getAppUser();
             }
         }, "Owner");
 
