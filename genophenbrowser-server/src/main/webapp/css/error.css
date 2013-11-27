@@ -1,0 +1,45 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    text-decoration: none;
+    outline: none;
+}
+
+body {
+    background: #F3F3F3;
+    font: normal 12px 'Open Sans', HelveticaNeue, Helvetica, Arial;
+    min-height: 100%;
+    color: #707070;
+    overflow-x: hidden;
+}
+
+.error_container {
+    position: absolute;
+    left: 50%;
+    margin-left: -250px;
+    top: 50%;
+    margin-top: -400px
+}
+
+.error_box {
+    color: rgba(0, 0, 0, 0.2);
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.6), 0 0 1px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    font-weight: 600;
+}
+
+.error_box a {
+    margin: 0.5em;
+}
+
+.small_text {
+    font-size: 25px;
+}
+
+.big_text {
+    font-size: 160px;
+}
+
+.error_actions {
+    margin-top: 20px;
+}
