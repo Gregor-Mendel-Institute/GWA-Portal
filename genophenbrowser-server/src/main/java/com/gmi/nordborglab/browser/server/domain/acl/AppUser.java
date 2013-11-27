@@ -35,10 +35,10 @@ public class AppUser extends BaseEntity {
     private boolean enabled = true;
     private boolean openidUser;
 
-    private Date registrationdate;
+    private Date registrationdate = new Date();
 
     @Enumerated(EnumType.ORDINAL)
-    private AppUserProxy.AVATAR_SOURCE avatarSource;
+    private AppUserProxy.AVATAR_SOURCE avatarSource = AppUserProxy.AVATAR_SOURCE.GRAVATAR;
 
     @Transient
     private String newPassword;
