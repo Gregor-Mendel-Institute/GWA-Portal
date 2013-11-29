@@ -39,11 +39,31 @@
         <jackson.verison>2.2.3</jackson.verison>
         <supercsv.version>2.1.0</supercsv.version>
         <apache.commons.math>3.2</apache.commons.math>
-
+        <freemaker.version>2.3.20</freemaker.version>
+        <mail.version>1.4.4</mail.version>
     </properties>
+
+    <!-- for javax.mail -->
+    <repositories>
+
+        <repository>
+            <id>Java.Net</id>
+            <url>http://download.java.net/maven/2/</url>
+        </repository>
+
+    </repositories>
 
 
     <dependencies>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-bus</artifactId>
@@ -268,6 +288,16 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${freemaker.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-servlets</artifactId>

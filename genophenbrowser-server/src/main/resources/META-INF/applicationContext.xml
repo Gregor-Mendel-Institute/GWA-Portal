@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:p="http://www.springframework.org/schema/p" 
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
-    xmlns:task="http://www.springframework.org/schema/task"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
 	   		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 	   		http://www.springframework.org/schema/context
 	   		http://www.springframework.org/schema/context/spring-context-3.1.xsd
@@ -13,34 +13,36 @@
 			http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
 			http://www.springframework.org/schema/task
 			http://www.springframework.org/schema/task/spring-task-3.1.xsd">
-			
-	
 
-	<!-- Activates various annotations to be detected in bean classes -->
-	<context:annotation-config />
 
-	<!-- Scans the classpath for annotated components that will be auto-registered as Spring beans.
-	 For example @Controller and @Service. Make sure to set the correct base-package -->
-	<context:component-scan base-package="com.gmi.nordborglab.browser.server" />
+    <!-- Activates various annotations to be detected in bean classes -->
+    <context:annotation-config/>
 
-    <context:property-placeholder location="classpath:META-INF/persistence_${spring.profiles.active}.properties,classpath:META-INF/application_${spring.profiles.active}.properties"/>
+    <!-- Scans the classpath for annotated components that will be auto-registered as Spring beans.
+     For example @Controller and @Service. Make sure to set the correct base-package -->
+    <context:component-scan base-package="com.gmi.nordborglab.browser.server"/>
+
+    <context:property-placeholder
+            location="classpath:META-INF/persistence_${spring.profiles.active}.properties,classpath:META-INF/application_${spring.profiles.active}.properties"/>
 
     <bean id="validator"
           class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
-	
-	<!-- Imports datasource configuration -->
-	<import resource="spring-data.xml"/> 
-	
-	<!-- Imports datasource configuration -->
-	<import resource="spring-elasticsearch.xml"/>
 
-    <import resource="spring-amqp.xml" />
+    <!-- Imports datasource configuration -->
+    <import resource="spring-data.xml"/>
+
+    <!-- Imports datasource configuration -->
+    <import resource="spring-elasticsearch.xml"/>
+
+    <import resource="spring-amqp.xml"/>
+
+    <import resource="spring-mail.xml"/>
 
     <task:annotation-driven executor="executor" scheduler="scheduler"/>
 
     <task:executor id="executor" pool-size="5"/>
 
     <task:scheduler id="scheduler" pool-size="10"/>
-	
+
 </beans>
 	

@@ -103,10 +103,10 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = false)
     public void registerUserIfValid(Registration registration,
                                     boolean userIsValid) throws DuplicateRegistrationException {
-        if (userRepository.findByEmail(registration.getEmail()) != null) {
-            throw new DuplicateRegistrationException();
-        }
         if (userIsValid) {
+            if (userRepository.findByEmail(registration.getEmail()) != null) {
+                throw new DuplicateRegistrationException();
+            }
             Md5PasswordEncoder encoder = new Md5PasswordEncoder();
 
             AppUser appUser = new AppUser(registration.getEmail());

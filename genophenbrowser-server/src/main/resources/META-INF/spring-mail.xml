@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${EMAIL.host}"/>
+        <property name="port" value="${EMAIL.port}"/>
+        <property name="username" value="${EMAIL.user}"/>
+    </bean>
+
+    <!-- freemarker config -->
+    <bean id="freemarkerConfiguration" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+        <property name="templateLoaderPath" value="/WEB-INF/ftl"></property>
+        <property name="freemarkerSettings">
+            <value>
+                locale=en_US
+            </value>
+
+        </property>
+    </bean>
+
+
+</beans>

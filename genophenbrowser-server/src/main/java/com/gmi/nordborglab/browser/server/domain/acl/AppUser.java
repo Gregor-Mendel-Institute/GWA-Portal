@@ -7,6 +7,8 @@ import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.validation.PasswordsEqual;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.elasticsearch.common.joda.time.DateTime;
+import org.elasticsearch.common.joda.time.Days;
 import org.hibernate.validator.constraints.Email;
 
 import java.util.Date;
@@ -67,6 +69,8 @@ public class AppUser extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "appUser")
     private List<StudyJob> studyJobs;
     private Date notificationCheckDate;
+    private String passwordResetToken;
+    private Date passwordResetExpiration;
 
     public AppUser() {
     }
@@ -274,5 +278,22 @@ public class AppUser extends BaseEntity {
             url = url + "?&=1";
         }
         return url;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+        if (passwordResetToken == null || passwordResetToken.isEmpty()) {
+            passwordResetExpiration = null;
+        } else {
+            passwordResetExpiration = DateTime.now().plusDays(1).toDate();
+        }
+    }
+
+    public String getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public Date getPasswordResetExpiration() {
+        return passwordResetExpiration;
     }
 }
