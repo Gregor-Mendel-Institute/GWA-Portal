@@ -51,6 +51,10 @@
         <mvc:interceptor>
             <mvc:mapping path="/browser/browser.nocache.js"/>
             <mvc:mapping path="/"/>
+            <mvc:mapping path="/login"/>
+            <mvc:mapping path="/forgot-password"/>
+            <mvc:mapping path="/reset-password"/>
+            <mvc:mapping path="/registration"/>
             <bean id="noCacheFilter" class="org.springframework.web.servlet.mvc.WebContentInterceptor">
                 <property name="cacheSeconds" value="0"/>
                 <property name="useExpiresHeader" value="false"/>
