@@ -210,13 +210,12 @@ public class ExperimentDetailPresenter
         getView().setShareTooltip(toolTipText, toolTipIcon);
         publicationDataProvider.setList(ImmutableList.copyOf(experiment.getPublications()));
         getView().displayStats(experiment.getStats(), experiment.getNumberOfPhenotypes(), experiment.getNumberOfAnalyses());
-        LoadingIndicatorEvent.fire(this, false);
+        fireEvent(new LoadingIndicatorEvent(false));
     }
 
     @Override
     public void prepareFromRequest(PlaceRequest placeRequest) {
         super.prepareFromRequest(placeRequest);
-        LoadingIndicatorEvent.fire(this, true);
         Receiver<ExperimentProxy> receiver = new Receiver<ExperimentProxy>() {
             @Override
             public void onSuccess(ExperimentProxy exp) {
@@ -235,6 +234,7 @@ public class ExperimentDetailPresenter
             Long experimentId = Long.valueOf(placeRequest.getParameter("id",
                     null));
             if (experiment == null || !experiment.getId().equals(experimentId)) {
+                fireEvent(new LoadingIndicatorEvent(true));
                 experimentManager.findOne(receiver, experimentId);
             } else {
                 getProxy().manualReveal(ExperimentDetailPresenter.this);
