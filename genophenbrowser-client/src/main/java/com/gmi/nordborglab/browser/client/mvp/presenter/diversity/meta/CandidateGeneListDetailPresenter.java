@@ -8,6 +8,9 @@ import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadCandidateGeneListEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PermissionDoneEvent;
+import com.gmi.nordborglab.browser.client.gin.ClientModule;
+import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
+import com.gmi.nordborglab.browser.client.manager.EnrichmentProviderImpl;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CandidateGeneListDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
@@ -96,6 +99,8 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         void refreshStats();
 
         void setUploadActionUrl(String url);
+
+        void setEnrichmentCount(int count);
     }
 
     @ProxyCodeSplit
@@ -103,6 +108,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     public interface MyProxy extends ProxyPlace<CandidateGeneListDetailPresenter> {
     }
 
+    public static final Object TYPE_SetEnrichmentCntent = new Object();
     private CandidateGeneListProxy candidateGeneList;
     private final PermissionDetailPresenter permissionDetailPresenter;
     private final Receiver<CandidateGeneListProxy> receiver = new Receiver<CandidateGeneListProxy>() {
@@ -135,6 +141,9 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     public static final Object TYPE_SetPermissionContent = new Object();
     private GenePageProxy genesPage;
     private final BiMap<ConstEnums.GENE_FILTER, List<String>> filter2Annotation;
+    private final CandidateGeneListEnrichmentPresenterWidget candidateGeneListEnrichmentPresenter;
+    private int enrichmentCount = 0;
+    private boolean refreshEnrichmentWidget = false;
 
 
     private final AsyncDataProvider<GeneProxy> genesDataProvider = new AsyncDataProvider<GeneProxy>() {
@@ -145,21 +154,27 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     };
 
 
+    private final EnrichmentProvider dataProvider;
+
     @Inject
     public CandidateGeneListDetailPresenter(EventBus eventBus, MyView view, MyProxy proxy,
                                             final PermissionDetailPresenter permissionDetailPresenter,
                                             final CustomRequestFactory rf, final PlaceManager placeManager,
-                                            final CurrentUser currentUser) {
+                                            final CurrentUser currentUser,
+                                            final ClientModule.AssistedInjectionFactory factory) {
         super(eventBus, view, proxy);
         filter2Annotation = new ImmutableBiMap.Builder<ConstEnums.GENE_FILTER, List<String>>()
                 .put(ConstEnums.GENE_FILTER.PROTEIN, Lists.newArrayList("gene"))
                 .put(ConstEnums.GENE_FILTER.TRANSPOSON, Lists.newArrayList("transposable_element", "transposable_element_gene"))
                 .put(ConstEnums.GENE_FILTER.PSEUDO, Lists.newArrayList("pseudogene")).build();
         this.permissionDetailPresenter = permissionDetailPresenter;
+        dataProvider = factory.createEnrichmentProvider(EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST);
+        this.candidateGeneListEnrichmentPresenter = factory.createCandidateGeneListEnrichmentPresenter(dataProvider);
         this.currentUser = currentUser;
         this.rf = rf;
         this.placeManager = placeManager;
         getView().setUiHandlers(this);
+
         genesDataProvider.addDataDisplay(getView().getGenesDisplay());
     }
 
@@ -175,11 +190,20 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     protected void onBind() {
         super.onBind();    //To change body of overridden methods use File | Settings | File Templates.
         setInSlot(TYPE_SetPermissionContent, permissionDetailPresenter);
+        setInSlot(TYPE_SetEnrichmentCntent, candidateGeneListEnrichmentPresenter);
         registerHandler(getEventBus().addHandlerToSource(PermissionDoneEvent.TYPE, permissionDetailPresenter, new PermissionDoneEvent.Handler() {
             @Override
             public void onPermissionDone(PermissionDoneEvent event) {
-                getView().showPermissionPanel(false);
-                refreshView();
+                rf.metaAnalysisRequest().findOneCandidateGeneList(candidateGeneList.getId()).with("userPermission", "ownerUser").to(new Receiver<CandidateGeneListProxy>() {
+                    @Override
+                    public void onSuccess(CandidateGeneListProxy response) {
+                        candidateGeneList = response;
+                        enrichmentCount = candidateGeneList.getEnrichmentCount();
+                        dataProvider.setEntity(candidateGeneList);
+                        getView().showPermissionPanel(false);
+                        refreshView();
+                    }
+                }).fire();
             }
         }));
     }
@@ -238,11 +262,14 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         try {
             Long id = Long.valueOf(placeRequest.getParameter("id", null));
             if (candidateGeneList == null || !candidateGeneList.getId().equals(id)) {
+                genesPage = null;
                 MetaAnalysisRequest ctx = rf.metaAnalysisRequest();
                 ctx.findOneCandidateGeneList(id).with("userPermission", "ownerUser").to(new Receiver<CandidateGeneListProxy>() {
                     @Override
                     public void onSuccess(CandidateGeneListProxy response) {
                         candidateGeneList = response;
+                        enrichmentCount = candidateGeneList.getEnrichmentCount();
+                        dataProvider.setEntity(candidateGeneList);
                     }
                 });
                 ctx.fire(new Receiver<Void>() {
@@ -273,6 +300,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         fireEvent(new LoadingIndicatorEvent(false));
         refreshView();
         requestGenes(getView().getGenesDisplay(), null);
+        candidateGeneListEnrichmentPresenter.refresh();
     }
 
     @Override
@@ -305,6 +333,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
             @Override
             public void onSuccess(GeneProxy response) {
                 genesPage = null;
+                resetEnrichmentCountAndUpdateView();
                 requestGenes(getView().getGenesDisplay(), response);
                 getView().getSearchBox().setText("");
                 getView().enableAddBtn(false);
@@ -383,6 +412,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
             @Override
             public void onSuccess(Void response) {
                 genesPage = null;
+                resetEnrichmentCountAndUpdateView();
                 requestGenes(getView().getGenesDisplay(), null);
             }
         });
@@ -391,6 +421,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     @Override
     public void refresh() {
         genesPage = null;
+        resetEnrichmentCountAndUpdateView();
         getView().getGenesDisplay().setVisibleRangeAndClearData(getView().getGenesDisplay().getVisibleRange(), true);
     }
 
@@ -398,7 +429,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         getView().getDisplayDriver().display(candidateGeneList);
         getView().showActionBtns(currentUser.hasEdit(candidateGeneList));
         getView().showShareBtn(currentUser.hasAdmin(candidateGeneList));
-
+        getView().setEnrichmentCount(enrichmentCount);
         getView().setUploadActionUrl("/provider/candidategenelist/" + candidateGeneList.getId() + "/upload");
 
         String toolTipText = "Public - Anyone on the Internet can find and access";
@@ -455,5 +486,16 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         }
     }
 
+
+    private void resetEnrichmentCountAndUpdateView() {
+        boolean refreshRequired = enrichmentCount > 0;
+        enrichmentCount = 0;
+        getView().setEnrichmentCount(enrichmentCount);
+        if (refreshRequired) {
+            candidateGeneListEnrichmentPresenter.refresh();
+            refreshEnrichmentWidget = false;
+        }
+
+    }
 
 }

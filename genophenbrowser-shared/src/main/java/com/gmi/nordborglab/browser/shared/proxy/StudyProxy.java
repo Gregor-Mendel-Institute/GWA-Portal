@@ -59,4 +59,8 @@ public interface StudyProxy extends SecureEntityProxy {
     Date getPublished();
 
     Date getModified();
+
+    void setCreateEnrichments(boolean isCreateEnrichments);
+
+    boolean isCreateEnrichments();
 }

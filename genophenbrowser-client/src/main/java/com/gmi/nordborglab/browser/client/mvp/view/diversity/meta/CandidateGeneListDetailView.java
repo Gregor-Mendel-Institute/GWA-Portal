@@ -8,21 +8,16 @@ import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.gmi.nordborglab.browser.client.editors.AvatarOwnerDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.CandidateGeneListDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.CandidateGeneListEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CandidateGeneListDetailUiHandlers;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListDetailPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisTopResultsPresenter;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.PhaseAnimation;
 import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
-import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.BiMap;
@@ -30,12 +25,12 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.cell.client.*;
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -50,12 +45,10 @@ import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
-import com.googlecode.gwt.charts.client.Selection;
 import com.googlecode.gwt.charts.client.corechart.PieChart;
 import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
 import com.googlecode.gwt.charts.client.options.Animation;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
-import elemental.html.FileList;
 
 import java.util.List;
 import java.util.Map;
@@ -147,16 +140,50 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     FormPanel formPanel;
     @UiField
     Button uploadBtn;
+    @UiField
+    SimpleLayoutPanel enrichmentContainer;
     private int minCharSize = 3;
     private final BiMap<ConstEnums.GENE_FILTER, NavLink> navLinkMap;
     private final CandidateGeneListDisplayDriver candidateGeneListDisplayDriver;
     private final CandidateGeneListView.CandidateGeneListEditDriver candidateGeneListEditDriver;
     private final BiMap<CandidateGeneListDetailPresenter.STATS, PieChart> stats2Chart;
     private Map<CandidateGeneListDetailPresenter.STATS, DataTable> stats2DataTable = Maps.newHashMap();
+    private HandlerRegistration clickhandlerRegistration;
 
     private Modal editPopup = new Modal(true);
     private Modal deletePopup = new Modal(true);
     private Modal permissionPopUp = new Modal(true);
+    private Modal resetEnrichmentPopup = new Modal(true);
+
+    private static enum ACTION {UPLOAD, ADD, REMOVE}
+
+    private BiMap<ACTION, ClickHandler> action2ClickHandler;
+    private int enrichmentCount = 0;
+    private GeneProxy geneToDelete = null;
+    private final com.github.gwtbootstrap.client.ui.Button continueGeneBtn = new com.github.gwtbootstrap.client.ui.Button("Add");
+
+    private final ClickHandler uploadClickHandler = new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+            formPanel.submit();
+        }
+    };
+
+    private final ClickHandler addGeneClickHandler = new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+            getUiHandlers().onAddGene();
+        }
+    };
+
+    private final ClickHandler removeClickHandler = new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+            getUiHandlers().onDeleteGene(geneToDelete);
+            geneToDelete = null;
+        }
+    };
+
     public static final ProvidesKey<GeneProxy> geneProvidesKey = new ProvidesKey<GeneProxy>() {
         @Override
         public Object getKey(GeneProxy item) {
@@ -215,6 +242,30 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         editPopup.setBackdrop(BackdropType.STATIC);
         editPopup.setCloseVisible(true);
         editPopup.setTitle("Edit study");
+
+
+        resetEnrichmentPopup.setBackdrop(BackdropType.STATIC);
+        resetEnrichmentPopup.setCloseVisible(false);
+        resetEnrichmentPopup.setTitle("Add/remove gene");
+        resetEnrichmentPopup.setKeyboard(false);
+
+
+        com.github.gwtbootstrap.client.ui.Button cancelEnrichmentBtn = new com.github.gwtbootstrap.client.ui.Button("Cancel", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                resetEnrichmentPopup.hide();
+            }
+        });
+        cancelEnrichmentBtn.setType(ButtonType.DEFAULT);
+        continueGeneBtn.setType(ButtonType.DANGER);
+        resetEnrichmentPopup.add(new HTML("<h4>This list contains enrichment analyses.<br>If you modify the gene list, those analyes will be automatically removed.<br><br>Do you want to continue?</h4>"));
+        action2ClickHandler = ImmutableBiMap.<ACTION, ClickHandler>builder()
+                .put(ACTION.UPLOAD, uploadClickHandler)
+                .put(ACTION.ADD, addGeneClickHandler)
+                .put(ACTION.REMOVE, removeClickHandler).build();
+        ModalFooter footer = new ModalFooter(cancelEnrichmentBtn, continueGeneBtn);
+        resetEnrichmentPopup.add(footer);
+
         com.github.gwtbootstrap.client.ui.Button cancelEditBtn = new com.github.gwtbootstrap.client.ui.Button("Cancel", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -229,7 +280,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
             }
         });
         saveEditBtn.setType(ButtonType.PRIMARY);
-        ModalFooter footer = new ModalFooter(cancelEditBtn, saveEditBtn);
+        footer = new ModalFooter(cancelEditBtn, saveEditBtn);
         editPopup.add(candidateGeneListEditEditor);
         editPopup.add(footer);
 
@@ -322,7 +373,12 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         hasCells.add(new ActionHasCell(new EntypoIconActionCell<GeneProxy>("e_icon-trash", new ActionCell.Delegate<GeneProxy>() {
             @Override
             public void execute(GeneProxy object) {
-                getUiHandlers().onDeleteGene(object);
+                if (enrichmentCount == 0) {
+                    getUiHandlers().onDeleteGene(object);
+                } else {
+                    geneToDelete = object;
+                    showEnrichmentPopup(ACTION.REMOVE);
+                }
             }
         }, true)));
 
@@ -369,7 +425,11 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
 
     @UiHandler("addGeneBtn")
     public void onClickAddGeneBtn(ClickEvent e) {
-        getUiHandlers().onAddGene();
+        if (enrichmentCount == 0) {
+            getUiHandlers().onAddGene();
+        } else {
+            showEnrichmentPopup(ACTION.ADD);
+        }
     }
 
     @Override
@@ -430,6 +490,8 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     public void setInSlot(Object slot, Widget content) {
         if (slot == CandidateGeneListDetailPresenter.TYPE_SetPermissionContent) {
             permissionPopUp.add(content);
+        } else if (slot == CandidateGeneListDetailPresenter.TYPE_SetEnrichmentCntent) {
+            enrichmentContainer.add(content);
         } else {
             super.setInSlot(slot, content);
         }
@@ -551,8 +613,46 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
 
     @UiHandler("fileUpload")
     public void onHandleFileSelect(ChangeEvent e) {
-        formPanel.submit();
+        if (enrichmentCount == 0) {
+            formPanel.submit();
+        } else {
+            showEnrichmentPopup(ACTION.UPLOAD);
+        }
     }
 
+
+    private void showEnrichmentPopup(ACTION action) {
+        ClickHandler handler = action2ClickHandler.get(action);
+        if (clickhandlerRegistration != null) {
+            clickhandlerRegistration.removeHandler();
+        }
+        clickhandlerRegistration = continueGeneBtn.addClickHandler(handler);
+        String title = "";
+        String btnText = "";
+        switch (action) {
+            case ADD:
+                title = "Add gene";
+                btnText = "Add";
+                break;
+            case UPLOAD:
+                title = "Upload gene list";
+                btnText = "Upload";
+                break;
+            case REMOVE:
+                title = "Remove gene";
+                btnText = "Remove";
+                break;
+        }
+        resetEnrichmentPopup.setTitle(title);
+        continueGeneBtn.setText(btnText);
+        continueGeneBtn.setCompleteText(btnText);
+        resetEnrichmentPopup.show();
+    }
+
+    @Override
+    public void setEnrichmentCount(int count) {
+        enrichmentCount = count;
+        resetEnrichmentPopup.hide();
+    }
 
 }

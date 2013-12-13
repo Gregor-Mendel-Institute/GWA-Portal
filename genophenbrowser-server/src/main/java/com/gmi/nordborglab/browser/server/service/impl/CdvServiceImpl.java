@@ -7,12 +7,14 @@ import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichment;
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.gmi.nordborglab.browser.server.repository.*;
 import com.gmi.nordborglab.browser.server.security.*;
 import com.gmi.nordborglab.browser.server.service.CdvService;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.service.HelperService;
+import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.base.Function;
 import com.google.common.collect.*;
@@ -26,6 +28,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.facet.FacetBuilders;
@@ -85,6 +88,9 @@ public class CdvServiceImpl implements CdvService {
     @Resource
     private EsAclManager esAclManager;
 
+    @Resource
+    private MetaAnalysisService cdvService;
+
 
     //TODO change ACL
     @Override
@@ -137,6 +143,9 @@ public class CdvServiceImpl implements CdvService {
             aclManager.addPermission(study, new PrincipalSid(SecurityUtil.getUsername()),
                     permission, TraitUom.class, traitUomId);
             aclManager.addPermission(study, new GrantedAuthoritySid("ROLE_ADMIN"), permission, TraitUom.class, traitUomId);
+            if (study.isCreateEnrichments()) {
+                cdvService.createCandidateGeneListEnrichments(study, true, null);
+            }
         }
         study = aclManager.setPermissionAndOwner(study);
         indexStudy(study);
@@ -384,6 +393,9 @@ public class CdvServiceImpl implements CdvService {
         for (Trait traits : study.getTraits()) {
             traits.getStudies().remove(study);
         }
+        for (CandidateGeneListEnrichment enrichment : study.getCandidateGeneListEnrichments()) {
+            enrichment.delete();
+        }
         gwasDataService.deleteStudyFile(studyId);
         studyRepository.delete(study);
         aclManager.deletePermissions(study, true);
@@ -402,5 +414,15 @@ public class CdvServiceImpl implements CdvService {
 
     private void deleteFromIndex(Long studyId, Long experimentId) {
         client.prepareDelete(esAclManager.getIndex(), "study", studyId.toString()).setRouting(experimentId.toString()).execute();
+        deleteCandidatGeneEnrichmentFromIndex(studyId);
+    }
+
+    private void deleteCandidatGeneEnrichmentFromIndex(Long studyId) {
+        try {
+            QueryBuilder query = QueryBuilders.constantScoreQuery(FilterBuilders.termFilter("study_.id", studyId));
+            client.prepareDeleteByQuery(esAclManager.getIndex()).setTypes("candidate_gene_list_enrichment").setQuery(query).execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

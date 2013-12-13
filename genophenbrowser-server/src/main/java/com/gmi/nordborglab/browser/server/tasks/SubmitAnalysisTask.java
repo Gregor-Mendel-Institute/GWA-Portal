@@ -4,12 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
+import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichment;
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.errai.ClientComService;
+import com.gmi.nordborglab.browser.server.repository.CandidateGeneListEnrichmentRepository;
+import com.gmi.nordborglab.browser.server.repository.CandidateGeneListRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyJobRepository;
 import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
+import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
 import com.gmi.nordborglab.browser.server.service.impl.SearchServiceImpl;
 import com.google.common.collect.Lists;
 import org.elasticsearch.action.count.CountRequestBuilder;
@@ -49,7 +54,16 @@ public class SubmitAnalysisTask {
     private StudyJobRepository studyJobRepository;
 
     @Resource
+    private CandidateGeneListEnrichmentRepository candidateGeneListEnrichmentRepository;
+
+    @Resource
+    private CandidateGeneListRepository candidateGeneListRepository;
+
+    @Resource
     private UserNotificationRepository userNotificationRepository;
+
+    @Resource
+    private MetaAnalysisService metaAnalysisService;
 
     @Resource
     private Client client;
@@ -69,6 +83,7 @@ public class SubmitAnalysisTask {
     private static final String GWAS_CHECK_TASK = "gmihpcworkflows.hpc_tasks.check_saga_job";
     private static final String GWAS_TASK = "gmihpcworkflows.hpc_tasks.start_saga";
     private static final String GWAS_TOP_SNPS_TASK = "gmihpcworkflows.hpc_tasks.index_top_study_snps";
+    private static final String CANDIDATE_GENE_LIST_ENRICHMENT = "gmihpcworkflows.hpc_tasks.candidate_gene_enrichment";
 
 
     @Scheduled(fixedDelay = 60000)
@@ -98,6 +113,36 @@ public class SubmitAnalysisTask {
             //TODO send an email.
             String test = "test";
         }
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    @Transactional(readOnly = false)
+    public synchronized void submitCanidateGeneListEnrichment() {
+        try {
+            List<CandidateGeneListEnrichment> enrichments = candidateGeneListEnrichmentRepository.findByStatusInAndTaskidIsNull("Waiting");
+            for (CandidateGeneListEnrichment enrichment : enrichments) {
+                submitCanidateGeneListEnrichment(enrichment);
+            }
+        } catch (Exception e) {
+            //TODO send an email.
+            String test = "test";
+        }
+    }
+
+    private void submitCanidateGeneListEnrichment(CandidateGeneListEnrichment enrichment) {
+        if (enrichment.getTaskid() != null || enrichment.getStatus() == null)
+            return;
+        CeleryTask task = null;
+        task = getCeleryTaskForEnrichment(enrichment);
+        if (task == null)
+            return;
+        submitCeleryTask(task);
+        enrichment.setTaskid(task.getId());
+        enrichment.setProgress(10);
+        enrichment.setTask("Running analysis on worker");
+        enrichment.setStatus("Running");
+        candidateGeneListEnrichmentRepository.save(enrichment);
+        indexCandidateGeneListEnrichment(enrichment);
     }
 
     @Scheduled(cron = "* 0 0  * * *")
@@ -186,6 +231,19 @@ public class SubmitAnalysisTask {
         args.add(studyJob.getId());
         args.add(true);
         return new CeleryTask(taskId, GWAS_TASK, args);
+    }
+
+    private CeleryTask getCeleryTaskForEnrichment(CandidateGeneListEnrichment enrichment) {
+        String taskId = UUID.randomUUID().toString();
+        List<Object> args = Lists.newArrayList();
+        args.add(enrichment.getId());
+        args.add(enrichment.getCandidateGeneList().getId());
+        args.add(enrichment.getStudy().getId());
+        args.add(enrichment.getStudy().getAlleleAssay().getId());
+        args.add(enrichment.getWindowsize());
+        args.add(enrichment.getPermutationCount());
+        args.add(enrichment.getTopSNPCount());
+        return new CeleryTask(taskId, CANDIDATE_GENE_LIST_ENRICHMENT, args);
     }
 
     @Transactional(readOnly = false)
@@ -292,5 +350,41 @@ public class SubmitAnalysisTask {
         String notificationText = "State of <a href=\"#!analysis/%s/overview\">GWAS-Job (%s)</a> on HPC cluster changed to <span class=\"badge %s\">%s</span>";
         notification.setText(String.format(notificationText, studyJob.getStudy().getId(), studyJob.getStudy().getName(), badge, studyJob.getStatus()));
         return notification;
+    }
+
+    @Transactional(readOnly = false)
+    public void onUpdateCandidateGeneListEnrichment(byte[] message) {
+        try {
+            Map<String, Object> payload = om.readValue(message, Map.class);
+            Long candidateGeneListEnrichmentId = Long.parseLong(payload.get("id").toString());
+            Double pValue = Double.parseDouble(payload.get("pvalue").toString());
+            CandidateGeneListEnrichment enrichment = candidateGeneListEnrichmentRepository.findOne(candidateGeneListEnrichmentId);
+            if (enrichment == null)
+                return;
+            String status = (String) payload.get("status");
+            enrichment.setTaskid(null);
+            if (!enrichment.getStatus().equalsIgnoreCase(status)) {
+                enrichment.setModified(new Date());
+                if ("Done".equalsIgnoreCase(status)) {
+                    enrichment.setPayload(null);
+                    enrichment.setStatus("Finished");
+                    enrichment.setTask("Finished on worker");
+                    enrichment.setProgress(100);
+                    enrichment.setPvalue(pValue);
+                } else if ("Failed".equalsIgnoreCase(status)) {
+                    enrichment.setStatus("Error");
+                    enrichment.setTask("Enrichment analysis failed");
+                }
+            }
+            candidateGeneListEnrichmentRepository.save(enrichment);
+            indexCandidateGeneListEnrichment(enrichment);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new AmqpRejectAndDontRequeueException(e.getMessage());
+        }
+    }
+
+    private void indexCandidateGeneListEnrichment(CandidateGeneListEnrichment enrichment) {
+        metaAnalysisService.indexCandidateGeneListEnrichment(enrichment);
     }
 }

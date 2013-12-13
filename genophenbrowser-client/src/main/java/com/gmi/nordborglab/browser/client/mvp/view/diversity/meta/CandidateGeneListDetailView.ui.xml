@@ -235,6 +235,10 @@
                         </g:layer>
                     </g:LayoutPanel>
                 </g:tab>
+                <g:tab>
+                    <g:header>Enrichment</g:header>
+                    <g:SimpleLayoutPanel ui:field="enrichmentContainer"/>
+                </g:tab>
             </g:TabLayoutPanel>
         </g:layer>
     </g:LayoutPanel>

@@ -3,8 +3,10 @@ package com.gmi.nordborglab.browser.server.controller;
 import com.gmi.nordborglab.browser.server.data.annotation.*;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichment;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.math.Transformations;
+import com.gmi.nordborglab.browser.server.repository.CandidateGeneListEnrichmentRepository;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.StudyGWASData;
 import com.gmi.nordborglab.browser.server.service.*;
@@ -17,12 +19,16 @@ import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.render.JsonRenderer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -42,6 +48,9 @@ public class RestProviderController {
 
     @Resource
     private MetaAnalysisService metaAnalysisService;
+
+    @Resource
+    private CandidateGeneListEnrichmentRepository candidateGeneListEnrichmentRepository;
 
 
     @Resource
@@ -204,5 +213,20 @@ public class RestProviderController {
         return new GenomeStatsDataResultStatus("OK", "", json.toString());
     }
 
+
+    @RequestMapping(method = RequestMethod.GET, value = "/candidategenelist/{id}/genes")
+    public
+    @ResponseBody
+    List<Gene> getCandidateGeneListGenes(@PathVariable("id") Long id) {
+        List<Gene> genes = metaAnalysisService.getGenesInCandidateGeneListEnrichment(id);
+        return genes;
+    }
+
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "No Access")
+    public void handleAccessDeniedException(AccessDeniedException ex, HttpServletResponse response) throws IOException {
+
+    }
 
 }

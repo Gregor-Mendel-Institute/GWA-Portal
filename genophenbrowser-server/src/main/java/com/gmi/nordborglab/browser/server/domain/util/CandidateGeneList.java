@@ -30,6 +30,8 @@ public class CandidateGeneList extends SecureEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified = new Date();
 
+    @OneToMany(mappedBy = "candidateGeneList", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<CandidateGeneListEnrichment> candidateGeneListEnrichments = new ArrayList<CandidateGeneListEnrichment>();
 
     @Transient
     private List<Gene> genesWithInfo = new ArrayList<Gene>();
@@ -100,9 +102,18 @@ public class CandidateGeneList extends SecureEntity {
         return genes != null ? genes.size() : 0;
     }
 
+    @Transient
+    public int getEnrichmentCount() {
+        return candidateGeneListEnrichments != null ? candidateGeneListEnrichments.size() : 0;
+    }
+
     @Override
     public String getIndexType() {
         return "candidate_gene_list";
+    }
+
+    public List<CandidateGeneListEnrichment> getCandidateGeneListEnrichments() {
+        return candidateGeneListEnrichments;
     }
 
     @Override

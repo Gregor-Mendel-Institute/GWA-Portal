@@ -147,7 +147,10 @@ public class MainPagePresenter extends
                 request.matchesNameToken(NameTokens.metaAnalysisGenes) ||
                 request.matchesNameToken(NameTokens.metaAnalysisTopResults) ||
                 request.matchesNameToken(NameTokens.candidateGeneList) ||
-                request.matchesNameToken(NameTokens.candidateGeneListDetail)
+                request.matchesNameToken(NameTokens.candidateGeneListDetail) ||
+                request.matchesNameToken(NameTokens.experimentsEnrichments) ||
+                request.matchesNameToken(NameTokens.phenotypeEnrichments) ||
+                request.matchesNameToken(NameTokens.studyEnrichments)
                 )
             menu = MENU.DIVERSITY;
         else if (request.matchesNameToken(NameTokens.taxonomies) ||

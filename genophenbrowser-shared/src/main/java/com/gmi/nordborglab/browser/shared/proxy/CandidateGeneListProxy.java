@@ -35,4 +35,6 @@ public interface CandidateGeneListProxy extends SecureEntityProxy {
     Date getPublished();
 
     int getGeneCount();
+
+    int getEnrichmentCount();
 }
