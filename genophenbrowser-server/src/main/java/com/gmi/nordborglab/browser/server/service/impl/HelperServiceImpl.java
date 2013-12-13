@@ -344,7 +344,7 @@ public class HelperServiceImpl implements HelperService {
             CellProcessor[] cellProcessors = {new NotNull()};
             List<String> phenotypeValues = null;
             while ((phenotypeValues = csvReader.read()) != null) {
-                geneIds.add(phenotypeValues.get(0));
+                geneIds.add(phenotypeValues.get(0).toUpperCase());
             }
 
         } catch (SuperCsvCellProcessorException e) {
