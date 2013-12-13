@@ -97,6 +97,7 @@ public class PhenotypeDetailPresenter
     protected final PhenotypeManager phenotypeManager;
     protected final CurrentUser currentUser;
     protected final Receiver<PhenotypeProxy> receiver;
+    protected boolean isRefresh = false;
     private ImmutableSortedMap<Double, Integer> histogramData;
     private List<StatisticTypeProxy> statisticTypes;
     protected HashMap<StatisticTypeProxy, List<TraitProxy>> cache = new HashMap<StatisticTypeProxy, List<TraitProxy>>();
@@ -161,6 +162,7 @@ public class PhenotypeDetailPresenter
     @Override
     protected void onReset() {
         super.onReset();
+        LoadingIndicatorEvent.fire(this, false);
         if (fireLoadEvent) {
             fireLoadEvent = false;
             fireEvent(new LoadPhenotypeEvent(phenotype));
@@ -168,12 +170,14 @@ public class PhenotypeDetailPresenter
         getView().getDisplayDriver().display(phenotype);
         getView().showActionBtns(currentUser.hasEdit(phenotype));
         getProxy().getTab().setTargetHistoryToken(placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest()));
-        LoadingIndicatorEvent.fire(this, false);
-        getView().setStatisticTypes(statisticTypes);
-        getView().setGeoChartData(null);
-        getView().setHistogramChartData(null);
-        getView().setPhenotypExplorerData(null);
+        if (isRefresh) {
+            getView().setStatisticTypes(statisticTypes);
+            getView().setGeoChartData(null);
+            getView().setHistogramChartData(null);
+            getView().setPhenotypExplorerData(null);
+        }
         getView().scheduledLayout();
+
     }
 
 
@@ -202,10 +206,12 @@ public class PhenotypeDetailPresenter
             Long phenotypeId = Long.valueOf(placeRequest.getParameter("id",
                     null));
             if (phenotype == null || !phenotype.getId().equals(phenotypeId)) {
+                isRefresh = true;
                 statisticTypes = null;
                 cache.clear();
                 phenotypeManager.findOne(receiver, phenotypeId);
             } else {
+                isRefresh = false;
                 getProxy().manualReveal(PhenotypeDetailPresenter.this);
             }
         } catch (NumberFormatException e) {
@@ -306,6 +312,7 @@ public class PhenotypeDetailPresenter
         if (phenotype != event.getPhenotype()) {
             cache.clear();
             statisticTypes = phenotype.getStatisticTypes();
+            isRefresh = true;
         }
         phenotype = event.getPhenotype();
         PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id", phenotype.getId().toString());
