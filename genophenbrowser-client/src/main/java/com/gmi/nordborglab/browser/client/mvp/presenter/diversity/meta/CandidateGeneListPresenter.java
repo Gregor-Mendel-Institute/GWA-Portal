@@ -200,7 +200,7 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
         MetaAnalysisRequest ctx = rf.metaAnalysisRequest();
         CandidateGeneListProxy candidateGeneListProxy = ctx.create(CandidateGeneListProxy.class);
         getView().getCandidateGeneListEditDriver().edit(candidateGeneListProxy, ctx);
-        ctx.saveCandidateGeneList(candidateGeneListProxy).with("userPermission").to(receiver);
+        ctx.saveCandidateGeneList(candidateGeneListProxy).with("userPermission", "ownerUser").to(receiver);
         getView().showEditPopup(true);
     }
 
