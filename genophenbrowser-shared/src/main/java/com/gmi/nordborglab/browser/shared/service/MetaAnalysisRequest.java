@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.shared.service;
 import com.gmi.nordborglab.browser.shared.proxy.*;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
+import com.google.web.bindery.requestfactory.shared.ExtraTypes;
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServiceName;
@@ -17,6 +18,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @ServiceName(value = "com.gmi.nordborglab.browser.server.service.MetaAnalysisService", locator = "com.gmi.nordborglab.browser.server.service.SpringServiceLocator")
+@ExtraTypes({GWASResultProxy.class, ExperimentProxy.class, PhenotypeProxy.class, StudyProxy.class, CandidateGeneListProxy.class})
 public interface MetaAnalysisRequest extends RequestContext {
     Request<MetaSNPAnalysisPageProxy> findAllAnalysisForRegion(int startPos, int endPos, String chr, int start, int size, List<FilterItemProxy> filterItems);
 
@@ -37,4 +39,10 @@ public interface MetaAnalysisRequest extends RequestContext {
     Request<GeneProxy> addGeneToCandidateGeneList(CandidateGeneListProxy candidateGeneList, String geneId);
 
     Request<Void> removeGeneFromCandidateGeneList(CandidateGeneListProxy candidateGeneList, String geneId);
+
+    Request<CandidateGeneListEnrichmentPageProxy> findCandidateGeneListEnrichments(SecureEntityProxy entity, ConstEnums.ENRICHMENT_FILTER currentFilter, String searchString, int start, int length);
+
+    Request<Void> createCandidateGeneListEnrichments(SecureEntityProxy entity, boolean isAllChecked, List<CandidateGeneListEnrichmentProxy> candidateGeneListEnrichments);
+
+    Request<List<FacetProxy>> findEnrichmentStats(SecureEntityProxy entity, String searchString);
 }

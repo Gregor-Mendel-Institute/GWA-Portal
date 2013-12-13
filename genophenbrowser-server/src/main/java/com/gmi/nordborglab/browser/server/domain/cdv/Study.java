@@ -10,9 +10,11 @@ import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichment;
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 import com.google.common.collect.Iterables;
+import org.apache.commons.lang.time.DateUtils;
 
 @Entity
 @Table(name = "cdv_g2p_study", schema = "cdv")
@@ -54,6 +56,12 @@ public class Study extends SecureEntity {
 
     @Transient
     private TraitUom phenotype;
+
+    @Transient
+    private boolean createEnrichments = false;
+
+    @OneToMany(mappedBy = "study", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<CandidateGeneListEnrichment> candidateGeneListEnrichments = new ArrayList<CandidateGeneListEnrichment>();
 
 
     public Set<Trait> getTraits() {
@@ -172,5 +180,21 @@ public class Study extends SecureEntity {
     @Override
     public String getRouting() {
         return getPhenotype().getExperiment().getId().toString();
+    }
+
+    public List<CandidateGeneListEnrichment> getCandidateGeneListEnrichments() {
+        return candidateGeneListEnrichments;
+    }
+
+    public void setCandidateGeneListEnrichments(List<CandidateGeneListEnrichment> candidateGeneListEnrichments) {
+        this.candidateGeneListEnrichments = candidateGeneListEnrichments;
+    }
+
+    public void setCreateEnrichments(boolean createEnrichments) {
+        this.createEnrichments = createEnrichments;
+    }
+
+    public boolean isCreateEnrichments() {
+        return createEnrichments;
     }
 }

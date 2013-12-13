@@ -6,18 +6,21 @@
        http://www.springframework.org/schema/rabbit
                            http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd">
 
-    <rabbit:connection-factory id="connectionFactory" host="${AMQP.HOST}" port="${AMQP.PORT}"  username="${AMQP.username}" password="${AMQP.password}" virtual-host="${AMQP.VHOST}" />
-    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory"  />
+    <rabbit:connection-factory id="connectionFactory" host="${AMQP.HOST}" port="${AMQP.PORT}"
+                               username="${AMQP.username}" password="${AMQP.password}" virtual-host="${AMQP.VHOST}"/>
+    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory"/>
     <rabbit:admin id="amqpAdmin" connection-factory="connectionFactory"/>
 
-    <rabbit:queue id="gwasJobIds" name="gwas_job_ids" />
-    <rabbit:queue id="gwasCheckJobs" name="gwas_check_jobs" />
-
+    <rabbit:queue id="gwasJobIds" name="gwas_job_ids"/>
+    <rabbit:queue id="gwasCheckJobs" name="gwas_check_jobs"/>
+    <rabbit:queue id="candidateGeneListEnrichment" name="candidate_gene_list_enrichment"/>
 
 
     <rabbit:listener-container connection-factory="connectionFactory">
         <rabbit:listener queues="gwasJobIds" ref="submitAnalysisTask" method="onUpdateJobId"/>
         <rabbit:listener queues="gwasCheckJobs" ref="submitAnalysisTask" method="onUpdateJobStatus"/>
+        <rabbit:listener queues="candidateGeneListEnrichment" ref="submitAnalysisTask"
+                         method="onUpdateCandidateGeneListEnrichment"/>
     </rabbit:listener-container>
 
 

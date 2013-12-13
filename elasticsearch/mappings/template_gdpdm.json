@@ -850,6 +850,98 @@
                 }
             }
         },
+        "candidate_gene_list_enrichment": {
+            "_parent": {
+                "type": "study"
+            },
+            "_routing": {
+                "required": true,
+                "path": "experiment_.id"
+            },
+            "properties": {
+                "study_": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "experiment_": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "phenotype_": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "candidate_gene_list_acl": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "permissions": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        }
+                    }
+                },
+                "candidategenelist": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "progress": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "created": {
+                    "type": "date"
+                },
+                "modified": {
+                    "type": "date"
+                },
+                "pvalue": {
+                    "type": "double"
+                },
+                "windowsize": {
+                    "type": "integer"
+                },
+                "top_snps_count": {
+                    "type": "integer"
+                },
+                "permutationcount": {
+                    "type": "integer"
+                }
+            }
+        },
         "candidate_gene_list": {
             "properties": {
                 "name": {

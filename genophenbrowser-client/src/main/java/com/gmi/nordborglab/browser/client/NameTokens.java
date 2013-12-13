@@ -36,6 +36,9 @@ public class NameTokens {
     public static final String profile = "!profile/{id}";
     public static final String account = "!account";
     public static final String userlist = "!users";
+    public static final String experimentsEnrichments = "!study/{id}/enrichments";
+    public static final String phenotypeEnrichments = "!phenotype/{id}/enrichments";
+    public static final String studyEnrichments = "!analysis/{id}/enrichments";
 
 
     public static String getHome() {

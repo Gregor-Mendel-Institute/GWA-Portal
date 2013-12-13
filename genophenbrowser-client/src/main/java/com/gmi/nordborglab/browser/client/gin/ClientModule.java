@@ -13,10 +13,7 @@ import com.gmi.nordborglab.browser.client.manager.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.*;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListDetailPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisGenePresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisTopResultsPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.TraitOntologyPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.PublicationDetailPresenter;
@@ -38,13 +35,11 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.home.HomeTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.dashboard.DashboardPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.*;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.CandidateGeneListEnrichmentView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.PermissionDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.*;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListDetailView;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListView;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.MetaAnalysisGeneView;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.MetaAnalysisTopResultsView;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.*;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.ontology.TraitOntologyView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.*;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.publication.PublicationDetailView;
@@ -65,20 +60,17 @@ import com.gmi.nordborglab.browser.client.mvp.view.home.HomeTabView;
 import com.gmi.nordborglab.browser.client.mvp.view.home.HomeView;
 import com.gmi.nordborglab.browser.client.mvp.view.home.dashboard.DashboardView;
 import com.gmi.nordborglab.browser.client.mvp.view.main.*;
-import com.gmi.nordborglab.browser.client.mvp.view.widgets.DropDownFilterItemPresenterWidgetView;
-import com.gmi.nordborglab.browser.client.mvp.view.widgets.FilterPresenterWidgetView;
-import com.gmi.nordborglab.browser.client.mvp.view.widgets.TextBoxFilterItemPresenterWidgetView;
-import com.gmi.nordborglab.browser.client.mvp.view.widgets.TypeaheadFilterItemPresenterWidgetView;
+import com.gmi.nordborglab.browser.client.mvp.view.widgets.*;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.validation.ClientValidation;
-import com.gmi.nordborglab.browser.client.validation.ClientValidatorFactory;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.HelperFactory;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
 import com.google.gwt.storage.client.Storage;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -101,7 +93,6 @@ import org.jboss.errai.bus.client.framework.MessageBus;
 import org.jboss.errai.bus.client.framework.RequestDispatcher;
 
 import javax.inject.Provider;
-import javax.validation.ValidatorFactory;
 import java.util.List;
 
 public class ClientModule extends AbstractPresenterModule {
@@ -109,6 +100,7 @@ public class ClientModule extends AbstractPresenterModule {
     @Override
     protected void configure() {
         //install(new DefaultModule(ClientPlaceManager.class));
+        install(new GinFactoryModuleBuilder().build(AssistedInjectionFactory.class));
 
         bind(EventBus.class).to(SimpleEventBus.class).in(Singleton.class);
 
@@ -299,6 +291,14 @@ public class ClientModule extends AbstractPresenterModule {
 
         bindPresenter(CandidateGeneListPresenter.class, CandidateGeneListPresenter.MyView.class, CandidateGeneListView.class, CandidateGeneListPresenter.MyProxy.class);
         bindPresenter(CandidateGeneListDetailPresenter.class, CandidateGeneListDetailPresenter.MyView.class, CandidateGeneListDetailView.class, CandidateGeneListDetailPresenter.MyProxy.class);
+        bindPresenter(ExperimentCandidateGeneListEnrichmentPresenter.class, ExperimentCandidateGeneListEnrichmentPresenter.MyView.class, CandidateGeneListEnrichmentView.class, ExperimentCandidateGeneListEnrichmentPresenter.MyProxy.class);
+        //Workaround because CandidateGeneListEnrichmentView was already bound
+        bind(PhenotypeCandidateGeneListEnrichmentPresenter.class).in(Singleton.class);
+        bind(PhenotypeCandidateGeneListEnrichmentPresenter.MyProxy.class).asEagerSingleton();
+        //Workaround because CandidateGeneStudyCandidateGeneListEnrichmentPresenterListEnrichmentView was already bound
+        bind(StudyCandidateGeneListEnrichmentPresenter.class).in(Singleton.class);
+        bind(StudyCandidateGeneListEnrichmentPresenter.MyProxy.class).asEagerSingleton();
+
 
         bindPresenterWidget(GWASPlotPresenterWidget.class, GWASPlotPresenterWidget.MyView.class, GWASPlotView.class);
         bindPresenterWidget(FilterPresenterWidget.class, FilterPresenterWidget.MyView.class, FilterPresenterWidgetView.class);
@@ -308,6 +308,9 @@ public class ClientModule extends AbstractPresenterModule {
 
         bindSingletonPresenterWidget(PhenotypeUploadWizardPresenterWidget.class, PhenotypeUploadWizardPresenterWidget.MyView.class, PhenotypeUploadWizardView.class);
         bindSingletonPresenterWidget(GWASUploadWizardPresenterWidget.class, GWASUploadWizardPresenterWidget.MyView.class, GWASUploadWizardView.class);
+        //bindPresenterWidget(CandidateGeneListEnrichmentPresenterWidget.class,CandidateGeneListEnrichmentPresenterWidget.MyView.class,CandidateGeneListEnrichmentPresenterWidgetView.class);
+        // have to use that otherwise @Assited throws error
+        //bind(CandidateGeneListEnrichmentPresenterWidget.MyView.class).to(CandidateGeneListEnrichmentPresenterWidgetView.class);
     }
 
 
@@ -481,5 +484,14 @@ public class ClientModule extends AbstractPresenterModule {
     @Singleton
     public MessageBus getMessageBus() {
         return ErraiBus.get();
+    }
+
+    public interface AssistedInjectionFactory {
+
+        EnrichmentProviderImpl createEnrichmentProvider(EnrichmentProvider.TYPE type);
+
+        CandidateGeneListEnrichmentPresenterWidget createCandidateGeneListEnrichmentPresenter(final EnrichmentProvider dataProvider);
+
+        CandidateGeneListEnrichmentPresenterWidgetView getCandidateGeneListEnrichmentView(final EnrichmentProvider.TYPE viewType);
     }
 }

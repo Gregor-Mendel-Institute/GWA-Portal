@@ -140,13 +140,14 @@ public class DiversityPresenter extends
             getView().clearBreadcrumbs(0);
             getView().setActiveMenuItem(MENU_ITEM.EXPERIMENT, request);
         }
-        if (request.matchesNameToken(NameTokens.experiment) || request.matchesNameToken(NameTokens.phenotypes)) {
+        if (request.matchesNameToken(NameTokens.experiment) || request.matchesNameToken(NameTokens.phenotypes) || request.matchesNameToken(NameTokens.experimentsEnrichments)) {
             type = "experiment";
             subItem = null;
             getView().setActiveMenuItem(MENU_ITEM.EXPERIMENT, request);
         } else if (request.matchesNameToken(NameTokens.phenotype)
                 || request.matchesNameToken(NameTokens.obsunit)
                 || request.matchesNameToken(NameTokens.studylist)
+                || request.matchesNameToken(NameTokens.phenotypeEnrichments)
                 ) {
             title = "Phenotype";
             type = "phenotype";
@@ -160,6 +161,14 @@ public class DiversityPresenter extends
             getView().setActiveMenuItem(MENU_ITEM.PHENOTYPE, request);
         } else if (request.matchesNameToken(NameTokens.studyoverview)) {
             getView().clearBreadcrumbs(0);
+            type = "study";
+            title = "Analyses";
+            subItem = null;
+            getView().setActiveMenuItem(MENU_ITEM.STUDY, request);
+        } else if (
+                request.matchesNameToken(NameTokens.study) ||
+                        request.matchesNameToken(NameTokens.studygwas) ||
+                        request.matchesNameToken(NameTokens.studyEnrichments)) {
             type = "study";
             title = "Analysis";
             subItem = null;
@@ -205,7 +214,7 @@ public class DiversityPresenter extends
             type = "meta";
             subItem = null;
             getView().setActiveMenuItem(MENU_ITEM.META_ANALYSIS, request);
-        } else if (request.matchesNameToken(NameTokens.candidateGeneList) || request.matchesNameToken(NameTokens.getCandidateGeneListDetail())) {
+        } else if (request.matchesNameToken(NameTokens.candidateGeneList) || request.matchesNameToken(NameTokens.candidateGeneListDetail)) {
             getView().clearBreadcrumbs(0);
             title = "Candidate gene lists";
             type = "candidategenelist";

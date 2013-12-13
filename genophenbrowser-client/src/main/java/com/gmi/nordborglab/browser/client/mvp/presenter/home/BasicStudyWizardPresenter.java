@@ -131,6 +131,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
         void showCallout(String callout, boolean show);
 
         void setStepNumber(int stepNumber);
+
+        HasValue<Boolean> getIsCreateEnrichments();
     }
 
     static class PhenotypeNamePredicate implements Predicate<PhenotypeProxy> {
@@ -567,6 +569,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                 study.setProtocol(selectedStudyProtocol);
                 study.setTraits(ImmutableSet.copyOf(filteredPhenotypeValues));
                 study.setTransformation(selectedTransformation);
+                study.setCreateEnrichments(getView().getIsCreateEnrichments().getValue());
                 if (getView().getIsStudyJob().getValue()) {
                     StudyJobProxy studyJob = ctx.create(StudyJobProxy.class);
                     studyJob.setStatus("Waiting");

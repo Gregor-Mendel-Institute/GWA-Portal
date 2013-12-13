@@ -17,6 +17,7 @@ import org.springframework.security.acls.model.*;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,13 @@ public class AclManager {
     @Resource
     protected UserRepository userRepository;
 
+
+    public <T extends SecureEntity> Map<ObjectIdentity, Acl> getAcls(Collection<T> entities) {
+        FluentIterable<T> filtered = FluentIterable.from(entities);
+        final ImmutableBiMap<T, ObjectIdentity> identities = retrieveObjectIdentites(filtered.toList()).inverse();
+        ImmutableMap<ObjectIdentity, Acl> permissions = ImmutableMap.copyOf(aclService.readAclsById(identities.values().asList()));
+        return permissions;
+    }
 
     public <T extends SecureEntity> Acl getAcl(T entity) {
         ObjectIdentity oid = new ObjectIdentityImpl(entity.getClass(), entity.getId());

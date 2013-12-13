@@ -148,6 +148,8 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     CustomPager missingGenotypesPager;
     @UiField
     CheckBox studyJobCb;
+    @UiField
+    CheckBox enrichmentJobCb;
     private Modal phenotypeUploadPopup = new Modal();
     private ResizeLayoutPanel phenotypeUploadPanel = new ResizeLayoutPanel();
 
@@ -640,6 +642,11 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @Override
     public void setStepNumber(int stepNumber) {
         wizard.setStepNumber(stepNumber);
+    }
+
+    @Override
+    public HasValue<Boolean> getIsCreateEnrichments() {
+        return enrichmentJobCb;
     }
 
     private void resetStatisticTypeLinks() {

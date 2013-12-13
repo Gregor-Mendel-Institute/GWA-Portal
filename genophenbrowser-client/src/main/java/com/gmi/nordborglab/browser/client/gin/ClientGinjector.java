@@ -136,4 +136,10 @@ public interface ClientGinjector extends Ginjector {
     Provider<AccountPresenter> getAccountPresenter();
 
     AsyncProvider<UserListPresenter> getUserListPresenter();
+
+    AsyncProvider<ExperimentCandidateGeneListEnrichmentPresenter> getExperimentCandidateGeneListEnrichmentPresenter();
+
+    AsyncProvider<PhenotypeCandidateGeneListEnrichmentPresenter> getPhenotypeCandidateGeneListEnrichmentPresenter();
+
+    AsyncProvider<StudyCandidateGeneListEnrichmentPresenter> getStudyCandidateGeneListEnrichmentPresenter();
 }

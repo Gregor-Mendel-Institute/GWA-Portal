@@ -276,6 +276,11 @@
                                     trigger="FOCUS" placement="RIGHT">
                                 <b:CheckBox ui:field="studyJobCb">Create HPC Job</b:CheckBox>
                             </b:Tooltip>
+                            <b:Tooltip
+                                    text='If checked a enrichment analysis for all available candidate genes will be run.'
+                                    trigger="FOCUS" placement="RIGHT">
+                                <b:CheckBox ui:field="enrichmentJobCb">Run Enrichment Analysis</b:CheckBox>
+                            </b:Tooltip>
                         </div>
                         <div class="{style.selectExperimentContainer}" id="method">
                             <g:FlowPanel ui:field="methodContainer"/>
