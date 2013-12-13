@@ -1,6 +1,6 @@
 package com.gmi.nordborglab.browser.client.events;
 
-import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.Event;
 import com.google.web.bindery.event.shared.EventBus;
@@ -21,9 +21,11 @@ public class PermissionDoneEvent extends Event<PermissionDoneEvent.Handler> {
 
     public static final Type<Handler> TYPE = new Type<Handler>();
 
+    private final SecureEntityProxy entity;
 
-    public PermissionDoneEvent() {
 
+    public PermissionDoneEvent(SecureEntityProxy entity) {
+        this.entity = entity;
     }
 
     @Override
@@ -36,11 +38,15 @@ public class PermissionDoneEvent extends Event<PermissionDoneEvent.Handler> {
         handler.onPermissionDone(this);
     }
 
-    public static HandlerRegistration register(EventBus eventBus,PermissionDoneEvent.Handler handler) {
-        return eventBus.addHandler(TYPE,handler);
+    public static HandlerRegistration register(EventBus eventBus, PermissionDoneEvent.Handler handler) {
+        return eventBus.addHandler(TYPE, handler);
     }
 
-    public static void fire(final EventBus source) {
-        source.fireEvent(new PermissionDoneEvent());
+    public static void fire(final EventBus source, SecureEntityProxy entity) {
+        source.fireEvent(new PermissionDoneEvent(entity));
+    }
+
+    public SecureEntityProxy getEntity() {
+        return entity;
     }
 }

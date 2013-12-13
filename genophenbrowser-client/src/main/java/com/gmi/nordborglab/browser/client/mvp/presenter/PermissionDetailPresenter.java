@@ -170,7 +170,7 @@ public class PermissionDetailPresenter extends
 
     @Override
     public void onDone() {
-        getEventBus().fireEventFromSource(new PermissionDoneEvent(), this);
+        getEventBus().fireEventFromSource(new PermissionDoneEvent(proxy), this);
     }
 
     @Override
