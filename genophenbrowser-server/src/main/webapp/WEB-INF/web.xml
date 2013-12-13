@@ -61,6 +61,8 @@
         <filter-name>GzipFilter</filter-name>
         <filter-class>org.eclipse.jetty.servlets.GzipFilter</filter-class>
         <init-param>
+            <param-name>methods</param-name>
+            <param-value>GET,POST</param-value>
             <param-name>mimeTypes</param-name>
             <param-value>
                 application/json,text/html,text/plain,text/xml,application/xhtml+xml,text/css,application/javascript,application/x-javascript,image/svg+xml,image/x-icon
