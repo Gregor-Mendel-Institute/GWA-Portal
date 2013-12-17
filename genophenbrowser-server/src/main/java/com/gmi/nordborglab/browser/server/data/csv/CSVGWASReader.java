@@ -62,7 +62,7 @@ public class CSVGWASReader implements GWASReader {
     }
 
     private static CellProcessor[] cellProcessors = new CellProcessor[]{
-            new ParseInt(), new ParseInt(), new ParseDouble(), new Optional(new ParseNAs(new ParseDouble())), new Optional(new ParseNAs(new ParseInt())), new Optional(new ParseNAs(new ParseDouble()))
+            new ParseInt(), new ParseDouble(), new ParseDouble(), new Optional(new ParseNAs(new ParseDouble())), new Optional(new ParseNAs(new ParseInt())), new Optional(new ParseNAs(new ParseDouble()))
     };
 
     public CSVGWASReader() {
@@ -117,7 +117,8 @@ public class CSVGWASReader implements GWASReader {
                     pvalues.clear();
                     chr = (Integer) row.get(0);
                 } else {
-                    positions.add((Integer) row.get(1));
+                    Integer position = ((Double) row.get(1)).intValue();
+                    positions.add(position);
                     Double value = (Double) row.get(2);
                     Float floatValue = (float) (double) value;
                     pvalues.add(floatValue);
