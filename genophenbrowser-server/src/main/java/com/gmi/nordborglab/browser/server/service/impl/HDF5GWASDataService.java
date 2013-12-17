@@ -126,7 +126,7 @@ public class HDF5GWASDataService implements GWASDataService {
             gwasWriter.saveGWASDataToFile(data, targetFile);
 
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            throw new IOException(e);
         } finally {
 
         }
