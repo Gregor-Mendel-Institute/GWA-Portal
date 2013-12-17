@@ -1,45 +1,41 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
+import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.errai.ClientComService;
-import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
+import com.gmi.nordborglab.browser.server.repository.*;
 import com.gmi.nordborglab.browser.server.security.*;
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.apache.commons.math3.analysis.function.Exp;
 import org.elasticsearch.action.update.UpdateRequestBuilder;
-import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.*;
-import org.springframework.security.acls.model.AccessControlEntry;
-import org.springframework.security.acls.model.Acl;
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Sid;
+import org.springframework.security.acls.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.acl.PermissionPrincipal;
 import com.gmi.nordborglab.browser.server.domain.acl.SearchPermissionUserRole;
-import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.gmi.nordborglab.browser.server.service.PermissionService;
 
 @Service
@@ -59,6 +55,12 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Resource
     protected Client client;
+
+    @Resource
+    protected TraitUomRepository traitUomRepository;
+
+    @Resource
+    protected StudyRepository studyRepository;
 
     @Resource
     protected AclManager aclManager;
@@ -130,7 +132,45 @@ public class PermissionServiceImpl implements PermissionService {
         return getGenericPermissions(entity);
     }
 
+
     private void indexPermissions(SecureEntity entity) {
+        indexEntityPermissions(entity);
+        ImmutableSet<SecureEntity> childEntities = getChildEntities(entity);
+        if (childEntities == null || childEntities.size() == 0)
+            return;
+        FluentIterable<SecureEntity> filteredEntities = aclManager.filterByAcl(childEntities, Lists.newArrayList(CustomPermission.ADMINISTRATION));
+        Map<ObjectIdentity, Acl> acls = aclManager.getAcls(filteredEntities);
+        for (SecureEntity child : filteredEntities) {
+            ObjectIdentity oid = new ObjectIdentityImpl(child.getClass(), child.getId());
+            Acl acl = acls.get(oid);
+            if (acl != null && acl.isEntriesInheriting()) {
+                indexPermissions(child);
+            }
+        }
+    }
+
+    private ImmutableSet<SecureEntity> getChildEntities(SecureEntity entity) {
+        if (entity instanceof Experiment) {
+            return ImmutableSet.copyOf(Lists.transform(traitUomRepository.findByExperimentId(entity.getId()), new Function<TraitUom, SecureEntity>() {
+                @Nullable
+                @Override
+                public SecureEntity apply(@Nullable TraitUom input) {
+                    return (SecureEntity) input;
+                }
+            }));
+        } else if (entity instanceof TraitUom) {
+            return ImmutableSet.copyOf(Lists.transform(studyRepository.findByPhenotypeId(entity.getId()), new Function<Study, SecureEntity>() {
+                @Nullable
+                @Override
+                public SecureEntity apply(@Nullable Study input) {
+                    return (SecureEntity) input;
+                }
+            }));
+        }
+        return null;
+    }
+
+    private void indexEntityPermissions(SecureEntity entity) {
         if (entity.getIndexType() == null)
             return;
         try {
