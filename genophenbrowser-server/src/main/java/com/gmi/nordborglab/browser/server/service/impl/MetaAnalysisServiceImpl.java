@@ -975,7 +975,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         FilterBuilder entityFilter = getEntityFilterForEnrichment(entity);
 
         if (searchString != null && !searchString.equalsIgnoreCase("")) {
-            request.setQuery(multiMatchQuery(searchString, "name^3.5", "name.partial^1.5", "protocol.analysis_method^3.5", "allele_assay.name^1.5", "allele_assay.producer", "owner.name", "experiment.name", "phenotype.name"));
+            request.setQuery(multiMatchQuery(searchString, "candidategenelist.name", "study.name", "phenotype.name", "experiment.name"));
         }
         FilterBuilder typeFilter = null;
         switch (currentFilter) {
@@ -988,7 +988,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                                         entityFilter,
                                         FilterBuilders.termFilter("status", "Finished")))
                         ).field("pvalue"));
-                request.addSort("pvalue", SortOrder.DESC);
+                request.addSort("pvalue", SortOrder.ASC);
                 break;
 
             case RUNNING:
@@ -1002,7 +1002,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
 
         SearchResponse response = request.execute().actionGet();
         //required because of possible duplicates when routing is wrongly assigned
-        Set<Long> idsToFetch = Sets.newHashSet();
+        Set<Long> idsToFetch = Sets.newLinkedHashSet();
         for (SearchHit hit : response.getHits()) {
             idsToFetch.add(Long.parseLong(hit.getId()));
         }
