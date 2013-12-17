@@ -43,7 +43,7 @@ public class AclManager {
     protected UserRepository userRepository;
 
 
-    public <T extends SecureEntity> Map<ObjectIdentity, Acl> getAcls(Collection<T> entities) {
+    public <T extends SecureEntity> Map<ObjectIdentity, Acl> getAcls(Iterable<T> entities) {
         FluentIterable<T> filtered = FluentIterable.from(entities);
         final ImmutableBiMap<T, ObjectIdentity> identities = retrieveObjectIdentites(filtered.toList()).inverse();
         ImmutableMap<ObjectIdentity, Acl> permissions = ImmutableMap.copyOf(aclService.readAclsById(identities.values().asList()));
@@ -160,16 +160,16 @@ public class AclManager {
         addPermission(entity, recipient, permission, parentClass, parentId);
     }
 
-    public <T extends SecureEntity> FluentIterable<T> filterByAcl(List<T> entities) {
+    public <T extends SecureEntity> FluentIterable<T> filterByAcl(Iterable<T> entities) {
         return filterByAcl(entities, ImmutableList.of(CustomPermission.READ));
     }
 
-    public <T extends SecureEntity> FluentIterable<T> filterByAcl(List<T> entities, final List<Permission> permissions) {
+    public <T extends SecureEntity> FluentIterable<T> filterByAcl(Iterable<T> entities, final List<Permission> permissions) {
         return filterByAcl(entities, permissions, SecurityUtil.getSids(roleHierarchy));
     }
 
 
-    public <T extends SecureEntity> FluentIterable<T> filterByAcl(List<T> entities, final List<Permission> permissions, final List<Sid> authorities) {
+    public <T extends SecureEntity> FluentIterable<T> filterByAcl(Iterable<T> entities, final List<Permission> permissions, final List<Sid> authorities) {
 
         FluentIterable<T> filtered = FluentIterable.from(entities);
         if (filtered.size() > 0) {
