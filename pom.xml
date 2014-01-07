@@ -54,7 +54,7 @@
         <maven.build-helper.plugin>1.8</maven.build-helper.plugin>
         <maven.gwt.plugin>2.5.1</maven.gwt.plugin>
         <maven.exec.plugin>1.2.1</maven.exec.plugin>
-        <maven.apt.plugin>1.0.6</maven.apt.plugin>
+        <maven.apt.plugin>1.1.1</maven.apt.plugin>
         <maven.release.plugin>2.4.1</maven.release.plugin>
         <maven.javadoc.plugin>2.9</maven.javadoc.plugin>
         <maven.surefire.plugin>2.15</maven.surefire.plugin>
