@@ -4,25 +4,13 @@
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:security="http://www.springframework.org/schema/security"
-       xmlns:oxm="http://www.springframework.org/schema/oxm" xmlns:bean="http://www.springframework.org/schema/jdbc"
-       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
-	http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.1.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context
-	   	http://www.springframework.org/schema/context/spring-context-3.1.xsd
-	   	http://www.springframework.org/schema/security
-		http://www.springframework.org/schema/security/spring-security-3.1.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd"
-        >
+	   	http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:annotation-config/>
-    <context:component-scan base-package="com.gmi.nordborglab.browser.server"/>
-
-    <!-- needs a separate global-method-security decleration here, so that hasPermission and hasRole work when incocating services from a controller -->
-    <security:global-method-security pre-post-annotations="enabled"
-                                     access-decision-manager-ref="methodAccessDecisionManager">
-        <security:expression-handler ref="expressionHandler"/>
-    </security:global-method-security>
+    <context:component-scan base-package="com.gmi.nordborglab.browser.server.controller.**"/>
 
 
     <mvc:annotation-driven validator="validator">
