@@ -214,7 +214,6 @@ public class SubmitAnalysisTask {
             args.add(studyJob.getId());
             args.add(payload.get("saga_job_id"));
             args.add(payload.get("sge_job_id"));
-            args.add(payload.get("newHPC"));
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
