@@ -115,6 +115,9 @@ public class CSVGWASReader implements GWASReader {
                     data.put(key, chrGWAData);
                     positions.clear();
                     pvalues.clear();
+                    mafs.clear();
+                    macs.clear();
+                    GVEs.clear();
                     chr = (Integer) row.get(0);
                 } else {
                     Integer position = ((Double) row.get(1)).intValue();
