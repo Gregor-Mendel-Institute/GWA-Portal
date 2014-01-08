@@ -85,6 +85,9 @@
 
     <util:map id="jpaPropertyMap">
         <entry key="hibernate.hbm2ddl.auto" value="auto"/>
+        <entry key="hibernate.generate_statistics" value="${database.statistics}"/>
+        <entry key="hibernate.show_sql" value="${database.show_sql}"/>
+        <entry key="hibernate.format_sql" value="${database.show_sql}"/>
         <entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
         <entry key="hibernate.id.new_generator_mappings" value="true"/>
     </util:map>
@@ -103,6 +106,20 @@
         <property name="url" value="${database.ontology.url}"/>
         <property name="username" value="${database.username}"/>
         <property name="password" value="${database.password}"/>
+    </bean>
+
+
+    <bean id="hibernateStatisticsBean" class="org.hibernate.jmx.StatisticsService">
+        <property name="statisticsEnabled" value="true"/>
+        <property name="sessionFactory" value="#{entityManagerFactory.sessionFactory}"/>
+    </bean>
+
+    <bean id="jmxExporter" class="org.springframework.jmx.export.MBeanExporter">
+        <property name="beans">
+            <map>
+                <entry key="Hibernate:application=Statistics" value-ref="hibernateStatisticsBean"/>
+            </map>
+        </property>
     </bean>
 
 </beans>
