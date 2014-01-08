@@ -78,8 +78,6 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             classpath:META-INF/applicationContext.xml
-            classpath:META-INF/spring-security.xml
-            classpath:META-INF/spring-acl.xml
         </param-value>
     </context-param>
 
@@ -163,6 +161,10 @@
 
     <error-page>
         <error-code>404</error-code>
+        <location>/WEB-INF/jsp/error/404.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>403</error-code>
         <location>/WEB-INF/jsp/error/404.jsp</location>
     </error-page>
     <error-page>
