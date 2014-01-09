@@ -37,6 +37,7 @@
         <maven.enforcer.plugin>1.0.1</maven.enforcer.plugin>
         <maven.version.range>[2.2.1,3.1.0)</maven.version.range>
         <jackson.verison>2.3.1</jackson.verison>
+        <jackson.annotations.version>2.3.0</jackson.annotations.version>
         <supercsv.version>2.1.0</supercsv.version>
         <apache.commons.math>3.2</apache.commons.math>
         <freemaker.version>2.3.20</freemaker.version>
@@ -329,7 +330,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.verison}</version>
+                <version>${jackson.annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
