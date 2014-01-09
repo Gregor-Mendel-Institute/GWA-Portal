@@ -471,7 +471,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     private void updateProgressBar(File file, double max, double current) {
         Element elem = filesToRow.get(file);
         GQuery query = $(elem).find("td:nth-child(4)");
-        int percentage = (int) Math.round(max / current * 100);
+        long percentage = Math.round((current * 100.0 / max));
         query.find("div > div").css("width", percentage + "%").html(percentage + "%");
     }
 
