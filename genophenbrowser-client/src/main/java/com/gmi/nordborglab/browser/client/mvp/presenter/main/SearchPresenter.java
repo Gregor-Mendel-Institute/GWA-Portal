@@ -33,6 +33,8 @@ public class SearchPresenter extends PresenterWidget<SearchPresenter.MyView> imp
     public interface MyView extends View, HasUiHandlers<SearchUiHandlers> {
 
         void setMinCharSize(int minCharSize);
+
+        void setLoadingIndicatorVisible(boolean visible);
     }
 
     private CATEGORY category;
@@ -76,10 +78,11 @@ public class SearchPresenter extends PresenterWidget<SearchPresenter.MyView> imp
                 Collection<Suggestion> suggestions = new ArrayList<Suggestion>();
                 for (SearchFacetPageProxy facetPage : response) {
                     for (SearchItemProxy searchItem : facetPage.getContents()) {
-                        suggestions.add(new SearchSuggestOracle.SearchSuggestion(searchItem));
+                        suggestions.add(new SearchSuggestOracle.SearchSuggestion(searchItem, facetPage));
                     }
                 }
                 searchResponse.setSuggestions(suggestions);
+                getView().setLoadingIndicatorVisible(false);
                 callback.onSuggestionsReady(request, searchResponse);
             }
         });

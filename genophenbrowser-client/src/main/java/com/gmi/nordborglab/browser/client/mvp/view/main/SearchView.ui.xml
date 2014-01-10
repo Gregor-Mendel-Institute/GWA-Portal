@@ -5,6 +5,10 @@
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
+
+    <ui:with field="mainRes"
+             type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
+
     <ui:style>
         @external .hlt1;
         .hlt1 {
@@ -56,6 +60,7 @@
             color: #888;
             margin: 0;
             line-height: 11px;
+            white-space: nowrap;
         }
 
         .searchBoxPopup td {
@@ -117,11 +122,21 @@
             color: white;
             text-decoration: none;
         }
+
+        .searchBoxIndicator {
+            position: absolute;
+            right: 0px;
+            top: 10px;
+            display: inline;
+        }
+
     </ui:style>
     <g:FlowPanel addStyleNames="{style.search_container}">
         <b:InputAddOn prependIcon="SEARCH">
             <g:SuggestBox ui:field="suggestBox" addStyleNames="{style.search_box}">
             </g:SuggestBox>
         </b:InputAddOn>
+        <g:HTMLPanel ui:field="loadingIndicator" addStyleNames="{style.searchBoxIndicator} {mainRes.style.loader}">
+        </g:HTMLPanel>
     </g:FlowPanel>
 </ui:UiBinder>

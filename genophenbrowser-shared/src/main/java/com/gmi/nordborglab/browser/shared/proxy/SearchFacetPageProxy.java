@@ -9,6 +9,9 @@ import com.google.web.bindery.requestfactory.shared.ValueProxy;
 @ProxyForName("com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage")
 public interface SearchFacetPageProxy extends ValueProxy {
 
-	public List<SearchItemProxy> getContents();
-	public SUB_CATEGORY getCategory();
+    public List<SearchItemProxy> getContents();
+
+    public SUB_CATEGORY getCategory();
+
+    public long getTotal();
 }

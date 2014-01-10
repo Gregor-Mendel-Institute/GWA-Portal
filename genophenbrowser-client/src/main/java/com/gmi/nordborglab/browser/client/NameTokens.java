@@ -1,5 +1,8 @@
 package com.gmi.nordborglab.browser.client;
 
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
+import com.google.common.collect.ImmutableMap;
+
 public class NameTokens {
 
     public static final String home = "!home";
@@ -39,6 +42,14 @@ public class NameTokens {
     public static final String experimentsEnrichments = "!study/{id}/enrichments";
     public static final String phenotypeEnrichments = "!phenotype/{id}/enrichments";
     public static final String studyEnrichments = "!analysis/{id}/enrichments";
+
+    public static final ImmutableMap<SearchItemProxy.SUB_CATEGORY, String> subCategory2Token = ImmutableMap.<SearchItemProxy.SUB_CATEGORY, String>builder()
+            .put(SearchItemProxy.SUB_CATEGORY.STUDY, NameTokens.experiments)
+            .put(SearchItemProxy.SUB_CATEGORY.PHENOTYPE, NameTokens.phenotypeoverview)
+            .put(SearchItemProxy.SUB_CATEGORY.ANALYSIS, NameTokens.studyoverview)
+            .put(SearchItemProxy.SUB_CATEGORY.PUBLICATION, NameTokens.publications)
+            .put(SearchItemProxy.SUB_CATEGORY.CANDIDATE_GENE_LIST, NameTokens.candidateGeneList)
+            .build();
 
 
     public static String getHome() {

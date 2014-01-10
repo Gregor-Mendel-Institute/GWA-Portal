@@ -56,6 +56,8 @@ public interface MainResources extends ClientBundle {
         String iconContainer_active();
 
         String plant_icon();
+
+        String loader();
     }
 
     @Source("images/transplant_logo_small.png")
@@ -118,6 +120,9 @@ public interface MainResources extends ClientBundle {
 
     @Source("images/cloud.png")
     ImageResource cloud();
+
+    @Source("images/loader.gif")
+    ImageResource loader();
 
     @Source("style.css")
     MainStyle style();
