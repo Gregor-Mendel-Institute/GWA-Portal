@@ -25,46 +25,43 @@ import com.google.inject.Singleton;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 
 public class ExperimentsOverviewPresenterTest extends PresenterTestBase {
-	
-	public static class Module extends PresenterTestModule {
 
-		@Override
-		protected void configurePresenterTest() {
-			bind(ExperimentManager.class).in(Singleton.class);
-		}
-	}
-	
-	@Inject
-	ExperimentsOverviewPresenter presenter;
-	
-	@Inject
-	ExperimentsOverviewPresenter.MyView view;
-	
-	@Mock 
-	HasData<ExperimentProxy> display;
-	
-	
-	@Captor
-	ArgumentCaptor<List<ExperimentProxy>> captor;
-	
-	
-	
-	@Before
-	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
-	}
-	
+    public static class Module extends PresenterTestModule {
+
+        @Override
+        protected void configurePresenterTest() {
+            bind(ExperimentManager.class).in(Singleton.class);
+        }
+    }
+
+    @Inject
+    ExperimentsOverviewPresenter presenter;
+
+    @Inject
+    ExperimentsOverviewPresenter.MyView view;
+
+    @Mock
+    HasData<ExperimentProxy> display;
 
 
-	@Ignore
-	@Test
-	public void testLoadExperimentNavigateToNewPlace() {
-		ExperimentProxy experiment = mock(ExperimentProxy.class);
-		when(experiment.getId()).thenReturn(1L);
-		presenter.onBind();
-		presenter.loadExperiment(experiment);
-		PlaceRequest request = new PlaceRequest(NameTokens.experiment).with("id", experiment.getId().toString());
-		verify(placeManager).revealPlace(request);
-	}
-	
+    @Captor
+    ArgumentCaptor<List<ExperimentProxy>> captor;
+
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+    }
+
+
+    @Ignore
+    @Test
+    public void testLoadExperimentNavigateToNewPlace() {
+        ExperimentProxy experiment = mock(ExperimentProxy.class);
+        when(experiment.getId()).thenReturn(1L);
+        presenter.onBind();
+        PlaceRequest request = new PlaceRequest(NameTokens.experiment).with("id", experiment.getId().toString());
+        verify(placeManager).revealPlace(request);
+    }
+
 }

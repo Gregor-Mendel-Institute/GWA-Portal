@@ -200,7 +200,7 @@ public class ExperimentServiceTest extends BaseTest {
     public void testgetPublications() {
         SecurityUtils.setAnonymousUser();
         long count = publicationRepository.count();
-        PublicationPage page = service.getPublications(1, 5);
+        PublicationPage page = service.getPublications(null, 1, 5);
         assertNotNull(page);
         assertEquals(5, page.getContent().size());
         assertEquals(count, page.getTotalElements());

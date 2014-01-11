@@ -33,7 +33,7 @@ public interface ExperimentService {
     @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.observation.Experiment','EDIT')")
     Experiment addPublication(Long id, Publication publication);
 
-    PublicationPage getPublications(int start, int size);
+    PublicationPage getPublications(String searchString, int start, int size);
 
     Publication findOnePublication(Long id);
 
