@@ -123,13 +123,23 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
     }
 
     @Override
-    public void displayFacets(List<FacetProxy> facets) {
+    public void displayFacets(List<FacetProxy> facets, String searchString) {
         if (facets == null)
             return;
         for (FacetProxy facet : facets) {
             ConstEnums.TABLE_FILTER type = ConstEnums.TABLE_FILTER.valueOf(facet.getName());
             String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
-            navLinkMap.get(type).setText(newTitle);
+            NavLink link = navLinkMap.get(type);
+            link.setText(newTitle);
+            PlaceRequest request = PhenotypeOverviewPresenter.place;
+            if (type != ConstEnums.TABLE_FILTER.ALL) {
+                request = request.with("filter", type.name());
+            }
+            if (searchString != null) {
+                request = request.with("query", searchString);
+            }
+            searchBox.setText(searchString);
+            link.setTargetHistoryToken(placeManager.buildHistoryToken(request));
         }
     }
 
@@ -145,12 +155,6 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
                 return "Recent";
         }
         return "";
-    }
-
-    @UiHandler({"navAll", "navPrivate", "navPublished", "navRecent"})
-    public void onNavClick(ClickEvent e) {
-        IconAnchor iconAnchor = (IconAnchor) e.getSource();
-        getUiHandlers().selectFilter(navLinkMap.inverse().get(iconAnchor.getParent()));
     }
 
     @UiHandler("searchBox")

@@ -42,8 +42,8 @@ public class ExperimentManager extends RequestFactoryManager<ExperimentRequest> 
         rf.experimentRequest().findAllByAcl(permission).fire(receiver);
     }
 
-    public void findAllPublications(Receiver<PublicationPageProxy> receiver, int start, int size) {
-        rf.experimentRequest().getPublications(start, size).fire(receiver);
+    public void findAllPublications(Receiver<PublicationPageProxy> receiver, String searchString, int start, int size) {
+        rf.experimentRequest().getPublications(searchString, start, size).fire(receiver);
     }
 
     public void delete(Receiver<Void> receiver, ExperimentProxy experiment) {

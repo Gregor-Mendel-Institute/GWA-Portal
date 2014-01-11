@@ -71,7 +71,7 @@ public class TypeaheadFilterItemPresenterWidget extends FilterItemPresenterWidge
                 Collection<SuggestOracle.Suggestion> suggestions = Lists.newArrayList();
                 if (response != null) {
                     for (SearchItemProxy searchItem : response.getContents()) {
-                        suggestions.add(new SearchSuggestOracle.SearchSuggestion(searchItem));
+                        suggestions.add(new SearchSuggestOracle.SearchSuggestion(searchItem, response));
                     }
                 }
                 searchResponse.setSuggestions(suggestions);

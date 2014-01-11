@@ -198,7 +198,7 @@ public class MetaAnalysisGenePresenter extends
                 Collection<SuggestOracle.Suggestion> suggestions = new ArrayList<SuggestOracle.Suggestion>();
                 if (response != null) {
                     for (SearchItemProxy searchItem : response.getContents()) {
-                        suggestions.add(new SearchSuggestOracle.SearchSuggestion(searchItem));
+                        suggestions.add(new SearchSuggestOracle.SearchSuggestion(searchItem, response));
                     }
                 }
                 searchResponse.setSuggestions(suggestions);

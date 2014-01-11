@@ -3,21 +3,26 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
+import com.gmi.nordborglab.browser.client.mvp.handlers.PublicationOverviewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
+import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
+import com.gwtplatform.mvp.client.proxy.PlaceManager;
+import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
@@ -29,27 +34,34 @@ import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
  * To change this template use File | Settings | File Templates.
  */
 public class PublicationOverviewPresenter extends
-        Presenter<PublicationOverviewPresenter.MyView, PublicationOverviewPresenter.MyProxy> {
+        Presenter<PublicationOverviewPresenter.MyView, PublicationOverviewPresenter.MyProxy> implements PublicationOverviewUiHandlers {
 
-    public interface MyView extends View {
+    public interface MyView extends View, HasUiHandlers<PublicationOverviewUiHandlers> {
 
         HasData<PublicationProxy> getDisplay();
 
+        void setSearchString(String searchString);
     }
 
     @ProxyCodeSplit
     @NameToken(NameTokens.publications)
     public interface MyProxy extends ProxyPlace<PublicationOverviewPresenter> {
+
     }
 
     protected final AsyncDataProvider<PublicationProxy> dataProvider;
+    protected final PlaceManager placeManager;
+
     protected final ExperimentManager experimentManager;
+    protected String searchString;
 
     @Inject
     public PublicationOverviewPresenter(EventBus eventBus, MyView view, MyProxy proxy,
-                                        final ExperimentManager experimentManager) {
+                                        final ExperimentManager experimentManager, final PlaceManager placeManager) {
         super(eventBus, view, proxy);
+        this.placeManager = placeManager;
         this.experimentManager = experimentManager;
+        getView().setUiHandlers(this);
         dataProvider = new AsyncDataProvider<PublicationProxy>() {
 
             @Override
@@ -75,7 +87,30 @@ public class PublicationOverviewPresenter extends
                 dataProvider.updateRowData(range.getStart(), studies.getContents());
             }
         };
-        experimentManager.findAllPublications(receiver, range.getStart(), range.getLength());
+        experimentManager.findAllPublications(receiver, searchString, range.getStart(), range.getLength());
+    }
+
+
+    @Override
+    protected void onReset() {
+        super.onReset();
+        PlaceRequest request = placeManager.getCurrentPlaceRequest();
+        String newSearchString = request.getParameter("query", null);
+        if (newSearchString != searchString) {
+            searchString = newSearchString;
+            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+            getView().setSearchString(searchString);
+        }
+    }
+
+
+    @Override
+    public void updateSearchString(String searchString) {
+        PlaceRequest request = new PlaceRequest(NameTokens.publications);
+        if (searchString != null && !searchString.equals("")) {
+            request = request.with("query", searchString);
+        }
+        placeManager.revealPlace(request);
     }
 
 }

@@ -37,7 +37,7 @@ public class PhenotypeOverviewPresenter
 
         void setActiveNavLink(ConstEnums.TABLE_FILTER filter);
 
-        void displayFacets(List<FacetProxy> facets);
+        void displayFacets(List<FacetProxy> facets, String searchString);
 
     }
 
@@ -53,6 +53,7 @@ public class PhenotypeOverviewPresenter
     private ConstEnums.TABLE_FILTER currentFilter = ConstEnums.TABLE_FILTER.ALL;
     private String searchString = null;
     private List<FacetProxy> facets;
+    public static final PlaceRequest place = new PlaceRequest(NameTokens.phenotypeoverview);
 
     @Inject
     public PhenotypeOverviewPresenter(final EventBus eventBus, final MyView view,
@@ -80,7 +81,7 @@ public class PhenotypeOverviewPresenter
                 dataProvider.updateRowCount((int) phenotypes.getTotalElements(), true);
                 dataProvider.updateRowData(range.getStart(), phenotypes.getContents());
                 facets = phenotypes.getFacets();
-                getView().displayFacets(facets);
+                getView().displayFacets(facets, searchString);
             }
         };
         phenotypeManager.findAll(receiver, currentFilter, searchString, range.getStart(), range.getLength());
@@ -97,6 +98,7 @@ public class PhenotypeOverviewPresenter
         PlaceRequest request = placeManager.getCurrentPlaceRequest();
         ConstEnums.TABLE_FILTER newFilter = ConstEnums.TABLE_FILTER.ALL;
         String newCategoryString = request.getParameter("filter", null);
+        String newSearchString = request.getParameter("query", null);
         if (newCategoryString != null) {
             try {
                 newFilter = ConstEnums.TABLE_FILTER.valueOf(newCategoryString);
@@ -104,28 +106,23 @@ public class PhenotypeOverviewPresenter
 
             }
         }
-        if (newFilter != currentFilter) {
+        if (newFilter != currentFilter || newSearchString != searchString) {
             currentFilter = newFilter;
+            searchString = newSearchString;
             getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
         }
         getView().setActiveNavLink(currentFilter);
     }
 
     @Override
-    public void selectFilter(ConstEnums.TABLE_FILTER filter) {
-        if (filter != currentFilter) {
-            currentFilter = filter;
-            PlaceRequest request = placeManager.getCurrentPlaceRequest();
-            request.with("filter", filter.toString());
-            placeManager.updateHistory(request, true);
-            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
-            getView().setActiveNavLink(currentFilter);
-        }
-    }
-
-    @Override
     public void updateSearchString(String searchString) {
-        this.searchString = searchString;
-        getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+        PlaceRequest request = place;
+        if (currentFilter != null) {
+            request = request.with("filter", currentFilter.name());
+        }
+        if (searchString != null && !searchString.equals("")) {
+            request = request.with("query", searchString);
+        }
+        placeManager.revealPlace(request);
     }
 }

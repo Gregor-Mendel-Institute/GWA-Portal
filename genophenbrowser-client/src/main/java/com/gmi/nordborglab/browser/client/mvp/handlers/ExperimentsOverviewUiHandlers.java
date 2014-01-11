@@ -5,9 +5,5 @@ import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.gwtplatform.mvp.client.UiHandlers;
 
 public interface ExperimentsOverviewUiHandlers extends UiHandlers {
-    void loadExperiment(ExperimentProxy experiment);
-
-    void selectFilter(ConstEnums.TABLE_FILTER filter);
-
     void updateSearchString(String value);
 }

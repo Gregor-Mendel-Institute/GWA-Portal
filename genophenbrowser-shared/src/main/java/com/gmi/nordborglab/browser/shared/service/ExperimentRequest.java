@@ -27,7 +27,7 @@ public interface ExperimentRequest extends RequestContext {
 
     Request<ExperimentProxy> addPublication(Long id, PublicationProxy publication);
 
-    Request<PublicationPageProxy> getPublications(int start, int size);
+    Request<PublicationPageProxy> getPublications(String searchString, int start, int size);
 
     Request<Set<ExperimentProxy>> findExperimentsByPublication(Long id);
 

@@ -1,7 +1,9 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.publication;
 
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
+import com.gmi.nordborglab.browser.client.mvp.handlers.PublicationOverviewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.PublicationOverviewPresenter;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
@@ -9,8 +11,11 @@ import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.Label;
@@ -19,6 +24,7 @@ import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.gwtplatform.mvp.client.ViewImpl;
+import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 
@@ -29,7 +35,7 @@ import com.gwtplatform.mvp.client.proxy.PlaceRequest;
  * Time: 6:51 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PublicationOverviewView extends ViewImpl implements
+public class PublicationOverviewView extends ViewWithUiHandlers<PublicationOverviewUiHandlers> implements
         PublicationOverviewPresenter.MyView {
 
     interface Binder extends UiBinder<Widget, PublicationOverviewView> {
@@ -41,6 +47,8 @@ public class PublicationOverviewView extends ViewImpl implements
     DataGrid<PublicationProxy> dataGrid;
     @UiField
     CustomPager pager;
+    @UiField
+    TextBox searchBox;
     private final PlaceManager placeManger;
 
     @Inject
@@ -99,7 +107,19 @@ public class PublicationOverviewView extends ViewImpl implements
     }
 
     @Override
+    public void setSearchString(String searchString) {
+        searchBox.setText(searchString);
+    }
+
+    @Override
     public Widget asWidget() {
         return widget;
+    }
+
+    @UiHandler("searchBox")
+    public void onKeyUpSearchBox(KeyUpEvent e) {
+        if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER || searchBox.getValue().equalsIgnoreCase("")) {
+            getUiHandlers().updateSearchString(searchBox.getValue());
+        }
     }
 }

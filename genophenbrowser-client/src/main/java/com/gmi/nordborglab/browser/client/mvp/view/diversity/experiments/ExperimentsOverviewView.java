@@ -35,6 +35,7 @@ import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
+import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 
 import java.util.List;
 
@@ -63,7 +64,6 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
     NavLink navRecent;
     @UiField
     TextBox searchBox;
-
 
     private final BiMap<ConstEnums.TABLE_FILTER, NavLink> navLinkMap;
 
@@ -122,13 +122,23 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
     }
 
     @Override
-    public void displayFacets(List<FacetProxy> facets) {
+    public void displayFacets(List<FacetProxy> facets, String searchString) {
         if (facets == null)
             return;
         for (FacetProxy facet : facets) {
             ConstEnums.TABLE_FILTER type = ConstEnums.TABLE_FILTER.valueOf(facet.getName());
             String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
-            navLinkMap.get(type).setText(newTitle);
+            NavLink link = navLinkMap.get(type);
+            link.setText(newTitle);
+            PlaceRequest request = ExperimentsOverviewPresenter.place;
+            if (type != ConstEnums.TABLE_FILTER.ALL) {
+                request = request.with("filter", type.name());
+            }
+            if (searchString != null) {
+                request = request.with("query", searchString);
+            }
+            searchBox.setText(searchString);
+            link.setTargetHistoryToken(placeManager.buildHistoryToken(request));
         }
     }
 
@@ -146,17 +156,10 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
         return "";
     }
 
-    @UiHandler({"navAll", "navPrivate", "navPublished", "navRecent"})
-    public void onNavClick(ClickEvent e) {
-        IconAnchor iconAnchor = (IconAnchor) e.getSource();
-        getUiHandlers().selectFilter(navLinkMap.inverse().get(iconAnchor.getParent()));
-    }
-
     @UiHandler("searchBox")
     public void onKeyUpSearchBox(KeyUpEvent e) {
         if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER || searchBox.getValue().equalsIgnoreCase("")) {
             getUiHandlers().updateSearchString(searchBox.getValue());
         }
     }
-
 }

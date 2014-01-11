@@ -6,6 +6,7 @@ import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyOverviewUiHandlers;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.StudyListDataGridColumns;
@@ -65,13 +66,13 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
     NavLink navPublished;
     @UiField
     NavLink navRecent;
-    private final PlaceManager placeManger;
+    private final PlaceManager placeManager;
     private final BiMap<ConstEnums.TABLE_FILTER, NavLink> navLinkMap;
 
     @Inject
-    public StudyOverviewView(final Binder binder, final PlaceManager placeManger,
+    public StudyOverviewView(final Binder binder, final PlaceManager placeManager,
                              final CustomDataGridResources dataGridResources) {
-        this.placeManger = placeManger;
+        this.placeManager = placeManager;
         dataGrid = new DataGrid<StudyProxy>(20, dataGridResources, new EntityProxyKeyProvider<StudyProxy>());
         initGrid();
         widget = binder.createAndBindUi(this);
@@ -93,7 +94,7 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
                 NameTokens.study);
         dataGrid.setWidth("100%");
         dataGrid.setEmptyTableWidget(new Label("No Records found"));
-        dataGrid.addColumn(new StudyListDataGridColumns.TitleColumn(placeManger, request), "Name");
+        dataGrid.addColumn(new StudyListDataGridColumns.TitleColumn(placeManager, request), "Name");
         dataGrid.addColumn(new StudyListDataGridColumns.ExperimentColumn(), "Study");
         dataGrid.addColumn(new StudyListDataGridColumns.PhenotypeColumn(), "Phenotype");
         dataGrid.addColumn(new StudyListDataGridColumns.AlleleAssayColumn(), "Genotype");
@@ -103,7 +104,7 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
         cells.add(new StudyListDataGridColumns.StatusCell());
         cells.add(new StudyListDataGridColumns.ProgressCell());
         dataGrid.addColumn(new StudyListDataGridColumns.StatusColumn(cells), "Status");
-        dataGrid.addColumn(new OwnerLinkColumn(placeManger), "Owner");
+        dataGrid.addColumn(new OwnerLinkColumn(placeManager), "Owner");
         dataGrid.addColumn(new AccessColumn(), "Access");
         dataGrid.setColumnWidth(0, 25, Unit.PCT);
         dataGrid.setColumnWidth(1, 25, Unit.PCT);
@@ -126,13 +127,23 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
     }
 
     @Override
-    public void displayFacets(List<FacetProxy> facets) {
+    public void displayFacets(List<FacetProxy> facets, String searchString) {
         if (facets == null)
             return;
         for (FacetProxy facet : facets) {
             ConstEnums.TABLE_FILTER type = ConstEnums.TABLE_FILTER.valueOf(facet.getName());
             String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
-            navLinkMap.get(type).setText(newTitle);
+            NavLink link = navLinkMap.get(type);
+            link.setText(newTitle);
+            PlaceRequest request = StudyOverviewPresenter.place;
+            if (type != ConstEnums.TABLE_FILTER.ALL) {
+                request = request.with("filter", type.name());
+            }
+            if (searchString != null) {
+                request = request.with("query", searchString);
+            }
+            searchBox.setText(searchString);
+            link.setTargetHistoryToken(placeManager.buildHistoryToken(request));
         }
     }
 
@@ -150,11 +161,6 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
         return "";
     }
 
-    @UiHandler({"navAll", "navPrivate", "navPublished", "navRecent"})
-    public void onNavClick(ClickEvent e) {
-        IconAnchor iconAnchor = (IconAnchor) e.getSource();
-        getUiHandlers().selectFilter(navLinkMap.inverse().get(iconAnchor.getParent()));
-    }
 
     @UiHandler("searchBox")
     public void onKeyUpSearchBox(KeyUpEvent e) {

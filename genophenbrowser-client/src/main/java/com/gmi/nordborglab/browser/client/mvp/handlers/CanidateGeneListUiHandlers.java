@@ -12,11 +12,8 @@ import com.gwtplatform.mvp.client.UiHandlers;
  * To change this template use File | Settings | File Templates.
  */
 public interface CanidateGeneListUiHandlers extends UiHandlers {
-    void loadCandidateGeneList(CandidateGeneListProxy candidateGeneList);
 
     void updateSearchString(String value);
-
-    void selectFilter(ConstEnums.TABLE_FILTER filter);
 
     void onSave();
 

@@ -11,8 +11,5 @@ import com.gwtplatform.mvp.client.UiHandlers;
  * To change this template use File | Settings | File Templates.
  */
 public interface StudyOverviewUiHandlers extends UiHandlers {
-
-    void selectFilter(ConstEnums.TABLE_FILTER filter);
-
     void updateSearchString(String searchString);
 }

@@ -16,6 +16,7 @@ import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
+import com.gmi.nordborglab.browser.server.search.PublicationSearchProcessor;
 import com.gmi.nordborglab.browser.server.security.*;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
@@ -71,6 +72,7 @@ import com.gmi.nordborglab.browser.server.service.ExperimentService;
 import com.gmi.nordborglab.browser.server.service.TraitUomService;
 import sun.nio.cs.Surrogate;
 
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
 @Service
@@ -316,11 +318,35 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
     }
 
     @Override
-    public PublicationPage getPublications(int start, int size) {
-        PageRequest pageRequest = new PageRequest(start / size, size);
-        Page<Publication> page = publicationRepository.findAll(pageRequest);
-        return new PublicationPage(page.getContent(), pageRequest,
-                page.getTotalElements());
+    public PublicationPage getPublications(String searchString, int start, int size) {
+        PublicationSearchProcessor publicationSearchProcessor = new PublicationSearchProcessor(searchString);
+        SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
+        request = publicationSearchProcessor.getSearchBuilder(request);
+        if (searchString == null || searchString.equalsIgnoreCase("")) {
+            request.setQuery(matchAllQuery());
+        }
+        request.setSize(size).setFrom(start).setNoFields();
+        SearchResponse response = request.execute().actionGet();
+        List<Long> idsToFetch = Lists.newArrayList();
+        for (SearchHit hit : response.getHits()) {
+            idsToFetch.add(Long.parseLong(hit.getId()));
+        }
+        List<Publication> publications = Lists.newArrayList();
+        //Neded because ids are not sorted
+        Map<Long, Publication> id2Map = Maps.uniqueIndex(publicationRepository.findAll(idsToFetch), new Function<Publication, Long>() {
+            @Nullable
+            @Override
+            public Long apply(@Nullable Publication publication) {
+                return publication.getId();
+            }
+        });
+        for (Long id : idsToFetch) {
+            if (id2Map.containsKey(id)) {
+                publications.add(id2Map.get(id));
+            }
+        }
+        return new PublicationPage(publications, new PageRequest(start, size),
+                response.getHits().getTotalHits());
     }
 
     @Override
