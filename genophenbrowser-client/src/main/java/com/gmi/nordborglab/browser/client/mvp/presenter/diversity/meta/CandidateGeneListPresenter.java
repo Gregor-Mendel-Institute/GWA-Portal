@@ -49,7 +49,7 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
 
         void setActiveNavLink(ConstEnums.TABLE_FILTER filter);
 
-        void displayFacets(List<FacetProxy> facets);
+        void displayFacets(List<FacetProxy> facets, String searchString);
 
         CandidateGeneListView.CandidateGeneListEditDriver getCandidateGeneListEditDriver();
 
@@ -72,6 +72,7 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
     private List<FacetProxy> facets;
     private Receiver<CandidateGeneListProxy> receiver = null;
     private final CurrentUser currentUser;
+    public static final PlaceRequest place = new PlaceRequest(NameTokens.candidateGeneList);
 
     @Inject
     public CandidateGeneListPresenter(EventBus eventBus, CandidateGeneListPresenter.MyView view,
@@ -125,7 +126,7 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
                 dataProvider.updateRowCount((int) candidateGeneLists.getTotalElements(), true);
                 dataProvider.updateRowData(getView().getDisplay().getVisibleRange().getStart(), candidateGeneLists.getContents());
                 facets = candidateGeneLists.getFacets();
-                getView().displayFacets(facets);
+                getView().displayFacets(facets, searchString);
             }
         };
         Range range = getView().getDisplay().getVisibleRange();
@@ -149,6 +150,7 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
         PlaceRequest request = placeManager.getCurrentPlaceRequest();
         ConstEnums.TABLE_FILTER newFilter = ConstEnums.TABLE_FILTER.ALL;
         String newCategoryString = request.getParameter("filter", null);
+        String newSearchString = request.getParameter("query", null);
         if (newCategoryString != null) {
             try {
                 newFilter = ConstEnums.TABLE_FILTER.valueOf(newCategoryString);
@@ -156,32 +158,15 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
 
             }
         }
-        if (newFilter != currentFilter) {
+        if (newFilter != currentFilter || newSearchString != searchString) {
             currentFilter = newFilter;
+            searchString = newSearchString;
             getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
         }
         getView().setActiveNavLink(currentFilter);
         getView().showCreateBtn(currentUser.isLoggedIn());
     }
 
-
-    @Override
-    public void loadCandidateGeneList(CandidateGeneListProxy candidateGeneList) {
-        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.experiment).with("id", candidateGeneList.getId().toString());
-        placeManager.revealPlace(request);
-    }
-
-    @Override
-    public void selectFilter(ConstEnums.TABLE_FILTER filter) {
-        if (filter != currentFilter) {
-            currentFilter = filter;
-            PlaceRequest request = placeManager.getCurrentPlaceRequest();
-            request.with("filter", filter.toString());
-            placeManager.updateHistory(request, true);
-            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
-            getView().setActiveNavLink(currentFilter);
-        }
-    }
 
     @Override
     public void onSave() {
@@ -206,7 +191,13 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
 
     @Override
     public void updateSearchString(String value) {
-        searchString = value;
-        getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+        PlaceRequest request = place;
+        if (currentFilter != null) {
+            request = request.with("filter", currentFilter.name());
+        }
+        if (value != null && !value.equals("")) {
+            request = request.with("query", value);
+        }
+        placeManager.revealPlace(request);
     }
 }

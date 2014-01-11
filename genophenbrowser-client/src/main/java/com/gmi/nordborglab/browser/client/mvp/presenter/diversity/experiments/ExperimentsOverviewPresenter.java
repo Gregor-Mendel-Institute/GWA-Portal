@@ -39,7 +39,7 @@ public class ExperimentsOverviewPresenter
 
         void setActiveNavLink(ConstEnums.TABLE_FILTER filter);
 
-        void displayFacets(List<FacetProxy> facets);
+        void displayFacets(List<FacetProxy> facets, String searchString);
     }
 
     @ProxyCodeSplit
@@ -58,6 +58,7 @@ public class ExperimentsOverviewPresenter
     private ConstEnums.TABLE_FILTER currentFilter = ConstEnums.TABLE_FILTER.ALL;
     private String searchString = null;
     private List<FacetProxy> facets;
+    public static final PlaceRequest place = new PlaceRequest(NameTokens.experiments);
 
     @Inject
     public ExperimentsOverviewPresenter(final EventBus eventBus,
@@ -86,7 +87,7 @@ public class ExperimentsOverviewPresenter
                 dataProvider.updateRowCount((int) experiments.getTotalElements(), true);
                 dataProvider.updateRowData(getView().getDisplay().getVisibleRange().getStart(), experiments.getContents());
                 facets = experiments.getFacets();
-                getView().displayFacets(facets);
+                getView().displayFacets(facets, searchString);
             }
         };
         Range range = getView().getDisplay().getVisibleRange();
@@ -111,6 +112,7 @@ public class ExperimentsOverviewPresenter
         PlaceRequest request = placeManager.getCurrentPlaceRequest();
         ConstEnums.TABLE_FILTER newFilter = ConstEnums.TABLE_FILTER.ALL;
         String newCategoryString = request.getParameter("filter", null);
+        String newSearchString = request.getParameter("query", null);
         if (newCategoryString != null) {
             try {
                 newFilter = ConstEnums.TABLE_FILTER.valueOf(newCategoryString);
@@ -118,35 +120,25 @@ public class ExperimentsOverviewPresenter
 
             }
         }
-        if (newFilter != currentFilter) {
+        if (newFilter != currentFilter || newSearchString != searchString) {
             currentFilter = newFilter;
+            searchString = newSearchString;
             getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
         }
         getView().setActiveNavLink(currentFilter);
     }
 
 
-    @Override
-    public void loadExperiment(ExperimentProxy experiment) {
-        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.experiment).with("id", experiment.getId().toString());
-        placeManager.revealPlace(request);
-    }
-
-    @Override
-    public void selectFilter(ConstEnums.TABLE_FILTER filter) {
-        if (filter != currentFilter) {
-            currentFilter = filter;
-            PlaceRequest request = placeManager.getCurrentPlaceRequest();
-            request.with("filter", filter.toString());
-            placeManager.updateHistory(request, true);
-            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
-            getView().setActiveNavLink(currentFilter);
-        }
-    }
 
     @Override
     public void updateSearchString(String value) {
-        searchString = value;
-        getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+        PlaceRequest request = place;
+        if (currentFilter != null) {
+            request = request.with("filter", currentFilter.name());
+        }
+        if (value != null && !value.equals("")) {
+            request = request.with("query", value);
+        }
+        placeManager.revealPlace(request);
     }
 }
