@@ -1,6 +1,6 @@
 package com.gmi.nordborglab.browser.server.domain.observation;
 
-import java.util.Date;
+import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -12,8 +12,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import java.util.Date;
 
 @Entity
 @Table(name = "div_obs_unit_sample", schema = "observation")

@@ -1,10 +1,8 @@
 package com.gmi.nordborglab.browser.server.domain.acl;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.MapsId;
+import java.io.Serializable;
 
 
 @Embeddable

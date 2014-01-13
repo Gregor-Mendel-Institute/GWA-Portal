@@ -1,20 +1,19 @@
 package com.gmi.nordborglab.browser.server.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.gmi.nordborglab.browser.server.domain.SecureEntity;
+import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
+import com.gmi.nordborglab.browser.server.domain.acl.Authority;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AuthorityProxy;
+import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableSet;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.vm.AutoBeanFactorySource;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.elasticsearch.index.query.FilterBuilder;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,19 +22,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
-import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
-import com.gmi.nordborglab.browser.server.domain.acl.Authority;
-import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
-import com.gmi.nordborglab.browser.shared.proxy.AuthorityProxy;
-import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.web.bindery.autobean.shared.AutoBean;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.vm.AutoBeanFactorySource;
-
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class SecurityUtil {
 

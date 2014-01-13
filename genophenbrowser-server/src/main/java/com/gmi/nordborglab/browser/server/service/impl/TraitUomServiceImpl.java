@@ -1,37 +1,39 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
-
-import java.io.IOException;
-import java.util.*;
-
-import javax.annotation.Nullable;
-import javax.annotation.Resource;
-
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.domain.AppData;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
-import com.gmi.nordborglab.browser.server.domain.pages.ExperimentPage;
+import com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage;
+import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
-import com.gmi.nordborglab.browser.server.domain.util.Publication;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
 import com.gmi.nordborglab.browser.server.repository.PassportRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
+import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
 import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
+import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.CdvService;
 import com.gmi.nordborglab.browser.server.service.HelperService;
+import com.gmi.nordborglab.browser.server.service.TraitUomService;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.gmi.nordborglab.jpaontology.model.Term;
 import com.gmi.nordborglab.jpaontology.model.Term2Term;
+import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
-import com.google.common.collect.*;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -47,24 +49,26 @@ import org.elasticsearch.search.facet.filter.FilterFacet;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.acls.domain.*;
-import org.springframework.security.acls.model.*;
+import org.springframework.security.acls.domain.CumulativePermission;
+import org.springframework.security.acls.domain.GrantedAuthoritySid;
+import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.model.Permission;
+import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
-import com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage;
-import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
-import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
-import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
-import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
-import com.gmi.nordborglab.browser.server.security.SecurityUtil;
-import com.gmi.nordborglab.browser.server.service.TraitUomService;
-import com.gmi.nordborglab.jpaontology.repository.TermRepository;
-import com.google.common.base.Predicate;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
+
+import javax.annotation.Nullable;
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
 @Service
 @Transactional(readOnly = true)

@@ -1,11 +1,13 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
-import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.safehtml.shared.*;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiRenderer;
 import com.google.inject.Inject;

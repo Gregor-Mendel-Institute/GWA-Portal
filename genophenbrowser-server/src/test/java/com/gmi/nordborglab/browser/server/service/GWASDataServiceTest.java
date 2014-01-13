@@ -1,18 +1,13 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.repository.GWASResultRepository;
-import com.google.common.collect.Lists;
+import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
+import com.google.common.collect.ImmutableList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,14 +21,17 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.gmi.nordborglab.browser.server.data.ChrGWAData;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.testutils.BaseTest;
-import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class GWASDataServiceTest extends BaseTest {
 

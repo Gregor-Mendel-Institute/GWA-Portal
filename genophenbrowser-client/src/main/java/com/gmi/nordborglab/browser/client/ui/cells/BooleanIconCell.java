@@ -1,15 +1,10 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
-import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.cell.client.Cell;
-import com.google.gwt.cell.client.IconCellDecorator;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeUri;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,8 +24,8 @@ public class BooleanIconCell extends AbstractCell<Boolean> {
         SafeHtml nokIcon();
     }
 
-    private static Template template = GWT.create(Template.class);;
-
+    private static Template template = GWT.create(Template.class);
+    ;
 
 
     @Override

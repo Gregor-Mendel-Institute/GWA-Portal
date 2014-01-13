@@ -1,8 +1,6 @@
 package com.gmi.nordborglab.browser.client.ui.favicon;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.i18n.client.Dictionary;
-import com.googlecode.gwt.charts.client.options.Options;
 
 /**
  * Created with IntelliJ IDEA.

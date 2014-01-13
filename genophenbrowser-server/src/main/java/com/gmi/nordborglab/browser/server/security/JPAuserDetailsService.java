@@ -1,15 +1,14 @@
 package com.gmi.nordborglab.browser.server.security;
 
-import javax.annotation.Resource;
-
+import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
+import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
-import com.gmi.nordborglab.browser.server.repository.UserRepository;
+import javax.annotation.Resource;
 
 @Service
 @Transactional(readOnly = true)

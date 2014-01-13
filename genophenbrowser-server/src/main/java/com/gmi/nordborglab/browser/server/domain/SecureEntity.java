@@ -1,14 +1,9 @@
 package com.gmi.nordborglab.browser.server.domain;
 
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
-import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
-import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.persistence.Transient;
-import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.

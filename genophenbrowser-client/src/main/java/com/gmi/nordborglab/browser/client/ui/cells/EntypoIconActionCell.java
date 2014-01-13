@@ -1,7 +1,8 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASViewerView;
-import com.google.gwt.cell.client.*;
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
@@ -12,9 +13,6 @@ import com.google.gwt.safecss.shared.SafeStylesUtils;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.text.shared.SafeHtmlRenderer;
-import com.google.gwt.text.shared.SimpleSafeHtmlRenderer;
 import com.google.gwt.user.client.Element;
 
 

@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui" xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base">
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
 
     <ui:style>
         .filedroppanel {
@@ -62,7 +62,7 @@
         }
 
         .buttonWithMargin {
-            margin-left:10px !important;
+            margin-left: 10px !important;
         }
 
 
@@ -70,94 +70,111 @@
 
     <!--<g:LayoutPanel ui:field="uploadGWASPanel">
         <g:layer top="0" bottom="0">-->
-            <b:FluidContainer ui:field="gwasUploadPanel" addStyleNames="{style.uploadContainer}">
-                <b:FluidRow >
-                    <b:Column size="12">
-                        <g:HTMLPanel>
-                            <h4>File-Format</h4>
-                            <p>The CSV file must have following format:</p>
-                            <table class="table table-striped" >
-                                <thead>
-                                    <th>chr</th>
-                                    <th>pos</th>
-                                    <th>pvalue | score</th>
-                                    <th>maf</th>
-                                    <th>mac</th>
-                                    <th>GVE</th>
-                                </thead>
-                                <tbody>
-                                    <td>1</td><td>6083872</td>
-                                    <td>0.023 | 5.1673</td><td>0.3191 (can be empty or "NA")</td><td>30 (can be empty or "NA")</td><td>0.0016 (can be empty or "NA")</td>
-                                </tbody>
-                            </table>
-                            <h4>Upload</h4>
-                            <p>Use on of the methods below to upload a pvalue file:</p>
-                        </g:HTMLPanel>
-                    </b:Column>
-                </b:FluidRow>
+    <b:FluidContainer ui:field="gwasUploadPanel" addStyleNames="{style.uploadContainer}">
+        <b:FluidRow>
+            <b:Column size="12">
+                <g:HTMLPanel>
+                    <h4>File-Format</h4>
+                    <p>The CSV file must have following format:</p>
+                    <table class="table table-striped">
+                        <thead>
+                            <th>chr</th>
+                            <th>pos</th>
+                            <th>pvalue | score</th>
+                            <th>maf</th>
+                            <th>mac</th>
+                            <th>GVE</th>
+                        </thead>
+                        <tbody>
+                            <td>1</td>
+                            <td>6083872</td>
+                            <td>0.023 | 5.1673</td>
+                            <td>0.3191 (can be empty or "NA")</td>
+                            <td>30 (can be empty or "NA")</td>
+                            <td>0.0016 (can be empty or "NA")</td>
+                        </tbody>
+                    </table>
+                    <h4>Upload</h4>
+                    <p>Use on of the methods below to upload a pvalue file:</p>
+                </g:HTMLPanel>
+            </b:Column>
+        </b:FluidRow>
+        <b:FluidRow>
+            <b:Column size="12">
                 <b:FluidRow>
                     <b:Column size="12">
-                        <b:FluidRow>
-                            <b:Column size="12">
-                                <g:HTML ui:field="gwasFileDropPanel">
-                                    <div class="{style.filedroppanel}" ui:field="gwasFileDropText">
-                                        <h1>Drag and drop files from your computer here</h1>
-                                    </div>
-                                    <div ui:field="multipleFilesPanel" style="display:none;" class="{style.multipleFilesPanel}">
-                                        <h1 ui:field="multipleFileCheckText"></h1>
-                                    </div>
-                                    <div ui:field="checkFileTableContainer" style="display:none;" class="{style.checkFileTableContainer}">
-                                        <h5 id="checkFileTableHeader" style="margin-left:5px;"></h5>
-                                        <table class="table table-striped" ui:field="checkFileTable">
-                                            <thead>
-                                                <th>chr</th>
-                                                <th>pos</th>
-                                                <th>pvalue | score</th>
-                                                <th>maf</th>
-                                                <th>mac</th>
-                                                <th>GVE</th>
-                                            </thead>
-                                            <tbody>
-                                                <td></td><td></td>
-                                                <td></td><td></td><td></td><td></td>
-                                            </tbody>
-                                        </table>
-                                        <h1 style="color: #b8b8b8;text-align: center;margin-top: 60px;">Drag and drop more files...</h1>
-                                    </div>
-                                </g:HTML>
-                            </b:Column>
-                        </b:FluidRow>
+                        <g:HTML ui:field="gwasFileDropPanel">
+                            <div class="{style.filedroppanel}" ui:field="gwasFileDropText">
+                                <h1>Drag and drop files from your computer here</h1>
+                            </div>
+                            <div ui:field="multipleFilesPanel" style="display:none;" class="{style.multipleFilesPanel}">
+                                <h1 ui:field="multipleFileCheckText"></h1>
+                            </div>
+                            <div ui:field="checkFileTableContainer" style="display:none;"
+                                 class="{style.checkFileTableContainer}">
+                                <h5 id="checkFileTableHeader" style="margin-left:5px;"></h5>
+                                <table class="table table-striped" ui:field="checkFileTable">
+                                    <thead>
+                                        <th>chr</th>
+                                        <th>pos</th>
+                                        <th>pvalue | score</th>
+                                        <th>maf</th>
+                                        <th>mac</th>
+                                        <th>GVE</th>
+                                    </thead>
+                                    <tbody>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tbody>
+                                </table>
+                                <h1 style="color: #b8b8b8;text-align: center;margin-top: 60px;">Drag and drop more
+                                    files...
+                                </h1>
+                            </div>
+                        </g:HTML>
                     </b:Column>
                 </b:FluidRow>
-                <b:FluidRow addStyleNames="{style.gwasUploadButtonRow}">
-                    <b:Column size="3">
-                        <b:Controls>
-                            <b:Form ui:field="gwasUploadForm">
-                                <b:ButtonGroup>
-                                    <b:Button type="SUCCESS" icon="PLUS" ui:field="gwasFileBrowseBtn">Add files...</b:Button>
-                                    <b:Button type="WARNING" icon="BAN_CIRCLE" ui:field="gwasFileUploadCancelBtn" visible="false" addStyleNames="{style.buttonWithMargin}">Cancel</b:Button>
-                                    <b:Button icon="UPLOAD" type="PRIMARY"  ui:field="gwasFileUploadStartBtn" visible="false" addStyleNames="{style.buttonWithMargin}">Start Upload</b:Button>
-                                    <b:Button  type="PRIMARY"  ui:field="gwasFileUploadCloseBtn" visible="false" addStyleNames="{style.buttonWithMargin}">Close</b:Button>
-                                </b:ButtonGroup>
-                                <b:FileUpload ui:field="gwasFileUploadBtn" addStyleNames="{style.fileinput}"></b:FileUpload>
+            </b:Column>
+        </b:FluidRow>
+        <b:FluidRow addStyleNames="{style.gwasUploadButtonRow}">
+            <b:Column size="3">
+                <b:Controls>
+                    <b:Form ui:field="gwasUploadForm">
+                        <b:ButtonGroup>
+                            <b:Button type="SUCCESS" icon="PLUS" ui:field="gwasFileBrowseBtn">Add files...</b:Button>
+                            <b:Button type="WARNING" icon="BAN_CIRCLE" ui:field="gwasFileUploadCancelBtn"
+                                      visible="false" addStyleNames="{style.buttonWithMargin}">Cancel
+                            </b:Button>
+                            <b:Button icon="UPLOAD" type="PRIMARY" ui:field="gwasFileUploadStartBtn" visible="false"
+                                      addStyleNames="{style.buttonWithMargin}">Start Upload
+                            </b:Button>
+                            <b:Button type="PRIMARY" ui:field="gwasFileUploadCloseBtn" visible="false"
+                                      addStyleNames="{style.buttonWithMargin}">Close
+                            </b:Button>
+                        </b:ButtonGroup>
+                        <b:FileUpload ui:field="gwasFileUploadBtn" addStyleNames="{style.fileinput}"></b:FileUpload>
 
-                            </b:Form>
-                        </b:Controls>
+                    </b:Form>
+                </b:Controls>
 
-                    </b:Column>
-                    <b:Column size="9">
-                        <g:HTMLPanel ui:field="fileSelectPanel" addStyleNames="fade">
-                            <div class="alert">
-                                    <span id="checkStatusMsg" style="font-size:130%"></span>
-                             </div>
-                            <table class="{style.fileSelectTable} table table-striped" id="fileToUploadTable">
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </g:HTMLPanel>
-                    </b:Column>
-                </b:FluidRow>
-            </b:FluidContainer>
-       <!-- </g:layer>
-    </g:LayoutPanel>-->
+            </b:Column>
+            <b:Column size="9">
+                <g:HTMLPanel ui:field="fileSelectPanel" addStyleNames="fade">
+                    <div class="alert">
+                        <span id="checkStatusMsg" style="font-size:130%"></span>
+                    </div>
+                    <table class="{style.fileSelectTable} table table-striped" id="fileToUploadTable">
+                        <tbody>
+                        </tbody>
+                    </table>
+                </g:HTMLPanel>
+            </b:Column>
+        </b:FluidRow>
+    </b:FluidContainer>
+    <!-- </g:layer>
+ </g:LayoutPanel>-->
 </ui:UiBinder>

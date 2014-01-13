@@ -1,20 +1,19 @@
 package com.gmi.nordborglab.browser.server.data.hdf5;
 
+import ch.systemsx.cisd.hdf5.HDF5DataClass;
+import ch.systemsx.cisd.hdf5.HDF5DataSetInformation;
+import ch.systemsx.cisd.hdf5.HDF5Factory;
+import ch.systemsx.cisd.hdf5.IHDF5Reader;
+import ch.systemsx.cisd.hdf5.IHDF5Writer;
+import com.gmi.nordborglab.browser.server.data.ChrGWAData;
+import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.data.GWASReader;
+import com.google.common.collect.Maps;
+
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import ch.systemsx.cisd.hdf5.*;
-
-import com.gmi.nordborglab.browser.server.data.ChrGWAData;
-import com.gmi.nordborglab.browser.server.data.ChrGWAData;
-import com.gmi.nordborglab.browser.server.data.GWASData;
-import com.gmi.nordborglab.browser.server.data.GWASReader;
-import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
-import com.google.common.collect.Maps;
-import com.google.common.primitives.Floats;
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
 
 public class HDF5GWASReader implements GWASReader {
 

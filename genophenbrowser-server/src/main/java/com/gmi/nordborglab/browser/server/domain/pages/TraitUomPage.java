@@ -1,12 +1,11 @@
 package com.gmi.nordborglab.browser.server.domain.pages;
 
-import java.util.List;
-
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import java.util.List;
 
 public class TraitUomPage extends PageImpl<TraitUom> {
 

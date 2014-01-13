@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.view.germplasm.taxonomy;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
-
 import com.gmi.nordborglab.browser.client.editors.TaxonomyDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.TaxonomyEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.TaxonomyDetailUiHandlers;
@@ -16,9 +15,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.googlecode.gwt.charts.client.DataTable;

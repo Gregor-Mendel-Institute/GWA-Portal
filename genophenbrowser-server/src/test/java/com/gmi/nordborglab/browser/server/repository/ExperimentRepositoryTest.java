@@ -1,24 +1,15 @@
 package com.gmi.nordborglab.browser.server.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import org.junit.Test;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
-import com.gmi.nordborglab.browser.server.security.CustomPermission;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.security.acls.domain.BasePermission;
-
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ExperimentRepositoryTest extends BaseTest {
 

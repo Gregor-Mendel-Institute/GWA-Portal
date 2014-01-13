@@ -1,12 +1,10 @@
 package com.gmi.nordborglab.browser.shared.proxy;
 
-import java.util.Date;
-import java.util.Set;
+import com.google.web.bindery.requestfactory.shared.ProxyForName;
 
 import javax.validation.constraints.NotNull;
-
-import com.google.web.bindery.requestfactory.shared.EntityProxy;
-import com.google.web.bindery.requestfactory.shared.ProxyForName;
+import java.util.Date;
+import java.util.Set;
 
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.cdv.Study", locator = "com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
 public interface StudyProxy extends SecureEntityProxy {

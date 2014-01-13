@@ -1,12 +1,12 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import java.util.List;
-
 import com.gmi.nordborglab.browser.server.domain.PassportSearchCriteria;
-import com.gmi.nordborglab.browser.server.domain.stats.PassportStats;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
 import com.gmi.nordborglab.browser.server.domain.pages.PassportPage;
+import com.gmi.nordborglab.browser.server.domain.stats.PassportStats;
+
+import java.util.List;
 
 public interface PassportService {
 

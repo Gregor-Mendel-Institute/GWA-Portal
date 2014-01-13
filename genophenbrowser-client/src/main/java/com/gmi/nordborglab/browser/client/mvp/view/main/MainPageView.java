@@ -1,10 +1,10 @@
 package com.gmi.nordborglab.browser.client.mvp.view.main;
 
-import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.mvp.handlers.MainUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter.MENU;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.ui.NotificationPopup;
 import com.gmi.nordborglab.browser.client.ui.favicon.Favico;
 import com.gmi.nordborglab.browser.client.ui.favicon.FavicoOptions;
@@ -24,7 +24,14 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.InlineHyperlink;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;

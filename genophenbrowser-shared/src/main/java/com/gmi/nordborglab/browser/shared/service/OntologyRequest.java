@@ -8,8 +8,6 @@ import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServiceName;
 
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  * User: uemit.seren

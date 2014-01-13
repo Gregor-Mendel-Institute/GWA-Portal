@@ -2,12 +2,9 @@ package com.gmi.nordborglab.browser.server.service;
 
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import com.gmi.nordborglab.browser.server.domain.acl.SearchPermissionUserRole;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.security.CustomAcl;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 

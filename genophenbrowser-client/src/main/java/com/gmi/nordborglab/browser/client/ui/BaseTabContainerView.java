@@ -3,7 +3,6 @@ package com.gmi.nordborglab.browser.client.ui;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
 import com.gwtplatform.mvp.client.Tab;
 import com.gwtplatform.mvp.client.TabData;
 import com.gwtplatform.mvp.client.TabView;

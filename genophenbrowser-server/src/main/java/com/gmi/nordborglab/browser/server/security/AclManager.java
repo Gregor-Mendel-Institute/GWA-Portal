@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.server.security;
 
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
@@ -13,11 +12,17 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.*;
+import org.springframework.security.acls.model.AccessControlEntry;
+import org.springframework.security.acls.model.Acl;
+import org.springframework.security.acls.model.MutableAcl;
+import org.springframework.security.acls.model.MutableAclService;
+import org.springframework.security.acls.model.NotFoundException;
+import org.springframework.security.acls.model.ObjectIdentity;
+import org.springframework.security.acls.model.Permission;
+import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

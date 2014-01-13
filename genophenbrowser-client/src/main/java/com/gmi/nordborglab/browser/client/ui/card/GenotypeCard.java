@@ -1,12 +1,8 @@
 package com.gmi.nordborglab.browser.client.ui.card;
 
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.CellWidget;
-import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 
 /**

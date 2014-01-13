@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.server.repository;
 
-import com.gmi.nordborglab.browser.server.domain.cdv.StudyProtocol;
 import com.gmi.nordborglab.browser.server.domain.cdv.Transformation;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.google.common.collect.Iterables;
@@ -8,7 +7,9 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,7 +30,7 @@ public class TransformationRepositoryTest extends BaseTest {
         assertEquals(1, actual.getId().longValue());
         assertNotNull(actual.getStudies());
         assertTrue(actual.getStudies().size() > 0);
-        assertEquals(Iterables.get(actual.getStudies(),0).getTransformation(),actual);
+        assertEquals(Iterables.get(actual.getStudies(), 0).getTransformation(), actual);
     }
 
 }

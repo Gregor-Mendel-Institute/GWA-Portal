@@ -5,8 +5,6 @@ import com.gmi.nordborglab.jpaontology.model.Term;
 import com.gmi.nordborglab.jpaontology.model.Term2Term;
 import com.gmi.nordborglab.jpaontology.model.TermPage;
 
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  * User: uemit.seren

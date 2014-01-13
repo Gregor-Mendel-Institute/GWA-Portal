@@ -1,7 +1,5 @@
 package com.gmi.nordborglab.browser.client.events;
 
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.TraitOntologyPresenter;
-import com.gmi.nordborglab.browser.shared.proxy.ontology.Term2TermProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.Event;
@@ -15,7 +13,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * Time: 5:02 PM
  * To change this template use File | Settings | File Templates.
  */
-public class OntologyLoadedEvent  extends Event<OntologyLoadedEvent.Handler> {
+public class OntologyLoadedEvent extends Event<OntologyLoadedEvent.Handler> {
 
 
     public interface Handler extends EventHandler {
@@ -40,8 +38,8 @@ public class OntologyLoadedEvent  extends Event<OntologyLoadedEvent.Handler> {
         handler.onOntologyLoaded(this);
     }
 
-    public static HandlerRegistration register(EventBus eventBus,OntologyLoadedEvent.Handler handler) {
-        return eventBus.addHandler(TYPE,handler);
+    public static HandlerRegistration register(EventBus eventBus, OntologyLoadedEvent.Handler handler) {
+        return eventBus.addHandler(TYPE, handler);
     }
 
     public static void fire(final EventBus source,

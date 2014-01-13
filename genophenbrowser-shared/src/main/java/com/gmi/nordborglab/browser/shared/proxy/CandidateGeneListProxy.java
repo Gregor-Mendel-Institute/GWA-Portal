@@ -1,11 +1,8 @@
 package com.gmi.nordborglab.browser.shared.proxy;
 
-import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.

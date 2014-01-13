@@ -1,6 +1,10 @@
 package com.gmi.nordborglab.browser.shared.service;
 
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypePageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyPageProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;

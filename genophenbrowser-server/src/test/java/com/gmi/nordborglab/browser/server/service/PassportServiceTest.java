@@ -1,24 +1,22 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.gmi.nordborglab.browser.server.domain.PassportSearchCriteria;
+import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
+import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
+import com.gmi.nordborglab.browser.server.domain.pages.PassportPage;
+import com.gmi.nordborglab.browser.server.domain.stats.PassportStats;
+import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.gmi.nordborglab.browser.server.domain.PassportSearchCriteria;
-import com.gmi.nordborglab.browser.server.domain.stats.PassportStats;
-import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
-import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
-import com.gmi.nordborglab.browser.server.domain.pages.PassportPage;
-import com.gmi.nordborglab.browser.server.testutils.BaseTest;
-import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class PassportServiceTest extends BaseTest {
 

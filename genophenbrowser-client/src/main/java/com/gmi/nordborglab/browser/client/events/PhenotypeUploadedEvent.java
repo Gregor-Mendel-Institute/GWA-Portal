@@ -1,11 +1,9 @@
 package com.gmi.nordborglab.browser.client.events;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HasHandlers;
+import com.google.web.bindery.event.shared.Event;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.google.web.bindery.event.shared.Event;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,8 +37,8 @@ public class PhenotypeUploadedEvent extends Event<PhenotypeUploadedEvent.Handler
         handler.onPhenotypeUploaded(this);
     }
 
-    public static HandlerRegistration register(EventBus eventBus,PhenotypeUploadedEvent.Handler handler) {
-        return eventBus.addHandler(TYPE,handler);
+    public static HandlerRegistration register(EventBus eventBus, PhenotypeUploadedEvent.Handler handler) {
+        return eventBus.addHandler(TYPE, handler);
     }
 
     public static void fire(final EventBus source,

@@ -1,10 +1,13 @@
 package com.gmi.nordborglab.browser.server.domain.germplasm;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.gmi.nordborglab.browser.server.domain.cdv.Source;
+import com.gmi.nordborglab.browser.server.domain.genotype.Allele;
+import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
+import com.mysema.query.annotations.QueryInit;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -15,18 +18,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
-import com.gmi.nordborglab.browser.server.domain.cdv.Source;
-import com.gmi.nordborglab.browser.server.domain.genotype.Allele;
-import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
-import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.mysema.query.annotations.QueryInit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 @Entity

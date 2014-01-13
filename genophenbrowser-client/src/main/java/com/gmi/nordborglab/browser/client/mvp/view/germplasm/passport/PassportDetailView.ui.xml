@@ -4,7 +4,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:c="urn:import:com.google.gwt.user.cellview.client"
              xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-             xmlns:chzn="urn:import:com.watopi.chosen.client.gwt"
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'

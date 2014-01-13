@@ -1,19 +1,18 @@
 package com.gmi.nordborglab.browser.server.search;
 
-import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.gmi.nordborglab.browser.server.domain.SearchItem;
+import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.search.SearchHit;
 
-import com.gmi.nordborglab.browser.server.domain.SearchItem;
-import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
-import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
-import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
 public class StudySearchProcessor extends TermSearchProcessor {
 

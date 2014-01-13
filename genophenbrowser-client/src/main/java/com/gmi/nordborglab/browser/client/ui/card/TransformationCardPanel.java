@@ -1,7 +1,9 @@
 package com.gmi.nordborglab.browser.client.ui.card;
 
-import com.gmi.nordborglab.browser.client.ui.card.TransformationCard;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 

@@ -18,7 +18,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.web.bindery.event.shared.EventBus;
-import com.gwtplatform.mvp.client.UiHandlers;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,7 +32,9 @@ public class MethodCard extends Composite {
 
     public interface MyStyle extends CssResource {
         String card_selected();
+
         String ok();
+
         String empty_ok();
     }
 
@@ -47,7 +48,8 @@ public class MethodCard extends Composite {
     ParagraphElement subtitle;
     @UiField
     DivElement card;
-    @UiField MyStyle style;
+    @UiField
+    MyStyle style;
     @UiField
     SpanElement typeLabel;
     @UiField
@@ -83,11 +85,10 @@ public class MethodCard extends Composite {
         if (studyProtocol.getType().equals("MIXED")) {
             runTimeDuration.setInnerText("10 minutes");
             typeLabel.addClassName("label-success");
-        }else if (studyProtocol.getType().equals("LINEAR")) {
+        } else if (studyProtocol.getType().equals("LINEAR")) {
             runTimeDuration.setInnerText("2 minutes");
             typeLabel.addClassName("label-info");
-        }
-        else {
+        } else {
             runTimeDuration.setInnerText("0.5 minutes");
         }
     }
@@ -99,8 +100,7 @@ public class MethodCard extends Composite {
             selectIcon.addStyleName(style.ok());
             selectIcon.setType(IconType.OK);
 
-        }
-        else {
+        } else {
             card.removeClassName(style.card_selected());
             selectIcon.removeStyleName(style.ok());
             selectIcon.addStyleName(style.empty_ok());
@@ -127,7 +127,7 @@ public class MethodCard extends Composite {
 
     @UiHandler("focusPanel")
     public void onKeyUp(KeyUpEvent event) {
-        SelectMethodEvent.fire(eventBus,this);
+        SelectMethodEvent.fire(eventBus, this);
     }
 
 }

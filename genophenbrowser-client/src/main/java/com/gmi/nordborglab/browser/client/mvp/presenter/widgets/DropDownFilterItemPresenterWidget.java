@@ -2,15 +2,12 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.widgets;
 
 import com.gmi.nordborglab.browser.shared.dto.FilterItemValue;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.

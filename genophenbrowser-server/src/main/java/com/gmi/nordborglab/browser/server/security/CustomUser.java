@@ -1,12 +1,11 @@
 package com.gmi.nordborglab.browser.server.security;
 
-import java.util.Collection;
-
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
-import com.google.common.base.Preconditions;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.userdetails.User;
+
+import java.util.Collection;
 
 public class CustomUser extends User {
 

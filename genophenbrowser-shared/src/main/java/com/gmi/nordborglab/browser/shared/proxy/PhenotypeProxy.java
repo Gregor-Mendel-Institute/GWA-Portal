@@ -1,15 +1,12 @@
 package com.gmi.nordborglab.browser.shared.proxy;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
-import com.google.web.bindery.requestfactory.shared.EntityProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
 
 import javax.validation.constraints.NotNull;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom", locator = "com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")

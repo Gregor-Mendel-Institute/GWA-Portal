@@ -10,7 +10,6 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASUplo
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.Statistics;
-import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
 import com.gmi.nordborglab.browser.shared.util.PhenotypeHistogram;
 import com.google.common.collect.*;
@@ -19,7 +18,6 @@ import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyDetailUiHandlers;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter.State;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyDetailView.StudyDisplayDriver;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyDetailView.StudyEditDriver;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
@@ -38,7 +36,6 @@ import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 public class StudyDetailPresenter extends

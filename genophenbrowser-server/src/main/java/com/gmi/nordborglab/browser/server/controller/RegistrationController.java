@@ -1,8 +1,8 @@
 package com.gmi.nordborglab.browser.server.controller;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
-
+import com.gmi.nordborglab.browser.server.form.Registration;
+import com.gmi.nordborglab.browser.server.service.DuplicateRegistrationException;
+import com.gmi.nordborglab.browser.server.service.UserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.gmi.nordborglab.browser.server.form.Registration;
-import com.gmi.nordborglab.browser.server.service.DuplicateRegistrationException;
-import com.gmi.nordborglab.browser.server.service.UserService;
+import javax.annotation.Resource;
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/registration")

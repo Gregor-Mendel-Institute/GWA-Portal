@@ -1,9 +1,9 @@
 package com.gmi.nordborglab.browser.shared.proxy;
 
-import java.util.List;
-
 import com.google.web.bindery.requestfactory.shared.EntityProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
+
+import java.util.List;
 
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy", locator = "com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
 public interface TaxonomyProxy extends EntityProxy {

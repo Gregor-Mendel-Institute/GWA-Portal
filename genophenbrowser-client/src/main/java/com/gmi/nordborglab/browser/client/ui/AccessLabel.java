@@ -2,8 +2,6 @@ package com.gmi.nordborglab.browser.client.ui;
 
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
-import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.user.client.ui.Composite;
 

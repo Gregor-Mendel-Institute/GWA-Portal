@@ -6,17 +6,12 @@ import com.github.gwtbootstrap.client.ui.TextBox;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.client.EditorError;
-import com.google.gwt.editor.client.HasEditorErrors;
-import com.google.gwt.editor.ui.client.ValueBoxEditorDecorator;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

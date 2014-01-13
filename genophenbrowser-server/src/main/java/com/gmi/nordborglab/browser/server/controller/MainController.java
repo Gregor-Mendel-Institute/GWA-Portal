@@ -1,14 +1,13 @@
 package com.gmi.nordborglab.browser.server.controller;
 
-import javax.annotation.Resource;
-
+import com.gmi.nordborglab.browser.server.service.HelperService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.gmi.nordborglab.browser.server.service.HelperService;
+import javax.annotation.Resource;
 
 
 @Controller

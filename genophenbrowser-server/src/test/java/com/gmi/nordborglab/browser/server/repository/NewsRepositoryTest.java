@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.server.repository;
 
-import com.gmi.nordborglab.browser.server.domain.observation.Locality;
 import com.gmi.nordborglab.browser.server.domain.util.NewsItem;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import org.junit.Test;

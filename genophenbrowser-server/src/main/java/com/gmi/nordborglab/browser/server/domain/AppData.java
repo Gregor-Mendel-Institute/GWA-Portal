@@ -1,7 +1,5 @@
 package com.gmi.nordborglab.browser.server.domain;
 
-import java.util.List;
-
 import com.gmi.nordborglab.browser.server.domain.cdv.StudyProtocol;
 import com.gmi.nordborglab.browser.server.domain.cdv.Transformation;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
@@ -11,6 +9,8 @@ import com.gmi.nordborglab.browser.server.domain.phenotype.UnitOfMeasure;
 import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
 import com.gmi.nordborglab.browser.server.domain.util.NewsItem;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
+
+import java.util.List;
 
 public class AppData {
 

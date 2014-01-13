@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.shared.proxy;
 
-import com.google.web.bindery.requestfactory.shared.EntityProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
 
 import javax.validation.constraints.NotNull;

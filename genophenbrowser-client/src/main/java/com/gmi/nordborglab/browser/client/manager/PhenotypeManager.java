@@ -1,16 +1,16 @@
 package com.gmi.nordborglab.browser.client.manager;
 
-import java.util.List;
-
-import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypePageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.PhenotypeRequest;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.shared.Receiver;
+
+import java.util.List;
 
 public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
 

@@ -1,9 +1,8 @@
 package com.gmi.nordborglab.browser.server.repository;
 
+import com.gmi.nordborglab.browser.server.domain.germplasm.AccessionCollection;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.gmi.nordborglab.browser.server.domain.germplasm.AccessionCollection;
-
 public interface AccessionCollectionRepository extends
-		JpaRepository<AccessionCollection, Long> {
+        JpaRepository<AccessionCollection, Long> {
 }

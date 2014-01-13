@@ -2,9 +2,6 @@ package com.gmi.nordborglab.browser.client.editors;
 
 import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
-import com.google.gwt.cell.client.Cell;
-import com.google.gwt.editor.client.IsEditor;
-import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.user.cellview.client.CellWidget;
 import com.google.inject.Inject;
 

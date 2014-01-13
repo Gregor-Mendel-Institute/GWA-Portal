@@ -1,11 +1,9 @@
 package com.gmi.nordborglab.browser.client.events;
 
-import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HasHandlers;
-import com.google.web.bindery.event.shared.Event;
 
 import java.util.List;
 

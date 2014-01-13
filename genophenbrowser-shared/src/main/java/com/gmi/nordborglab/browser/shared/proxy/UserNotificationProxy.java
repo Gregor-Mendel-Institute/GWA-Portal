@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.shared.proxy;
 
 import com.google.web.bindery.requestfactory.shared.EntityProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
-import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
 import java.util.Date;
 
@@ -13,14 +12,18 @@ import java.util.Date;
  * Time: 2:55 PM
  * To change this template use File | Settings | File Templates.
  */
-@ProxyForName(value="com.gmi.nordborglab.browser.server.domain.util.UserNotification", locator="com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
-public interface UserNotificationProxy extends EntityProxy{
+@ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.util.UserNotification", locator = "com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
+public interface UserNotificationProxy extends EntityProxy {
 
     public Long getId();
+
     public String getType();
+
     public String getText();
+
     public Date getCreateDate();
 
     boolean isRead();
+
     void setRead(boolean isRead);
 }

@@ -1,11 +1,8 @@
 package com.gmi.nordborglab.browser.client.mvp.handlers;
 
 import com.gmi.nordborglab.browser.shared.proxy.ontology.Term2TermProxy;
-import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.gwt.view.client.HasData;
 import com.gwtplatform.mvp.client.UiHandlers;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,7 +11,7 @@ import java.util.List;
  * Time: 3:16 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface OntologyUiHandlers extends UiHandlers{
+public interface OntologyUiHandlers extends UiHandlers {
     public void refreshWithChildTerms(HasData<Term2TermProxy> display, Term2TermProxy term);
 
     void onSelectTerm(Term2TermProxy selectedTerm);

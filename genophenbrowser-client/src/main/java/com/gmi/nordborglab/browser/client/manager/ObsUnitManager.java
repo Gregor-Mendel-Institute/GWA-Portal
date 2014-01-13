@@ -1,13 +1,13 @@
 package com.gmi.nordborglab.browser.client.manager;
 
-import java.util.List;
-
 import com.gmi.nordborglab.browser.shared.proxy.ObsUnitPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ObsUnitProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.ObsUnitRequest;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.shared.Receiver;
+
+import java.util.List;
 
 public class ObsUnitManager extends RequestFactoryManager<ObsUnitRequest> {
 

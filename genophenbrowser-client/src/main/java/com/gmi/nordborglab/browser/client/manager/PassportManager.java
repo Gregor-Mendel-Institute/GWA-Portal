@@ -1,8 +1,6 @@
 package com.gmi.nordborglab.browser.client.manager;
 
 
-import java.util.List;
-
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportListPresenter.PassportProxyFilter;
 import com.gmi.nordborglab.browser.shared.proxy.PassportPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
@@ -15,6 +13,8 @@ import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.PassportRequest;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.shared.Receiver;
+
+import java.util.List;
 
 public class PassportManager extends RequestFactoryManager<PassportRequest> {
 

@@ -1,6 +1,9 @@
 package com.gmi.nordborglab.browser.client.manager;
 
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 

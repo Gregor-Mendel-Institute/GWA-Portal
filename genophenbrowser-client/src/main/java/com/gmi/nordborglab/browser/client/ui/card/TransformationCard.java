@@ -6,7 +6,6 @@ import com.gmi.nordborglab.browser.client.events.SelectTransformationEvent;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationProxy;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -14,21 +13,17 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.shared.HasHandlers;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
-import com.google.gwt.visualization.client.AbstractDataTable;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.visualizations.corechart.Options;
 import com.google.web.bindery.event.shared.EventBus;
-import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.google.web.bindery.event.shared.SimpleEventBus;
-
-import java.util.Iterator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,7 +32,7 @@ import java.util.Iterator;
  * Time: 10:05 AM
  * To change this template use File | Settings | File Templates.
  */
-public class TransformationCard extends Composite implements RequiresResize{
+public class TransformationCard extends Composite implements RequiresResize {
 
 
     public interface MyStyle extends CssResource {
@@ -52,6 +47,7 @@ public class TransformationCard extends Composite implements RequiresResize{
 
     interface TransformationCardUiBinder extends UiBinder<FocusPanel, TransformationCard> {
     }
+
     private static TransformationCardUiBinder ourUiBinder = GWT.create(TransformationCardUiBinder.class);
     protected DataTable histogramData;
     private ResizeableColumnChart chart;
@@ -72,7 +68,8 @@ public class TransformationCard extends Composite implements RequiresResize{
 
     @UiField
     Icon selectIcon;
-    @UiField MyStyle style;
+    @UiField
+    MyStyle style;
     @UiField
     FocusPanel focusPanel;
     private boolean layoutScheduled = false;
@@ -82,16 +79,18 @@ public class TransformationCard extends Composite implements RequiresResize{
             forceLayout();
         }
     };
+
     public TransformationCard() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
+
     public void onResize() {
         initChartContainerHeight();
         histogramContainer.onResize();
     }
 
 
-    public void setHistogramData(ImmutableSortedMap<Double,Integer> data,Double shapiroScore) {
+    public void setHistogramData(ImmutableSortedMap<Double, Integer> data, Double shapiroScore) {
         setHistogramData(DataTableUtils.createPhenotypeHistogramTable(data), shapiroScore);
     }
 
@@ -141,7 +140,7 @@ public class TransformationCard extends Composite implements RequiresResize{
             return;
         int availableHeight = getOffsetHeight() - 120;
         if (availableHeight > 0)
-            histogramContainer.setHeight(availableHeight+"px");
+            histogramContainer.setHeight(availableHeight + "px");
     }
 
     private void updateSelected() {
@@ -151,8 +150,7 @@ public class TransformationCard extends Composite implements RequiresResize{
             selectIcon.addStyleName(style.ok());
             selectIcon.setType(IconType.OK);
 
-        }
-        else {
+        } else {
             card.removeClassName(style.card_selected());
             selectIcon.removeStyleName(style.ok());
             selectIcon.addStyleName(style.empty_ok());
@@ -174,7 +172,7 @@ public class TransformationCard extends Composite implements RequiresResize{
 
     public void setTransformation(TransformationProxy transformation) {
         this.transformation = transformation;
-        titleLb.setInnerText(transformation.getName()+" transformation");
+        titleLb.setInnerText(transformation.getName() + " transformation");
     }
 
 

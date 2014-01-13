@@ -1,13 +1,12 @@
 package com.gmi.nordborglab.browser.server.repository;
 
-import java.util.List;
-
+import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
+import com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
-import com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy;
+import java.util.List;
 
 public interface TaxonomyRepository extends JpaRepository<Taxonomy, Long> {
 

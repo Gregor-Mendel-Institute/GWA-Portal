@@ -1,26 +1,24 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
-import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
-import com.google.common.collect.Lists;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.gmi.nordborglab.browser.server.domain.stats.TaxonomyStats;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Sampstat;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy;
+import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
+import com.gmi.nordborglab.browser.server.domain.stats.TaxonomyStats;
 import com.gmi.nordborglab.browser.server.repository.TaxonomyRepository;
 import com.gmi.nordborglab.browser.server.service.TaxonomyService;
+import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
+import com.google.common.collect.Lists;
 import com.google.visualization.datasource.base.DataSourceException;
 import com.google.visualization.datasource.datatable.ColumnDescription;
 import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.datatable.value.ValueType;
 import com.google.visualization.datasource.render.JsonRenderer;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 
 @Service

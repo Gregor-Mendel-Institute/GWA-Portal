@@ -3,7 +3,6 @@ package com.gmi.nordborglab.browser.client.ui.card;
 import com.gmi.nordborglab.browser.client.util.SearchTerm;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.inject.Inject;
 
@@ -32,7 +31,7 @@ public class PhenotypeCardCell extends AbstractCell<PhenotypeProxy> {
     public void render(Context context, PhenotypeProxy value, SafeHtmlBuilder sb) {
         if (value == null)
             return;
-        uiRenderer.render(searchTerm,value,sb);
+        uiRenderer.render(searchTerm, value, sb);
     }
 
     public SearchTerm getSearchTerm() {

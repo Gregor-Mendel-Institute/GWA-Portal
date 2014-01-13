@@ -3,7 +3,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
              xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
@@ -11,7 +10,7 @@
              ui:generateLocales='default'>
 
     <ui:with field="mainRes"
-             type="com.gmi.nordborglab.browser.client.resources.MainResources" />
+             type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
 
 
     <ui:style>
@@ -78,7 +77,7 @@
 
         }
 
-        .actionDropDown >  a {
+        .actionDropDown > a {
             margin-top: 0px !important;
             margin-bottom: 0px !important;
         }
@@ -89,9 +88,10 @@
         }
 
         .statusLabel {
-            margin-top:6px;
-            float:left;
+            margin-top: 6px;
+            float: left;
         }
+
         @external gwt-TabLayoutPanelTab;
         .gwt-TabLayoutPanelTab {
             color: #06C !important;
@@ -126,37 +126,37 @@
 
     </ui:style>
 
-                <g:LayoutPanel>
-                    <g:layer left="0" top="0" bottom="0" width="30em">
-                        <g:LayoutPanel>
-                            <g:layer top="5px" height="40px" left="0" right="0">
-                                <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
-                                    <div class="{style.actionRow}">
-                                    </div>
-                                </g:HTMLPanel>
-                            </g:layer>
-                            <g:layer top="47px" bottom="0" left="0" right="0">
-                                <g:FlowPanel>
-                                   <ed:PublicationDisplayEditor ui:field="publicationDisplayEditor" />
-                                </g:FlowPanel>
-                            </g:layer>
-                        </g:LayoutPanel>
-                    </g:layer>
-                    <g:layer left="31em" top="0" bottom="0" right="0">
-                        <g:TabLayoutPanel barUnit="PX" barHeight="38"  animationDuration="500">
-                        <g:tab>
-                            <g:header>Experiments</g:header>
-                            <g:LayoutPanel>
-                                <g:layer top="0" left="0" right="0" bottom="30px">
-                                    <c:DataGrid ui:field="experimentDataGrid" />
-                                </g:layer>
-                                <g:layer bottom="0" left="0" right="0" height="30px">
-                                    <gui:CustomPager ui:field="experimentPager" />
-                                </g:layer>
-                            </g:LayoutPanel>
-                        </g:tab>
-                    </g:TabLayoutPanel>
-                    </g:layer>
-                </g:LayoutPanel>
+    <g:LayoutPanel>
+        <g:layer left="0" top="0" bottom="0" width="30em">
+            <g:LayoutPanel>
+                <g:layer top="5px" height="40px" left="0" right="0">
+                    <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                        <div class="{style.actionRow}">
+                        </div>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="47px" bottom="0" left="0" right="0">
+                    <g:FlowPanel>
+                        <ed:PublicationDisplayEditor ui:field="publicationDisplayEditor"/>
+                    </g:FlowPanel>
+                </g:layer>
+            </g:LayoutPanel>
+        </g:layer>
+        <g:layer left="31em" top="0" bottom="0" right="0">
+            <g:TabLayoutPanel barUnit="PX" barHeight="38" animationDuration="500">
+                <g:tab>
+                    <g:header>Experiments</g:header>
+                    <g:LayoutPanel>
+                        <g:layer top="0" left="0" right="0" bottom="30px">
+                            <c:DataGrid ui:field="experimentDataGrid"/>
+                        </g:layer>
+                        <g:layer bottom="0" left="0" right="0" height="30px">
+                            <gui:CustomPager ui:field="experimentPager"/>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:tab>
+            </g:TabLayoutPanel>
+        </g:layer>
+    </g:LayoutPanel>
 
 </ui:UiBinder>

@@ -1,17 +1,10 @@
 package com.gmi.nordborglab.browser.client.util;
 
-import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
-import com.gmi.nordborglab.browser.shared.proxy.AlleleProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableMultiset;
-import com.google.common.collect.Lists;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 
 /**

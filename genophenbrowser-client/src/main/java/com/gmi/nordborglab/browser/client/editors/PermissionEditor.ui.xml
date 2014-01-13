@@ -1,21 +1,21 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui"
-	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
-    xmlns:b="urn:import:com.github.gwtbootstrap.client.ui" xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
-	>
-	
-	<ui:style>
-		
-	</ui:style>
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+        >
+
+    <ui:style>
+
+    </ui:style>
     <b:FluidContainer>
         <b:FluidRow>
             <b:Column size="12" height="230px">
-			    <c:CellTable ui:field="dataGrid" width="100%"/>
+                <c:CellTable ui:field="dataGrid" width="100%"/>
             </b:Column>
         </b:FluidRow>
         <b:FluidRow>
-            <b:Column size="12" >
+            <b:Column size="12">
                 <g:CheckBox ui:field="isEntriesInheriting" text="Inherit permissions from higher levels"/>
             </b:Column>
         </b:FluidRow>

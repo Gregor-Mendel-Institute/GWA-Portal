@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.manager;
 
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
-import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
 import com.gmi.nordborglab.browser.shared.service.GWASDataRequest;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -16,7 +15,7 @@ import java.util.List;
  * Time: 9:00 PM
  * To change this template use File | Settings | File Templates.
  */
-public class GWASDataManager extends RequestFactoryManager<GWASDataRequest>{
+public class GWASDataManager extends RequestFactoryManager<GWASDataRequest> {
 
     @Inject
     public GWASDataManager(CustomRequestFactory rf) {
@@ -36,7 +35,7 @@ public class GWASDataManager extends RequestFactoryManager<GWASDataRequest>{
         getContext().delete(object).with("appUser").fire(receiver);
     }
 
-    public void findOneGWASResults(Receiver<GWASResultProxy> receiver,Long id) {
+    public void findOneGWASResults(Receiver<GWASResultProxy> receiver, Long id) {
         getContext().findOneGWASResult(id).fire(receiver);
     }
 }

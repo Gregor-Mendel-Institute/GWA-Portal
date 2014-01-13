@@ -1,7 +1,15 @@
 package com.gmi.nordborglab.browser.shared.service;
 
 
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
+import com.gmi.nordborglab.browser.shared.proxy.CustomAclProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SearchPermissionUserRoleProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.google.web.bindery.requestfactory.shared.ExtraTypes;
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;

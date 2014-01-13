@@ -1,9 +1,17 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
 import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
-import com.gmi.nordborglab.browser.server.search.*;
-import com.gmi.nordborglab.browser.server.security.AclManager;
-import com.gmi.nordborglab.browser.server.security.CustomPermission;
+import com.gmi.nordborglab.browser.server.search.CandidategenelistSearchProcessor;
+import com.gmi.nordborglab.browser.server.search.ExperimentSearchProcessor;
+import com.gmi.nordborglab.browser.server.search.GeneSearchProcessor;
+import com.gmi.nordborglab.browser.server.search.OntologySearchProcessor;
+import com.gmi.nordborglab.browser.server.search.PassportSearchProcessor;
+import com.gmi.nordborglab.browser.server.search.PhenotypeSearchProcessor;
+import com.gmi.nordborglab.browser.server.search.PublicationSearchProcessor;
+import com.gmi.nordborglab.browser.server.search.SearchProcessor;
+import com.gmi.nordborglab.browser.server.search.StockSearchProcessor;
+import com.gmi.nordborglab.browser.server.search.StudySearchProcessor;
+import com.gmi.nordborglab.browser.server.search.TaxonomySearchProcessor;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
 import com.gmi.nordborglab.browser.server.service.SearchService;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
@@ -16,7 +24,6 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.FilterBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

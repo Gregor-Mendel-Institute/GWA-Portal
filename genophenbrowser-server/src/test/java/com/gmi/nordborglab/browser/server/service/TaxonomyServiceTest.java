@@ -1,13 +1,11 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.Collection;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy;
+import com.gmi.nordborglab.browser.server.domain.stats.TaxonomyStats;
+import com.gmi.nordborglab.browser.server.repository.TaxonomyRepository;
+import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
+import com.google.common.collect.ImmutableList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,12 +13,12 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.gmi.nordborglab.browser.server.domain.stats.TaxonomyStats;
-import com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy;
-import com.gmi.nordborglab.browser.server.repository.TaxonomyRepository;
-import com.gmi.nordborglab.browser.server.testutils.BaseTest;
-import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
-import com.google.common.collect.ImmutableList;
+import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TaxonomyServiceTest extends BaseTest {
 

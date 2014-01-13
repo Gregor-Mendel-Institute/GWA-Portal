@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.handlers;
 
-import com.gmi.nordborglab.browser.client.ui.card.TransformationCard;
 import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
 import com.gwtplatform.mvp.client.UiHandlers;
 
@@ -11,7 +10,7 @@ import com.gwtplatform.mvp.client.UiHandlers;
  * Time: 1:20 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface TaxonomyOverviewUiHandlers extends UiHandlers{
+public interface TaxonomyOverviewUiHandlers extends UiHandlers {
 
     void onClickTaxonomy(TaxonomyProxy taxonomy);
 }
