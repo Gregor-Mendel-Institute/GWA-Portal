@@ -3,13 +3,16 @@ package com.gmi.nordborglab.browser.client.ui.cells;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.google.gwt.cell.client.AbstractEditableCell;
 import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiRenderer;
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 
 /**
@@ -21,28 +24,40 @@ import com.google.inject.Inject;
  */
 
 @SuppressWarnings("GwtUiHandlerErrors")
-public class PermissionSelectionCell extends AbstractEditableCell<AccessControlEntryProxy,Integer>{
+public class PermissionSelectionCell extends AbstractEditableCell<AccessControlEntryProxy, Integer> {
 
 
     public interface MyStyle extends CssResource {
         String hide();
+
         String access_container_opened();
+
         String not_selectable();
 
     }
 
     public interface Renderer extends UiRenderer {
-        void render(SafeHtmlBuilder sb,String access,String iconClass,String accessClass,String editCheckBox,String viewCheckBox,String privateCheckBox,String publicCheckBox);
+        void render(SafeHtmlBuilder sb, String access, String iconClass, String accessClass, String editCheckBox, String viewCheckBox, String privateCheckBox, String publicCheckBox);
+
         MyStyle getStyle();
+
         DivElement getMenu(Element parent);
+
         UListElement getPermMenu(Element parent);
+
         UListElement getAccessMenu(Element parent);
+
         DivElement getPrivateItemCb(Element parent);
+
         DivElement getPublicItemCb(Element parent);
+
         DivElement getEditItemCb(Element parent);
+
         DivElement getViewItemCb(Element parent);
-        void onBrowserEvent(PermissionSelectionCell permissionSelectionCell, NativeEvent event, Element parent, AccessControlEntryProxy value,ValueUpdater<AccessControlEntryProxy> valueUpdater);
+
+        void onBrowserEvent(PermissionSelectionCell permissionSelectionCell, NativeEvent event, Element parent, AccessControlEntryProxy value, ValueUpdater<AccessControlEntryProxy> valueUpdater);
     }
+
     private static String ICON_OK = "icon-ok";
     private final Renderer uiRenderer;
     private boolean menuOpened = false;
@@ -56,7 +71,7 @@ public class PermissionSelectionCell extends AbstractEditableCell<AccessControlE
 
     @Override
     public void onBrowserEvent(Context context, Element parent, AccessControlEntryProxy value, NativeEvent event, ValueUpdater<AccessControlEntryProxy> valueUpdater) {
-        uiRenderer.onBrowserEvent(this,event,parent,value,valueUpdater);
+        uiRenderer.onBrowserEvent(this, event, parent, value, valueUpdater);
     }
 
     @Override
@@ -72,35 +87,31 @@ public class PermissionSelectionCell extends AbstractEditableCell<AccessControlE
         String iconClass = "";
         String accessClass = "";
         String editCheckBox = "";
-        String viewCheckBox="";
-        String privateCheckBox= "";
-        String publicCheckBox= "";
+        String viewCheckBox = "";
+        String privateCheckBox = "";
+        String publicCheckBox = "";
         if (value.getPrincipal().getIsOwner()) {
             access = "Is owner";
             iconClass = uiRenderer.getStyle().hide();
             accessClass = uiRenderer.getStyle().not_selectable();
-        }
-        else if (!value.getPrincipal().getIsUser()) {
+        } else if (!value.getPrincipal().getIsUser()) {
             if (value.getMask() == 0) {
                 access = "Private";
                 privateCheckBox = ICON_OK;
-            }
-            else {
+            } else {
                 access = "Public";
                 publicCheckBox = ICON_OK;
             }
-        }
-        else {
+        } else {
             if (canEdit(value.getMask())) {
                 access = "Can edit";
                 editCheckBox = ICON_OK;
-            }
-            else {
+            } else {
                 access = "Can view";
                 viewCheckBox = ICON_OK;
             }
         }
-        uiRenderer.render(sb,access,iconClass,accessClass,editCheckBox,viewCheckBox,privateCheckBox,publicCheckBox);
+        uiRenderer.render(sb, access, iconClass, accessClass, editCheckBox, viewCheckBox, privateCheckBox, publicCheckBox);
     }
 
     private boolean canEdit(int mask) {
@@ -108,10 +119,10 @@ public class PermissionSelectionCell extends AbstractEditableCell<AccessControlE
     }
 
     @UiHandler({"menu"})
-    public void onClickMenu(ClickEvent e,Element parent,AccessControlEntryProxy value,ValueUpdater<AccessControlEntryProxy> valueUpdater) {
+    public void onClickMenu(ClickEvent e, Element parent, AccessControlEntryProxy value, ValueUpdater<AccessControlEntryProxy> valueUpdater) {
         if (value.getPrincipal().getIsOwner())
             return;
-        UListElement permMenu  = uiRenderer.getPermMenu(parent.getParentElement());
+        UListElement permMenu = uiRenderer.getPermMenu(parent.getParentElement());
         UListElement accessMenu = uiRenderer.getAccessMenu(parent.getParentElement());
         accessMenu.getStyle().setDisplay(Style.Display.NONE);
         permMenu.getStyle().setDisplay(Style.Display.NONE);
@@ -121,8 +132,7 @@ public class PermissionSelectionCell extends AbstractEditableCell<AccessControlE
             else {
                 permMenu.getStyle().setDisplay(Style.Display.NONE);
             }
-        }
-        else {
+        } else {
             if (!menuOpened)
                 accessMenu.getStyle().setDisplay(Style.Display.BLOCK);
             else
@@ -138,7 +148,7 @@ public class PermissionSelectionCell extends AbstractEditableCell<AccessControlE
 
 
     @UiHandler({"privateItem"})
-    public void onClickPrivateItem(ClickEvent e,Element parent, AccessControlEntryProxy value,ValueUpdater<AccessControlEntryProxy> valueUpdater) {
+    public void onClickPrivateItem(ClickEvent e, Element parent, AccessControlEntryProxy value, ValueUpdater<AccessControlEntryProxy> valueUpdater) {
         if (value.getPrincipal().getIsUser())
             return;
         value.setMask(0);
@@ -146,7 +156,7 @@ public class PermissionSelectionCell extends AbstractEditableCell<AccessControlE
     }
 
     @UiHandler({"publicItem"})
-    public void onClickPublicItem(ClickEvent e,Element parent, AccessControlEntryProxy value,ValueUpdater<AccessControlEntryProxy> valueUpdater) {
+    public void onClickPublicItem(ClickEvent e, Element parent, AccessControlEntryProxy value, ValueUpdater<AccessControlEntryProxy> valueUpdater) {
         if (value.getPrincipal().getIsUser())
             return;
         value.setMask(value.getMask() | AccessControlEntryProxy.READ);
@@ -154,7 +164,7 @@ public class PermissionSelectionCell extends AbstractEditableCell<AccessControlE
     }
 
     @UiHandler({"editItem"})
-    public void onClickEditItem(ClickEvent e,Element parent, AccessControlEntryProxy value,ValueUpdater<AccessControlEntryProxy> valueUpdater) {
+    public void onClickEditItem(ClickEvent e, Element parent, AccessControlEntryProxy value, ValueUpdater<AccessControlEntryProxy> valueUpdater) {
         if (!value.getPrincipal().getIsUser() || value.getPrincipal().getIsOwner())
             return;
         value.setMask(AccessControlEntryProxy.EDIT | AccessControlEntryProxy.READ);
@@ -162,7 +172,7 @@ public class PermissionSelectionCell extends AbstractEditableCell<AccessControlE
     }
 
     @UiHandler({"viewItem"})
-    public void onClickViewItem(ClickEvent e,Element parent, AccessControlEntryProxy value,ValueUpdater<AccessControlEntryProxy> valueUpdater) {
+    public void onClickViewItem(ClickEvent e, Element parent, AccessControlEntryProxy value, ValueUpdater<AccessControlEntryProxy> valueUpdater) {
         if (!value.getPrincipal().getIsUser() || value.getPrincipal().getIsOwner())
             return;
         value.setMask(AccessControlEntryProxy.READ);
@@ -172,20 +182,18 @@ public class PermissionSelectionCell extends AbstractEditableCell<AccessControlE
     private void doUpdate(AccessControlEntryProxy value, Element parent, ValueUpdater<AccessControlEntryProxy> valueUpdater) {
         DivElement menuItem = uiRenderer.getMenu(parent);
         if (value.getPrincipal().getIsUser()) {
-           DivElement editItem = uiRenderer.getEditItemCb(parent);
-           DivElement viewItem = uiRenderer.getViewItemCb(parent);
-           editItem.removeClassName(ICON_OK);
-           viewItem.removeClassName(ICON_OK);
-           if (canEdit(value.getMask())) {
-               editItem.addClassName(ICON_OK);
-               menuItem.getFirstChildElement().setInnerText("Can edit");
-           }
-           else {
-               viewItem.addClassName(ICON_OK);
-               menuItem.getFirstChildElement().setInnerText("Can view");
-           }
-        }
-        else {
+            DivElement editItem = uiRenderer.getEditItemCb(parent);
+            DivElement viewItem = uiRenderer.getViewItemCb(parent);
+            editItem.removeClassName(ICON_OK);
+            viewItem.removeClassName(ICON_OK);
+            if (canEdit(value.getMask())) {
+                editItem.addClassName(ICON_OK);
+                menuItem.getFirstChildElement().setInnerText("Can edit");
+            } else {
+                viewItem.addClassName(ICON_OK);
+                menuItem.getFirstChildElement().setInnerText("Can view");
+            }
+        } else {
             DivElement publicItem = uiRenderer.getPublicItemCb(parent);
             DivElement privateItem = uiRenderer.getPrivateItemCb(parent);
             publicItem.removeClassName(ICON_OK);
@@ -193,14 +201,13 @@ public class PermissionSelectionCell extends AbstractEditableCell<AccessControlE
             if (value.getMask() == 0) {
                 privateItem.addClassName(ICON_OK);
                 menuItem.getFirstChildElement().setInnerText("Private");
-            }
-            else {
+            } else {
                 publicItem.addClassName(ICON_OK);
                 menuItem.getFirstChildElement().setInnerText("Public");
             }
         }
         menuItem.removeClassName(uiRenderer.getStyle().access_container_opened());
-        UListElement permMenu  = uiRenderer.getPermMenu(parent);
+        UListElement permMenu = uiRenderer.getPermMenu(parent);
         UListElement accessMenu = uiRenderer.getAccessMenu(parent);
         permMenu.getStyle().setDisplay(Style.Display.NONE);
         accessMenu.getStyle().setDisplay(Style.Display.NONE);

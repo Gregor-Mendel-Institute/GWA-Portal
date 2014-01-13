@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.events;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.Event;
 
 /**

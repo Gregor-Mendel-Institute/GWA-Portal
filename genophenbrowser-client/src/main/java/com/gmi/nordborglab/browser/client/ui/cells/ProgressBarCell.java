@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
-import com.github.gwtbootstrap.client.ui.Bar;
 import com.github.gwtbootstrap.client.ui.base.ProgressBarBase;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
@@ -19,7 +18,7 @@ public class ProgressBarCell extends AbstractCell<Number> {
 
     interface Template extends SafeHtmlTemplates {
         @Template("<div style=\"margin-bottom:0px;width:100px\"class=\"progress {0}\"><div class=\"bar\" style=\"width:{1}\"></div></div>")
-        SafeHtml progressbar(String cssClass,String percentage);
+        SafeHtml progressbar(String cssClass, String percentage);
     }
 
     private static Template template = GWT.create(Template.class);
@@ -42,15 +41,12 @@ public class ProgressBarCell extends AbstractCell<Number> {
             String className = "";
             if (color != null) {
                 className = color.get();
-            }
-            else {
+            } else {
                 if (value.intValue() <= 1) {
-                    className= ProgressBarBase.Color.DANGER.get();
-                }
-                else if (value.intValue() <100) {
+                    className = ProgressBarBase.Color.DANGER.get();
+                } else if (value.intValue() < 100) {
                     className = ProgressBarBase.Color.WARNING.get();
-                }
-                else {
+                } else {
                     className = ProgressBarBase.Color.SUCCESS.get();
                 }
 
@@ -61,7 +57,7 @@ public class ProgressBarCell extends AbstractCell<Number> {
             if (isAnimated && value.intValue() < 100) {
                 className += " active";
             }
-            sb.append(template.progressbar(className,percentage));
+            sb.append(template.progressbar(className, percentage));
         }
     }
 }

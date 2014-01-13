@@ -4,7 +4,6 @@ import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
 import com.google.web.bindery.requestfactory.shared.Locator;
 import org.springframework.context.ApplicationContext;
-import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.persistence.EntityManager;

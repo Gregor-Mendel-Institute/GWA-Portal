@@ -9,8 +9,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.gmi.nordborglab.browser.server.data.annotation.GeneFeature;
 import com.google.common.collect.Lists;
 
-
-
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -35,35 +33,30 @@ public class NCListItemDeserializer extends StdDeserializer<NCListItem> {
         while (jp.nextToken() != JsonToken.END_ARRAY) {
             if (i == 0) {
                 item.setStart(jp.getValueAsLong());
-            } else if (i==1) {
+            } else if (i == 1) {
                 item.setEnd(jp.getValueAsLong());
-            }
-            else if (i == 2) {
+            } else if (i == 2) {
                 JsonNode node = jp.readValueAsTree();
                 if (node.isObject()) {
                     item.setChunk(node.get("chunk").asLong());
-                }
-                else {
+                } else {
                     item.setStrand(node.asInt());
                 }
-            }
-            else if (i== 3) {
+            } else if (i == 3) {
                 item.setName(jp.getText());
                 String name = item.getName();
 
-            }
-            else if (i==5) {
+            } else if (i == 5) {
 
                 jp.nextToken();  //REQUIRED otherwise all tokens are shifted by one properly (version 2.1.4, not necessary in version 1.9.12)
                 Iterator<GeneFeature> iterator = jp.readValuesAs(GeneFeature.class);
                 item.setGeneFeatures(Lists.newArrayList(iterator));
-            }
-            else if (i==6) {
+            } else if (i == 6) {
                 jp.nextToken(); //REQUIRED otherwise all tokens are shifted by one properly (version 2.1.4, not necessary in version 1.9.12)
                 Iterator<NCListItem> iterator = jp.readValuesAs(NCListItem.class);
                 item.setSubNCList(Lists.newArrayList(iterator));
             }
-            i= i+1;
+            i = i + 1;
         }
         return item;
     }

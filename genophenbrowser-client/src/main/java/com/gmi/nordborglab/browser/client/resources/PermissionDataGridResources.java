@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.resources;
 
 import com.google.gwt.user.cellview.client.CellTable;
-import com.google.gwt.user.cellview.client.DataGrid;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,7 +16,6 @@ public interface PermissionDataGridResources extends CellTable.Resources {
 
 
     }
-
 
 
     @Override

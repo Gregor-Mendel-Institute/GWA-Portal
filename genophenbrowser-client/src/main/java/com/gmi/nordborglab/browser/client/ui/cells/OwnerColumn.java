@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentListDataGridColumns;
 import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.user.cellview.client.Column;

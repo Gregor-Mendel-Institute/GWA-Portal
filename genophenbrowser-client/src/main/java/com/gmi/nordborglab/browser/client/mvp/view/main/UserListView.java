@@ -1,14 +1,11 @@
 package com.gmi.nordborglab.browser.client.mvp.view.main;
 
 import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.Pagination;
-import com.github.gwtbootstrap.client.ui.SimplePager;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.UserListUiHandler;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.UserListPresenter;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
-import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.NumberedPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
@@ -19,7 +16,6 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -34,9 +30,6 @@ import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
-import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
-import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 

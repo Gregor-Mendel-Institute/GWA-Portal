@@ -1,25 +1,22 @@
 package com.gmi.nordborglab.browser.server.servlet;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.gmi.nordborglab.browser.server.data.GWASDataForClient;
+import com.gmi.nordborglab.browser.server.service.impl.GWASDataTableGenerator;
+import com.google.gson.Gson;
+import com.google.visualization.datasource.DataSourceHelper;
+import com.google.visualization.datasource.base.DataSourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.HttpRequestHandler;
 
-import com.gmi.nordborglab.browser.server.data.GWASDataForClient;
-import com.gmi.nordborglab.browser.server.service.impl.GWASDataTableGenerator;
-import com.google.gson.Gson;
-import com.google.visualization.datasource.DataSourceHelper;
-import com.google.visualization.datasource.base.DataSourceException;
+import javax.annotation.Resource;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Writer;
 
 @Component
 public class HDF5GWASDataServlet implements HttpRequestHandler {

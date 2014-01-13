@@ -3,7 +3,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
-             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
              xmlns:gchart='urn:import:com.googlecode.gwt.charts.client.corechart'
              xmlns:s="urn:import:com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments"

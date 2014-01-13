@@ -3,8 +3,7 @@ package com.gmi.nordborglab.browser.server.data.annotation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.elasticsearch.common.jackson.core.JsonGenerationException;
-import org.elasticsearch.common.jackson.core.JsonGenerator;
+
 import java.io.IOException;
 
 /**

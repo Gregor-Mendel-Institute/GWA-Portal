@@ -1,16 +1,13 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.orm.jpa.support.SharedEntityManagerBean;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.jpaontology.model.BaseOntologyEntity;
 import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
 import com.google.web.bindery.requestfactory.shared.Locator;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 public class SpringOntologyEntityLocator extends Locator<BaseOntologyEntity, Integer> {
 

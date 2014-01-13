@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.springframework.security.acls.model.MutableAclService;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

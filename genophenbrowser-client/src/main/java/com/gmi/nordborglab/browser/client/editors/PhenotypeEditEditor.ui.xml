@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-             xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:e="urn:import:com.google.gwt.editor.ui.client"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
         >
@@ -39,7 +39,7 @@
             width: 280px;
         }
 
-            /* required because of bug that puts the typeadead below the modal */
+        /* required because of bug that puts the typeadead below the modal */
         @external .typeahead;
         .typeahead {
             z-index: 1051 !important;

@@ -1,12 +1,9 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
-import java.io.IOException;
-import java.util.*;
-
-import javax.annotation.Nullable;
-import javax.annotation.Resource;
-
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
+import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
+import com.gmi.nordborglab.browser.server.domain.acl.PermissionPrincipal;
+import com.gmi.nordborglab.browser.server.domain.acl.SearchPermissionUserRole;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
@@ -14,29 +11,49 @@ import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.errai.ClientComService;
-import com.gmi.nordborglab.browser.server.repository.*;
-import com.gmi.nordborglab.browser.server.security.*;
+import com.gmi.nordborglab.browser.server.repository.StudyRepository;
+import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
+import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
+import com.gmi.nordborglab.browser.server.repository.UserRepository;
+import com.gmi.nordborglab.browser.server.security.AclManager;
+import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
+import com.gmi.nordborglab.browser.server.security.CustomAcl;
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
+import com.gmi.nordborglab.browser.server.security.EsAclManager;
+import com.gmi.nordborglab.browser.server.security.SecurityUtil;
+import com.gmi.nordborglab.browser.server.service.PermissionService;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.commons.math3.analysis.function.Exp;
 import org.elasticsearch.action.update.UpdateRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.acls.domain.*;
-import org.springframework.security.acls.model.*;
+import org.springframework.security.acls.domain.AccessControlEntryImpl;
+import org.springframework.security.acls.domain.AclImpl;
+import org.springframework.security.acls.domain.GrantedAuthoritySid;
+import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.model.AccessControlEntry;
+import org.springframework.security.acls.model.Acl;
+import org.springframework.security.acls.model.MutableAclService;
+import org.springframework.security.acls.model.ObjectIdentity;
+import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
-import com.gmi.nordborglab.browser.server.domain.acl.PermissionPrincipal;
-import com.gmi.nordborglab.browser.server.domain.acl.SearchPermissionUserRole;
-import com.gmi.nordborglab.browser.server.service.PermissionService;
+import javax.annotation.Nullable;
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)

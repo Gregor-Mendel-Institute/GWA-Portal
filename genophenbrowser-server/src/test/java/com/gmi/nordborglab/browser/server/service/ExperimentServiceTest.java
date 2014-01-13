@@ -1,21 +1,16 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
+import com.gmi.nordborglab.browser.server.domain.acl.Authority;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.pages.PublicationPage;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
+import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
 import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
+import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
+import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
 import com.google.common.collect.Iterables;
 import org.junit.After;
 import org.junit.Before;
@@ -34,14 +29,15 @@ import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
-import com.gmi.nordborglab.browser.server.domain.acl.Authority;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.domain.pages.ExperimentPage;
-import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
-import com.gmi.nordborglab.browser.server.repository.UserRepository;
-import com.gmi.nordborglab.browser.server.testutils.BaseTest;
-import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 
 public class ExperimentServiceTest extends BaseTest {

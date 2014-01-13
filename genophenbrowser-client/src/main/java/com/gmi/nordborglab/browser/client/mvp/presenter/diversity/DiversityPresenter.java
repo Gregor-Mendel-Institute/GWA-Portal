@@ -2,13 +2,11 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity;
 
 import java.util.List;
 
-import com.eemi.gwt.tour.client.GwtTour;
-import com.eemi.gwt.tour.client.Tour;
+
 import com.gmi.nordborglab.browser.client.events.GWASResultLoadedEvent;
 import com.gmi.nordborglab.browser.client.events.OntologyLoadedEvent;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
-import com.google.inject.name.Named;
 import com.gwtplatform.mvp.client.View;
 import com.gmi.nordborglab.browser.client.manager.HelperManager;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;

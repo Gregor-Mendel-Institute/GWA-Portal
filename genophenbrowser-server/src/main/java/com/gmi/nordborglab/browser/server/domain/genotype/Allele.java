@@ -1,5 +1,8 @@
 package com.gmi.nordborglab.browser.server.domain.genotype;
 
+import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -8,9 +11,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
-import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
 
 @Entity
 @Table(name = "div_allele", schema = "genotype")

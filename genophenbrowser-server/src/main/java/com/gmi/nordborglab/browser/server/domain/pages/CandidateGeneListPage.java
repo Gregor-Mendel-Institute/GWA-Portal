@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.server.domain.pages;
 
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;

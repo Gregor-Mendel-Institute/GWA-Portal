@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.germplasm;
 
-import java.util.*;
+import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -12,9 +13,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
-import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 @Entity

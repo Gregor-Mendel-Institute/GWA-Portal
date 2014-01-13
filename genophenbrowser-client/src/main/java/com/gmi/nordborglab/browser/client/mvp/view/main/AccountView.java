@@ -3,17 +3,19 @@ package com.gmi.nordborglab.browser.client.mvp.view.main;
 import com.gmi.nordborglab.browser.client.editors.UserEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.AccountUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.AccountPresenter;
-import com.google.gwt.dom.client.*;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
-import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
-import com.gwtplatform.mvp.client.ViewImpl;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
-import com.google.gwt.i18n.client.Dictionary;
+import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 
 public class AccountView extends ViewWithUiHandlers<AccountUiHandlers> implements AccountPresenter.MyView {

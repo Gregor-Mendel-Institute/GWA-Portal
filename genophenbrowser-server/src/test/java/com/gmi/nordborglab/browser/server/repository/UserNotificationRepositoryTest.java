@@ -5,7 +5,6 @@ import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import org.junit.Test;
 
 import javax.annotation.Resource;
-
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;

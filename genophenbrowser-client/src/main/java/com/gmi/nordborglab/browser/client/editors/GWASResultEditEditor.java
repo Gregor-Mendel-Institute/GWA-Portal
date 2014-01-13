@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.editors;
 
-import com.github.gwtbootstrap.client.ui.*;
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.TextArea;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
@@ -22,12 +23,14 @@ public class GWASResultEditEditor extends Composite implements Editor<GWASResult
 
     interface GWASResultEditorUiBinder extends UiBinder<Widget, GWASResultEditEditor> {
     }
+
     private static GWASResultEditorUiBinder ourUiBinder = GWT.create(GWASResultEditorUiBinder.class);
 
 
     @UiField
     ValueBoxEditorDecorator<String> name;
-    @UiField  ValueBoxEditorDecorator<String> type;
+    @UiField
+    ValueBoxEditorDecorator<String> type;
 
     @UiField
     Button createGWASBtn;
@@ -35,7 +38,6 @@ public class GWASResultEditEditor extends Composite implements Editor<GWASResult
     Button cancelGWASBtn;
     @UiField
     TextArea comments;
-
 
 
     public GWASResultEditEditor() {

@@ -1,24 +1,24 @@
 package com.gmi.nordborglab.browser.server.data.csv;
 
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
-import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.data.GWASReader;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
 import com.google.common.primitives.Ints;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
-import org.supercsv.cellprocessor.*;
+import org.supercsv.cellprocessor.CellProcessorAdaptor;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ParseDouble;
+import org.supercsv.cellprocessor.ParseInt;
+import org.supercsv.cellprocessor.Trim;
 import org.supercsv.cellprocessor.constraint.Equals;
 import org.supercsv.cellprocessor.constraint.IsIncludedIn;
-import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.ICsvListReader;
-import org.supercsv.io.ICsvMapReader;
 import org.supercsv.prefs.CsvPreference;
 import org.supercsv.util.CsvContext;
-import sun.util.locale.StringTokenIterator;
 
 import java.io.File;
 import java.io.FileReader;

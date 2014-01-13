@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.server.repository;
 
 import com.gmi.nordborglab.browser.server.domain.util.NewsItem;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 /**
  * Created with IntelliJ IDEA.

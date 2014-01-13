@@ -1,12 +1,12 @@
 package com.gmi.nordborglab.browser.server.domain.phenotype;
 
+import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 
 @Entity
 @Table(name = "div_unit_of_measure", schema = "phenotype")

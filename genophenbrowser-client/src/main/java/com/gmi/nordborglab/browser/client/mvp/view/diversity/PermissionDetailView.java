@@ -1,10 +1,9 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.github.gwtbootstrap.client.ui.*;
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.ButtonToolbar;
+import com.github.gwtbootstrap.client.ui.FluidRow;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.gmi.nordborglab.browser.client.editors.PermissionEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PermissionUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
@@ -27,6 +26,10 @@ import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.watopi.chosen.client.ChosenOptions;
 import com.watopi.chosen.client.event.ChosenChangeEvent;
 import com.watopi.chosen.client.gwt.ChosenListBox;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandlers> implements
         PermissionDetailPresenter.MyView {

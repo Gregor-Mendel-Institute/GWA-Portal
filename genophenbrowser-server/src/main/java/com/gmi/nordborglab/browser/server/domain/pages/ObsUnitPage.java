@@ -1,13 +1,12 @@
 package com.gmi.nordborglab.browser.server.domain.pages;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ObsUnitPage extends PageImpl<ObsUnit> {
 

@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.server.data.annotation.nclist;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.annotation.GeneFeature;
 
@@ -16,7 +15,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @JsonDeserialize(using = NCListItemDeserializer.class)
-public class NCListItem implements Comparable<NCListItem>{
+public class NCListItem implements Comparable<NCListItem> {
 
     private Long start;
     private Long end;
@@ -29,7 +28,7 @@ public class NCListItem implements Comparable<NCListItem>{
     private List<NCListItem> subNCList;
 
     public Gene getGene(boolean isFeature) {
-        return new Gene(start,end, strand,name,(isFeature ? geneFeatures : new ArrayList<GeneFeature>()));
+        return new Gene(start, end, strand, name, (isFeature ? geneFeatures : new ArrayList<GeneFeature>()));
     }
 
 

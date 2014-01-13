@@ -1,16 +1,14 @@
 package com.gmi.nordborglab.browser.client.ui;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.annotation.Nullable;
-
-import com.gmi.nordborglab.browser.client.resources.Icons;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.resources.Icons;
 import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle.SearchSuggestion;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import com.google.common.base.Function;
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimaps;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
@@ -29,6 +27,10 @@ import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestBox.SuggestionCallback;
 import com.google.gwt.user.client.ui.SuggestBox.SuggestionDisplay;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
+
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class SearchSuggestDisplay extends SuggestionDisplay {
 

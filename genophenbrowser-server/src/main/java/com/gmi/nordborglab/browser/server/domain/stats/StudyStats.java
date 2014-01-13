@@ -1,8 +1,8 @@
 package com.gmi.nordborglab.browser.server.domain.stats;
 
-import java.util.List;
-
 import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
+
+import java.util.List;
 
 public class StudyStats {
 

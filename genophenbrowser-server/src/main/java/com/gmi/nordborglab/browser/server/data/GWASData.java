@@ -1,7 +1,5 @@
 package com.gmi.nordborglab.browser.server.data;
 
-import com.gmi.nordborglab.browser.server.data.ChrGWAData;
-
 import java.util.Map;
 
 /**
@@ -13,7 +11,7 @@ import java.util.Map;
  */
 public class GWASData {
 
-    private final Map<String,ChrGWAData> chrGWASData;
+    private final Map<String, ChrGWAData> chrGWASData;
     private final long numberOfSNPs;
     private final double bonferroniScore;
     private final float maxScore;
@@ -42,8 +40,8 @@ public class GWASData {
     }
 
     public void sortByPosition() {
-        for (Map.Entry<String,ChrGWAData> dataEntry : chrGWASData.entrySet()) {
-             chrGWASData.put(dataEntry.getKey(),ChrGWAData.sortByPosition(dataEntry.getValue()));
+        for (Map.Entry<String, ChrGWAData> dataEntry : chrGWASData.entrySet()) {
+            chrGWASData.put(dataEntry.getKey(), ChrGWAData.sortByPosition(dataEntry.getValue()));
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools;
 
-import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.GWASUploadedEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASUploadWizardUiHandlers;
@@ -17,17 +16,17 @@ import com.gwtplatform.mvp.client.View;
  * Time: 4:04 PM
  * To change this template use File | Settings | File Templates.
  */
-public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadWizardPresenterWidget.MyView> implements GWASUploadWizardUiHandlers{
+public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadWizardPresenterWidget.MyView> implements GWASUploadWizardUiHandlers {
 
 
-    private boolean multipleUpload=true;
+    private boolean multipleUpload = true;
     private String restURL = "provider/gwas/upload";
 
     public boolean isMultipleUpload() {
         return multipleUpload;
     }
 
-    public interface MyView extends View,HasUiHandlers<GWASUploadWizardUiHandlers>{
+    public interface MyView extends View, HasUiHandlers<GWASUploadWizardUiHandlers> {
 
         void showUploadPanel();
 
@@ -54,14 +53,15 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
         //getView().showUploadPanel();
         //GWASUploadedEvent.fire(getEventBus(),id);
     }
+
     @Override
     public void onClose() {
-        GWASUploadedEvent.fire(getEventBus(),0L);
+        GWASUploadedEvent.fire(getEventBus(), 0L);
     }
 
     @Override
     public void onUploadStart() {
-        fireEvent(new LoadingIndicatorEvent(true,"Uploading..."));
+        fireEvent(new LoadingIndicatorEvent(true, "Uploading..."));
     }
 
     @Override
@@ -73,6 +73,7 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
         this.multipleUpload = multipleUpload;
         getView().setmultipleUpload(multipleUpload);
     }
+
     public void setRestURL(String restUrl) {
         this.restURL = restUrl;
         getView().setRestURL(restUrl);

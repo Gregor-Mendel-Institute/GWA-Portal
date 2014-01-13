@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.acl;
 
+import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -10,8 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 
 
 @Entity

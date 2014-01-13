@@ -1,14 +1,13 @@
 package com.gmi.nordborglab.browser.shared.proxy;
 
-import java.util.Date;
-import java.util.List;
-
 import com.gmi.nordborglab.browser.shared.validation.PasswordsEqual;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
 import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Date;
+import java.util.List;
 
 
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.acl.AppUser")

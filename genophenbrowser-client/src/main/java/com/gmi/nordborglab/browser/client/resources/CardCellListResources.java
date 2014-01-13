@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.resources;
 
-import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.cellview.client.CellList;
 
 /**

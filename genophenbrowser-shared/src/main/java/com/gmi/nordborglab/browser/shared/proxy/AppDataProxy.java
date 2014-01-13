@@ -1,9 +1,9 @@
 package com.gmi.nordborglab.browser.shared.proxy;
 
-import java.util.List;
-
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
 import com.google.web.bindery.requestfactory.shared.ValueProxy;
+
+import java.util.List;
 
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.AppData")
 public interface AppDataProxy extends ValueProxy {

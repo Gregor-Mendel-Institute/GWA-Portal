@@ -1,7 +1,8 @@
 package com.gmi.nordborglab.browser.server.domain.germplasm;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
+import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -12,10 +13,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
-import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
-import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "div_taxonomy", schema = "germplasm")

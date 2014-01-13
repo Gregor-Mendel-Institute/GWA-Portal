@@ -1,24 +1,21 @@
 package com.gmi.nordborglab.browser.server.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.cdv.StudyProtocol;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.google.common.collect.Iterables;
+import org.junit.Test;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class StudyRepositoryTest extends BaseTest {
 
@@ -59,7 +56,7 @@ public class StudyRepositoryTest extends BaseTest {
         List<Study> page = repository.findByPhenotypeId(1L);
         assertNotNull(page);
         /*assertEquals(0,page.getNumber());
-		assertNotNull(page.getContent());
+        assertNotNull(page.getContent());
 		assertEquals(2, page.getContent().size());
 		assertEquals(2,page.getTotalElements());*/
         Study study = page.get(0);

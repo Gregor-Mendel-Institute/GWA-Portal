@@ -1,8 +1,11 @@
 package com.gmi.nordborglab.browser.client.util;
 
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetTermProxy;
+import com.gmi.nordborglab.browser.shared.proxy.LocalityProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multiset;
 import com.google.gwt.core.client.JavaScriptObject;

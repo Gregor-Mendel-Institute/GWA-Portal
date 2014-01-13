@@ -1,8 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-             xmlns:gwtbootstrap="urn:import:com.github.gwtbootstrap.client.ui">
+        >
 
     <ui:style type='com.gmi.nordborglab.browser.client.mvp.view.widgets.FilterPresenterWidgetView.MyStyle'>
         .container {
@@ -32,7 +31,7 @@
             margin: 0 !important;
         }
 
-        .active_items  li {
+        .active_items li {
             display: inline-block;
             padding-left: 20px;
         }

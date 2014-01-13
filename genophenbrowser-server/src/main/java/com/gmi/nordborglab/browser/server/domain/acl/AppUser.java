@@ -8,13 +8,21 @@ import com.gmi.nordborglab.browser.server.validation.PasswordsEqual;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.elasticsearch.common.joda.time.DateTime;
-import org.elasticsearch.common.joda.time.Days;
 import org.hibernate.validator.constraints.Email;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 
 @Entity

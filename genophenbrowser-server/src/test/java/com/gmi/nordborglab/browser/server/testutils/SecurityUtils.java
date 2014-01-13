@@ -1,9 +1,5 @@
 package com.gmi.nordborglab.browser.server.testutils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.security.CustomUser;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -12,6 +8,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 public class SecurityUtils {

@@ -1,8 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.cdv;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -12,10 +11,9 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
-import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
-import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "cdv_source", schema = "cdv")

@@ -1,13 +1,13 @@
 package com.gmi.nordborglab.browser.client.editors;
 
-import com.gmi.nordborglab.browser.shared.proxy.ObsUnitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,13 +27,17 @@ public class OntologyDisplayEditor extends Composite implements Editor<TermProxy
 
     @UiField
     Label name;
-    @Path("termDefinition.termComment") @UiField
+    @Path("termDefinition.termComment")
+    @UiField
     Label comment;
-    @Path("termDefinition.termDefinition") @UiField
+    @Path("termDefinition.termDefinition")
+    @UiField
     Label definition;
 
-    @UiField Label acc;
-    @UiField Label termType;
+    @UiField
+    Label acc;
+    @UiField
+    Label termType;
 
 
     public OntologyDisplayEditor() {

@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.server.domain.pages;
 
-import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

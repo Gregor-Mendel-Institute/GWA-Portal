@@ -1,8 +1,8 @@
 package com.gmi.nordborglab.browser.server.domain.observation;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
+import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -15,10 +15,9 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
-import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
-import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "div_obs_unit", schema = "observation")

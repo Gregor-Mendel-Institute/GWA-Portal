@@ -6,18 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Nullable;
+
 import javax.validation.ConstraintViolation;
 
 import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
-import com.gmi.nordborglab.browser.client.ui.OntologyTermSuggestOracle;
-import com.gmi.nordborglab.browser.shared.proxy.ontology.TermPageProxy;
-import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
-import com.google.common.base.Function;
 import com.google.common.collect.*;
-import com.google.gwt.user.client.ui.SuggestOracle;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
@@ -48,9 +43,8 @@ import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
-import com.gmi.nordborglab.browser.shared.util.ConstEnums.ONTOLOGY_TYPE;
+
 
 public class PhenotypeDetailPresenter
         extends

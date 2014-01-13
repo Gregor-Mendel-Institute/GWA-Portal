@@ -3,7 +3,7 @@
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
              xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
-             xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base">
+        >
 
     <ui:style>
         .header {

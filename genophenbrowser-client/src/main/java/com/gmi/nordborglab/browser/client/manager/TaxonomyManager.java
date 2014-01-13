@@ -1,13 +1,13 @@
 package com.gmi.nordborglab.browser.client.manager;
 
-import java.util.List;
-
 import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TaxonomyStatsProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.TaxonomyRequest;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.shared.Receiver;
+
+import java.util.List;
 
 public class TaxonomyManager extends RequestFactoryManager<TaxonomyRequest> {
 

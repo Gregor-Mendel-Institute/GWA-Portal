@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.observation;
 
-import java.util.Set;
+import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.gmi.nordborglab.browser.server.domain.germplasm.AccessionCollection;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -9,9 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
-import com.gmi.nordborglab.browser.server.domain.germplasm.AccessionCollection;
+import java.util.Set;
 
 @Entity
 @Table(name = "div_locality", schema = "observation")

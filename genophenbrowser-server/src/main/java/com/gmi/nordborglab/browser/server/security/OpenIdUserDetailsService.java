@@ -1,13 +1,10 @@
 package com.gmi.nordborglab.browser.server.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-
 import com.gmi.nordborglab.browser.server.domain.acl.AclSid;
+import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
+import com.gmi.nordborglab.browser.server.domain.acl.Authority;
 import com.gmi.nordborglab.browser.server.repository.AclSidRepository;
+import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,9 +13,10 @@ import org.springframework.security.openid.OpenIDAttribute;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
-import com.gmi.nordborglab.browser.server.domain.acl.Authority;
-import com.gmi.nordborglab.browser.server.repository.UserRepository;
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OpenIdUserDetailsService implements UserDetailsService,
         AuthenticationUserDetailsService<OpenIDAuthenticationToken> {

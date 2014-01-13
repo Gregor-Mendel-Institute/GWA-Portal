@@ -1,10 +1,7 @@
 package com.gmi.nordborglab.browser.client.ui;
 
-import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
-import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestOracle;
-import com.google.inject.Inject;
 
 /**
  * Created with IntelliJ IDEA.

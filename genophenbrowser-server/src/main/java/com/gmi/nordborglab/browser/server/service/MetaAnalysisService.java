@@ -4,8 +4,6 @@ import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.meta.MetaAnalysisTopResultsCriteria;
-import com.gmi.nordborglab.browser.server.domain.meta.MetaSNPAnalysis;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.pages.CandidateGeneListEnrichmentPage;
 import com.gmi.nordborglab.browser.server.domain.pages.CandidateGeneListPage;
 import com.gmi.nordborglab.browser.server.domain.pages.GenePage;
@@ -13,8 +11,6 @@ import com.gmi.nordborglab.browser.server.domain.pages.MetaSNPAnalysisPage;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichment;
 import com.gmi.nordborglab.browser.shared.dto.FilterItem;
-import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import org.springframework.security.access.prepost.PreAuthorize;
 

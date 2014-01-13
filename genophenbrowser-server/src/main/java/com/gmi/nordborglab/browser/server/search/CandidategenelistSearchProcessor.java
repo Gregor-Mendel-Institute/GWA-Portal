@@ -5,7 +5,6 @@ import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;

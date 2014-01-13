@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.mvp.view.genotype.genome;
 
 import com.gmi.nordborglab.browser.client.mvp.handlers.GenomeBrowserUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.genotype.genome.GenomeBrowserPresenter;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;

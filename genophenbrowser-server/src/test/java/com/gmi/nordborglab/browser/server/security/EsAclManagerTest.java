@@ -1,7 +1,5 @@
 package com.gmi.nordborglab.browser.server.security;
 
-import com.gmi.nordborglab.browser.server.domain.acl.AclSid;
-import com.gmi.nordborglab.browser.server.repository.AclSidRepository;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
 import com.google.common.collect.Lists;
@@ -13,7 +11,6 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

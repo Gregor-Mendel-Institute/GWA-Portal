@@ -1,26 +1,19 @@
 package com.gmi.nordborglab.browser.server.errai;
 
-import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
-import com.gmi.nordborglab.browser.server.service.UserService;
-import com.gmi.nordborglab.browser.server.util.AppContextManager;
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
-import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
-import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.MessageCallback;
 import org.jboss.errai.bus.client.api.QueueSession;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.bus.client.framework.RequestDispatcher;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jboss.errai.bus.server.util.ServerBusTools;
 import org.jboss.errai.common.client.protocols.MessageParts;
 import org.jboss.errai.common.client.protocols.Resources;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -35,7 +28,7 @@ import java.util.List;
 @Service
 public class ClientComService implements MessageCallback {
 
-    private static Multimap<String,String> session2UserMap = ArrayListMultimap.create();
+    private static Multimap<String, String> session2UserMap = ArrayListMultimap.create();
 
     private static RequestDispatcher dispatcher;
 
@@ -49,14 +42,14 @@ public class ClientComService implements MessageCallback {
         String username = SecurityUtil.getUsername();
         QueueSession sess = message.getResource(QueueSession.class, Resources.Session.name());
         String sessionId = sess.getSessionId();
-        session2UserMap.put(username,sessionId);
+        session2UserMap.put(username, sessionId);
     }
 
-    public static void pushBroadcastNotification(String... usernames)   {
-        try  {
+    public static void pushBroadcastNotification(String... usernames) {
+        try {
             List<String> sessionIds = Lists.newArrayList();
             if (usernames != null && usernames.length > 0) {
-                for (int i =0;i<usernames.length;i++) {
+                for (int i = 0; i < usernames.length; i++) {
                     if (!session2UserMap.containsKey(usernames[i])) {
                         sessionIds.addAll(session2UserMap.get(usernames[i]));
                     }
@@ -67,39 +60,36 @@ public class ClientComService implements MessageCallback {
                         .signalling()
                         .noErrorHandling()
                         .sendNowWith(dispatcher);
-            }
-            else  {
-                for (String sessionId:sessionIds) {
+            } else {
+                for (String sessionId : sessionIds) {
                     try {
                         MessageBuilder.createMessage("BroadcastReceiver")
                                 .signalling()
-                                .with(MessageParts.SessionID,sessionId)
+                                .with(MessageParts.SessionID, sessionId)
                                 .noErrorHandling()
                                 .sendNowWith(dispatcher);
+                    } catch (Exception e) {
                     }
-                    catch (Exception e) {}
                 }
             }
 
-        }
-        catch (Exception e ){
+        } catch (Exception e) {
         }
     }
 
-    public static void pushUserNotification(String username,String subject,String type,Long id) {
+    public static void pushUserNotification(String username, String subject, String type, Long id) {
         if (username != null && !username.isEmpty()) {
             if (!session2UserMap.containsKey(username))
                 return;
         }
-        try  {
+        try {
             MessageBuilder.createMessage(subject)
                     .signalling()
-                    .with("type",type)
-                    .with("id",id)
+                    .with("type", type)
+                    .with("id", id)
                     .noErrorHandling()
                     .sendNowWith(dispatcher);
-        }
-        catch (Exception e ){
+        } catch (Exception e) {
         }
     }
 

@@ -1,14 +1,13 @@
 package com.gmi.nordborglab.browser.server.domain.pages;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExperimentPage extends PageImpl<Experiment> {
 

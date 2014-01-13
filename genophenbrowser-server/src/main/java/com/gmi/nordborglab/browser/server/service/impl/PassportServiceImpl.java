@@ -1,32 +1,12 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
-import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.accNameContains;
-import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.accNumberContains;
-import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.alleleAssayIdsEqual;
-import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.collectorContains;
-import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.countriesIn;
-import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.passportIdEqual;
-import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.sampStatIdEqual;
-import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.sourceContains;
-import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.taxonomyIdEqual;
-
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.gmi.nordborglab.browser.server.domain.PassportSearchCriteria;
-import com.gmi.nordborglab.browser.server.domain.stats.PassportStats;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
 import com.gmi.nordborglab.browser.server.domain.pages.PassportPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
 import com.gmi.nordborglab.browser.server.domain.phenotype.UnitOfMeasure;
+import com.gmi.nordborglab.browser.server.domain.stats.PassportStats;
 import com.gmi.nordborglab.browser.server.repository.PassportRepository;
 import com.gmi.nordborglab.browser.server.repository.StockRepository;
 import com.gmi.nordborglab.browser.server.service.PassportService;
@@ -36,6 +16,24 @@ import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.datatable.value.ValueType;
 import com.google.visualization.datasource.render.JsonRenderer;
 import com.mysema.query.BooleanBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.accNameContains;
+import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.accNumberContains;
+import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.alleleAssayIdsEqual;
+import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.collectorContains;
+import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.countriesIn;
+import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.passportIdEqual;
+import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.sampStatIdEqual;
+import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.sourceContains;
+import static com.gmi.nordborglab.browser.server.domain.specifications.PassportPredicates.taxonomyIdEqual;
 
 @Service
 @Transactional(readOnly = true)

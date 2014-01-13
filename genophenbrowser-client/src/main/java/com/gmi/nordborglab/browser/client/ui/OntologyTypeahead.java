@@ -3,10 +3,7 @@ package com.gmi.nordborglab.browser.client.ui;
 import com.github.gwtbootstrap.client.ui.Typeahead;
 import com.github.gwtbootstrap.client.ui.base.TextBoxBase;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
-import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.client.EditorDelegate;
 import com.google.gwt.editor.client.LeafValueEditor;
-import com.google.gwt.editor.client.ValueAwareEditor;
 import com.google.gwt.user.client.ui.SuggestOracle;
 
 /**

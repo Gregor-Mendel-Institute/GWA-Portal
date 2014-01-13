@@ -1,5 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+        >
     <ui:with field="link" type="com.google.gwt.safehtml.shared.SafeUri"/>
     <ui:with field="icon" type="java.lang.String"/>
     <ui:with field="iconClass" type="java.lang.String"/>

@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentListDataGridColumns;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;

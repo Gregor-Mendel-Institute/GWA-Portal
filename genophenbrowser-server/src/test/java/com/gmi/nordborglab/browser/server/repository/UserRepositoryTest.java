@@ -1,21 +1,19 @@
 package com.gmi.nordborglab.browser.server.repository;
 
-import static org.junit.Assert.assertEquals;
-import static com.gmi.nordborglab.browser.server.domain.specifications.AppUserSpecifications.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
+import com.gmi.nordborglab.browser.server.domain.acl.Authority;
+import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import org.junit.Test;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.junit.Test;
-
-import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
-import com.gmi.nordborglab.browser.server.domain.acl.Authority;
-import com.gmi.nordborglab.browser.server.domain.specifications.AppUserSpecifications;
-import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import static com.gmi.nordborglab.browser.server.domain.specifications.AppUserSpecifications.firstNameIsLike;
+import static com.gmi.nordborglab.browser.server.domain.specifications.AppUserSpecifications.lastNameIsLike;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 
 public class UserRepositoryTest extends BaseTest {

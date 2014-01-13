@@ -1,6 +1,19 @@
 package com.gmi.nordborglab.browser.shared.service;
 
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FilterItemProxy;
+import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
+import com.gmi.nordborglab.browser.shared.proxy.GenePageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisTopResultsCriteriaProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.web.bindery.requestfactory.shared.ExtraTypes;

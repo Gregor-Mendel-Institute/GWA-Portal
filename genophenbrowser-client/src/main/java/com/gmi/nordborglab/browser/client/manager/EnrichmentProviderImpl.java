@@ -10,7 +10,6 @@ import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 
 import java.util.List;

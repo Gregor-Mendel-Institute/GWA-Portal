@@ -1,11 +1,10 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import java.util.List;
-
+import com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy;
+import com.gmi.nordborglab.browser.server.domain.stats.TaxonomyStats;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import com.gmi.nordborglab.browser.server.domain.stats.TaxonomyStats;
-import com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy;
+import java.util.List;
 
 public interface TaxonomyService {
 

@@ -1,17 +1,13 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import com.gmi.nordborglab.browser.server.domain.Notifcation;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.pages.AppUserPage;
 import com.gmi.nordborglab.browser.server.domain.pages.ExperimentPage;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
 import com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage;
-import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.form.Registration;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import org.springframework.security.access.prepost.PreAuthorize;
-
-import java.util.List;
 
 public interface UserService {
 
