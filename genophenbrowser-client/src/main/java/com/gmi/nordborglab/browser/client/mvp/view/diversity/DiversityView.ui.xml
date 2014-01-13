@@ -9,7 +9,7 @@
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
 
-    <ui:with type="com.gmi.nordborglab.browser.client.NameTokens"
+    <ui:with type="com.gmi.nordborglab.browser.client.place.NameTokens"
              field="nameTokens"></ui:with>
     <ui:style
             type="com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView.MyStyle">

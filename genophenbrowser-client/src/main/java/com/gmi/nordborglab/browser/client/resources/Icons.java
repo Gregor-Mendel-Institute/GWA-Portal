@@ -1,4 +1,4 @@
-package com.gmi.nordborglab.browser.client;
+package com.gmi.nordborglab.browser.client.resources;
 
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.common.collect.ImmutableMap;

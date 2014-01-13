@@ -1,28 +1,28 @@
-package com.gmi.nordborglab.browser.client;
+package com.gmi.nordborglab.browser.client.security;
 
-import javax.annotation.Nullable;
-
-import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadStudyEvent;
 import com.gmi.nordborglab.browser.client.events.LoadUserNotificationEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
-import com.gmi.nordborglab.browser.client.util.Base64Encoder;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AppDataProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AuthorityProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
-import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.MessageCallback;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.bus.client.framework.MessageBus;
 import org.jboss.errai.bus.client.framework.RequestDispatcher;
 
+import javax.annotation.Nullable;
 import java.util.Date;
-import java.util.List;
 
 
 public class CurrentUser {

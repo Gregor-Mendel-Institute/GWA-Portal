@@ -1,14 +1,18 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
 import com.gmi.nordborglab.browser.client.dto.MyFactory;
+import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PhenotypeUploadedEvent;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeUploadWizardView;
-import com.gmi.nordborglab.browser.shared.proxy.*;
-import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeUploadWizardUiHandlers;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeUploadWizardView;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadValueProxy;
+import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.gmi.nordborglab.browser.shared.service.PhenotypeRequest;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
