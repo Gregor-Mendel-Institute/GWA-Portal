@@ -1,47 +1,47 @@
-package com.gmi.nordborglab.browser.client;
+package com.gmi.nordborglab.browser.client.place;
 
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.common.collect.ImmutableMap;
 
 public class NameTokens {
 
-    public static final String home = "!home";
-    public static final String experiments = "!studies";
-    public static final String experiment = "!study/{id}/overview";
-    public static final String phenotypes = "!study/{id}/phenotypes";
-    public static final String phenotype = "!phenotype/{id}/overview";
-    public static final String obsunit = "!phenotype/{id}/obsunits";
-    public static final String studylist = "!phenotype/{id}/analysislist";
-    public static final String study = "!analysis/{id}/overview";
-    public static final String studygwas = "!analysis/{id}/studygwas";
-    public static final String experimentPermission = "!experiment/{id}/permission";
-    public static final String studywizard = "!phenotype/{id}/analysiswizard";
-    public static final String taxonomies = "!taxonomies";
-    public static final String taxonomy = "!taxonomy/{id}/overview";
-    public static final String passports = "!taxonomy/{id}/passports";
-    public static final String passport = "!passport/{id}/overview";
-    public static final String stock = "!stock/{id}/overview";
-    public static final String phenotypeoverview = "!phenotypes";
-    public static final String studyoverview = "!analysisoverview";
+    public static final String home = "/home";
+    public static final String experiments = "/studies";
+    public static final String experiment = "/study/{id}/overview";
+    public static final String phenotypes = "/study/{id}/phenotypes";
+    public static final String phenotype = "/phenotype/{id}/overview";
+    public static final String obsunit = "/phenotype/{id}/obsunits";
+    public static final String studylist = "/phenotype/{id}/analysislist";
+    public static final String study = "/analysis/{id}/overview";
+    public static final String studygwas = "/analysis/{id}/studygwas";
+    public static final String experimentPermission = "/experiment/{id}/permission";
+    public static final String studywizard = "/phenotype/{id}/analysiswizard";
+    public static final String taxonomies = "/taxonomies";
+    public static final String taxonomy = "/taxonomy/{id}/overview";
+    public static final String passports = "/taxonomy/{id}/passports";
+    public static final String passport = "/passport/{id}/overview";
+    public static final String stock = "/stock/{id}/overview";
+    public static final String phenotypeoverview = "/phenotypes";
+    public static final String studyoverview = "/analysisoverview";
     //TODO can't use {id} because of updateHistoryToken causes exception
-    public static final String traitontology = "!ontology/{ontology}";
-    public static final String gwasViewer = "!gwasViewer";
-    public static final String basicstudywizard = "!analysiswizard";
-    public static final String publications = "!publications";
-    public static final String publication = "!publication/{id}/overview";
-    public static final String metaAnalysisGenes = "!meta/genes";
-    public static final String metaAnalysisTopResults = "!meta/topresults";
-    public static final String dashboard = "!dashboard";
-    public static final String news = "!news/{id}";
-    public static final String genomebrowser = "!genotype/genomebrowser";
-    public static final String candidateGeneList = "!meta/candidategenelists";
-    public static final String candidateGeneListDetail = "!meta/candidategenelist/{id}";
-    public static final String profile = "!profile/{id}";
-    public static final String account = "!account";
-    public static final String userlist = "!users";
-    public static final String experimentsEnrichments = "!study/{id}/enrichments";
-    public static final String phenotypeEnrichments = "!phenotype/{id}/enrichments";
-    public static final String studyEnrichments = "!analysis/{id}/enrichments";
+    public static final String traitontology = "/ontology/{ontology}";
+    public static final String gwasViewer = "/gwasViewer";
+    public static final String basicstudywizard = "/analysiswizard";
+    public static final String publications = "/publications";
+    public static final String publication = "/publication/{id}/overview";
+    public static final String metaAnalysisGenes = "/meta/genes";
+    public static final String metaAnalysisTopResults = "/meta/topresults";
+    public static final String dashboard = "/dashboard";
+    public static final String news = "/news/{id}";
+    public static final String genomebrowser = "/genotype/genomebrowser";
+    public static final String candidateGeneList = "/meta/candidategenelists";
+    public static final String candidateGeneListDetail = "/meta/candidategenelist/{id}";
+    public static final String profile = "/profile/{id}";
+    public static final String account = "/account";
+    public static final String userlist = "/users";
+    public static final String experimentsEnrichments = "/study/{id}/enrichments";
+    public static final String phenotypeEnrichments = "/phenotype/{id}/enrichments";
+    public static final String studyEnrichments = "/analysis/{id}/enrichments";
 
     public static final ImmutableMap<SearchItemProxy.SUB_CATEGORY, String> subCategory2Token = ImmutableMap.<SearchItemProxy.SUB_CATEGORY, String>builder()
             .put(SearchItemProxy.SUB_CATEGORY.STUDY, NameTokens.experiments)

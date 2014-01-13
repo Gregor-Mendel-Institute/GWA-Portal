@@ -1,21 +1,29 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.LabelTypeCell;
 import com.gmi.nordborglab.browser.client.ui.cells.ProgressBarCell;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.google.common.collect.ImmutableMap;
-import com.google.gwt.cell.client.*;
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.CompositeCell;
+import com.google.gwt.cell.client.DateCell;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
-import com.google.gwt.safehtml.shared.*;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.cellview.client.TextColumn;
@@ -29,17 +37,17 @@ public interface StudyListDataGridColumns {
 
     public static class NameColumn extends HyperlinkPlaceManagerColumn<StudyProxy> {
 
-        private final PlaceRequest placeRequest;
+        private final PlaceRequest.Builder placeRequest;
 
 
-        public NameColumn(final PlaceManager placeManager, final PlaceRequest placeRequest) {
+        public NameColumn(final PlaceManager placeManager, final PlaceRequest.Builder placeRequest) {
             super(new HyperlinkCell(), placeManager);
             this.placeRequest = placeRequest;
         }
 
         @Override
         public HyperlinkParam getValue(StudyProxy object) {
-            String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()));
+            String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()).build());
             String name = object.getName();
             return new HyperlinkParam(name, url);
         }
@@ -217,7 +225,7 @@ public interface StudyListDataGridColumns {
     }
 
     public class TitleColumn extends IdentityColumn<StudyProxy> {
-        public TitleColumn(PlaceManager placeManager, PlaceRequest request) {
+        public TitleColumn(PlaceManager placeManager, PlaceRequest.Builder request) {
             super(new TitleCell(request, placeManager));
         }
     }
@@ -234,9 +242,9 @@ public interface StudyListDataGridColumns {
         private static Template templates = GWT.create(Template.class);
 
         private final PlaceManager placeManager;
-        private PlaceRequest placeRequest;
+        private PlaceRequest.Builder placeRequest;
 
-        public TitleCell(PlaceRequest placeRequest, PlaceManager placeManager) {
+        public TitleCell(PlaceRequest.Builder placeRequest, PlaceManager placeManager) {
             super();
             this.placeManager = placeManager;
             this.placeRequest = placeRequest;
@@ -247,7 +255,7 @@ public interface StudyListDataGridColumns {
             if (value == null)
                 return;
             placeRequest.with("id", value.getId().toString());
-            SafeUri link = UriUtils.fromTrustedString("#" + placeManager.buildHistoryToken(placeRequest));
+            SafeUri link = UriUtils.fromTrustedString("#" + placeManager.buildHistoryToken(placeRequest.build()));
             SafeHtml name = SafeHtmlUtils.fromString(value.getName());
             SafeHtmlBuilder builder = new SafeHtmlBuilder();
             builder

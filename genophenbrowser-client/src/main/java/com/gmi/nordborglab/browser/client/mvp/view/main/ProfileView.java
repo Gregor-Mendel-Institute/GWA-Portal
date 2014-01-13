@@ -2,8 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.view.main;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ProfileUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.ProfilePresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentListDataGridColumns;
@@ -12,7 +11,6 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.StudyList
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
-import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
 import com.gmi.nordborglab.browser.shared.proxy.*;
 import com.google.common.collect.Lists;
 import com.google.gwt.cell.client.HasCell;
@@ -110,7 +108,7 @@ public class ProfileView extends ViewWithUiHandlers<ProfileUiHandlers> implement
 
 
     private void initExperimentDataGrid() {
-        experimentDataGrid.addColumn(new ExperimentListDataGridColumns.TitleColumn(placeManager, new ParameterizedPlaceRequest(NameTokens.experiment)), "Name");
+        experimentDataGrid.addColumn(new ExperimentListDataGridColumns.TitleColumn(placeManager, new PlaceRequest.Builder().nameToken(NameTokens.experiment)), "Name");
         experimentDataGrid.addColumn(new ExperimentListDataGridColumns.DesignColumn(), "Design");
         experimentDataGrid.addColumn(new AccessColumn(), "Access");
         experimentDataGrid.setColumnWidth(2, 150, Style.Unit.PX);
@@ -120,7 +118,7 @@ public class ProfileView extends ViewWithUiHandlers<ProfileUiHandlers> implement
         phenotypeDataGrid.setWidth("100%");
         phenotypeDataGrid.setEmptyTableWidget(new Label("No Records found"));
 
-        phenotypeDataGrid.addColumn(new PhenotypeListDataGridColumns.TitleColumn(placeManager, new ParameterizedPlaceRequest(NameTokens.phenotype)), "Name");
+        phenotypeDataGrid.addColumn(new PhenotypeListDataGridColumns.TitleColumn(placeManager, new PlaceRequest.Builder().nameToken(NameTokens.phenotype)), "Name");
 
         phenotypeDataGrid.addColumn(new PhenotypeListDataGridColumns.ExperimentColumn(), "Experiment");
         phenotypeDataGrid.addColumn(
@@ -140,8 +138,7 @@ public class ProfileView extends ViewWithUiHandlers<ProfileUiHandlers> implement
     }
 
     private void initStudyDataGrid() {
-        PlaceRequest request = new ParameterizedPlaceRequest(
-                NameTokens.study);
+        PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.study);
         studyDataGrid.setWidth("100%");
         studyDataGrid.setEmptyTableWidget(new Label("No Records found"));
         studyDataGrid.addColumn(new StudyListDataGridColumns.TitleColumn(placeManager, request), "Name");

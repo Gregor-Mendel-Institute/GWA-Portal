@@ -4,12 +4,10 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
-import com.gmi.nordborglab.browser.client.manager.EnrichmentProviderImpl;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CandidateGeneListEnrichmentUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListEnrichmentPresenterWidget;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentProxy;
@@ -18,7 +16,10 @@ import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
-import com.google.gwt.cell.client.*;
+import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.HasCell;
+import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -26,7 +27,10 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.cellview.client.*;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.cellview.client.IdentityColumn;
+import com.google.gwt.user.cellview.client.TextHeader;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -155,10 +159,8 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
     }
 
     private void addCommonColumns(DataGrid<CandidateGeneListEnrichmentProxy> grid, CandidateGeneListEnrichmentDataGridColumns.CheckBoxFooter checkBoxFooter) {
-        PlaceRequest studyRequest = new ParameterizedPlaceRequest(
-                NameTokens.study);
-        PlaceRequest request = new ParameterizedPlaceRequest(
-                NameTokens.candidateGeneListDetail);
+        PlaceRequest.Builder studyRequest = new PlaceRequest.Builder().nameToken(NameTokens.study);
+        PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.candidateGeneListDetail);
         if (type != EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST) {
             grid.addColumn(new CandidateGeneListEnrichmentDataGridColumns.TitleColumn(placeManager, request), new TextHeader("List"), checkBoxFooter);
         }
@@ -199,8 +201,7 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
     }
 
     private void initRunningGrid() {
-        PlaceRequest request = new ParameterizedPlaceRequest(
-                NameTokens.study);
+        PlaceRequest request = new PlaceRequest.Builder().nameToken(NameTokens.study).build();
         runningDataGrid.setWidth("100%");
         runningDataGrid.setEmptyTableWidget(new Label("No running analyses"));
         addCommonColumns(runningDataGrid, null);
@@ -211,8 +212,7 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
     }
 
     private void initFinishedGrid() {
-        PlaceRequest request = new ParameterizedPlaceRequest(
-                NameTokens.study);
+        PlaceRequest request = new PlaceRequest.Builder().nameToken(NameTokens.study).build();
         finishedDataGrid.setWidth("100%");
         finishedDataGrid.setEmptyTableWidget(new Label("No Records found"));
         addCommonColumns(finishedDataGrid, null);
@@ -253,8 +253,6 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
 
     @UiHandler({"navFinished", "navRunning", "navAvailable"})
     public void onNavClick(ClickEvent e) {
-        if (type != EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST && type != EnrichmentProvider.TYPE.STUDY)
-            return;
         IconAnchor iconAnchor = (IconAnchor) e.getSource();
         getUiHandlers().selectFilter(navLinkMap.inverse().get(iconAnchor.getParent()));
     }

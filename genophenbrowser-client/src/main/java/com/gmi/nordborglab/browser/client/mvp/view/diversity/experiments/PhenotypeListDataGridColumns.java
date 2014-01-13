@@ -1,23 +1,20 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
-import com.github.gwtbootstrap.client.ui.constants.LabelType;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
-import com.gmi.nordborglab.browser.client.ui.cells.LabelTypeCell;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
-import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
-import com.google.common.collect.ImmutableMap;
 import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
-import com.google.gwt.safehtml.shared.*;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.cellview.client.TextColumn;
@@ -28,17 +25,17 @@ public interface PhenotypeListDataGridColumns {
 
     public static class NameColumn extends HyperlinkPlaceManagerColumn<PhenotypeProxy> {
 
-        private final PlaceRequest placeRequest;
+        private final PlaceRequest.Builder placeRequest;
 
 
-        public NameColumn(final PlaceManager placeManager, final PlaceRequest placeRequest) {
+        public NameColumn(final PlaceManager placeManager, final PlaceRequest.Builder placeRequest) {
             super(new HyperlinkCell(), placeManager);
             this.placeRequest = placeRequest;
         }
 
         @Override
         public HyperlinkParam getValue(PhenotypeProxy object) {
-            String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()));
+            String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()).build());
             String name = object.getLocalTraitName();
             return new HyperlinkParam(name, url);
         }
@@ -95,8 +92,8 @@ public interface PhenotypeListDataGridColumns {
     }
 
     public class TitleColumn extends IdentityColumn<PhenotypeProxy> {
-        public TitleColumn(PlaceManager placeManager, ParameterizedPlaceRequest parameterizedPlaceRequest) {
-            super(new TitleCell(parameterizedPlaceRequest, placeManager));
+        public TitleColumn(PlaceManager placeManager, PlaceRequest.Builder requestBuilder) {
+            super(new TitleCell(requestBuilder, placeManager));
         }
     }
 
@@ -112,20 +109,20 @@ public interface PhenotypeListDataGridColumns {
         private static Template templates = GWT.create(Template.class);
 
         private final PlaceManager placeManager;
-        private PlaceRequest placeRequest;
+        private PlaceRequest.Builder requestBuilder;
 
-        public TitleCell(PlaceRequest placeRequest, PlaceManager placeManager) {
+        public TitleCell(PlaceRequest.Builder requestBuilder, PlaceManager placeManager) {
             super();
             this.placeManager = placeManager;
-            this.placeRequest = placeRequest;
+            this.requestBuilder = requestBuilder;
         }
 
         @Override
         public void render(Context context, PhenotypeProxy value, SafeHtmlBuilder sb) {
             if (value == null)
                 return;
-            placeRequest.with("id", value.getId().toString());
-            SafeUri link = UriUtils.fromTrustedString("#" + placeManager.buildHistoryToken(placeRequest));
+            requestBuilder.with("id", value.getId().toString());
+            SafeUri link = UriUtils.fromTrustedString("#" + placeManager.buildHistoryToken(requestBuilder.build()));
             SafeHtml name = SafeHtmlUtils.fromString(value.getLocalTraitName());
             SafeHtmlBuilder builder = new SafeHtmlBuilder();
             builder

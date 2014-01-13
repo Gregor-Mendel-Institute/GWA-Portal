@@ -5,8 +5,8 @@ import java.util.Iterator;
 
 import javax.annotation.Nullable;
 
-import com.gmi.nordborglab.browser.client.Icons;
-import com.gmi.nordborglab.browser.client.NameTokens;
+import com.gmi.nordborglab.browser.client.resources.Icons;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle.SearchSuggestion;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import com.google.common.base.Function;
@@ -14,10 +14,8 @@ import com.google.common.collect.*;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.ParagraphElement;
-import com.google.gwt.dom.client.ParamElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableRowElement;
@@ -163,7 +161,7 @@ public class SearchSuggestDisplay extends SuggestionDisplay {
                 HeadingElement h3 = Document.get().createHElement(3);
                 String categoryText = key.toString();
                 if (NameTokens.subCategory2Token.containsKey(key)) {
-                    categoryText = "<a href=\"/#" + NameTokens.subCategory2Token.get(key) + ";query=" + suggestBox.getText() + "\">" + categoryText + "</a>";
+                    categoryText = "<a href=\"/#" + NameTokens.subCategory2Token.get(key) + "?query=" + suggestBox.getText() + "\">" + categoryText + "</a>";
                 }
                 if (Icons.subCategory2Icon.containsKey(key)) {
                     categoryText = "<i class=\"" + Icons.subCategory2Icon.get(key) + "\" style=\"margin-right:5px;\"></i>" + categoryText;

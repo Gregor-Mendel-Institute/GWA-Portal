@@ -2,16 +2,13 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeOverviewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.PhenotypeListDataGridColumns;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
-import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.OwnerLinkColumn;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
@@ -20,7 +17,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -88,7 +84,7 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
         dataGrid.setWidth("100%");
         dataGrid.setEmptyTableWidget(new Label("No Records found"));
 
-        dataGrid.addColumn(new PhenotypeListDataGridColumns.TitleColumn(placeManager, new ParameterizedPlaceRequest(NameTokens.phenotype)), "Name");
+        dataGrid.addColumn(new PhenotypeListDataGridColumns.TitleColumn(placeManager, new PlaceRequest.Builder().nameToken(NameTokens.phenotype)), "Name");
 
         dataGrid.addColumn(new PhenotypeListDataGridColumns.ExperimentColumn(), "Experiment");
         dataGrid.addColumn(
@@ -131,7 +127,7 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
             String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
             NavLink link = navLinkMap.get(type);
             link.setText(newTitle);
-            PlaceRequest request = PhenotypeOverviewPresenter.place;
+            PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(PhenotypeOverviewPresenter.placeToken);
             if (type != ConstEnums.TABLE_FILTER.ALL) {
                 request = request.with("filter", type.name());
             }
@@ -139,7 +135,7 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
                 request = request.with("query", searchString);
             }
             searchBox.setText(searchString);
-            link.setTargetHistoryToken(placeManager.buildHistoryToken(request));
+            link.setTargetHistoryToken(placeManager.buildHistoryToken(request.build()));
         }
     }
 

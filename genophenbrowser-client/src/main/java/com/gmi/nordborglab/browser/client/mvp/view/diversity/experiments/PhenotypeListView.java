@@ -3,14 +3,12 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeListViewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.PhenotypeListPresenter;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
-import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.OwnerLinkColumn;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
@@ -31,7 +29,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
-import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
@@ -86,12 +83,12 @@ public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListViewUiHan
     }
 
     private void initCellTable() {
-        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.phenotype);
+        PlaceRequest request = new PlaceRequest.Builder().nameToken(NameTokens.phenotype).build();
 
         dataGrid.setWidth("100%");
         dataGrid.setEmptyTableWidget(new Label("No Records found"));
 
-        dataGrid.addColumn(new PhenotypeListDataGridColumns.TitleColumn(placeManager, new ParameterizedPlaceRequest(NameTokens.phenotype)), "Name");
+        dataGrid.addColumn(new PhenotypeListDataGridColumns.TitleColumn(placeManager, new PlaceRequest.Builder().nameToken(NameTokens.phenotype)), "Name");
         dataGrid.addColumn(new PhenotypeListDataGridColumns.TraitOntologyColumn(), "Trait-Ontology");
         dataGrid.addColumn(new PhenotypeListDataGridColumns.EnvironOntologyColumn(), "Env-Ontology");
         dataGrid.addColumn(new PhenotypeListDataGridColumns.ProtocolColumn(), "Protocol");

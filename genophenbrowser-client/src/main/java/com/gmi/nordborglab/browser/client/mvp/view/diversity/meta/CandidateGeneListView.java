@@ -1,22 +1,23 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.meta;
 
-import com.github.gwtbootstrap.client.ui.*;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.ModalFooter;
+import com.github.gwtbootstrap.client.ui.NavLink;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
-import com.gmi.nordborglab.browser.client.editors.CandidateGeneListDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.CandidateGeneListEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CanidateGeneListUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListPresenter;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentListDataGridColumns;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
-import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
@@ -31,7 +32,11 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
-import com.google.gwt.safehtml.shared.*;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -104,9 +109,9 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
         private static Template templates = GWT.create(Template.class);
 
         private final PlaceManager placeManager;
-        private PlaceRequest placeRequest;
+        private PlaceRequest.Builder placeRequest;
 
-        public TitleCell(PlaceRequest placeRequest, PlaceManager placeManager) {
+        public TitleCell(PlaceRequest.Builder placeRequest, PlaceManager placeManager) {
             super();
             this.placeManager = placeManager;
             this.placeRequest = placeRequest;
@@ -117,7 +122,7 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
             if (value == null)
                 return;
             placeRequest.with("id", value.getId().toString());
-            SafeUri link = UriUtils.fromTrustedString("#" + placeManager.buildHistoryToken(placeRequest));
+            SafeUri link = UriUtils.fromTrustedString("#" + placeManager.buildHistoryToken(placeRequest.build()));
             SafeHtml name = SafeHtmlUtils.fromString(value.getName());
             SafeHtmlBuilder builder = new SafeHtmlBuilder();
             builder
@@ -170,7 +175,7 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
     }
 
     private void initCellTable() {
-        final ParameterizedPlaceRequest request = new ParameterizedPlaceRequest(NameTokens.candidateGeneListDetail);
+        final PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.candidateGeneListDetail);
         dataGrid.addColumn(new IdentityColumn<CandidateGeneListProxy>(new TitleCell(request, placeManager)) {
 
         }, "Name");
@@ -226,7 +231,7 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
             String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
             NavLink link = navLinkMap.get(type);
             link.setText(newTitle);
-            PlaceRequest request = CandidateGeneListPresenter.place;
+            PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(CandidateGeneListPresenter.placeToken);
             if (type != ConstEnums.TABLE_FILTER.ALL) {
                 request = request.with("filter", type.name());
             }
@@ -234,7 +239,7 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
                 request = request.with("query", searchString);
             }
             searchBox.setText(searchString);
-            link.setTargetHistoryToken(placeManager.buildHistoryToken(request));
+            link.setTargetHistoryToken(placeManager.buildHistoryToken(request.build()));
         }
     }
 

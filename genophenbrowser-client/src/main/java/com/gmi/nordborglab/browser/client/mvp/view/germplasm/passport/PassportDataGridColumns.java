@@ -8,25 +8,17 @@ import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.client.util.SearchTerm;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.text.shared.SafeHtmlRenderer;
 import com.google.gwt.user.cellview.client.Column;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 
-import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Set;
 
 public interface PassportDataGridColumns {
@@ -43,16 +35,16 @@ public interface PassportDataGridColumns {
 
     public static class IdColumn extends HyperlinkPlaceManagerColumn<PassportProxy> {
 
-        private final PlaceRequest placeRequest;
+        private final PlaceRequest.Builder placeRequest;
 
-        public IdColumn(final PlaceManager placeManager, final PlaceRequest placeRequest) {
+        public IdColumn(final PlaceManager placeManager, final PlaceRequest.Builder placeRequest) {
             super(new HyperlinkCell(), placeManager);
             this.placeRequest = placeRequest;
         }
 
         @Override
         public HyperlinkParam getValue(PassportProxy object) {
-            String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()));
+            String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()).build());
             String name = object.getId().toString();
             return new HyperlinkParam(name, url);
         }

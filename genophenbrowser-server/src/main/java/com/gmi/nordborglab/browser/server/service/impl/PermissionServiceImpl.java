@@ -267,19 +267,19 @@ public class PermissionServiceImpl implements PermissionService {
                     String objName = "";
 
                     if (entity instanceof Experiment) {
-                        link = "#!study/" + entity.getId() + "/overview";
+                        link = "/#/study/" + entity.getId() + "/overview";
                         objType = "study";
                         objName = ((Experiment) entity).getName();
                     } else if (entity instanceof GWASResult) {
-                        link = "#!gwasViewer;id=" + entity.getId();
+                        link = "/#/gwasViewer;id=" + entity.getId();
                         objType = "GWAS-result";
                         objName = ((GWASResult) entity).getName();
                     } else if (entity instanceof CandidateGeneList) {
-                        link = "#!meta/candidategenelist/" + entity.getId();
+                        link = "/#/meta/candidategenelist/" + entity.getId();
                         objType = "candidategenelist";
                         objName = ((CandidateGeneList) entity).getName();
                     }
-                    String notificationText = userIcon + " <span><a href=\"#!profile/" + owner.getId().toString() + "\">%s</a> shared a <a href=\"%s\">%s (%s)</a> with you</span>";
+                    String notificationText = userIcon + " <span><a href=\"/#/profile/" + owner.getId().toString() + "\">%s</a> shared a <a href=\"%s\">%s (%s)</a> with you</span>";
                     notification.setText(String.format(notificationText, owner.getFirstname() + " " + owner.getLastname(), link, objType, objName));
                     notifications.add(notification);
                 }
