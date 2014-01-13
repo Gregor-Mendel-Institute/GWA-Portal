@@ -188,6 +188,9 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
 
     @Override
     public void selectFilter(ConstEnums.ENRICHMENT_FILTER filter) {
+        if (filter == ConstEnums.ENRICHMENT_FILTER.AVAILABLE && (dataProvider.getViewType() != EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST && dataProvider.getViewType() != EnrichmentProvider.TYPE.STUDY)) {
+            return;
+        }
         if (filter != currentFilter) {
             currentFilter = filter;
             refreshView();
