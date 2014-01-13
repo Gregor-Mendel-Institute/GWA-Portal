@@ -18,22 +18,17 @@ public class TransformationCardPanel extends ResizeComposite implements HasWidge
     protected SimpleLayoutPanel panel;
 
     public TransformationCardPanel() {
-        panel  = new SimpleLayoutPanel();
+        panel = new SimpleLayoutPanel();
         initWidget(panel);
     }
 
     @Override
-    public void setWidget(Widget w) {
-        super.setWidget(w);
-    }
-
-    @Override
     public void onResize() {
-       ((TransformationCard)panel.getWidget()).onResize();
+        ((TransformationCard) panel.getWidget()).onResize();
     }
 
     @Override
-    public Widget getWidget()  {
+    public Widget getWidget() {
         return panel;
     }
 
