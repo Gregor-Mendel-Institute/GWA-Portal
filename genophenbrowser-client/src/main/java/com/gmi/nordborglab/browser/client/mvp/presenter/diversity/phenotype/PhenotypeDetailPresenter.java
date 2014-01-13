@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
 
 import com.gmi.nordborglab.browser.client.manager.OntologyManager;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.ui.OntologyTermSuggestOracle;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
@@ -18,9 +20,6 @@ import com.google.common.collect.*;
 import com.google.gwt.user.client.ui.SuggestOracle;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.HasUiHandlers;
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadPhenotypeEvent;
@@ -116,7 +115,7 @@ public class PhenotypeDetailPresenter
                                     final MyProxy proxy, final PlaceManager placeManager,
                                     final PhenotypeManager phenotypeManager,
                                     final CurrentUser currentUser, final OntologyManager ontologyManager) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, PhenotypeDetailTabPresenter.TYPE_SetTabContent);
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
         this.ontologyManager = ontologyManager;
@@ -148,11 +147,6 @@ public class PhenotypeDetailPresenter
         };
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this,
-                PhenotypeDetailTabPresenter.TYPE_SetTabContent, this);
-    }
 
     @Override
     protected void onBind() {
@@ -199,7 +193,7 @@ public class PhenotypeDetailPresenter
                 statisticTypes = null;
                 fireEvent(new LoadingIndicatorEvent(false));
                 getProxy().manualRevealFailed();
-                placeManager.revealPlace(new PlaceRequest(NameTokens.experiments));
+                placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.experiments).build());
             }
         };
         try {
@@ -216,7 +210,7 @@ public class PhenotypeDetailPresenter
             }
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new PlaceRequest(NameTokens.experiments));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.experiments).build());
         }
     }
 
@@ -258,7 +252,7 @@ public class PhenotypeDetailPresenter
                 fireEvent(new LoadingIndicatorEvent(false));
                 PlaceRequest request = null;
                 if (placeManager.getHierarchyDepth() <= 1) {
-                    request = new ParameterizedPlaceRequest(NameTokens.studyoverview);
+                    request = new PlaceRequest.Builder().nameToken(NameTokens.studyoverview).build();
                 } else {
                     request = placeManager.getCurrentPlaceHierarchy().get(placeManager.getHierarchyDepth() - 2);
                 }
@@ -315,7 +309,10 @@ public class PhenotypeDetailPresenter
             isRefresh = true;
         }
         phenotype = event.getPhenotype();
-        PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id", phenotype.getId().toString());
+        PlaceRequest request = new PlaceRequest.Builder()
+                .nameToken(getProxy().getNameToken())
+                .with("id", phenotype.getId().toString())
+                .build();
         String historyToken = placeManager.buildHistoryToken(request);
         TabData tabData = getProxy().getTabData();
         getProxy().changeTab(new TabDataDynamic(tabData.getLabel(), tabData.getPriority(), historyToken));

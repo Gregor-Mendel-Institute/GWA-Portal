@@ -1,9 +1,9 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity;
 
 import com.gmi.nordborglab.browser.client.mvp.presenter.CandidateGeneListEnrichmentPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentCandidateGeneListEnrichmentPresenter;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -39,7 +39,7 @@ public class CandidateGeneListEnrichmentView extends ViewImpl implements Candida
     }
 
     @Override
-    public void setInSlot(Object slot, Widget content) {
+    public void setInSlot(Object slot, IsWidget content) {
         if (slot == CandidateGeneListEnrichmentPresenter.TYPE_SetCandidateGeneListEnrichment) {
             container.setWidget(content);
         } else {

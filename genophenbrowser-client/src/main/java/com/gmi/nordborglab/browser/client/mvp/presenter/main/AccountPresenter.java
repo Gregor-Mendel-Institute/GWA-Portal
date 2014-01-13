@@ -1,21 +1,17 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.main;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.IsLoggedInGatekeeper;
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.UserChangeEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.AccountUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.view.main.AccountView;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.client.security.IsLoggedInGatekeeper;
 import com.gmi.nordborglab.browser.client.validation.ClientValidation;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.UserRequest;
-import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -30,9 +26,9 @@ import com.gwtplatform.mvp.client.annotations.UseGatekeeper;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
 import javax.validation.ConstraintViolation;
+import java.util.Set;
 
 public class AccountPresenter extends Presenter<AccountPresenter.MyView, AccountPresenter.MyProxy> implements AccountUiHandlers {
 
@@ -93,7 +89,7 @@ public class AccountPresenter extends Presenter<AccountPresenter.MyView, Account
                             final CurrentUser currentUser, final PlaceManager placeManager,
                             final CustomRequestFactory rf,
                             final ClientValidation validation) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, MainPagePresenter.TYPE_SetMainContent);
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
         this.validation = validation;
@@ -155,19 +151,13 @@ public class AccountPresenter extends Presenter<AccountPresenter.MyView, Account
         setActiveAvatar();
     }
 
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, MainPagePresenter.TYPE_SetMainContent, this);
-    }
-
     @Override
     public void prepareFromRequest(PlaceRequest placeRequest) {
         super.prepareFromRequest(placeRequest);
         // Check if user is logged in
         if (!currentUser.isLoggedIn()) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new PlaceRequest(NameTokens.home));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.home).build());
         }
         try {
             Long userId = Long.valueOf(placeRequest.getParameter("id",
@@ -176,7 +166,7 @@ public class AccountPresenter extends Presenter<AccountPresenter.MyView, Account
             if (userId != null && !currentUser.getAppUser().getId().equals(userId) && !currentUser.isAdmin()) {
                 appUser = null;
                 getProxy().manualRevealFailed();
-                placeManager.revealPlace(new PlaceRequest(NameTokens.account));
+                placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.account).build());
                 return;
             }
             Long userIdToLoad = mustReload(userId);
@@ -195,7 +185,7 @@ public class AccountPresenter extends Presenter<AccountPresenter.MyView, Account
             }
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new PlaceRequest(NameTokens.home));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.home).build());
         }
     }
 

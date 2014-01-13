@@ -6,8 +6,7 @@ import com.github.gwtbootstrap.client.ui.AccordionGroup;
 import com.github.gwtbootstrap.client.ui.base.DivWidget;
 import com.github.gwtbootstrap.client.ui.base.ListItem;
 import com.github.gwtbootstrap.client.ui.base.UnorderedList;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.google.common.collect.ImmutableMap;
 import com.google.gwt.resources.client.CssResource;
@@ -90,9 +89,9 @@ public class DiversityView extends ViewImpl implements
                 .put(MENU_ITEM.TOOLS, toolsAccGroup)
                 .put(MENU_ITEM.META_ANALYSIS, metaAnalysisAccGroup)
                 .build();
-        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.traitontology);
-        traitOntologyLink.setTargetHistoryToken(placeManager.buildHistoryToken(request.with("ontology", "trait")));
-        environOntologyLink.setTargetHistoryToken(placeManager.buildHistoryToken(request.with("ontology", "environment")));
+        PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.traitontology);
+        traitOntologyLink.setTargetHistoryToken(placeManager.buildHistoryToken(request.with("ontology", "trait").build()));
+        environOntologyLink.setTargetHistoryToken(placeManager.buildHistoryToken(request.with("ontology", "environment").build()));
     }
 
     @Override
@@ -101,7 +100,7 @@ public class DiversityView extends ViewImpl implements
     }
 
     @Override
-    public void setInSlot(Object slot, Widget content) {
+    public void setInSlot(Object slot, IsWidget content) {
         if (slot == DiversityPresenter.TYPE_SetMainContent) {
             setMainContent(content);
         } else if (slot == DiversityPresenter.TYPE_SearchPresenterContent) {
@@ -115,7 +114,7 @@ public class DiversityView extends ViewImpl implements
         }
     }
 
-    private void setMainContent(Widget content) {
+    private void setMainContent(IsWidget content) {
         if (content != null) {
             container.setWidget(content);
         }

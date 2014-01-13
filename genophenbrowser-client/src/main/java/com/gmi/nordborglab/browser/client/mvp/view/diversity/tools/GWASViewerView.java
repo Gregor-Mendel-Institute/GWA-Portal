@@ -4,12 +4,12 @@ import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.TabLink;
 import com.github.gwtbootstrap.client.ui.TabPanel;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.editors.GWASResultEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASViewerUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASViewerPresenter;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
 import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
@@ -18,7 +18,13 @@ import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
 import com.google.common.collect.Lists;
-import com.google.gwt.cell.client.*;
+import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.CompositeCell;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
+import com.google.gwt.cell.client.NumberCell;
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -28,6 +34,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -169,11 +176,11 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
 
     private void initDataGridColumns() {
         NumberFormat format = NumberFormat.getFormat(NumberFormat.getDecimalFormat().getPattern()).overrideFractionDigits(0);
-        final PlaceRequest request = new PlaceRequest(NameTokens.gwasViewer);
+        final PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.gwasViewer);
         gwasResultDataGrid.addColumn(new HyperlinkPlaceManagerColumn<GWASResultProxy>(new HyperlinkCell(), placeManager) {
             @Override
             public HyperlinkPlaceManagerColumn.HyperlinkParam getValue(GWASResultProxy object) {
-                String url = "#" + placeManager.buildHistoryToken(request.with("id", object.getId().toString()));
+                String url = "#" + placeManager.buildHistoryToken(request.with("id", object.getId().toString()).build());
                 return new HyperlinkPlaceManagerColumn.HyperlinkParam(object.getId().toString(), url);
             }
         }, "ID");
@@ -252,7 +259,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     }
 
     @Override
-    public void setInSlot(Object slot, Widget content) {
+    public void setInSlot(Object slot, IsWidget content) {
         if (slot == GWASViewerPresenter.TYPE_SetGWASUploadContent) {
             gwasUploadPanel.setWidget(content);
         } else if (slot == GWASViewerPresenter.TYPE_SetGWASPLOTContent) {

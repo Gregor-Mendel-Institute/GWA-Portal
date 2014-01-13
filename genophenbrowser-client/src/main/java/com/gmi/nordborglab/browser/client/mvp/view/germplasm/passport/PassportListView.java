@@ -1,37 +1,24 @@
 package com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport;
 
 
-import java.util.List;
-import java.util.Set;
-
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PassportListViewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportListPresenter.PassportProxyFilter;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.AccNameColumn;
-import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.AccNumberColumn;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.AlleleAssayColumn;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.CollDateColumn;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.CollectorColumn;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.CountryColumn;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.IdColumn;
-import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.SourceColumn;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport.PassportDataGridColumns.TypeColumn;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
-import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.LocalityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SampStatProxy;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.dom.client.Style.VerticalAlign;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.maps.client.MapOptions;
 import com.google.gwt.maps.client.MapTypeId;
 import com.google.gwt.maps.client.MapWidget;
@@ -44,10 +31,13 @@ import com.google.gwt.maps.client.overlays.InfoWindowOptions;
 import com.google.gwt.maps.client.overlays.Marker;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -57,9 +47,6 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
-import com.watopi.chosen.client.event.ChosenChangeEvent;
-import com.watopi.chosen.client.event.ChosenChangeEvent.ChosenChangeHandler;
-import com.watopi.chosen.client.gwt.ChosenListBox;
 
 public class PassportListView extends ViewWithUiHandlers<PassportListViewUiHandlers> implements
         PassportListPresenter.MyView {
@@ -136,7 +123,7 @@ public class PassportListView extends ViewWithUiHandlers<PassportListViewUiHandl
     }
 
     @Override
-    public void setInSlot(Object slot, Widget content) {
+    public void setInSlot(Object slot, IsWidget content) {
         if (slot == PassportListPresenter.TYPE_FilterContent) {
             filterContainer.setWidget(content);
         } else {
@@ -145,7 +132,7 @@ public class PassportListView extends ViewWithUiHandlers<PassportListViewUiHandl
     }
 
     private void initDataGridColumns() {
-        PlaceRequest passportDetailRequest = new ParameterizedPlaceRequest(NameTokens.passport);
+        PlaceRequest.Builder passportDetailRequest = new PlaceRequest.Builder().nameToken(NameTokens.passport);
         IdColumn idColumn = new IdColumn(placeManager, passportDetailRequest);
         passportDataGrid.addColumn(idColumn, "ID");
         passportDataGrid.setColumnWidth(idColumn, 50, Unit.PX);

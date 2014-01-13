@@ -6,11 +6,10 @@ import com.eemi.gwt.tour.client.GwtTour;
 import com.eemi.gwt.tour.client.Tour;
 import com.gmi.nordborglab.browser.client.events.GWASResultLoadedEvent;
 import com.gmi.nordborglab.browser.client.events.OntologyLoadedEvent;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.inject.name.Named;
 import com.gwtplatform.mvp.client.View;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.manager.HelperManager;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.SearchPresenter;
@@ -71,17 +70,13 @@ public class DiversityPresenter extends
     public DiversityPresenter(final EventBus eventBus, final MyView view,
                               final MyProxy proxy, final PlaceManager placeManager,
                               final HelperManager helperManager, final SearchPresenter searchPresenter) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, MainPagePresenter.TYPE_SetMainContent);
         this.searchPresenter = searchPresenter;
         searchPresenter.setCategory(CATEGORY.DIVERSITY);
         this.placeManager = placeManager;
         this.helperManager = helperManager;
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, MainPagePresenter.TYPE_SetMainContent, this);
-    }
 
     @Override
     protected void onBind() {
@@ -92,7 +87,7 @@ public class DiversityPresenter extends
             public void onGWASResultLoaded(GWASResultLoadedEvent event) {
                 if (placeManager.getCurrentPlaceRequest().matchesNameToken(NameTokens.gwasViewer)) {
                     getView().clearBreadcrumbs(1);
-                    getView().setBreadcrumbs(0, "ALL", placeManager.buildHistoryToken(new PlaceRequest(NameTokens.gwasViewer)));
+                    getView().setBreadcrumbs(0, "ALL", placeManager.buildHistoryToken(new PlaceRequest.Builder().nameToken(NameTokens.gwasViewer).build()));
                     getView().setBreadcrumbs(1, event.getGWASResult().getName(), placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest()));
                 }
             }
@@ -103,13 +98,13 @@ public class DiversityPresenter extends
                 if (placeManager.getCurrentPlaceRequest().matchesNameToken(NameTokens.traitontology)) {
                     getView().clearBreadcrumbs(1);
                     TermProxy term = event.getTerm();
-                    PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.traitontology);
+                    PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.traitontology);
                     String subTitle = "Trait";
                     if (term.getTermType().equalsIgnoreCase("plant_trait_ontology")) {
                         request = request.with("ontology", "trait");
                     }
-                    getView().setBreadcrumbs(0, subTitle, placeManager.buildHistoryToken(request));
-                    getView().setBreadcrumbs(1, term.getName() + " (" + term.getAcc() + ")", placeManager.buildHistoryToken(request.with("id", term.getAcc())));
+                    getView().setBreadcrumbs(0, subTitle, placeManager.buildHistoryToken(request.build()));
+                    getView().setBreadcrumbs(1, term.getName() + " (" + term.getAcc() + ")", placeManager.buildHistoryToken(request.with("id", term.getAcc()).build()));
                 }
             }
         }));
@@ -236,7 +231,7 @@ public class DiversityPresenter extends
             public void onSuccess(List<BreadcrumbItemProxy> response) {
                 getView().clearBreadcrumbs(response.size());
                 //TODO publications doen't work this way.
-                getView().setBreadcrumbs(0, "ALL", placeManager.buildHistoryToken(new PlaceRequest(NameTokens.experiments)));
+                getView().setBreadcrumbs(0, "ALL", placeManager.buildHistoryToken(new PlaceRequest.Builder().nameToken(NameTokens.experiments).build()));
                 for (int i = 0; i < response.size(); i++) {
                     BreadcrumbItemProxy item = response.get(i);
                     String nameToken = null;
@@ -252,7 +247,9 @@ public class DiversityPresenter extends
                         nameToken = NameTokens.publication;
                     else if (item.getType().equals("candidategenelist"))
                         nameToken = NameTokens.candidateGeneListDetail;
-                    PlaceRequest request = new ParameterizedPlaceRequest(nameToken).with("id", item.getId().toString());
+                    PlaceRequest request = new PlaceRequest.Builder()
+                            .nameToken(nameToken)
+                            .with("id", item.getId().toString()).build();
                     getView().setBreadcrumbs(i + 1, item.getText(), placeManager.buildHistoryToken(request));
                 }
             }

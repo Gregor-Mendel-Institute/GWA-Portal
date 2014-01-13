@@ -1,13 +1,12 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadExperimentEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeListViewUiHandlers;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypePageProxy;
@@ -31,7 +30,6 @@ import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 import java.util.List;
@@ -75,7 +73,7 @@ public class PhenotypeListPresenter
     public PhenotypeListPresenter(final EventBus eventBus, final MyView view,
                                   final MyProxy proxy, final PhenotypeManager phenotypeManager,
                                   final PlaceManager placeManager) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, ExperimentDetailTabPresenter.TYPE_SetTabContent);
         getView().setUiHandlers(this);
         this.phenotypeManager = phenotypeManager;
         this.placeManager = placeManager;
@@ -117,12 +115,6 @@ public class PhenotypeListPresenter
 
         };
         phenotypeManager.findAll(receiver, experimentId, currentFilter, searchString, range.getStart(), range.getLength());
-    }
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this,
-                ExperimentDetailTabPresenter.TYPE_SetTabContent, this);
     }
 
     @Override
@@ -173,7 +165,9 @@ public class PhenotypeListPresenter
                 @Override
                 public void onFailure(Void reason) {
                     getProxy().manualRevealFailed();
-                    placeManager.revealPlace(new ParameterizedPlaceRequest(NameTokens.experiment).with("id", experimentIdToLoad.toString()));
+                    placeManager.revealPlace(new PlaceRequest.Builder()
+                            .nameToken(NameTokens.experiment)
+                            .with("id", experimentIdToLoad.toString()).build());
                 }
 
                 @Override
@@ -183,7 +177,7 @@ public class PhenotypeListPresenter
             }, getView().getDisplay().getVisibleRange());
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new ParameterizedPlaceRequest(NameTokens.experiments));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.experiments).build());
         }
     }
 
@@ -192,7 +186,9 @@ public class PhenotypeListPresenter
         experiment = event.getExperiment();
         if (!experiment.getId().equals(experimentId))
             phenotypesLoaded = false;
-        PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id", experiment.getId().toString());
+        PlaceRequest request = new PlaceRequest.Builder()
+                .nameToken(getProxy().getNameToken())
+                .with("id", experiment.getId().toString()).build();
         String historyToken = placeManager.buildHistoryToken(request);
         TabData tabData = getProxy().getTabData();
         getProxy().changeTab(new TabDataDynamic("Phenotypes (" + experiment.getNumberOfPhenotypes() + ")", tabData.getPriority(), historyToken));
@@ -207,9 +203,9 @@ public class PhenotypeListPresenter
     public void selectFilter(ConstEnums.TABLE_FILTER filter) {
         if (filter != currentFilter) {
             currentFilter = filter;
-            PlaceRequest request = placeManager.getCurrentPlaceRequest();
+            PlaceRequest.Builder request = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest());
             request.with("filter", filter.toString());
-            placeManager.updateHistory(request, true);
+            placeManager.updateHistory(request.build(), true);
             getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
             getView().setActiveNavLink(currentFilter);
         }

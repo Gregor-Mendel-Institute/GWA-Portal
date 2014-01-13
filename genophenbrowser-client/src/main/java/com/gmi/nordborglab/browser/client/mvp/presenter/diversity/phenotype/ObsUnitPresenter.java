@@ -1,9 +1,8 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype;
 
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.View;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadPhenotypeEvent;
@@ -68,7 +67,7 @@ public class ObsUnitPresenter extends
     public ObsUnitPresenter(final EventBus eventBus, final MyView view,
                             final MyProxy proxy, final PlaceManager placeManager,
                             final PhenotypeManager phenotypeManager, final ObsUnitManager obsUnitManager) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, PhenotypeDetailTabPresenter.TYPE_SetTabContent);
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
         this.phenotypeManager = phenotypeManager;
@@ -82,11 +81,6 @@ public class ObsUnitPresenter extends
         };
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this,
-                PhenotypeDetailTabPresenter.TYPE_SetTabContent, this);
-    }
 
     @Override
     protected void onBind() {
@@ -134,7 +128,9 @@ public class ObsUnitPresenter extends
                 @Override
                 public void onFailure(Void reason) {
                     getProxy().manualRevealFailed();
-                    placeManager.revealPlace(new ParameterizedPlaceRequest(NameTokens.phenotype).with("id", phenotypeIdToLoad.toString()));
+                    placeManager.revealPlace(new PlaceRequest.Builder()
+                            .nameToken(NameTokens.phenotype)
+                            .with("id", phenotypeIdToLoad.toString()).build());
                 }
 
                 @Override
@@ -144,7 +140,7 @@ public class ObsUnitPresenter extends
             }, getView().getDisplay().getVisibleRange());
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new ParameterizedPlaceRequest(NameTokens.experiments));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.experiments).build());
         }
     }
 
@@ -186,7 +182,9 @@ public class ObsUnitPresenter extends
         phenotype = event.getPhenotype();
         if (!phenotype.getId().equals(phenotypeId))
             obsUnitsLoaded = false;
-        PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id", phenotype.getId().toString());
+        PlaceRequest request = new PlaceRequest.Builder()
+                .nameToken(getProxy().getNameToken())
+                .with("id", phenotype.getId().toString()).build();
         String historyToken = placeManager.buildHistoryToken(request);
         TabData tabData = getProxy().getTabData();
         getProxy().changeTab(new TabDataDynamic("Plants (" + phenotype.getNumberOfObsUnits() + ")", tabData.getPriority(), historyToken));
@@ -195,7 +193,7 @@ public class ObsUnitPresenter extends
     @Override
     public void onShowObsUnit(ObsUnitProxy obsUnit) {
         if (obsUnit != null) {
-            PlaceRequest request = placeManager.getCurrentPlaceRequest().with("obsUnitId", obsUnit.getId().toString());
+            PlaceRequest request = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest()).with("obsUnitId", obsUnit.getId().toString()).build();
             placeManager.updateHistory(request, true);
         }
         getView().getDisplayDriver().display(obsUnit);

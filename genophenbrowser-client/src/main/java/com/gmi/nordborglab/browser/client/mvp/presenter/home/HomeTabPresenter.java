@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.home;
 
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.inject.Inject;
@@ -9,9 +8,11 @@ import com.gwtplatform.mvp.client.ChangeTabHandler;
 import com.gwtplatform.mvp.client.RequestTabsHandler;
 import com.gwtplatform.mvp.client.TabContainerPresenter;
 import com.gwtplatform.mvp.client.TabView;
-import com.gwtplatform.mvp.client.annotations.*;
+import com.gwtplatform.mvp.client.annotations.ChangeTab;
+import com.gwtplatform.mvp.client.annotations.ContentSlot;
+import com.gwtplatform.mvp.client.annotations.ProxyStandard;
+import com.gwtplatform.mvp.client.annotations.RequestTabs;
 import com.gwtplatform.mvp.client.proxy.Proxy;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 
 /**
@@ -43,16 +44,6 @@ public class HomeTabPresenter extends TabContainerPresenter<HomeTabPresenter.MyV
     @Inject
     public HomeTabPresenter(final EventBus eventBus, final MyView view,
                             final MyProxy proxy) {
-        super(eventBus, view, proxy, TYPE_SetTabContent, TYPE_RequestTabs, TYPE_ChangeTab);
-    }
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, MainPagePresenter.TYPE_SetMainContent, this);
-    }
-
-    @Override
-    protected void onBind() {
-        super.onBind();
+        super(eventBus, view, proxy, TYPE_SetTabContent, TYPE_RequestTabs, TYPE_ChangeTab, MainPagePresenter.TYPE_SetMainContent);
     }
 }

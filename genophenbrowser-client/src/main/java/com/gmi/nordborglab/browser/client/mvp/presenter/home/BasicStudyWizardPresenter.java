@@ -1,9 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.home;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.IsLoggedInGatekeeper;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PhenotypeUploadedEvent;
@@ -14,15 +10,34 @@ import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.BasicStudyWizardUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.client.security.IsLoggedInGatekeeper;
 import com.gmi.nordborglab.browser.client.util.SearchTerm;
 import com.gmi.nordborglab.browser.client.util.Statistics;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StatisticTypeProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyProtocolProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TransformationProxy;
 import com.gmi.nordborglab.browser.shared.service.CdvRequest;
 import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
-import com.gmi.nordborglab.browser.shared.util.*;
+import com.gmi.nordborglab.browser.shared.util.PhenotypeHistogram;
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.*;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultiset;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
@@ -41,10 +56,18 @@ import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.UseGatekeeper;
-import com.gwtplatform.mvp.client.proxy.*;
+import com.gwtplatform.mvp.client.proxy.PlaceManager;
+import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.client.proxy.ProxyPlace;
+import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -266,7 +289,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                                      final HelperManager helperManager,
                                      final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizard
     ) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, MainPagePresenter.TYPE_SetMainContent);
         this.currentUser = currentUser;
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
@@ -381,16 +404,10 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
 
     @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, MainPagePresenter.TYPE_SetMainContent, this);
-    }
-
-
-    @Override
     public void onCancel() {
         resetState();
-        PlaceRequest request = new ParameterizedPlaceRequest(
-                NameTokens.home);
+        PlaceRequest request = new PlaceRequest.Builder().nameToken(
+                NameTokens.home).build();
         placeManager.revealPlace(request);
     }
 
@@ -584,7 +601,9 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     @Override
                     public void onSuccess(StudyProxy response) {
                         fireEvent(new LoadingIndicatorEvent(false));
-                        PlaceRequest placeRequest = new ParameterizedPlaceRequest(NameTokens.study).with("id", response.getId().toString());
+                        PlaceRequest placeRequest = new PlaceRequest.Builder()
+                                .nameToken(NameTokens.study)
+                                .with("id", response.getId().toString()).build();
                         placeManager.setOnLeaveConfirmation(null);
                         placeManager.revealPlace(placeRequest);
                         resetState();

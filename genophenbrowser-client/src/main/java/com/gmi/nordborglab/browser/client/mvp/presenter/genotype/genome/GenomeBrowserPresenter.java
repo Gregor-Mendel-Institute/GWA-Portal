@@ -1,20 +1,16 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.genotype.genome;
 
-import com.gmi.nordborglab.browser.client.IsLoggedInGatekeeper;
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GenomeBrowserUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
-import com.gwtplatform.mvp.client.annotations.UseGatekeeper;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,13 +34,7 @@ public class GenomeBrowserPresenter extends Presenter<GenomeBrowserPresenter.MyV
 
     @Inject
     public GenomeBrowserPresenter(EventBus eventBus, MyView view, MyProxy proxy) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, MainPagePresenter.TYPE_SetMainContent);
         getView().setUiHandlers(this);
-    }
-
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, MainPagePresenter.TYPE_SetMainContent, this);
     }
 }

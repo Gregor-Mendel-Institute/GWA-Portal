@@ -12,56 +12,34 @@ import com.gwtplatform.mvp.client.annotations.ChangeTab;
 import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.RequestTabs;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.Proxy;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 
 public class ExperimentDetailTabPresenter
-		extends
-		TabContainerPresenter<ExperimentDetailTabPresenter.MyView, ExperimentDetailTabPresenter.MyProxy> {
+        extends
+        TabContainerPresenter<ExperimentDetailTabPresenter.MyView, ExperimentDetailTabPresenter.MyProxy> {
 
-	public interface MyView extends TabView {
-	}
+    public interface MyView extends TabView {
+    }
 
-	@ProxyCodeSplit
-	public interface MyProxy extends Proxy<ExperimentDetailTabPresenter> {
-	}
-	
-	@RequestTabs
-	public static final Type<RequestTabsHandler> TYPE_RequestTabs = new Type<RequestTabsHandler>();
-	
-	@ChangeTab
-	public static final Type<ChangeTabHandler> TYPE_ChangeTab = new Type<ChangeTabHandler>();
+    @ProxyCodeSplit
+    public interface MyProxy extends Proxy<ExperimentDetailTabPresenter> {
+    }
+
+    @RequestTabs
+    public static final Type<RequestTabsHandler> TYPE_RequestTabs = new Type<RequestTabsHandler>();
+
+    @ChangeTab
+    public static final Type<ChangeTabHandler> TYPE_ChangeTab = new Type<ChangeTabHandler>();
 
 
-	@ContentSlot
-	public static final Type<RevealContentHandler<?>> TYPE_SetTabContent = new Type<RevealContentHandler<?>>();
-	
+    @ContentSlot
+    public static final Type<RevealContentHandler<?>> TYPE_SetTabContent = new Type<RevealContentHandler<?>>();
 
-	@Inject
-	public ExperimentDetailTabPresenter(final EventBus eventBus, final MyView view,
-			final MyProxy proxy) {
-		super(eventBus, view, proxy,TYPE_SetTabContent, TYPE_RequestTabs, TYPE_ChangeTab);
-	}
 
-	@Override
-	protected void revealInParent() {
-		RevealContentEvent.fire(this, DiversityPresenter.TYPE_SetMainContent, this);
-	}
-	
-	@Override
-	public void prepareFromRequest(PlaceRequest placeRequest) {
-		super.prepareFromRequest(placeRequest);
-	}
-	
-	@Override
-	protected void onReset() {
-		super.onReset();
-	}
-
-	@Override
-	protected void onBind() {
-		super.onBind();
-	}
+    @Inject
+    public ExperimentDetailTabPresenter(final EventBus eventBus, final MyView view,
+                                        final MyProxy proxy) {
+        super(eventBus, view, proxy, TYPE_SetTabContent, TYPE_RequestTabs, TYPE_ChangeTab, DiversityPresenter.TYPE_SetMainContent);
+    }
 }

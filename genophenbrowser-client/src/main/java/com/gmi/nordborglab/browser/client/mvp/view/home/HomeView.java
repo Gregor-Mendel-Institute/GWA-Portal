@@ -5,9 +5,9 @@ import com.eemi.gwt.tour.client.Tour;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.mvp.handlers.HomeUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.HomePresenter;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.ui.cells.NewsItemCell;
 import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramFacetProxy;
@@ -22,7 +22,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.Cookies;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -33,8 +36,11 @@ import com.googlecode.gwt.charts.client.corechart.LineChart;
 import com.googlecode.gwt.charts.client.corechart.LineChartOptions;
 import com.googlecode.gwt.charts.client.format.DateFormat;
 import com.googlecode.gwt.charts.client.format.DateFormatOptions;
-import com.googlecode.gwt.charts.client.options.*;
-import com.gwtplatform.mvp.client.ViewImpl;
+import com.googlecode.gwt.charts.client.options.Animation;
+import com.googlecode.gwt.charts.client.options.AnimationEasing;
+import com.googlecode.gwt.charts.client.options.CurveType;
+import com.googlecode.gwt.charts.client.options.HAxis;
+import com.googlecode.gwt.charts.client.options.VAxis;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
@@ -126,7 +132,7 @@ public class HomeView extends ViewWithUiHandlers<HomeUiHandlers> implements Home
     }
 
     @Override
-    public void setInSlot(Object slot, Widget content) {
+    public void setInSlot(Object slot, IsWidget content) {
         if (slot == HomePresenter.TYPE_SetMainContent) {
             setMainContent(content);
         } else {
@@ -134,7 +140,7 @@ public class HomeView extends ViewWithUiHandlers<HomeUiHandlers> implements Home
         }
     }
 
-    private void setMainContent(Widget content) {
+    private void setMainContent(IsWidget content) {
         if (content != null) {
             container.setWidget(content);
         }
@@ -142,7 +148,7 @@ public class HomeView extends ViewWithUiHandlers<HomeUiHandlers> implements Home
 
     @Override
     public void setLinkToWizard(boolean isLoggedIn) {
-        String studyWizardLink = placeManager.buildHistoryToken(new PlaceRequest(NameTokens.basicstudywizard));
+        String studyWizardLink = placeManager.buildHistoryToken(new PlaceRequest.Builder().nameToken(NameTokens.basicstudywizard).build());
         String link = "/login?url=" + studyWizardLink;
         if (isLoggedIn) {
             link = "#" + studyWizardLink;

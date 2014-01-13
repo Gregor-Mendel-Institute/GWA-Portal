@@ -1,20 +1,15 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter;
 
-import com.gmi.nordborglab.browser.client.events.LoadPhenotypeEvent;
 import com.gmi.nordborglab.browser.client.gin.ClientModule;
 import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListEnrichmentPresenterWidget;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailTabPresenter;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.google.gwt.event.shared.GwtEvent;
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.Proxy;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 
 
@@ -44,7 +39,7 @@ public abstract class CandidateGeneListEnrichmentPresenter<T extends Proxy<?>> e
                                                 final ClientModule.AssistedInjectionFactory factory,
                                                 final EnrichmentProvider dataProvider,
                                                 final GwtEvent.Type<RevealContentHandler<?>> SLOT) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, SLOT);
         this.rf = rf;
         this.placeManager = placeManager;
         this.SLOT = SLOT;
@@ -63,12 +58,4 @@ public abstract class CandidateGeneListEnrichmentPresenter<T extends Proxy<?>> e
     protected void onReset() {
         super.onReset();    //To change body of overridden methods use File | Settings | File Templates.
     }
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, SLOT,
-                this);
-    }
-
-
 }

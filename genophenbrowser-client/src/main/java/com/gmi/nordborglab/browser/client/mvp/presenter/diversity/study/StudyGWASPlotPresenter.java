@@ -1,30 +1,29 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
-import com.gmi.nordborglab.browser.client.dispatch.CustomCallback;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
-import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataActionResult;
-import com.gmi.nordborglab.browser.client.dto.GWASDataDTO;
 import com.gmi.nordborglab.browser.client.events.LoadStudyEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.PhenotypeListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASPlotPresenterWidget;
-import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
-import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
-import com.gwtplatform.dispatch.shared.DispatchAsync;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.TabData;
 import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.annotations.*;
-import com.gwtplatform.mvp.client.proxy.*;
+import com.gwtplatform.mvp.client.annotations.ContentSlot;
+import com.gwtplatform.mvp.client.annotations.NameToken;
+import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
+import com.gwtplatform.mvp.client.annotations.ProxyEvent;
+import com.gwtplatform.mvp.client.annotations.TabInfo;
+import com.gwtplatform.mvp.client.proxy.PlaceManager;
+import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
+import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 public class StudyGWASPlotPresenter
         extends
@@ -56,16 +55,12 @@ public class StudyGWASPlotPresenter
                                   final MyProxy proxy, final PlaceManager placeManager,
                                   final CdvManager cdvManager,
                                   final GWASPlotPresenterWidget gwasPlotPresenterWidget) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, StudyTabPresenter.TYPE_SetTabContent);
         this.gwasPlotPresenterWidget = gwasPlotPresenterWidget;
         this.placeManager = placeManager;
         this.cdvManager = cdvManager;
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, StudyTabPresenter.TYPE_SetTabContent, this);
-    }
 
     @Override
     protected void onBind() {
@@ -109,7 +104,7 @@ public class StudyGWASPlotPresenter
             }
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new ParameterizedPlaceRequest(NameTokens.experiments));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.experiments).build());
         }
     }
 
@@ -118,7 +113,9 @@ public class StudyGWASPlotPresenter
         study = event.getStudy();
         if (!study.getId().equals(studyId))
             gwasPlotsLoaded = false;
-        PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id", study.getId().toString());
+        PlaceRequest request = new PlaceRequest.Builder()
+                .nameToken(getProxy().getNameToken())
+                .with("id", study.getId().toString()).build();
         String historyToken = placeManager.buildHistoryToken(request);
         TabData tabData = getProxy().getTabData();
         TabDataDynamic newTabData = new TabDataDynamic("Plot (" + study.getProtocol().getAnalysisMethod() + ")", tabData.getPriority(), historyToken);

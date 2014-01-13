@@ -1,17 +1,15 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.main;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.UserListUiHandler;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
-import com.gmi.nordborglab.browser.shared.proxy.ExperimentPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.HasRows;
 import com.google.gwt.view.client.Range;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
@@ -22,9 +20,7 @@ import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
 import java.util.List;
 
@@ -67,17 +63,12 @@ public class UserListPresenter extends Presenter<UserListPresenter.MyView, UserL
 
     @Inject
     public UserListPresenter(EventBus eventBus, MyView view, MyProxy proxy, final PlaceManager placeManager, final CustomRequestFactory rf) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, MainPagePresenter.TYPE_SetMainContent);
         getView().setUiHandlers(this);
         this.rf = rf;
         this.placeManager = placeManager;
     }
 
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, MainPagePresenter.TYPE_SetMainContent, this);
-    }
 
     @Override
     protected void onReset() {

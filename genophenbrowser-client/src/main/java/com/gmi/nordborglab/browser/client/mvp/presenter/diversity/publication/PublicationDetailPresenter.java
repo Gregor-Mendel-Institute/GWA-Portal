@@ -1,18 +1,14 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
-import com.gmi.nordborglab.browser.client.mvp.handlers.StudyDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.publication.PublicationDetailView;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
-import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.inject.Inject;
@@ -23,8 +19,9 @@ import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
-import com.gwtplatform.mvp.client.annotations.TabInfo;
-import com.gwtplatform.mvp.client.proxy.*;
+import com.gwtplatform.mvp.client.proxy.PlaceManager;
+import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 
 import java.util.Set;
 
@@ -61,18 +58,12 @@ public class PublicationDetailPresenter extends
     @Inject
     public PublicationDetailPresenter(EventBus eventBus, MyView view, MyProxy proxy,
                                       final CustomRequestFactory rf, final PlaceManager placeManager) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         this.placeManager = placeManager;
         this.rf = rf;
         experimentDataProvider.addDataDisplay(getView().getExperimentDisplay());
     }
 
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, DiversityPresenter.TYPE_SetMainContent,
-                this);
-    }
 
     @Override
     public boolean useManualReveal() {
@@ -104,11 +95,12 @@ public class PublicationDetailPresenter extends
                     public void onSuccess(Void aVoid) {
                         getProxy().manualReveal(PublicationDetailPresenter.this);
                     }
+
                     @Override
                     public void onFailure(ServerFailure error) {
                         getProxy().manualRevealFailed();
-                        placeManager.revealPlace(new PlaceRequest(
-                                NameTokens.publications));
+                        placeManager.revealPlace(new PlaceRequest.Builder()
+                                .nameToken(NameTokens.publications).build());
                     }
                 });
             } else {
@@ -116,7 +108,7 @@ public class PublicationDetailPresenter extends
             }
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new PlaceRequest(NameTokens.experiments));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.experiments).build());
         }
     }
 

@@ -1,10 +1,9 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentsOverviewUiHandlers;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
@@ -24,7 +23,6 @@ import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.annotations.Title;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 import java.util.List;
@@ -58,14 +56,14 @@ public class ExperimentsOverviewPresenter
     private ConstEnums.TABLE_FILTER currentFilter = ConstEnums.TABLE_FILTER.ALL;
     private String searchString = null;
     private List<FacetProxy> facets;
-    public static final PlaceRequest place = new PlaceRequest(NameTokens.experiments);
+    public static final String placeToken = NameTokens.experiments;
 
     @Inject
     public ExperimentsOverviewPresenter(final EventBus eventBus,
                                         final MyView view, final MyProxy proxy,
                                         final ExperimentManager experimentManager,
                                         final PlaceManager placeManager) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, ExperimentsOverviewTabPresenter.TYPE_SetTabContent);
         getView().setUiHandlers(this);
         this.experimentManager = experimentManager;
         this.placeManager = placeManager;
@@ -94,11 +92,6 @@ public class ExperimentsOverviewPresenter
         experimentManager.findAll(receiver, currentFilter, searchString, range.getStart(), range.getLength());
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, ExperimentsOverviewTabPresenter.TYPE_SetTabContent,
-                this);
-    }
 
     @Override
     protected void onBind() {
@@ -129,16 +122,15 @@ public class ExperimentsOverviewPresenter
     }
 
 
-
     @Override
     public void updateSearchString(String value) {
-        PlaceRequest request = place;
+        PlaceRequest.Builder builder = new PlaceRequest.Builder().nameToken(placeToken);
         if (currentFilter != null) {
-            request = request.with("filter", currentFilter.name());
+            builder.with("filter", currentFilter.name());
         }
         if (value != null && !value.equals("")) {
-            request = request.with("query", value);
+            builder.with("query", value);
         }
-        placeManager.revealPlace(request);
+        placeManager.revealPlace(builder.build());
     }
 }
