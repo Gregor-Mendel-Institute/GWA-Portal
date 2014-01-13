@@ -1,15 +1,25 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.FilterModifiedEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.MetaAnalysisTopResultsUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.*;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.DropDownFilterItemPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FilterItemPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FilterPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.TextBoxFilterItemPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.TypeaheadFilterItemPresenterWidget;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.dto.FilterItem;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FilterItemProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisTopResultsCriteriaProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyProtocolProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.MetaAnalysisRequest;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
@@ -35,7 +45,6 @@ import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
 import javax.annotation.Nullable;
 import javax.inject.Provider;
@@ -115,7 +124,7 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
                                            final Provider<TypeaheadFilterItemPresenterWidget> typeaheadFilterProvider,
                                            final CurrentUser currentUser
     ) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         getView().setUiHandlers(this);
         this.filterPresenterWidget = filterPresenterWidget;
         List<FilterItemPresenterWidget> filterWidgets = Lists.newArrayList();
@@ -168,11 +177,6 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
         filterPresenterWidget.setFilterItemWidgets(filterWidgets);
         this.rf = rf;
         this.placeManager = placeManager;
-    }
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, DiversityPresenter.TYPE_SetMainContent, this);
     }
 
 

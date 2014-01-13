@@ -1,33 +1,40 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta;
 
 import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadCandidateGeneListEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PermissionDoneEvent;
 import com.gmi.nordborglab.browser.client.gin.ClientModule;
 import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
-import com.gmi.nordborglab.browser.client.manager.EnrichmentProviderImpl;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CandidateGeneListDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListView;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
+import com.gmi.nordborglab.browser.shared.proxy.GenePageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SearchFacetPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.MetaAnalysisRequest;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.base.Predicate;
-import com.google.common.collect.*;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.SuggestOracle;
-import com.google.gwt.view.client.*;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
@@ -44,7 +51,6 @@ import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
 import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
@@ -162,7 +168,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                                             final CustomRequestFactory rf, final PlaceManager placeManager,
                                             final CurrentUser currentUser,
                                             final ClientModule.AssistedInjectionFactory factory) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         filter2Annotation = new ImmutableBiMap.Builder<ConstEnums.GENE_FILTER, List<String>>()
                 .put(ConstEnums.GENE_FILTER.PROTEIN, Lists.newArrayList("gene"))
                 .put(ConstEnums.GENE_FILTER.TRANSPOSON, Lists.newArrayList("transposable_element", "transposable_element_gene"))
@@ -180,11 +186,6 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
 
     private String geneId = null;
 
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, DiversityPresenter.TYPE_SetMainContent, this);
-    }
 
     @Override
     protected void onBind() {
@@ -281,8 +282,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                     @Override
                     public void onFailure(ServerFailure error) {
                         getProxy().manualRevealFailed();
-                        placeManager.revealPlace(new PlaceRequest(
-                                NameTokens.candidateGeneList));
+                        placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.candidateGeneList).build());
                     }
                 });
             } else {
@@ -290,7 +290,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
             }
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new PlaceRequest(NameTokens.candidateGeneList));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.candidateGeneList).build());
         }
     }
 
@@ -370,7 +370,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                 fireEvent(new LoadingIndicatorEvent(false));
                 PlaceRequest request = null;
                 if (placeManager.getHierarchyDepth() <= 1) {
-                    request = new ParameterizedPlaceRequest(NameTokens.candidateGeneList);
+                    request = new PlaceRequest.Builder().nameToken(NameTokens.candidateGeneList).build();
                 } else {
                     request = placeManager.getCurrentPlaceHierarchy().get(placeManager.getHierarchyDepth() - 2);
                 }
@@ -446,7 +446,9 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     public void onNewCandidateGeneList(LoadCandidateGeneListEvent event) {
         candidateGeneList = event.getCandidateGeneList();
         genesPage = null;
-        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.candidateGeneListDetail).with("id", candidateGeneList.getId().toString());
+        PlaceRequest request = new PlaceRequest.Builder()
+                .nameToken(NameTokens.candidateGeneListDetail)
+                .with("id", candidateGeneList.getId().toString()).build();
         placeManager.revealPlace(request);
     }
 

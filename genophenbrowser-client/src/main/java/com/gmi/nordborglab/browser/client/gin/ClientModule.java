@@ -8,7 +8,6 @@ import com.eemi.gwt.tour.client.Placement;
 import com.eemi.gwt.tour.client.Tour;
 import com.eemi.gwt.tour.client.TourStep;
 import com.eemi.gwt.tour.client.jso.Function;
-import com.gmi.nordborglab.browser.client.*;
 import com.gmi.nordborglab.browser.client.manager.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
@@ -61,8 +60,11 @@ import com.gmi.nordborglab.browser.client.mvp.view.home.HomeView;
 import com.gmi.nordborglab.browser.client.mvp.view.home.dashboard.DashboardView;
 import com.gmi.nordborglab.browser.client.mvp.view.main.*;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.*;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.client.security.IsLoggedInGatekeeper;
 import com.gmi.nordborglab.browser.client.validation.ClientValidation;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
@@ -76,18 +78,16 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.web.bindery.event.shared.EventBus;
-import com.google.web.bindery.event.shared.SimpleEventBus;
 import com.gwtplatform.dispatch.client.actionhandler.caching.Cache;
 import com.gwtplatform.dispatch.client.actionhandler.caching.DefaultCacheImpl;
-import com.gwtplatform.mvp.client.RootPresenter;
+import com.gwtplatform.mvp.client.annotations.DefaultPlace;
+import com.gwtplatform.mvp.client.annotations.ErrorPlace;
 import com.gwtplatform.mvp.client.annotations.GaAccount;
+import com.gwtplatform.mvp.client.annotations.UnauthorizedPlace;
 import com.gwtplatform.mvp.client.gin.AbstractPresenterModule;
-import com.gwtplatform.mvp.client.googleanalytics.GoogleAnalytics;
-import com.gwtplatform.mvp.client.googleanalytics.GoogleAnalyticsImpl;
+import com.gwtplatform.mvp.client.gin.DefaultModule;
 import com.gwtplatform.mvp.client.googleanalytics.GoogleAnalyticsNavigationTracker;
-import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
-import com.gwtplatform.mvp.client.proxy.TokenFormatter;
+import com.gwtplatform.mvp.client.proxy.*;
 import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.framework.MessageBus;
 import org.jboss.errai.bus.client.framework.RequestDispatcher;
@@ -99,28 +99,24 @@ public class ClientModule extends AbstractPresenterModule {
 
     @Override
     protected void configure() {
-        //install(new DefaultModule(ClientPlaceManager.class));
+        install(new DefaultModule(DefaultPlaceManager.class, RouteTokenFormatter.class));
+        install(new ClientDispatchModule());
         install(new GinFactoryModuleBuilder().build(AssistedInjectionFactory.class));
+        install(new ApplicationModule());
 
-        bind(EventBus.class).to(SimpleEventBus.class).in(Singleton.class);
-
+        bind(ResourceLoader.class).asEagerSingleton();
         bind(IsLoggedInGatekeeper.class).in(Singleton.class);
 
-        bind(GoogleAnalytics.class).to(GoogleAnalyticsImpl.class).in(Singleton.class);
+        bindConstant().annotatedWith(DefaultPlace.class).to(NameTokens.home);
+        bindConstant().annotatedWith(ErrorPlace.class).to(NameTokens.home);
+        bindConstant().annotatedWith(UnauthorizedPlace.class).to(NameTokens.home);
         bindConstant().annotatedWith(GaAccount.class).to("UA-26150757-2");
+
         bind(GoogleAnalyticsNavigationTracker.class).asEagerSingleton();
 
-        //bind(TokenFormatter.class).to(ParameterTokenFormatter.class).in(Singleton.class);
-        bind(RootPresenter.class).asEagerSingleton();
-
-        bind(PlaceManager.class).to(ClientPlaceManager.class).in(Singleton.class);
-
-        bind(TokenFormatter.class).to(ParameterizedParameterTokenFormatter.class).in(Singleton.class);
         bind(CurrentUser.class).asEagerSingleton();
         bind(ClientValidation.class).in(Singleton.class);
-        //bind(ValidatorFactory.class).to(ClientValidatorFactory.class);
         bind(Cache.class).to(DefaultCacheImpl.class).in(Singleton.class);
-
         bind(MainResources.class).in(Singleton.class);
         bind(ExperimentManager.class).in(Singleton.class);
         bind(PhenotypeManager.class).in(Singleton.class);
@@ -128,189 +124,9 @@ public class ClientModule extends AbstractPresenterModule {
         bind(ObsUnitManager.class).in(Singleton.class);
         bind(CdvManager.class).in(Singleton.class);
         bind(FlagMap.class).in(Singleton.class);
-        bindConstant().annotatedWith(DefaultPlace.class).to(NameTokens.home);
 
         bind(AppUserFactory.class).asEagerSingleton();
         bind(HelperFactory.class).asEagerSingleton();
-
-        bindPresenter(MainPagePresenter.class, MainPagePresenter.MyView.class,
-                MainPageView.class, MainPagePresenter.MyProxy.class);
-
-        bindPresenter(HomePresenter.class, HomePresenter.MyView.class,
-                HomeView.class, HomePresenter.MyProxy.class);
-
-        bindPresenter(AccountPresenter.class,
-                AccountPresenter.MyView.class, AccountView.class, AccountPresenter.MyProxy.class);
-
-        bindPresenter(DashboardPresenter.class,
-                DashboardPresenter.MyView.class, DashboardView.class,
-                DashboardPresenter.MyProxy.class);
-
-        bindPresenter(DiversityPresenter.class,
-                DiversityPresenter.MyView.class, DiversityView.class,
-                DiversityPresenter.MyProxy.class);
-
-        bindPresenter(ExperimentsOverviewPresenter.class,
-                ExperimentsOverviewPresenter.MyView.class,
-                ExperimentsOverviewView.class,
-                ExperimentsOverviewPresenter.MyProxy.class);
-
-        bindPresenter(ExperimentDetailPresenter.class,
-                ExperimentDetailPresenter.MyView.class,
-                ExperimentDetailView.class,
-                ExperimentDetailPresenter.MyProxy.class);
-
-
-        bindPresenter(ExperimentsOverviewTabPresenter.class,
-                ExperimentsOverviewTabPresenter.MyView.class,
-                ExperimentsOverviewTabView.class,
-                ExperimentsOverviewTabPresenter.MyProxy.class);
-
-        bindPresenter(ExperimentDetailTabPresenter.class,
-                ExperimentDetailTabPresenter.MyView.class,
-                ExperimentDetailTabView.class,
-                ExperimentDetailTabPresenter.MyProxy.class);
-
-        bindPresenter(PhenotypeListPresenter.class,
-                PhenotypeListPresenter.MyView.class, PhenotypeListView.class,
-                PhenotypeListPresenter.MyProxy.class);
-
-        bindPresenter(PhenotypeDetailTabPresenter.class,
-                PhenotypeDetailTabPresenter.MyView.class,
-                PhenotypeDetailTabView.class,
-                PhenotypeDetailTabPresenter.MyProxy.class);
-
-        bindPresenter(PhenotypeDetailPresenter.class,
-                PhenotypeDetailPresenter.MyView.class,
-                PhenotypeDetailView.class,
-                PhenotypeDetailPresenter.MyProxy.class);
-
-        bindPresenter(ObsUnitPresenter.class, ObsUnitPresenter.MyView.class,
-                ObsUnitView.class, ObsUnitPresenter.MyProxy.class);
-
-        bindPresenter(StudyListPresenter.class,
-                StudyListPresenter.MyView.class, StudyListView.class,
-                StudyListPresenter.MyProxy.class);
-
-        bindPresenter(StudyTabPresenter.class, StudyTabPresenter.MyView.class,
-                StudyTabView.class, StudyTabPresenter.MyProxy.class);
-
-        bindPresenter(StudyDetailPresenter.class,
-                StudyDetailPresenter.MyView.class, StudyDetailView.class,
-                StudyDetailPresenter.MyProxy.class);
-
-        bindPresenter(StudyGWASPlotPresenter.class,
-                StudyGWASPlotPresenter.MyView.class, StudyGWASPlotView.class,
-                StudyGWASPlotPresenter.MyProxy.class);
-
-        bindPresenterWidget(PermissionDetailPresenter.class,
-                PermissionDetailPresenter.MyView.class,
-                PermissionDetailView.class);
-
-
-        bindPresenter(StudyWizardPresenter.class,
-                StudyWizardPresenter.MyView.class, StudyWizardView.class,
-                StudyWizardPresenter.MyProxy.class);
-
-        bindPresenter(BasicStudyWizardPresenter.class,
-                BasicStudyWizardPresenter.MyView.class, BasicStudyWizardView.class,
-                BasicStudyWizardPresenter.MyProxy.class);
-
-
-        bindPresenter(GermplasmPresenter.class,
-                GermplasmPresenter.MyView.class, GermplasmView.class,
-                GermplasmPresenter.MyProxy.class);
-
-        bindPresenter(TaxonomyOverviewPresenter.class,
-                TaxonomyOverviewPresenter.MyView.class,
-                TaxonomyOverviewView.class,
-                TaxonomyOverviewPresenter.MyProxy.class);
-
-        bindPresenter(TaxonomyDetailPresenter.class,
-                TaxonomyDetailPresenter.MyView.class, TaxonomyDetailView.class,
-                TaxonomyDetailPresenter.MyProxy.class);
-
-        bindPresenter(PassportListPresenter.class,
-                PassportListPresenter.MyView.class, PassportListView.class,
-                PassportListPresenter.MyProxy.class);
-
-        bindPresenter(PassportDetailPresenter.class,
-                PassportDetailPresenter.MyView.class, PassportDetailView.class,
-                PassportDetailPresenter.MyProxy.class);
-
-        bindPresenter(StockDetailPresenter.class,
-                StockDetailPresenter.MyView.class, StockDetailView.class,
-                StockDetailPresenter.MyProxy.class);
-
-        bindPresenterWidget(SearchPresenter.class,
-                SearchPresenter.MyView.class, SearchView.class);
-
-        bindPresenter(PhenotypeOverviewPresenter.class,
-                PhenotypeOverviewPresenter.MyView.class,
-                PhenotypeOverviewView.class,
-                PhenotypeOverviewPresenter.MyProxy.class);
-
-        bindPresenter(StudyOverviewPresenter.class,
-                StudyOverviewPresenter.MyView.class, StudyOverviewView.class,
-                StudyOverviewPresenter.MyProxy.class);
-
-        bindPresenter(TraitOntologyPresenter.class,
-                TraitOntologyPresenter.MyView.class,
-                TraitOntologyView.class,
-                TraitOntologyPresenter.MyProxy.class);
-
-        bindPresenter(PublicationOverviewPresenter.class,
-                PublicationOverviewPresenter.MyView.class, PublicationOverviewView.class,
-                PublicationOverviewPresenter.MyProxy.class);
-
-        bindPresenter(PublicationDetailPresenter.class,
-                PublicationDetailPresenter.MyView.class, PublicationDetailView.class,
-                PublicationDetailPresenter.MyProxy.class);
-
-        bindPresenter(MetaAnalysisGenePresenter.class,
-                MetaAnalysisGenePresenter.MyView.class, MetaAnalysisGeneView.class,
-                MetaAnalysisGenePresenter.MyProxy.class);
-
-        bindPresenter(MetaAnalysisTopResultsPresenter.class,
-                MetaAnalysisTopResultsPresenter.MyView.class, MetaAnalysisTopResultsView.class,
-                MetaAnalysisTopResultsPresenter.MyProxy.class);
-
-        bindPresenter(GenomeBrowserPresenter.class,
-                GenomeBrowserPresenter.MyView.class, GenomeBrowserView.class,
-                GenomeBrowserPresenter.MyProxy.class);
-
-        bindPresenter(HomeTabPresenter.class, HomeTabPresenter.MyView.class, HomeTabView.class, HomeTabPresenter.MyProxy.class);
-
-        bindPresenter(ProfilePresenter.class, ProfilePresenter.MyView.class, ProfileView.class, ProfilePresenter.MyProxy.class);
-
-        bindPresenter(UserListPresenter.class,
-                UserListPresenter.MyView.class, UserListView.class,
-                UserListPresenter.MyProxy.class);
-
-        bindPresenter(GWASViewerPresenter.class, GWASViewerPresenter.MyView.class, GWASViewerView.class, GWASViewerPresenter.MyProxy.class);
-
-        bindPresenter(CandidateGeneListPresenter.class, CandidateGeneListPresenter.MyView.class, CandidateGeneListView.class, CandidateGeneListPresenter.MyProxy.class);
-        bindPresenter(CandidateGeneListDetailPresenter.class, CandidateGeneListDetailPresenter.MyView.class, CandidateGeneListDetailView.class, CandidateGeneListDetailPresenter.MyProxy.class);
-        bindPresenter(ExperimentCandidateGeneListEnrichmentPresenter.class, ExperimentCandidateGeneListEnrichmentPresenter.MyView.class, CandidateGeneListEnrichmentView.class, ExperimentCandidateGeneListEnrichmentPresenter.MyProxy.class);
-        //Workaround because CandidateGeneListEnrichmentView was already bound
-        bind(PhenotypeCandidateGeneListEnrichmentPresenter.class).in(Singleton.class);
-        bind(PhenotypeCandidateGeneListEnrichmentPresenter.MyProxy.class).asEagerSingleton();
-        //Workaround because CandidateGeneStudyCandidateGeneListEnrichmentPresenterListEnrichmentView was already bound
-        bind(StudyCandidateGeneListEnrichmentPresenter.class).in(Singleton.class);
-        bind(StudyCandidateGeneListEnrichmentPresenter.MyProxy.class).asEagerSingleton();
-
-
-        bindPresenterWidget(GWASPlotPresenterWidget.class, GWASPlotPresenterWidget.MyView.class, GWASPlotView.class);
-        bindPresenterWidget(FilterPresenterWidget.class, FilterPresenterWidget.MyView.class, FilterPresenterWidgetView.class);
-        bindPresenterWidget(TextBoxFilterItemPresenterWidget.class, TextBoxFilterItemPresenterWidget.MyView.class, TextBoxFilterItemPresenterWidgetView.class);
-        bindPresenterWidget(DropDownFilterItemPresenterWidget.class, DropDownFilterItemPresenterWidget.MyView.class, DropDownFilterItemPresenterWidgetView.class);
-        bindPresenterWidget(TypeaheadFilterItemPresenterWidget.class, TypeaheadFilterItemPresenterWidget.MyView.class, TypeaheadFilterItemPresenterWidgetView.class);
-
-        bindSingletonPresenterWidget(PhenotypeUploadWizardPresenterWidget.class, PhenotypeUploadWizardPresenterWidget.MyView.class, PhenotypeUploadWizardView.class);
-        bindSingletonPresenterWidget(GWASUploadWizardPresenterWidget.class, GWASUploadWizardPresenterWidget.MyView.class, GWASUploadWizardView.class);
-        //bindPresenterWidget(CandidateGeneListEnrichmentPresenterWidget.class,CandidateGeneListEnrichmentPresenterWidget.MyView.class,CandidateGeneListEnrichmentPresenterWidgetView.class);
-        // have to use that otherwise @Assited throws error
-        //bind(CandidateGeneListEnrichmentPresenterWidget.MyView.class).to(CandidateGeneListEnrichmentPresenterWidgetView.class);
     }
 
 
@@ -395,8 +211,8 @@ public class ClientModule extends AbstractPresenterModule {
         step.onNext(new Function() {
             @Override
             public void execute() {
-                PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.experiments);
-                placeManager.revealPlace(request);
+                placeManager.revealPlace(new PlaceRequest.Builder()
+                        .nameToken(NameTokens.experiments).build());
             }
         });
 

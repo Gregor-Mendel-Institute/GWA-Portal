@@ -2,18 +2,13 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.study;
 
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyOverviewUiHandlers;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.StudyListDataGridColumns;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
-import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.OwnerLinkColumn;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
@@ -25,7 +20,6 @@ import com.google.common.collect.Lists;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -37,7 +31,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
-import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
@@ -90,8 +83,7 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
     }
 
     private void initGrid() {
-        PlaceRequest request = new ParameterizedPlaceRequest(
-                NameTokens.study);
+        PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.study);
         dataGrid.setWidth("100%");
         dataGrid.setEmptyTableWidget(new Label("No Records found"));
         dataGrid.addColumn(new StudyListDataGridColumns.TitleColumn(placeManager, request), "Name");
@@ -135,15 +127,15 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
             String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
             NavLink link = navLinkMap.get(type);
             link.setText(newTitle);
-            PlaceRequest request = StudyOverviewPresenter.place;
+            PlaceRequest.Builder builder = new PlaceRequest.Builder().nameToken(StudyOverviewPresenter.placeToken);
             if (type != ConstEnums.TABLE_FILTER.ALL) {
-                request = request.with("filter", type.name());
+                builder = builder.with("filter", type.name());
             }
             if (searchString != null) {
-                request = request.with("query", searchString);
+                builder = builder.with("query", searchString);
             }
             searchBox.setText(searchString);
-            link.setTargetHistoryToken(placeManager.buildHistoryToken(request));
+            link.setTargetHistoryToken(placeManager.buildHistoryToken(builder.build()));
         }
     }
 

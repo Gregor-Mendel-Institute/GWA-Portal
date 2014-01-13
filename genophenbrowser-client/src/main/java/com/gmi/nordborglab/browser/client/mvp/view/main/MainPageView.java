@@ -1,6 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.view.main;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.mvp.handlers.MainUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter.MENU;
@@ -11,8 +11,6 @@ import com.gmi.nordborglab.browser.client.ui.favicon.FavicoOptions;
 import com.gmi.nordborglab.browser.client.util.DateUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UserNotificationProxy;
-import com.google.gwt.animation.client.AnimationScheduler;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
@@ -28,16 +26,13 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
-import elemental.html.File;
 
 import java.util.List;
 
 import static com.google.gwt.query.client.GQuery.$;
-import static com.google.gwt.query.client.GQuery.Events;
 
 public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements MainPagePresenter.MyView {
 
@@ -139,7 +134,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
     }
 
     @Override
-    public void setInSlot(Object slot, Widget content) {
+    public void setInSlot(Object slot, IsWidget content) {
         if (slot == MainPagePresenter.TYPE_SetMainContent) {
             setMainContent(content);
         } else {
@@ -147,7 +142,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
         }
     }
 
-    private void setMainContent(Widget content) {
+    private void setMainContent(IsWidget content) {
         container.setWidget(content);
     }
 

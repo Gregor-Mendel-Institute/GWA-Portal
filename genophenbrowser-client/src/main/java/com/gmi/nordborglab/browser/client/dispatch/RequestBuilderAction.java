@@ -1,15 +1,20 @@
 package com.gmi.nordborglab.browser.client.dispatch;
 
-import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.RequestBuilder.Method;
-import com.gwtplatform.dispatch.shared.Action;
-import com.gwtplatform.dispatch.shared.Result;
+import com.google.gwt.http.client.Response;
+import com.gwtplatform.dispatch.rpc.shared.Action;
+import com.gwtplatform.dispatch.rpc.shared.Result;
 
-public interface RequestBuilderAction <R extends Result> extends Action<R> {
-		
-	String getUrl();
-	Method getMethod();
-	R extractResult(Response response);
-	String getRequestData();
-	String getContentType();
+
+public interface RequestBuilderAction<R extends Result> extends Action<R> {
+
+    String getUrl();
+
+    Method getMethod();
+
+    R extractResult(Response response);
+
+    String getRequestData();
+
+    String getContentType();
 }

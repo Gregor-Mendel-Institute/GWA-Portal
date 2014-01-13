@@ -5,7 +5,7 @@
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
-    <ui:with type="com.gmi.nordborglab.browser.client.NameTokens"
+    <ui:with type="com.gmi.nordborglab.browser.client.place.NameTokens"
              field="nameTokens"></ui:with>
 
     <!-- <ui:image field="logo" src='../../resources/gmi-logo-transp.png' /> -->
@@ -45,7 +45,7 @@
             line-height: 3.423em;
         }
 
-        .navigation  li {
+        .navigation li {
             list-style: none;
             display: inline-block;
             float: left;
@@ -161,7 +161,7 @@
                         -moz-transition: color 0.1s linear;*/
         }
 
-        .userDetailLinks li:hover>a {
+        .userDetailLinks li:hover > a {
             background: #eff5f9;
             color: #1A74B0;
             text-shadow: 0 0 0 black;

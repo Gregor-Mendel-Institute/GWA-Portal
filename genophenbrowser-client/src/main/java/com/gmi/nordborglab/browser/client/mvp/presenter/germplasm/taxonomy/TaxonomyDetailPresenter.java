@@ -1,15 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.taxonomy;
 
-import java.util.Set;
-
-import com.googlecode.gwt.charts.client.DataTable;
-import com.gwtplatform.mvp.client.HasUiHandlers;
-
-import javax.validation.ConstraintViolation;
-
-import com.gwtplatform.mvp.client.View;
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadTaxonomyEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
@@ -19,6 +9,8 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.Ex
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.GermplasmPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.taxonomy.TaxonomyDetailView.TaxonomyDisplayDriver;
 import com.gmi.nordborglab.browser.client.mvp.view.germplasm.taxonomy.TaxonomyDetailView.TaxonomyEditDriver;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
@@ -29,15 +21,18 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
-
+import com.googlecode.gwt.charts.client.DataTable;
+import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
-
+import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
+
+import javax.validation.ConstraintViolation;
+import java.util.Set;
 
 public class TaxonomyDetailPresenter
         extends
@@ -78,7 +73,7 @@ public class TaxonomyDetailPresenter
     public TaxonomyDetailPresenter(final EventBus eventBus, final MyView view,
                                    final MyProxy proxy, final PlaceManager placeManager,
                                    final TaxonomyManager taxonomyManager, final CurrentUser currentUser) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, GermplasmPresenter.TYPE_SetMainContent);
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
         this.taxonomyManager = taxonomyManager;
@@ -104,11 +99,6 @@ public class TaxonomyDetailPresenter
             }
         };
 
-    }
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, GermplasmPresenter.TYPE_SetMainContent, this);
     }
 
     @Override
@@ -157,7 +147,7 @@ public class TaxonomyDetailPresenter
             public void onFailure(ServerFailure error) {
                 fireEvent(new LoadingIndicatorEvent(false));
                 getProxy().manualRevealFailed();
-                placeManager.revealPlace(new PlaceRequest(NameTokens.taxonomies));
+                placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.taxonomies).build());
             }
         };
         try {
@@ -171,7 +161,7 @@ public class TaxonomyDetailPresenter
             }
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new PlaceRequest(NameTokens.taxonomies));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.taxonomies).build());
         }
     }
 

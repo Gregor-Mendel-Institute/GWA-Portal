@@ -1,5 +1,4 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'>
 
     <gui:SimpleTabPanel ui:field="tabContainer"/>

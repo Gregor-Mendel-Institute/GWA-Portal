@@ -3,17 +3,13 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentsOverviewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewPresenter;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
-import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
-import com.gmi.nordborglab.browser.client.ui.cells.OwnerLinkColumn;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
@@ -21,7 +17,6 @@ import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -92,7 +87,7 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
 
     private void initCellTable() {
 
-        table.addColumn(new ExperimentListDataGridColumns.TitleColumn(placeManager, new ParameterizedPlaceRequest(NameTokens.experiment)), "Name");
+        table.addColumn(new ExperimentListDataGridColumns.TitleColumn(placeManager, new PlaceRequest.Builder().nameToken(NameTokens.experiment)), "Name");
         table.addColumn(new ExperimentListDataGridColumns.DesignColumn(), "Design");
         /*table.addColumn(new OwnerLinkColumn(placeManager), "Owner");*/
         table.addColumn(new Column<ExperimentProxy, AppUserProxy>(avatarNameCell) {
@@ -130,7 +125,7 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
             String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
             NavLink link = navLinkMap.get(type);
             link.setText(newTitle);
-            PlaceRequest request = ExperimentsOverviewPresenter.place;
+            PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(ExperimentsOverviewPresenter.placeToken);
             if (type != ConstEnums.TABLE_FILTER.ALL) {
                 request = request.with("filter", type.name());
             }
@@ -138,7 +133,7 @@ public class ExperimentsOverviewView extends ViewWithUiHandlers<ExperimentsOverv
                 request = request.with("query", searchString);
             }
             searchBox.setText(searchString);
-            link.setTargetHistoryToken(placeManager.buildHistoryToken(request));
+            link.setTargetHistoryToken(placeManager.buildHistoryToken(request.build()));
         }
     }
 

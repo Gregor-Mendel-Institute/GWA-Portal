@@ -1,12 +1,11 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.ontology;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.editors.OntologyDisplayEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.OntologyUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.OntologyTreeViewModel;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.TraitOntologyPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.PhenotypeListDataGridColumns;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
@@ -113,10 +112,9 @@ public class TraitOntologyView extends ViewWithUiHandlers<OntologyUiHandlers> im
     }
 
     private void initPhenotypeDataGrid() {
-        PlaceRequest request = new ParameterizedPlaceRequest(
-                NameTokens.phenotype);
+        PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.phenotype);
 
-        final PlaceRequest ontologyRequest = placeManager.getCurrentPlaceRequest();
+        final PlaceRequest.Builder ontologyRequest = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest());
 
         phenotypeDataGrid.setWidth("100%");
         phenotypeDataGrid.setEmptyTableWidget(new Label("No Records found"));
@@ -132,7 +130,7 @@ public class TraitOntologyView extends ViewWithUiHandlers<OntologyUiHandlers> im
                 if (object.getTraitOntologyTerm() != null) {
                     to = object.getTraitOntologyTerm().getName() + " (" + object.getTraitOntologyTerm().getAcc() + ")";
                 }
-                String url = "#" + placeManager.buildHistoryToken(ontologyRequest.with("id", object.getToAccession()));
+                String url = "#" + placeManager.buildHistoryToken(ontologyRequest.with("id", object.getToAccession()).build());
                 return new HyperlinkParam(to, url);
             }
         }, "Trait-Ontology");

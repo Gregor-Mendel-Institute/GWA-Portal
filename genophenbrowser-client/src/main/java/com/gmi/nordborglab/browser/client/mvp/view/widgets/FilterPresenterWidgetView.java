@@ -18,6 +18,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
@@ -79,14 +80,14 @@ public class FilterPresenterWidgetView extends ViewWithUiHandlers<FilterPresente
         availableFilterContainerUl.setInnerHTML("");
     }
 
-    private void addFilter(Widget content) {
+    private void addFilter(IsWidget content) {
         LIElement liItem = Document.get().createLIElement();
         availableFilterContainerUl.appendChild(liItem);
-        availableFilterContainer.add(content, liItem);
+        availableFilterContainer.add(content.asWidget(), liItem);
     }
 
     @Override
-    public void addToSlot(Object slot, Widget content) {
+    public void addToSlot(Object slot, IsWidget content) {
         if (slot == FilterPresenterWidget.TYPE_FilterItemsContent) {
             addFilter(content);
         } else {
@@ -96,7 +97,7 @@ public class FilterPresenterWidgetView extends ViewWithUiHandlers<FilterPresente
 
 
     @Override
-    public void setInSlot(Object slot, Widget content) {
+    public void setInSlot(Object slot, IsWidget content) {
         if (slot == FilterPresenterWidget.TYPE_FilterItemsContent) {
             clearAvailableFilters();
             addToSlot(slot, content);

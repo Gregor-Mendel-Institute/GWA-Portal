@@ -1,15 +1,16 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadCandidateGeneListEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CanidateGeneListUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListView;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.MetaAnalysisRequest;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
@@ -29,7 +30,6 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
 import javax.validation.ConstraintViolation;
 import java.util.List;
@@ -72,13 +72,13 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
     private List<FacetProxy> facets;
     private Receiver<CandidateGeneListProxy> receiver = null;
     private final CurrentUser currentUser;
-    public static final PlaceRequest place = new PlaceRequest(NameTokens.candidateGeneList);
+    public static final String placeToken = NameTokens.candidateGeneList;
 
     @Inject
     public CandidateGeneListPresenter(EventBus eventBus, CandidateGeneListPresenter.MyView view,
                                       CandidateGeneListPresenter.MyProxy proxy, final CustomRequestFactory rf,
                                       final PlaceManager placeManager, final CurrentUser currentUser) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         this.currentUser = currentUser;
         this.rf = rf;
         this.placeManager = placeManager;
@@ -133,10 +133,6 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
         rf.metaAnalysisRequest().findCandidateGeneLists(currentFilter, searchString, range.getStart(), range.getLength()).with("contents.acl", "contents.ownerUser").fire(receiver);
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, DiversityPresenter.TYPE_SetMainContent, this);
-    }
 
     @Override
     protected void onBind() {
@@ -191,13 +187,13 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
 
     @Override
     public void updateSearchString(String value) {
-        PlaceRequest request = place;
+        PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(placeToken);
         if (currentFilter != null) {
             request = request.with("filter", currentFilter.name());
         }
         if (value != null && !value.equals("")) {
             request = request.with("query", value);
         }
-        placeManager.revealPlace(request);
+        placeManager.revealPlace(request.build());
     }
 }

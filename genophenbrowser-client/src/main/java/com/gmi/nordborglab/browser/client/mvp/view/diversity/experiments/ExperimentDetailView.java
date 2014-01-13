@@ -1,6 +1,9 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
-import com.github.gwtbootstrap.client.ui.*;
+import com.github.gwtbootstrap.client.ui.ButtonGroup;
+import com.github.gwtbootstrap.client.ui.Form;
+import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.ModalFooter;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.Tooltip;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
@@ -16,8 +19,12 @@ import com.gmi.nordborglab.browser.client.ui.PhaseAnimation;
 import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetTermProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums.ONTOLOGY_TYPE;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
@@ -33,7 +40,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.inject.Inject;
@@ -43,10 +54,11 @@ import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
 import com.googlecode.gwt.charts.client.corechart.PieChart;
 import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
-import com.googlecode.gwt.charts.client.options.*;
+import com.googlecode.gwt.charts.client.options.ChartArea;
 import com.googlecode.gwt.charts.client.options.Legend;
+import com.googlecode.gwt.charts.client.options.LegendAlignment;
+import com.googlecode.gwt.charts.client.options.LegendPosition;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
-import com.gmi.nordborglab.browser.shared.util.ConstEnums.ONTOLOGY_TYPE;
 
 import java.util.HashMap;
 import java.util.List;
@@ -398,7 +410,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     }
 
     @Override
-    public void setInSlot(Object slot, Widget content) {
+    public void setInSlot(Object slot, IsWidget content) {
         if (slot == ExperimentDetailPresenter.TYPE_SetPermissionContent) {
             permissionPopUp.add(content);
         } else {

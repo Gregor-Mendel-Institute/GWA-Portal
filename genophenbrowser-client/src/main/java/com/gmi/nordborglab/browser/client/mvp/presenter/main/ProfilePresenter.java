@@ -1,12 +1,16 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.main;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ProfileUiHandlers;
-import com.gmi.nordborglab.browser.client.mvp.presenter.home.HomeTabPresenter;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypePageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -17,15 +21,14 @@ import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
-import com.gwtplatform.mvp.client.PresenterWidget;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyStandard;
-import com.gwtplatform.mvp.client.annotations.TabInfo;
-import com.gwtplatform.mvp.client.proxy.*;
+import com.gwtplatform.mvp.client.proxy.PlaceManager;
+import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -142,7 +145,7 @@ public class ProfilePresenter extends Presenter<ProfilePresenter.MyView, Profile
     public ProfilePresenter(final EventBus eventBus, final MyView view, final MyProxy proxy,
                             final CurrentUser currentUser, final CustomRequestFactory rf,
                             final PlaceManager placeManager) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, MainPagePresenter.TYPE_SetMainContent);
         getView().setUiHandlers(this);
         this.rf = rf;
         this.currentUser = currentUser;
@@ -172,7 +175,9 @@ public class ProfilePresenter extends Presenter<ProfilePresenter.MyView, Profile
         getView().displayStats(user.getNumberOfStudies(), user.getNumberOfPhenotypes(), user.getNumberOfAnalysis());
         String editUrl = null;
         if (currentUser.isAdmin()) {
-            PlaceRequest editRequest = new ParameterizedPlaceRequest(NameTokens.account).with("id", user.getId().toString());
+            PlaceRequest editRequest = new PlaceRequest.Builder()
+                    .nameToken(NameTokens.account)
+                    .with("id", user.getId().toString()).build();
             editUrl = "#" + placeManager.buildHistoryToken(editRequest);
         }
         getView().setEditUrl(editUrl);
@@ -200,10 +205,6 @@ public class ProfilePresenter extends Presenter<ProfilePresenter.MyView, Profile
         getView().setActiveType(currentType);
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, MainPagePresenter.TYPE_SetMainContent, this);
-    }
 
     @Override
     public void prepareFromRequest(PlaceRequest placeRequest) {
@@ -225,7 +226,7 @@ public class ProfilePresenter extends Presenter<ProfilePresenter.MyView, Profile
                     @Override
                     public void onFailure(ServerFailure error) {
                         getProxy().manualRevealFailed();
-                        placeManager.revealPlace(new PlaceRequest(NameTokens.home));
+                        placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.home).build());
                     }
                 });
             } else {
@@ -234,7 +235,7 @@ public class ProfilePresenter extends Presenter<ProfilePresenter.MyView, Profile
             }
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new PlaceRequest(NameTokens.home));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.home).build());
         }
     }
 

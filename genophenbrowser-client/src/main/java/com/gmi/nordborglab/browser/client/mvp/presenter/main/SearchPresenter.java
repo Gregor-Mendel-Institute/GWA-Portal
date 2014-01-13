@@ -1,18 +1,12 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.main;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.handlers.SearchUiHandlers;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle;
 import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle.SearchSuggestion;
 import com.gmi.nordborglab.browser.shared.proxy.SearchFacetPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
-import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.google.gwt.user.client.ui.SuggestOracle.Callback;
 import com.google.gwt.user.client.ui.SuggestOracle.Request;
@@ -26,6 +20,10 @@ import com.gwtplatform.mvp.client.PresenterWidget;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 public class SearchPresenter extends PresenterWidget<SearchPresenter.MyView> implements SearchUiHandlers {
@@ -126,7 +124,9 @@ public class SearchPresenter extends PresenterWidget<SearchPresenter.MyView> imp
         if (nameToken == null)
             return;
 
-        PlaceRequest request = new ParameterizedPlaceRequest(nameToken).with("id", searchSuggestion.getId());
+        PlaceRequest.Builder request = new PlaceRequest.Builder()
+                .nameToken(nameToken)
+                .with("id", searchSuggestion.getId());
 
         //TODO refactor
         switch (searchSuggestion.getCategory()) {
@@ -138,6 +138,6 @@ public class SearchPresenter extends PresenterWidget<SearchPresenter.MyView> imp
                 request.with("ontology", ontologyType);
                 break;
         }
-        placeManager.revealPlace(request);
+        placeManager.revealPlace(request.build());
     }
 }

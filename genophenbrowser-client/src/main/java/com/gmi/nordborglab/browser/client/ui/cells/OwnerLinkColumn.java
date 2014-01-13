@@ -1,12 +1,8 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
-import com.google.gwt.cell.client.Cell;
-import com.google.gwt.user.cellview.client.Column;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 
@@ -27,7 +23,7 @@ public class OwnerLinkColumn<T extends SecureEntityProxy> extends HyperlinkPlace
     public HyperlinkPlaceManagerColumn.HyperlinkParam getValue(SecureEntityProxy object) {
         String name = "";
         String link = null;
-        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.profile);
+        PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.profile);
         if (checkNormalUser(object.getOwnerUser())) {
             request.with("id", object.getOwnerUser().getId().toString());
         } else {
@@ -42,7 +38,7 @@ public class OwnerLinkColumn<T extends SecureEntityProxy> extends HyperlinkPlace
         }
 
         if (request != null) {
-            link = "#" + placeManager.buildHistoryToken(request.with("id", object.getOwnerUser().getId().toString()));
+            link = "#" + placeManager.buildHistoryToken(request.with("id", object.getOwnerUser().getId().toString()).build());
         }
         HyperlinkParam param = new HyperlinkParam(name, link);
         return param;

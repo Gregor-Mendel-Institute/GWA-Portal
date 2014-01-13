@@ -1,12 +1,9 @@
 package com.gmi.nordborglab.browser.client.mvp.view.home;
 
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.home.HomeTabPresenter;
 import com.gmi.nordborglab.browser.client.ui.BaseTabContainerView;
-import com.gmi.nordborglab.browser.client.ui.SimpleTabPanel;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
@@ -38,7 +35,7 @@ public class HomeTabView extends BaseTabContainerView implements HomeTabPresente
     }
 
     @Override
-    public void setInSlot(Object slot, Widget content) {
+    public void setInSlot(Object slot, IsWidget content) {
         if (slot == HomeTabPresenter.TYPE_SetTabContent) {
             setMainContent(content);
         } else {

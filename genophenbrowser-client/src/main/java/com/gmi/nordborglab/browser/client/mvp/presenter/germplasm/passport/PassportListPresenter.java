@@ -1,12 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.events.FilterModifiedEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PassportListViewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.GermplasmPresenter;
@@ -14,11 +7,16 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.DropDownFilterIt
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FilterItemPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FilterPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.TextBoxFilterItemPresenterWidget;
-import com.gmi.nordborglab.browser.client.util.SearchTerm;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.PassportProxyPredicates;
+import com.gmi.nordborglab.browser.client.util.SearchTerm;
 import com.gmi.nordborglab.browser.shared.dto.FilterItem;
 import com.gmi.nordborglab.browser.shared.dto.FilterItemValue;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PassportSearchCriteriaProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SampStatProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -37,10 +35,11 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
 import javax.annotation.Nullable;
 import javax.inject.Provider;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PassportListPresenter extends
         Presenter<PassportListPresenter.MyView, PassportListPresenter.MyProxy> implements PassportListViewUiHandlers {
@@ -187,7 +186,7 @@ public class PassportListPresenter extends
                                  final FilterPresenterWidget filterPresenterWidget,
                                  final Provider<DropDownFilterItemPresenterWidget> dropDownFilterProvider,
                                  final Provider<TextBoxFilterItemPresenterWidget> textBoxFilterProvider) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, GermplasmPresenter.TYPE_SetMainContent);
         this.filterPresenterWidget = filterPresenterWidget;
         this.dataProvider = dataProvider;
         this.placeManager = placeManager;
@@ -248,10 +247,6 @@ public class PassportListPresenter extends
         genotypeFilterWidget.setHasMultiple(true);
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, GermplasmPresenter.TYPE_SetMainContent, this);
-    }
 
     @Override
     protected void onBind() {
@@ -337,7 +332,7 @@ public class PassportListPresenter extends
             getProxy().manualReveal(PassportListPresenter.this);
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new ParameterizedPlaceRequest(NameTokens.taxonomies));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.taxonomies).build());
         }
     }
 

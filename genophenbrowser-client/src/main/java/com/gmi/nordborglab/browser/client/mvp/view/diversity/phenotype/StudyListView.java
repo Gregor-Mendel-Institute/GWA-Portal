@@ -4,14 +4,12 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyListUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.StudyListPresenter;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
-import com.gmi.nordborglab.browser.client.ui.cells.OwnerColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.OwnerLinkColumn;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
@@ -102,7 +100,7 @@ public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> imple
     }
 
     private void initCellTable() {
-        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.study);
+        PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.study);
         dataGrid.setEmptyTableWidget(new Label("No Records found"));
         dataGrid.addColumn(new StudyListDataGridColumns.TitleColumn(placeManager, request), "Title");
         dataGrid.addColumn(new StudyListDataGridColumns.ProtocolColumn(), "Protocol");

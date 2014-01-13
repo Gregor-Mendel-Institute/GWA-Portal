@@ -1,23 +1,36 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.meta;
 
-import com.github.gwtbootstrap.client.ui.Footer;
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.StudyListDataGridColumns;
 import com.gmi.nordborglab.browser.client.ui.cells.LabelTypeCell;
 import com.gmi.nordborglab.browser.client.ui.cells.ProgressBarCell;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.gwt.cell.client.*;
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.AbstractSafeHtmlCell;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.CompositeCell;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
+import com.google.gwt.cell.client.NumberCell;
+import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.*;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
-import com.google.gwt.safehtml.shared.*;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.text.shared.SafeHtmlRenderer;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.IdentityColumn;
@@ -371,7 +384,7 @@ public interface CandidateGeneListEnrichmentDataGridColumns {
 
 
     public class StudyColumn extends Column<CandidateGeneListEnrichmentProxy, StudyProxy> {
-        public StudyColumn(PlaceManager placeManager, PlaceRequest request) {
+        public StudyColumn(PlaceManager placeManager, PlaceRequest.Builder request) {
             super(new StudyListDataGridColumns.TitleCell(request, placeManager));
         }
 
@@ -383,12 +396,7 @@ public interface CandidateGeneListEnrichmentDataGridColumns {
 
     public class TitleColumn extends Column<CandidateGeneListEnrichmentProxy, CandidateGeneListProxy> {
 
-        /**
-         * Construct a new IdentityColumn with a given {@link com.google.gwt.cell.client.Cell}.
-         *
-         * @param cell the {@link com.google.gwt.cell.client.Cell} responsible for rendering items in the column
-         */
-        public TitleColumn(PlaceManager placeManager, PlaceRequest request) {
+        public TitleColumn(PlaceManager placeManager, PlaceRequest.Builder request) {
             super(new TitleCell(request, placeManager));
         }
 
@@ -410,9 +418,9 @@ public interface CandidateGeneListEnrichmentDataGridColumns {
         private static Template templates = GWT.create(Template.class);
 
         private final PlaceManager placeManager;
-        private PlaceRequest placeRequest;
+        private PlaceRequest.Builder placeRequest;
 
-        public TitleCell(PlaceRequest placeRequest, PlaceManager placeManager) {
+        public TitleCell(PlaceRequest.Builder placeRequest, PlaceManager placeManager) {
             super();
             this.placeManager = placeManager;
             this.placeRequest = placeRequest;
@@ -423,7 +431,7 @@ public interface CandidateGeneListEnrichmentDataGridColumns {
             if (value == null)
                 return;
             placeRequest.with("id", value.getId().toString());
-            SafeUri link = UriUtils.fromTrustedString("#" + placeManager.buildHistoryToken(placeRequest));
+            SafeUri link = UriUtils.fromTrustedString("#" + placeManager.buildHistoryToken(placeRequest.build()));
             SafeHtml name = SafeHtmlUtils.fromString(value.getName());
             String description = value.getDescription();
             SafeHtmlBuilder builder = new SafeHtmlBuilder();

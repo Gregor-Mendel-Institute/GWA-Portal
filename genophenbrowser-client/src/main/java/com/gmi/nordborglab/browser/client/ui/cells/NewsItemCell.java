@@ -1,25 +1,19 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.NewsItemProxy;
-import com.gmi.nordborglab.browser.shared.proxy.ontology.Term2TermProxy;
-import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.common.collect.ImmutableMap;
 import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.shared.*;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiRenderer;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -66,7 +60,7 @@ public class NewsItemCell extends AbstractCell<NewsItemProxy> {
 
     @Override
     public void render(Context context, NewsItemProxy value, SafeHtmlBuilder sb) {
-        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.news).with("id", value.getId().toString());
+        PlaceRequest request = new PlaceRequest.Builder().nameToken(NameTokens.news).with("id", value.getId().toString()).build();
         SafeUri link = UriUtils.fromSafeConstant("#" + placeManager.buildHistoryToken(request));
         String title = value.getTitle();
         SafeHtml content = SafeHtmlUtils.fromTrustedString(value.getContent());

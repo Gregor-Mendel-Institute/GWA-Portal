@@ -1,11 +1,14 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
+import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.testutils.PresenterTestBase;
+import com.gmi.nordborglab.browser.client.testutils.PresenterTestModule;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.google.gwt.view.client.HasData;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,15 +17,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
-import com.gmi.nordborglab.browser.client.testutils.PresenterTestBase;
-import com.gmi.nordborglab.browser.client.testutils.PresenterTestModule;
-import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
-import com.google.gwt.view.client.HasData;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ExperimentsOverviewPresenterTest extends PresenterTestBase {
 
@@ -60,7 +59,9 @@ public class ExperimentsOverviewPresenterTest extends PresenterTestBase {
         ExperimentProxy experiment = mock(ExperimentProxy.class);
         when(experiment.getId()).thenReturn(1L);
         presenter.onBind();
-        PlaceRequest request = new PlaceRequest(NameTokens.experiment).with("id", experiment.getId().toString());
+        PlaceRequest request = new PlaceRequest.Builder()
+                .nameToken(NameTokens.experiment)
+                .with("id", experiment.getId().toString()).build();
         verify(placeManager).revealPlace(request);
     }
 

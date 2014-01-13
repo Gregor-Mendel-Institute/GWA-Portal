@@ -2,18 +2,22 @@ package com.gmi.nordborglab.browser.client.mvp.view.germplasm.passport;
 
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.editors.PassportDisplayEditor;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailPresenter.State;
 import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportDetailPresenter;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.client.util.CustomDataTable;
 import com.gmi.nordborglab.browser.client.util.CustomDataTable.Filter;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
+import com.gmi.nordborglab.browser.shared.proxy.LocalityProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StockProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.Scheduler;
@@ -35,7 +39,15 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.visualization.client.DataView;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
@@ -193,7 +205,7 @@ public class PassportDetailView extends ViewImpl implements
     }
 
     @Override
-    public void setInSlot(Object slot, Widget content) {
+    public void setInSlot(Object slot, IsWidget content) {
         super.setInSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
 
     }
@@ -224,12 +236,12 @@ public class PassportDetailView extends ViewImpl implements
     }
 
     private void initStockDataGrid() {
-        final PlaceRequest placeRequest = new ParameterizedPlaceRequest(NameTokens.stock);
+        final PlaceRequest.Builder placeRequest = new PlaceRequest.Builder().nameToken(NameTokens.stock);
         stockDataGrid.addColumn(new HyperlinkPlaceManagerColumn<StockProxy>(new HyperlinkCell(), placeManager) {
 
             @Override
             public HyperlinkParam getValue(StockProxy object) {
-                String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()));
+                String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()).build());
                 String name = object.getId().toString();
                 return new HyperlinkParam(name, url);
             }
@@ -262,12 +274,12 @@ public class PassportDetailView extends ViewImpl implements
     }
 
     private void initPhenotypeDataGrid() {
-        final PlaceRequest placeRequest = new ParameterizedPlaceRequest(NameTokens.phenotype);
+        final PlaceRequest.Builder placeRequest = new PlaceRequest.Builder().nameToken(NameTokens.phenotype);
         phenotypeDataGrid.addColumn(new HyperlinkPlaceManagerColumn<PhenotypeProxy>(new HyperlinkCell(), placeManager) {
 
             @Override
             public HyperlinkParam getValue(PhenotypeProxy object) {
-                String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()));
+                String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()).build());
                 String name = object.getId().toString();
                 return new HyperlinkParam(name, url);
             }
@@ -300,12 +312,12 @@ public class PassportDetailView extends ViewImpl implements
     }
 
     private void initStudyDataGrid() {
-        final PlaceRequest placeRequest = new ParameterizedPlaceRequest(NameTokens.study);
+        final PlaceRequest.Builder placeRequest = new PlaceRequest.Builder().nameToken(NameTokens.study);
         studyDataGrid.addColumn(new HyperlinkPlaceManagerColumn<StudyProxy>(new HyperlinkCell(), placeManager) {
 
             @Override
             public HyperlinkParam getValue(StudyProxy object) {
-                String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()));
+                String url = "#" + placeManager.buildHistoryToken(placeRequest.with("id", object.getId().toString()).build());
                 String name = object.getId().toString();
                 return new HyperlinkParam(name, url);
             }

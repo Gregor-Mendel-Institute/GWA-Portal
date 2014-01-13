@@ -346,7 +346,7 @@ public class SubmitAnalysisTask {
         notification.setAppUser(studyJob.getAppUser());
         notification.setType("gwasjob");
         String badge = getBadgeFromStatus(studyJob.getStatus());
-        String notificationText = "State of <a href=\"#!analysis/%s/overview\">GWAS-Job (%s)</a> on HPC cluster changed to <span class=\"badge %s\">%s</span>";
+        String notificationText = "State of <a href=\"/#/analysis/%s/overview\">GWAS-Job (%s)</a> on HPC cluster changed to <span class=\"badge %s\">%s</span>";
         notification.setText(String.format(notificationText, studyJob.getStudy().getId(), studyJob.getStudy().getName(), badge, studyJob.getStatus()));
         return notification;
     }

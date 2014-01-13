@@ -1,10 +1,10 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyOverviewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
@@ -23,7 +23,6 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
 import java.util.List;
 
@@ -53,12 +52,12 @@ public class StudyOverviewPresenter
     private String searchString = null;
     private List<FacetProxy> facets;
     private final PlaceManager placeManager;
-    public static final PlaceRequest place = new PlaceRequest(NameTokens.studyoverview);
+    public static final String placeToken = NameTokens.studyoverview;
 
     @Inject
     public StudyOverviewPresenter(final EventBus eventBus, final MyView view,
                                   final MyProxy proxy, final CdvManager cdvManager, final PlaceManager placeManager) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         getView().setUiHandlers(this);
         this.cdvManager = cdvManager;
         this.placeManager = placeManager;
@@ -87,10 +86,6 @@ public class StudyOverviewPresenter
         cdvManager.findAll(receiver, currentFilter, searchString, range.getStart(), range.getLength());
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, DiversityPresenter.TYPE_SetMainContent, this);
-    }
 
     @Override
     protected void onReset() {
@@ -117,13 +112,13 @@ public class StudyOverviewPresenter
 
     @Override
     public void updateSearchString(String searchString) {
-        PlaceRequest request = place;
+        PlaceRequest.Builder builder = new PlaceRequest.Builder().nameToken(placeToken);
         if (currentFilter != null) {
-            request = request.with("filter", currentFilter.name());
+            builder = builder.with("filter", currentFilter.name());
         }
         if (searchString != null && !searchString.equals("")) {
-            request = request.with("query", searchString);
+            builder = builder.with("query", searchString);
         }
-        placeManager.revealPlace(request);
+        placeManager.revealPlace(builder.build());
     }
 }

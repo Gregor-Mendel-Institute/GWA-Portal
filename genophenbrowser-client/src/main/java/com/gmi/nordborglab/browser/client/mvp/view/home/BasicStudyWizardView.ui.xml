@@ -2,10 +2,7 @@
              xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
-             xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
              xmlns:c='urn:import:com.google.gwt.user.cellview.client'
-             xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
-             xmlns:incubator="urn:import:com.github.gwtbootstrap.client.ui.incubator"
              xmlns:card="urn:import:com.gmi.nordborglab.browser.client.ui.card">
     <ui:with field="bootstrap" type="com.github.gwtbootstrap.client.ui.constants.Constants"/>
 

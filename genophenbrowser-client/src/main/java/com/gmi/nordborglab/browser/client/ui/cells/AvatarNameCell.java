@@ -1,23 +1,16 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
-import com.gmi.nordborglab.browser.shared.proxy.NewsItemProxy;
-import com.google.common.collect.ImmutableMap;
 import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.shared.*;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiRenderer;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,7 +47,7 @@ public class AvatarNameCell extends AbstractCell<AppUserProxy> {
         SafeUri avatarUrl = UriUtils.fromSafeConstant("javascript:;");
         if (value != null) {
             if (value.getId() != null) {
-                PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.profile).with("id", value.getId().toString());
+                PlaceRequest request = new PlaceRequest.Builder().nameToken(NameTokens.profile).with("id", value.getId().toString()).build();
                 link = UriUtils.fromSafeConstant("#" + placeManager.buildHistoryToken(request));
             }
             name = value.getFirstname() + " " + value.getLastname();

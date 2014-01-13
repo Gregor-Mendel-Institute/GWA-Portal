@@ -1,8 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadPhenotypeEvent;
@@ -11,7 +8,13 @@ import com.gmi.nordborglab.browser.client.events.StudyModifiedEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyListUiHandlers;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.view.client.AsyncDataProvider;
@@ -31,7 +34,6 @@ import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 import java.util.Arrays;
@@ -76,7 +78,7 @@ public class StudyListPresenter extends
                               final MyProxy proxy, final PlaceManager placeManager,
                               final PhenotypeManager phenotypeManager, final CdvManager cdvManager,
                               final CurrentUser currentUser) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, PhenotypeDetailTabPresenter.TYPE_SetTabContent);
         getView().setUiHandlers(this);
         this.currentUser = currentUser;
         this.placeManager = placeManager;
@@ -91,11 +93,6 @@ public class StudyListPresenter extends
         };
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this,
-                PhenotypeDetailTabPresenter.TYPE_SetTabContent, this);
-    }
 
     @Override
     protected void onReset() {
@@ -156,7 +153,10 @@ public class StudyListPresenter extends
                 @Override
                 public void onFailure(Void reason) {
                     getProxy().manualRevealFailed();
-                    placeManager.revealPlace(new ParameterizedPlaceRequest(NameTokens.phenotype).with("id", phenotypeIdToLoad.toString()));
+                    placeManager.revealPlace(new PlaceRequest.Builder()
+                            .nameToken(NameTokens.phenotype)
+                            .with("id", phenotypeIdToLoad.toString())
+                            .build());
                 }
 
                 @Override
@@ -166,7 +166,7 @@ public class StudyListPresenter extends
             }, getView().getDisplay().getVisibleRange());
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new ParameterizedPlaceRequest(NameTokens.experiments));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.experiments).build());
         }
     }
 
@@ -180,7 +180,9 @@ public class StudyListPresenter extends
         phenotype = event.getPhenotype();
         if (!phenotype.getId().equals(phenotypeId))
             studiesLoaded = false;
-        PlaceRequest request = new ParameterizedPlaceRequest(getProxy().getNameToken()).with("id", phenotype.getId().toString());
+        PlaceRequest request = new PlaceRequest.Builder()
+                .nameToken(getProxy().getNameToken())
+                .with("id", phenotype.getId().toString()).build();
         String historyToken = placeManager.buildHistoryToken(request);
         TabData tabData = getProxy().getTabData();
         getProxy().changeTab(new TabDataDynamic("Analyses (" + phenotype.getNumberOfStudies() + ")", tabData.getPriority(), historyToken));
@@ -215,7 +217,9 @@ public class StudyListPresenter extends
 
     @Override
     public void onNewStudy() {
-        PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.basicstudywizard).with("phenotype", phenotypeId.toString());
+        PlaceRequest request = new PlaceRequest.Builder()
+                .nameToken(NameTokens.basicstudywizard)
+                .with("phenotype", phenotypeId.toString()).build();
         placeManager.revealPlace(request);
     }
 
@@ -230,9 +234,9 @@ public class StudyListPresenter extends
     public void selectFilter(ConstEnums.TABLE_FILTER filter) {
         if (filter != currentFilter) {
             currentFilter = filter;
-            PlaceRequest request = placeManager.getCurrentPlaceRequest();
+            PlaceRequest.Builder request = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest());
             request.with("filter", filter.toString());
-            placeManager.updateHistory(request, true);
+            placeManager.updateHistory(request.build(), true);
             getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
             getView().setActiveNavLink(currentFilter);
         }

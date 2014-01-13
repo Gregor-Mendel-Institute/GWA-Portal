@@ -1,12 +1,12 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.main;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadUserNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.UserChangeEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.MainUiHandlers;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UserNotificationProxy;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
@@ -22,7 +22,10 @@ import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyStandard;
-import com.gwtplatform.mvp.client.proxy.*;
+import com.gwtplatform.mvp.client.proxy.PlaceManager;
+import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.client.proxy.Proxy;
+import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -72,7 +75,7 @@ public class MainPagePresenter extends
                              final AppUserFactory appUserFactory, final CurrentUser currentUser,
                              final PlaceManager placeManager,
                              final CustomRequestFactory rf) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, RevealType.RootLayout);
         getView().setUiHandlers(this);
         this.appUserFactory = appUserFactory;
         this.currentUser = currentUser;
@@ -80,11 +83,6 @@ public class MainPagePresenter extends
         this.rf = rf;
     }
 
-
-    @Override
-    protected void revealInParent() {
-        RevealRootLayoutContentEvent.fire(this, this);
-    }
 
     @Override
     protected void onBind() {

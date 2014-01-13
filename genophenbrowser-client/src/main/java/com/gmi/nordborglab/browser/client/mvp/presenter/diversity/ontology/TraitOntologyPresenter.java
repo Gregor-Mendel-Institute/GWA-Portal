@@ -1,19 +1,21 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.OntologyLoadedEvent;
 import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.OntologyUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.ontology.TraitOntologyView;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.Term2TermProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.gwt.view.client.*;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.Range;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -25,7 +27,6 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,17 +70,12 @@ public class TraitOntologyPresenter
                                   final OntologyManager ontologyManager,
                                   final PlaceManager placeManager,
                                   final PhenotypeManager phenotypeManager) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         this.phenotypeManager = phenotypeManager;
         this.placeManager = placeManager;
         this.ontologyManager = ontologyManager;
         getView().setUiHandlers(this);
         phenotypeDataProvider.addDataDisplay(getView().getPhenotypeDisplay());
-    }
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, DiversityPresenter.TYPE_SetMainContent, this);
     }
 
     @Override
@@ -154,9 +150,9 @@ public class TraitOntologyPresenter
     public void onSelectTerm(Term2TermProxy selectedTerm) {
         this.selectedTerm = null;
         if (selectedTerm != null) {
-            PlaceRequest request = placeManager.getCurrentPlaceRequest();
+            PlaceRequest.Builder request = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest());
             //TODO doesn't work when it checks if nameTokens match
-            placeManager.updateHistory(request.with("id", selectedTerm.getChild().getAcc()), true);
+            placeManager.updateHistory(request.with("id", selectedTerm.getChild().getAcc()).build(), true);
             loadTermDataAndDisplay(selectedTerm);
             OntologyLoadedEvent.fire(getEventBus(), selectedTerm.getChild());
         } else {

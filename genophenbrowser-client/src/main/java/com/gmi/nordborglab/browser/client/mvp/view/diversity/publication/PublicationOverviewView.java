@@ -1,10 +1,9 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.publication;
 
 import com.github.gwtbootstrap.client.ui.TextBox;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PublicationOverviewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.PublicationOverviewPresenter;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
@@ -23,7 +22,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
-import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
@@ -66,12 +64,12 @@ public class PublicationOverviewView extends ViewWithUiHandlers<PublicationOverv
         dataGrid.setEmptyTableWidget(new Label("No Records found"));
 
         dataGrid.setEmptyTableWidget(new Label("No Records found"));
-        final PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.publication);
+        final PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.publication);
         dataGrid.addColumn(new HyperlinkPlaceManagerColumn<PublicationProxy>(new HyperlinkCell(), placeManger) {
             @Override
             public HyperlinkPlaceManagerColumn.HyperlinkParam getValue(PublicationProxy object) {
                 String name = object.getFirstAuthor();
-                String url = "#" + placeManger.buildHistoryToken(request.with("id", object.getId().toString()));
+                String url = "#" + placeManger.buildHistoryToken(request.with("id", object.getId().toString()).build());
                 return new HyperlinkParam(name, url);
             }
         }, "Author");

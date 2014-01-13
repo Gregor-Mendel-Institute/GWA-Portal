@@ -1,15 +1,12 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PublicationOverviewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
-import com.gmi.nordborglab.browser.shared.proxy.StudyPageProxy;
-import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
-import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
@@ -24,7 +21,6 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,7 +54,7 @@ public class PublicationOverviewPresenter extends
     @Inject
     public PublicationOverviewPresenter(EventBus eventBus, MyView view, MyProxy proxy,
                                         final ExperimentManager experimentManager, final PlaceManager placeManager) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         this.placeManager = placeManager;
         this.experimentManager = experimentManager;
         getView().setUiHandlers(this);
@@ -70,11 +66,6 @@ public class PublicationOverviewPresenter extends
             }
         };
         dataProvider.addDataDisplay(getView().getDisplay());
-    }
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, DiversityPresenter.TYPE_SetMainContent, this);
     }
 
     private void requestPublications(final Range range) {
@@ -106,11 +97,11 @@ public class PublicationOverviewPresenter extends
 
     @Override
     public void updateSearchString(String searchString) {
-        PlaceRequest request = new PlaceRequest(NameTokens.publications);
+        PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.publications);
         if (searchString != null && !searchString.equals("")) {
-            request = request.with("query", searchString);
+            request.with("query", searchString);
         }
-        placeManager.revealPlace(request);
+        placeManager.revealPlace(request.build());
     }
 
 }

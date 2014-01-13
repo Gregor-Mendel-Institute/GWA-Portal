@@ -1,9 +1,8 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.home;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.HomeUiHandlers;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramFacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramProxy;
@@ -22,7 +21,8 @@ import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyStandard;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
-import com.gwtplatform.mvp.client.proxy.*;
+import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
+import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 import java.util.HashMap;
 import java.util.List;
@@ -64,18 +64,13 @@ public class HomePresenter extends
     @Inject
     public HomePresenter(final EventBus eventBus, final MyView view,
                          final MyProxy proxy, final CurrentUser currentUser, final CustomRequestFactory rf) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, HomeTabPresenter.TYPE_SetTabContent);
         getView().setUiHandlers(this);
         this.rf = rf;
         this.currentUser = currentUser;
         newsDataProvider.addDataDisplay(getView().getNewsDisplay());
     }
 
-
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, HomeTabPresenter.TYPE_SetTabContent, this);
-    }
 
     @Override
     protected void onReset() {

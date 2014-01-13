@@ -1,25 +1,16 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.publication;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.editors.PublicationDisplayEditor;
-import com.gmi.nordborglab.browser.client.editors.StudyDisplayEditor;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.PublicationDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentListDataGridColumns;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
-import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
-import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
-import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
@@ -27,6 +18,7 @@ import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriv
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
+import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 
 
 /**
@@ -41,7 +33,9 @@ public class PublicationDetailView extends ViewImpl implements PublicationDetail
     interface Binder extends UiBinder<Widget, PublicationDetailView> {
 
     }
-    public interface PublicationDisplayDriver extends RequestFactoryEditorDriver<PublicationProxy, PublicationDisplayEditor> {}
+
+    public interface PublicationDisplayDriver extends RequestFactoryEditorDriver<PublicationProxy, PublicationDisplayEditor> {
+    }
 
     private final Widget widget;
     private final PlaceManager placeManager;
@@ -49,7 +43,7 @@ public class PublicationDetailView extends ViewImpl implements PublicationDetail
 
     @UiField
     PublicationDisplayEditor publicationDisplayEditor;
-    @UiField(provided=true)
+    @UiField(provided = true)
     DataGrid<ExperimentProxy> experimentDataGrid;
     @UiField
     CustomPager experimentPager;
@@ -58,7 +52,7 @@ public class PublicationDetailView extends ViewImpl implements PublicationDetail
     public PublicationDetailView(final Binder binder, final PublicationDisplayDriver displayDriver,
                                  final CustomDataGridResources dataGridResources, final PlaceManager placeManager) {
         this.placeManager = placeManager;
-        experimentDataGrid = new DataGrid<ExperimentProxy>(10,dataGridResources,new EntityProxyKeyProvider<ExperimentProxy>());
+        experimentDataGrid = new DataGrid<ExperimentProxy>(10, dataGridResources, new EntityProxyKeyProvider<ExperimentProxy>());
         experimentDataGrid.setWidth("100%");
         widget = binder.createAndBindUi(this);
         this.displayDriver = displayDriver;
@@ -69,10 +63,10 @@ public class PublicationDetailView extends ViewImpl implements PublicationDetail
 
     private void initExperimentDataGrid() {
 
-        experimentDataGrid.addColumn(new ExperimentListDataGridColumns.NameColumn(placeManager,new ParameterizedPlaceRequest(NameTokens.experiment)),"Name");
-        experimentDataGrid.addColumn(new ExperimentListDataGridColumns.DesignColumn(),"Design");
-        experimentDataGrid.addColumn(new ExperimentListDataGridColumns.OriginatorColumn(),"Originator");
-        experimentDataGrid.addColumn(new ExperimentListDataGridColumns.CommentsColumn(),"Comments");
+        experimentDataGrid.addColumn(new ExperimentListDataGridColumns.NameColumn(placeManager, new PlaceRequest.Builder().nameToken(NameTokens.experiment)), "Name");
+        experimentDataGrid.addColumn(new ExperimentListDataGridColumns.DesignColumn(), "Design");
+        experimentDataGrid.addColumn(new ExperimentListDataGridColumns.OriginatorColumn(), "Originator");
+        experimentDataGrid.addColumn(new ExperimentListDataGridColumns.CommentsColumn(), "Comments");
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta;
 
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
 import com.gmi.nordborglab.browser.client.events.FilterModifiedEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.MetaAnalysisGeneUiHandlers;
@@ -10,9 +8,17 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.DropDownFilterIt
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FilterItemPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FilterPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.TypeaheadFilterItemPresenterWidget;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle;
 import com.gmi.nordborglab.browser.shared.dto.FilterItem;
-import com.gmi.nordborglab.browser.shared.proxy.*;
+import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FilterItemProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SearchFacetPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
+import com.gmi.nordborglab.browser.shared.proxy.StudyProtocolProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.MetaAnalysisRequest;
@@ -24,7 +30,6 @@ import com.google.common.collect.Lists;
 import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.Range;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
@@ -38,7 +43,6 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 
 import javax.annotation.Nullable;
 import javax.inject.Provider;
@@ -121,7 +125,7 @@ public class MetaAnalysisGenePresenter extends
                                      final Provider<DropDownFilterItemPresenterWidget> dropDownFilterProvider,
                                      final Provider<TypeaheadFilterItemPresenterWidget> typeaheadFilterProvider,
                                      final CurrentUser currentUser) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         getView().setUiHandlers(this);
         this.rf = rf;
         this.filterPresenterWidget = filterPresenterWidget;
@@ -183,10 +187,6 @@ public class MetaAnalysisGenePresenter extends
         }));
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, DiversityPresenter.TYPE_SetMainContent, this);
-    }
 
     @Override
     public void onSearchForGene(final SuggestOracle.Request request, final SuggestOracle.Callback callback) {
@@ -209,8 +209,8 @@ public class MetaAnalysisGenePresenter extends
 
     @Override
     public void onSelectGene(SuggestOracle.Suggestion suggestion) {
-        PlaceRequest request = placeManager.getCurrentPlaceRequest();
-        placeManager.revealPlace(request.with("id", suggestion.getReplacementString()));
+        PlaceRequest.Builder request = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest());
+        placeManager.revealPlace(request.with("id", suggestion.getReplacementString()).build());
     }
 
 

@@ -1,15 +1,12 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.meta;
 
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPAnnotProxy;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.i18n.client.CurrencyList;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.cellview.client.Column;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
@@ -34,7 +31,9 @@ public interface MetaSNPAnalysisDataGridColumns {
         @Override
         public HyperlinkParam getValue(MetaSNPAnalysisProxy object) {
             String name = object.getAnalysis();
-            PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.study).with("id", object.getAnalysisId().toString());
+            PlaceRequest request = new PlaceRequest.Builder()
+                    .nameToken(NameTokens.study)
+                    .with("id", object.getAnalysisId().toString()).build();
             String url = "#" + placeManager.buildHistoryToken(request);
             return new HyperlinkParam(name, url);
         }
@@ -49,7 +48,9 @@ public interface MetaSNPAnalysisDataGridColumns {
         @Override
         public HyperlinkParam getValue(MetaSNPAnalysisProxy object) {
             String name = object.getPhenotype();
-            PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.phenotype).with("id", object.getPhenotypeId().toString());
+            PlaceRequest request = new PlaceRequest.Builder()
+                    .nameToken(NameTokens.phenotype)
+                    .with("id", object.getPhenotypeId().toString()).build();
             String url = "#" + placeManager.buildHistoryToken(request);
             return new HyperlinkParam(name, url);
         }
@@ -64,7 +65,9 @@ public interface MetaSNPAnalysisDataGridColumns {
         @Override
         public HyperlinkParam getValue(MetaSNPAnalysisProxy object) {
             String name = object.getStudy();
-            PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.experiment).with("id", object.getStudyId().toString());
+            PlaceRequest request = new PlaceRequest.Builder()
+                    .nameToken(NameTokens.experiment)
+                    .with("id", object.getStudyId().toString()).build();
             String url = "#" + placeManager.buildHistoryToken(request);
             return new HyperlinkParam(name, url);
         }
@@ -120,7 +123,9 @@ public interface MetaSNPAnalysisDataGridColumns {
             if (gene == null || gene.isEmpty()) {
                 return null;
             }
-            PlaceRequest request = new ParameterizedPlaceRequest(NameTokens.metaAnalysisGenes).with("id", gene);
+            PlaceRequest request = new PlaceRequest.Builder()
+                    .nameToken(NameTokens.metaAnalysisGenes)
+                    .with("id", gene).build();
             String url = "#" + placeManager.buildHistoryToken(request);
             return new HyperlinkParam(gene, url);
 

@@ -7,6 +7,8 @@ import javax.validation.ConstraintViolation;
 
 import com.gmi.nordborglab.browser.client.events.*;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASUploadWizardPresenterWidget;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.Statistics;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
@@ -14,9 +16,6 @@ import com.gmi.nordborglab.browser.shared.util.PhenotypeHistogram;
 import com.google.common.collect.*;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.HasUiHandlers;
-import com.gmi.nordborglab.browser.client.CurrentUser;
-import com.gmi.nordborglab.browser.client.NameTokens;
-import com.gmi.nordborglab.browser.client.ParameterizedPlaceRequest;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyDetailUiHandlers;
@@ -102,7 +101,7 @@ public class StudyDetailPresenter extends
                                 final MyProxy proxy, final PlaceManager placeManager,
                                 final CdvManager cdvManager, final CurrentUser currentUser,
                                 final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget) {
-        super(eventBus, view, proxy);
+        super(eventBus, view, proxy, StudyTabPresenter.TYPE_SetTabContent);
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
         this.gwasUploadWizardPresenterWidget = gwasUploadWizardPresenterWidget;
@@ -132,11 +131,6 @@ public class StudyDetailPresenter extends
         };
     }
 
-    @Override
-    protected void revealInParent() {
-        RevealContentEvent.fire(this, StudyTabPresenter.TYPE_SetTabContent,
-                this);
-    }
 
     @Override
     protected void onBind() {
@@ -211,8 +205,7 @@ public class StudyDetailPresenter extends
             @Override
             public void onFailure(ServerFailure error) {
                 getProxy().manualRevealFailed();
-                placeManager.revealPlace(new PlaceRequest(
-                        NameTokens.experiments));
+                placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.experiments).build());
             }
         };
         try {
@@ -224,15 +217,16 @@ public class StudyDetailPresenter extends
             }
         } catch (NumberFormatException e) {
             getProxy().manualRevealFailed();
-            placeManager.revealPlace(new PlaceRequest(NameTokens.experiments));
+            placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.experiments).build());
         }
     }
 
     @ProxyEvent
     public void onLoad(LoadStudyEvent event) {
         study = event.getStudy();
-        PlaceRequest request = new ParameterizedPlaceRequest(getProxy()
-                .getNameToken()).with("id", study.getId().toString());
+        PlaceRequest request = new PlaceRequest.Builder()
+                .nameToken(getProxy().getNameToken())
+                .with("id", study.getId().toString()).build();
         String historyToken = placeManager.buildHistoryToken(request);
         TabData tabData = getProxy().getTabData();
         getProxy().changeTab(
@@ -316,7 +310,7 @@ public class StudyDetailPresenter extends
             public void onSuccess(Void response) {
                 PlaceRequest request = null;
                 if (placeManager.getHierarchyDepth() <= 1) {
-                    request = new ParameterizedPlaceRequest(NameTokens.phenotypeoverview);
+                    request = new PlaceRequest.Builder().nameToken(NameTokens.phenotypeoverview).build();
                 } else {
                     request = placeManager.getCurrentPlaceHierarchy().get(placeManager.getHierarchyDepth() - 2);
                 }

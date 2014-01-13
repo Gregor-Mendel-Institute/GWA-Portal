@@ -8,7 +8,7 @@ import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASPlotUiHandlers;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
-import com.gwtplatform.dispatch.shared.DispatchAsync;
+import com.gwtplatform.dispatch.rpc.shared.DispatchAsync;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.PresenterWidget;
 import com.gwtplatform.mvp.client.View;
@@ -20,9 +20,9 @@ import com.gwtplatform.mvp.client.View;
  * Time: 3:50 PM
  * To change this template use File | Settings | File Templates.
  */
-public class GWASPlotPresenterWidget  extends PresenterWidget<GWASPlotPresenterWidget.MyView> implements GWASPlotUiHandlers{
+public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWidget.MyView> implements GWASPlotUiHandlers {
 
-    public interface MyView extends View,HasUiHandlers<GWASPlotUiHandlers>{
+    public interface MyView extends View, HasUiHandlers<GWASPlotUiHandlers> {
 
         void drawGWASPlots(GWASDataDTO gwasData);
     }
@@ -39,14 +39,14 @@ public class GWASPlotPresenterWidget  extends PresenterWidget<GWASPlotPresenterW
     }
 
 
-    public void loadPlots(Long id,GetGWASDataAction.TYPE type) {
+    public void loadPlots(Long id, GetGWASDataAction.TYPE type) {
         this.id = id;
         this.type = type;
         loadDataFromServer();
     }
 
     private void loadDataFromServer() {
-        dispatch.execute(new GetGWASDataAction(id,type), new CustomCallback<GetGWASDataActionResult>(getEventBus()) {
+        dispatch.execute(new GetGWASDataAction(id, type), new CustomCallback<GetGWASDataActionResult>(getEventBus()) {
 
             @Override
             public void onSuccess(GetGWASDataActionResult result) {
