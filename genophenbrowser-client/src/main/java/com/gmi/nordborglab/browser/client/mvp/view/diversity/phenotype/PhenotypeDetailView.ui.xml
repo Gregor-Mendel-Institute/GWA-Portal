@@ -25,6 +25,12 @@
             margin-top: -4px;
             float: left;
         }
+
+        .buttontoolbar {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+        }
+
     </ui:style>
     <g:LayoutPanel addStyleNames="{style.container}" ui:field="container">
         <g:layer top="0" height="29em">
@@ -32,14 +38,27 @@
                 <g:west size="30">
                     <g:LayoutPanel>
                         <g:layer top="5px" height="40px" left="0" right="0">
-                            <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                            <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="actionBarPanel">
                                 <div class="{style.actionRow}">
-                                    <g:ToggleButton ui:field="edit"
-                                                    addStyleNames="{mainRes.style.button_blue}" visible="true">Edit
-                                    </g:ToggleButton>
-                                    <g:ToggleButton ui:field="delete"
-                                                    addStyleNames="{mainRes.style.button_red}" visible="true">Delete
-                                    </g:ToggleButton>
+                                    <b:ButtonToolbar addStyleNames="{style.buttontoolbar}">
+                                        <b:ButtonGroup>
+                                            <b:Button ui:field="edit" icon="EDIT" size="SMALL" type="PRIMARY"
+                                                      text="Edit"/>
+                                        </b:ButtonGroup>
+                                        <b:ButtonGroup>
+                                            <b:Button ui:field="delete" icon="REMOVE" size="SMALL" type="DANGER"
+                                                      text="Delete"/>
+                                        </b:ButtonGroup>
+                                        <b:ButtonGroup>
+                                            <b:DropdownButton text="Download" size="SMALL" type="INFO"
+                                                              icon="DOWNLOAD">
+                                                <b:NavLink text="Phenotype (CSV)"
+                                                           ui:field="navLinkPhenCSV"></b:NavLink>
+                                                <b:NavLink text="Phenotype (JSON)" target="_BLANK"
+                                                           ui:field="navLinkPhenJSON"></b:NavLink>
+                                            </b:DropdownButton>
+                                        </b:ButtonGroup>
+                                    </b:ButtonToolbar>
                                 </div>
                             </g:HTMLPanel>
                         </g:layer>

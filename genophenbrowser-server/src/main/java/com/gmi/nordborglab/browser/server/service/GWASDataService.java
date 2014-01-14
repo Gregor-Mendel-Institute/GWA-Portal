@@ -15,6 +15,9 @@ public interface GWASDataService {
     @PreAuthorize("hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
     public GWASData getGWASDataByStudyId(Long studyId);
 
+    @PreAuthorize("hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
+    public GWASData getGWASDataByStudyId(Long studyId, Double limit);
+
     @PreAuthorize("hasPermission(#gwasResultId,'com.gmi.nordborglab.browser.server.domain.util.GWASResult','READ')")
     public GWASData getGWASDataByViewerId(Long gwasResultId);
 
@@ -37,4 +40,7 @@ public interface GWASDataService {
     Study uploadStudyGWASResult(Long studyId, CommonsMultipartFile file) throws IOException;
 
     public void deleteStudyFile(Long id);
+
+    @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
+    String getHDF5StudyFile(Long id);
 }

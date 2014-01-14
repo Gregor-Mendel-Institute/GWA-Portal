@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.study;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Divider;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.ModalFooter;
 import com.github.gwtbootstrap.client.ui.NavLink;
@@ -39,8 +40,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
-import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
@@ -98,7 +99,6 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     private GeoChart geoChart = new GeoChart();
     private PieChart pieChart;
     private Modal gwasUploadPopup = new Modal(true);
-
     private Modal editPopup = new Modal(true);
     private Modal deletePopup = new Modal(true);
 
@@ -118,9 +118,9 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     @UiField
     HTMLPanel motionChartBtnContainer;
     @UiField
-    ToggleButton edit;
+    Button edit;
     @UiField
-    ToggleButton delete;
+    Button delete;
     @UiField(provided = true)
     MainResources mainRes;
     @UiField
@@ -128,12 +128,6 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     @UiField
     NavLink startBtn;
 
-    /*@UiField
-    Label jobStatusLb;*/
-
-
-    /*@UiField
-    ProgressBar jobStatusProgress;*/
     @UiField
     com.google.gwt.user.client.ui.Label modifiedLb;
     @UiField
@@ -157,6 +151,22 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     Button jobWaitingBtn;
     @UiField
     HTMLPanel gwasJobContainer;
+    @UiField
+    HTMLPanel actionBarPanel;
+    @UiField
+    LayoutPanel topLeftPanel;
+    @UiField
+    NavLink navLinkPvalCSV;
+    @UiField
+    NavLink navLinkPvalHDF5;
+    @UiField
+    NavLink navLinkPvalJSON;
+    @UiField
+    Divider downloadDivider;
+    @UiField
+    NavLink navLinkPhenCSV;
+    @UiField
+    NavLink navLinkPhenJSON;
 
     @Inject
     public StudyDetailView(final Binder binder, final StudyDisplayDriver displayDriver, final StudyEditDriver editDriver,
@@ -210,6 +220,9 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 
         gwasJobContainer.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         gwasJobContainer.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        actionBarPanel.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+
 
         Map<Range<Integer>, String> colorRanges = ImmutableMap.<Range<Integer>, String>builder()
                 .put(Range.closedOpen(0, 1), "rgba(0,0,0,0.4)")
@@ -264,6 +277,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         String jobTask = "";
         boolean showJobActionBtns = false;
         boolean showProgress = false;
+        boolean showDownloadLinks = true;
         Integer progress = 0;
         jobProgress.setHasError(false);
         if (job == null) {
@@ -278,6 +292,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         } else {
             jobTask = job.getTask();
             progress = job.getProgress();
+            showDownloadLinks = true;
             //jobStatusLb.setText(job.getStatus());
             if (job.getStatus().equalsIgnoreCase("Finished")) {
                 jobFinishedBtn.setVisible(true);
@@ -308,6 +323,10 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         }
         jobProgress.setProgress(progress);
         taskLb.setText(jobTask);
+        navLinkPvalCSV.setVisible(showDownloadLinks);
+        downloadDivider.setVisible(showDownloadLinks);
+        navLinkPvalHDF5.setVisible(showDownloadLinks);
+        navLinkPvalJSON.setVisible(showDownloadLinks);
     }
 
 
@@ -522,5 +541,14 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
             deletePopup.show();
         else
             deletePopup.hide();
+    }
+
+    @Override
+    public void setStudyId(Long id) {
+        navLinkPvalCSV.setHref("/provider/study/" + id + "/pvalues.csv");
+        navLinkPvalHDF5.setHref("/provider/study/" + id + "/pvalues.hdf5");
+        navLinkPvalJSON.setHref("/provider/study/" + id + "/pvalues.json");
+        navLinkPhenCSV.setHref("/provider/study/" + id + "/phenotypedata.csv");
+        navLinkPhenJSON.setHref("/provider/study/" + id + "/phenotypedata.json");
     }
 }

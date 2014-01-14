@@ -64,6 +64,8 @@ public class StudyDetailPresenter extends
         void showEditPopup(boolean show);
 
         void showDeletePopup(boolean show);
+
+        void setStudyId(Long id);
     }
 
     protected StudyProxy study;
@@ -178,6 +180,7 @@ public class StudyDetailPresenter extends
         getView().setHistogramChartData(histogramData);
         getView().scheduledLayout();
         getView().setPhenotypExplorerData(ImmutableSet.copyOf(study.getTraits()));
+        getView().setStudyId(study.getId());
         fireEvent(new LoadingIndicatorEvent(false));
     }
 

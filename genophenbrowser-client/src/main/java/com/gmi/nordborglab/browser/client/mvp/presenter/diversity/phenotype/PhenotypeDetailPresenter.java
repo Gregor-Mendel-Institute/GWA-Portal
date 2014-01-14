@@ -57,6 +57,8 @@ public class PhenotypeDetailPresenter
 
         PhenotypeEditDriver getEditDriver();
 
+        void setPhenotypeId(Long id);
+
         void setAcceptableValuesForUnitOfMeasure(
                 Collection<UnitOfMeasureProxy> values);
 
@@ -164,6 +166,7 @@ public class PhenotypeDetailPresenter
             getView().setHistogramChartData(null);
             getView().setPhenotypExplorerData(null);
         }
+        getView().setPhenotypeId(phenotype.getId());
         getView().scheduledLayout();
 
     }

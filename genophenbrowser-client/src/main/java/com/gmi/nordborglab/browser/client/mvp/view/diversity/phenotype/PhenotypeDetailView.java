@@ -86,15 +86,21 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     @UiField
     HTMLPanel motionChartBtnContainer;
     @UiField
-    ToggleButton edit;
+    Button edit;
     @UiField
-    ToggleButton delete;
+    Button delete;
     @UiField(provided = true)
     MainResources mainRes;
     @UiField
     NavPills statisticTypePills;
     @UiField
     LayoutPanel container;
+    @UiField
+    NavLink navLinkPhenCSV;
+    @UiField
+    NavLink navLinkPhenJSON;
+    @UiField
+    HTMLPanel actionBarPanel;
     protected DataTable histogramData;
     protected DataTable phenotypeExplorerData;
     protected DataTable geoChartData;
@@ -190,6 +196,8 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         });
         deleteBtn.setType(ButtonType.DANGER);
         deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
+        actionBarPanel.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
     }
 
     private void resetStatisticTypeLinkActive() {
@@ -256,6 +264,13 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     @Override
     public PhenotypeEditDriver getEditDriver() {
         return editDriver;
+    }
+
+
+    @Override
+    public void setPhenotypeId(Long id) {
+        navLinkPhenCSV.setHref("/provider/phenotype/" + id + "/phenotypedata.csv");
+        navLinkPhenJSON.setHref("/provider/phenotype/" + id + "/phenotypedata.json");
     }
 
     @Override
