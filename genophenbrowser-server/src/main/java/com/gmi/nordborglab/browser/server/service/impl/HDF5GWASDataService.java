@@ -85,14 +85,20 @@ public class HDF5GWASDataService implements GWASDataService {
 
     private static List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
 
+
     @Override
-    public GWASData getGWASDataByStudyId(Long studyId) {
+    public GWASData getGWASDataByStudyId(Long studyId, Double limit) {
         TraitUom trait = traitUomRepository.findByStudyId(studyId);
         GWASReader gwasReader = new HDF5GWASReader(GWAS_STUDY_FOLDER);
-        GWASData gwasData = gwasReader.readAll(studyId + ".hdf5", 2500D);
+        GWASData gwasData = gwasReader.readAll(studyId + ".hdf5", limit);
         gwasData.sortByPosition();
         gwasData = addAnnotation(gwasData);
         return gwasData;
+    }
+
+    @Override
+    public GWASData getGWASDataByStudyId(Long studyId) {
+        return getGWASDataByStudyId(studyId, 2500D);
     }
 
     @Override
@@ -210,6 +216,11 @@ public class HDF5GWASDataService implements GWASDataService {
         if (file.exists()) {
             file.delete();
         }
+    }
+
+    @Override
+    public String getHDF5StudyFile(Long id) {
+        return GWAS_STUDY_FOLDER + id + ".hdf5";
     }
 
     private GWASResult updateStats(GWASResult gwasResult, Map<String, ChrGWAData> data) {
