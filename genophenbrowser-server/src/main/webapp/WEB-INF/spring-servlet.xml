@@ -13,7 +13,11 @@
     <context:component-scan base-package="com.gmi.nordborglab.browser.server.controller.**"/>
 
 
-    <mvc:annotation-driven validator="validator">
+    <mvc:annotation-driven validator="validator" content-negotiation-manager="contentNegotiationManager" >
+        <mvc:message-converters register-defaults="true">
+            <bean class="com.gmi.nordborglab.browser.server.converters.CSVGwasDataConverter"></bean>
+            <bean class="com.gmi.nordborglab.browser.server.converters.CsvPhenotypeDataConverter"></bean>
+        </mvc:message-converters>
     </mvc:annotation-driven>
 
 
@@ -68,4 +72,22 @@
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
           p:basename="/WEB-INF/resources/messages">
     </bean>
+
+    <bean id="contentNegotiationManager"
+          class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="favorPathExtension" value="true" />
+        <property name="ignoreAcceptHeader" value="true"/>
+        <property name="useJaf" value="false"/>
+        <property name="defaultContentType" value="application/json" />
+        <property name="mediaTypes">
+            <map>
+                <entry key="json" value="application/json" />
+                <entry key="xls" value="application/vnd.ms-excel"/>
+                <entry key="csv" value="text/csv"/>
+                <entry key="hdf5" value="application/hdf5"/>
+            </map>
+        </property>
+    </bean>
+
+
 </beans>
