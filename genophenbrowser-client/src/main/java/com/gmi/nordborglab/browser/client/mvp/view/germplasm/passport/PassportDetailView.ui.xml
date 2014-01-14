@@ -89,6 +89,11 @@
         .top_container {
             min-height: 750px;
         }
+
+        .buttontoolbar {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+        }
     </ui:style>
 
     <g:LayoutPanel addStyleNames="{style.top_container}" ui:field="container">
@@ -99,15 +104,12 @@
                         <g:layer top="0px" height="35px" left="0" right="0">
                             <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
                                 <div class="{style.actionRow}">
-                                    <g:ToggleButton ui:field="edit"
-                                                    addStyleNames="{mainRes.style.button_blue}" visible="false">Edit
-                                    </g:ToggleButton>
-                                    <g:ToggleButton ui:field="save"
-                                                    addStyleNames="{mainRes.style.button_grey}" visible="false">Save
-                                    </g:ToggleButton>
-                                    <g:Anchor ui:field="cancel" visible="false"
-                                              addStyleNames="{mainRes.style.cursor}">Cancel
-                                    </g:Anchor>
+                                    <b:ButtonToolbar addStyleNames="{style.buttontoolbar}">
+                                        <b:ButtonGroup>
+                                            <b:Button ui:field="edit" icon="EDIT" size="SMALL" type="PRIMARY"
+                                                      text="Edit"/>
+                                        </b:ButtonGroup>
+                                    </b:ButtonToolbar>
                                 </div>
                             </g:HTMLPanel>
                         </g:layer>

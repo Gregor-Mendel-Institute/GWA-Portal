@@ -79,7 +79,7 @@
 
         }
 
-        .actionDropDown >  a {
+        .actionDropDown > a {
             margin-top: 0px !important;
             margin-bottom: 0px !important;
         }
@@ -145,23 +145,35 @@
         .fileinput {
             visibility: hidden;
         }
+
+        .buttontoolbar {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+        }
+
     </ui:style>
 
     <g:LayoutPanel>
         <g:layer left="0" top="0" bottom="0" width="30em">
             <g:LayoutPanel>
                 <g:layer top="5px" height="40px" left="0" right="0">
-                    <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                    <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="actionBarPanel">
                         <div class="{style.actionRow}">
-                            <g:ToggleButton ui:field="editBtn"
-                                            addStyleNames="{mainRes.style.button_blue}" visible="true">Edit
-                            </g:ToggleButton>
-                            <g:ToggleButton ui:field="deleteBtn"
-                                            addStyleNames="{mainRes.style.button_red}" visible="true">Delete
-                            </g:ToggleButton>
-                            <b:Tooltip ui:field="shareTooltip" placement="BOTTOM">
-                                <b:Button icon="LOCK" text="  Share" type="INFO" ui:field="shareBtn"/>
-                            </b:Tooltip>
+                            <b:ButtonToolbar addStyleNames="{style.buttontoolbar}">
+                                <b:ButtonGroup>
+                                    <b:Button ui:field="editBtn" icon="EDIT" size="SMALL" type="PRIMARY" text="Edit"/>
+                                </b:ButtonGroup>
+                                <b:ButtonGroup>
+                                    <b:Button ui:field="deleteBtn" icon="REMOVE" size="SMALL" type="DANGER"
+                                              text="Delete"/>
+                                </b:ButtonGroup>
+                                <b:ButtonGroup>
+                                    <b:Tooltip ui:field="shareTooltip" placement="BOTTOM">
+                                        <b:Button icon="LOCK" text="Share" size="SMALL" type="INFO"
+                                                  ui:field="shareBtn"/>
+                                    </b:Tooltip>
+                                </b:ButtonGroup>
+                            </b:ButtonToolbar>
                         </div>
                     </g:HTMLPanel>
                 </g:layer>

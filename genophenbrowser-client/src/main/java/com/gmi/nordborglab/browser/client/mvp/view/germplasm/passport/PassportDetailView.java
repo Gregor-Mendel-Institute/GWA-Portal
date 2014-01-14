@@ -88,11 +88,7 @@ public class PassportDetailView extends ViewImpl implements
     @UiField
     PassportDisplayEditor passportDisplayEditor;
     @UiField
-    ToggleButton edit;
-    @UiField
-    ToggleButton save;
-    @UiField
-    Anchor cancel;
+    Button edit;
     @UiField
     SimpleLayoutPanel mapContainer;
     @UiField
@@ -186,8 +182,6 @@ public class PassportDetailView extends ViewImpl implements
         //taxonomyEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.WRITE) == AccessControlEntryProxy.WRITE);
         edit.setVisible(state == State.DISPLAYING &&
                 (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.mvp.view.germplasm.taxonomy;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
+import com.github.gwtbootstrap.client.ui.Button;
 import com.gmi.nordborglab.browser.client.editors.TaxonomyDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.TaxonomyEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.TaxonomyDetailUiHandlers;
@@ -48,11 +49,7 @@ public class TaxonomyDetailView extends ViewWithUiHandlers<TaxonomyDetailUiHandl
     @UiField
     TaxonomyEditEditor taxonomyEditEditor;
     @UiField
-    ToggleButton edit;
-    @UiField
-    ToggleButton save;
-    @UiField
-    Anchor cancel;
+    Button edit;
     @UiField
     com.googlecode.gwt.charts.client.corechart.PieChart stockChart;
     @UiField
@@ -111,8 +108,6 @@ public class TaxonomyDetailView extends ViewWithUiHandlers<TaxonomyDetailUiHandl
         taxonomyEditEditor.setVisible((state == State.EDITING || state == State.SAVING) && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
         edit.setVisible(state == State.DISPLAYING &&
                 (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        save.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
-        cancel.setVisible(state == State.EDITING && (permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT);
     }
 
 
@@ -120,20 +115,6 @@ public class TaxonomyDetailView extends ViewWithUiHandlers<TaxonomyDetailUiHandl
     public void onEdit(ClickEvent e) {
         if (state == State.DISPLAYING) {
             getUiHandlers().onEdit();
-        }
-    }
-
-    @UiHandler("save")
-    public void onSave(ClickEvent e) {
-        if (state == State.EDITING) {
-            getUiHandlers().onSave();
-        }
-    }
-
-    @UiHandler("cancel")
-    public void onCancel(ClickEvent e) {
-        if (state == State.EDITING) {
-            getUiHandlers().onCancel();
         }
     }
 

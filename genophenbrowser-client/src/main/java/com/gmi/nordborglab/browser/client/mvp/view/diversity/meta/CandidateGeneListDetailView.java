@@ -48,6 +48,7 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
@@ -139,9 +140,9 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     @UiField
     Button shareBtn;
     @UiField
-    ToggleButton deleteBtn;
+    Button deleteBtn;
     @UiField
-    ToggleButton editBtn;
+    Button editBtn;
     @UiField
     Tooltip shareTooltip;
     @UiField
@@ -158,6 +159,8 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     Button uploadBtn;
     @UiField
     SimpleLayoutPanel enrichmentContainer;
+    @UiField
+    HTMLPanel actionBarPanel;
     private int minCharSize = 3;
     private final BiMap<ConstEnums.GENE_FILTER, NavLink> navLinkMap;
     private final CandidateGeneListDisplayDriver candidateGeneListDisplayDriver;
@@ -340,6 +343,8 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
                 getUiHandlers().refresh();
             }
         });
+        actionBarPanel.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.client.ui;
 
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
@@ -8,7 +10,6 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiChild;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -113,12 +114,10 @@ public class WizardPanel extends ResizeComposite {
         int visibleIndex = pageContainer.getVisibleWidgetIndex();
         if (visibleIndex + 1 == pageContainer.getWidgetCount()) {
             nextBtn.setText("Finish");
-            nextBtn.removeStyleName(mainRes.style().button_blue());
-            nextBtn.addStyleName(mainRes.style().button_red());
+            nextBtn.setType(ButtonType.DANGER);
         } else {
             nextBtn.setText("Next");
-            nextBtn.removeStyleName(mainRes.style().button_red());
-            nextBtn.addStyleName(mainRes.style().button_blue());
+            nextBtn.setType(ButtonType.PRIMARY);
         }
         if (visibleIndex == 0) {
             previousBtn.setVisible(false);

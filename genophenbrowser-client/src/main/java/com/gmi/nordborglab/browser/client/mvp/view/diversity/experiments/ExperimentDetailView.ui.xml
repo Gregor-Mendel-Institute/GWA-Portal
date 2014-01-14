@@ -108,23 +108,34 @@
             font-weight: 300;
             margin-bottom: 0;
         }
+
+        .buttontoolbar {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+        }
     </ui:style>
     <g:ScrollPanel>
         <g:LayoutPanel>
             <g:layer left="0" top="0" height="400px" width="35em">
                 <g:LayoutPanel>
                     <g:layer top="5px" height="40px" left="0" right="0">
-                        <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                        <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="actionBarPanel">
                             <div class="{style.actionRow}">
-                                <g:ToggleButton ui:field="edit"
-                                                addStyleNames="{mainRes.style.button_blue}" visible="true">Edit
-                                </g:ToggleButton>
-                                <g:ToggleButton ui:field="delete"
-                                                addStyleNames="{mainRes.style.button_red}" visible="true">Delete
-                                </g:ToggleButton>
-                                <b:Tooltip ui:field="shareTooltip" placement="BOTTOM">
-                                    <b:Button icon="LOCK" text="  Share" type="INFO" ui:field="share"/>
-                                </b:Tooltip>
+                                <b:ButtonToolbar addStyleNames="{style.buttontoolbar}">
+                                    <b:ButtonGroup>
+                                        <b:Button ui:field="edit" icon="EDIT" size="SMALL" type="PRIMARY" text="Edit"/>
+                                    </b:ButtonGroup>
+                                    <b:ButtonGroup>
+                                        <b:Button ui:field="delete" icon="REMOVE" size="SMALL" type="DANGER"
+                                                  text="Delete"/>
+                                    </b:ButtonGroup>
+                                    <b:ButtonGroup>
+                                        <b:Tooltip ui:field="shareTooltip" placement="BOTTOM">
+                                            <b:Button icon="LOCK" text="Share" size="SMALL" type="INFO"
+                                                      ui:field="share"/>
+                                        </b:Tooltip>
+                                    </b:ButtonGroup>
+                                </b:ButtonToolbar>
                             </div>
                         </g:HTMLPanel>
                     </g:layer>

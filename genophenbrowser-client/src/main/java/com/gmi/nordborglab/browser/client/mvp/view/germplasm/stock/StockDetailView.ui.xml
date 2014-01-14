@@ -3,6 +3,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -18,6 +19,12 @@
             color: #005C9C;
             font-size: 15px;
             text-align: center;
+            float: right;
+        }
+
+        .buttontoolbar {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
         }
     </ui:style>
     <g:DockLayoutPanel unit="EM">
@@ -29,15 +36,11 @@
                 <g:layer top="0px" height="35px" left="0" right="0">
                     <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
                         <div class="{style.actionRow}">
-                            <g:ToggleButton ui:field="edit"
-                                            addStyleNames="{mainRes.style.button_blue}" visible="false">Edit
-                            </g:ToggleButton>
-                            <g:ToggleButton ui:field="save"
-                                            addStyleNames="{mainRes.style.button_grey}" visible="false">Save
-                            </g:ToggleButton>
-                            <g:Anchor ui:field="cancel" visible="false"
-                                      addStyleNames="{mainRes.style.cursor}">Cancel
-                            </g:Anchor>
+                            <b:ButtonToolbar addStyleNames="{style.buttontoolbar}">
+                                <b:ButtonGroup>
+                                    <b:Button ui:field="edit" icon="EDIT" size="SMALL" type="PRIMARY" text="Edit"/>
+                                </b:ButtonGroup>
+                            </b:ButtonToolbar>
                         </div>
                     </g:HTMLPanel>
                 </g:layer>

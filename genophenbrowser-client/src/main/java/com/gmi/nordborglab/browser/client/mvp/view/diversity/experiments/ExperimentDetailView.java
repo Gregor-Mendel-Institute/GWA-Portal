@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
+import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.Form;
 import com.github.gwtbootstrap.client.ui.Modal;
@@ -41,6 +42,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.ToggleButton;
@@ -82,9 +84,9 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     @UiField(provided = true)
     ExperimentDisplayEditor experimentDisplayEditor;
     @UiField
-    ToggleButton edit;
+    Button edit;
     @UiField
-    ToggleButton delete;
+    Button delete;
     @UiField
     com.github.gwtbootstrap.client.ui.Button share;
     @UiField(provided = true)
@@ -103,6 +105,8 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     PieChart ontologyChart;
     @UiField
     ButtonGroup ontologyTypeBtnGrp;
+    @UiField
+    HTMLPanel actionBarPanel;
     private final ExperimentEditDriver experimentEditDriver;
     private final ExperimentDisplayDriver experimentDisplayDriver;
     private final MainResources resources;
@@ -343,7 +347,8 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         });
         deleteBtn.setType(ButtonType.DANGER);
         deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
-        share.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        actionBarPanel.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
     }
 
     private void initDataGrid() {
