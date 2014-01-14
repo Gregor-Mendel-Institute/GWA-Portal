@@ -1,26 +1,29 @@
 package com.gmi.nordborglab.browser.server.rest;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by uemit.seren on 14.01.14.
  */
 public class PhenotypeValue {
 
     private Long passportId;
-    private String value;
+    private Map<String, String> values;
 
     public PhenotypeValue() {
     }
 
-    public PhenotypeValue(Long passportId, String value) {
+    public PhenotypeValue(Long passportId, Map<String, String> values) {
         this.passportId = passportId;
-        this.value = value;
+        this.values = values;
     }
 
     public Long getPassportId() {
         return passportId;
     }
 
-    public String getValue() {
-        return value;
+    public Map<String, String> getValue() {
+        return values;
     }
 }

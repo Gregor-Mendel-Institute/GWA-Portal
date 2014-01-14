@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.controller;
 
 import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeValue;
 import com.gmi.nordborglab.browser.server.data.annotation.FetchGeneInfoResult;
@@ -22,10 +23,22 @@ import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
 import com.gmi.nordborglab.browser.server.service.TraitService;
+import com.gmi.nordborglab.browser.server.service.TraitUomService;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Ordering;
+import com.google.common.primitives.Ints;
 import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.render.JsonRenderer;
 import org.apache.commons.io.IOUtils;
@@ -48,7 +61,11 @@ import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 @Controller
@@ -60,6 +77,9 @@ public class RestProviderController {
 
     @Resource
     private TraitService traitService;
+
+    @Resource
+    private TraitUomService traitUomService;
 
     @Resource
     private HelperService helperService;
@@ -106,14 +126,77 @@ public class RestProviderController {
     PhenotypeData getStudyPhenotypeData(@PathVariable("id") Long id) {
         Study study = cdvService.findStudy(id);
         study = helperService.applyTransformation(study);
-        List<PhenotypeValue> values = Lists.newArrayList(Iterables.transform(study.getTraits(), new Function<Trait, PhenotypeValue>() {
+        List<PhenotypeValue> values = getPhenotypeDataFromTraits(study.getTraits());
+        return new PhenotypeData(study.getTransformation().getName(), id.toString(), values);
+    }
+
+
+    @RequestMapping(method = RequestMethod.GET, value = "/phenotype/{id}/phenotypedata")
+    public
+    @ResponseBody
+    PhenotypeData getPhenotypeData(@PathVariable("id") Long id) {
+        TraitUom traitUom = traitUomService.findPhenotype(id);
+        List<PhenotypeValue> values = getPhenotypeDataFromTraits(traitUom.getTraits());
+        return new PhenotypeData("", id.toString(), values);
+    }
+
+
+    private List<PhenotypeValue> getPhenotypeDataFromTraits(Set<Trait> traits) {
+
+        // Group by PassportId
+        Ordering<Multiset.Entry<?>> descendingOrder = new Ordering<Multiset.Entry<?>>() {
+            @Override
+            public int compare(Multiset.Entry<?> left, Multiset.Entry<?> right) {
+                return Ints.compare(left.getCount(), right.getCount());
+            }
+        }.reverse();
+
+
+        // sort by number of trait values
+        ImmutableListMultimap<Long, Trait> grouped = Multimaps.index(traits, new Function<Trait, Long>() {
             @Nullable
             @Override
-            public PhenotypeValue apply(@Nullable Trait input) {
-                return new PhenotypeValue(input.getObsUnit().getStock().getPassport().getId(), input.getValue());
+            public Long apply(@Nullable Trait input) {
+                return input.getObsUnit().getStock().getPassport().getId();
             }
-        }));
-        return new PhenotypeData(study.getTransformation().getName(), id.toString(), values);
+        });
+        ImmutableMultimap.Builder<Long, Trait> builder = ImmutableMultimap.builder();
+        for (Multiset.Entry<Long> entry : descendingOrder.sortedCopy(grouped.keys().entrySet())) {
+            builder.putAll(entry.getElement(), grouped.get(entry.getElement()));
+        }
+        ImmutableMultimap<Long, Trait> groupedAndSorted = builder.build();
+        List<PhenotypeValue> values = Lists.newArrayList();
+        for (Map.Entry<Long, Collection<Trait>> entry : groupedAndSorted.asMap().entrySet()) {
+            Long passportId = entry.getKey();
+
+            //sort by statisticType
+            Map<String, String> phenValues = Maps.transformValues(
+                    Maps.uniqueIndex(
+                            Ordering.natural().onResultOf(
+                                    new Function<Trait, Long>() {
+                                        @Nullable
+                                        @Override
+                                        public Long apply(@Nullable Trait input) {
+                                            return input.getStatisticType().getId();
+                                        }
+                                    }).immutableSortedCopy(entry.getValue()),
+                            new Function<Trait, String>() {
+                                @Nullable
+                                @Override
+                                public String apply(@Nullable Trait input) {
+                                    return input.getStatisticType().getStatType();
+                                }
+                            }),
+                    new Function<Trait, String>() {
+                        @Nullable
+                        @Override
+                        public String apply(@Nullable Trait input) {
+                            return input.getValue();
+                        }
+                    });
+            values.add(new PhenotypeValue(passportId, phenValues));
+        }
+        return values;
     }
 
 
