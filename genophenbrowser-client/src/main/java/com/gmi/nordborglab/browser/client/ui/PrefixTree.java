@@ -429,7 +429,7 @@ class PrefixTree extends AbstractCollection<String> {
 
                     // Provide as many suggestions as will fit into the remaining limit.
                     // If there is only one suggestion, include it.
-                    if ((subtree.@com.gmi.nordborglab.browser.client.ui.PrefixTree::size < = limit - output.@java.util.Collection::size()()) ||
+                    if ((subtree.@com.gmi.nordborglab.browser.client.ui.PrefixTree::size <= limit - output.@java.util.Collection::size()()) ||
                         (subtree.@com.gmi.nordborglab.browser.client.ui.PrefixTree::size == 1)) {
                         subtree.@com.gmi.nordborglab.browser.client.ui.PrefixTree::dump(Ljava/util/Collection;Ljava/lang/String;)(output, target);
 
