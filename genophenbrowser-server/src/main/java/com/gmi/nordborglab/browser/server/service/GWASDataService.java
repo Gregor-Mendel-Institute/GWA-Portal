@@ -16,7 +16,7 @@ public interface GWASDataService {
     public GWASData getGWASDataByStudyId(Long studyId);
 
     @PreAuthorize("hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
-    public GWASData getGWASDataByStudyId(Long studyId, Double limit);
+    public GWASData getGWASDataByStudyId(Long studyId, Double limit, boolean addAnnotation);
 
     @PreAuthorize("hasPermission(#gwasResultId,'com.gmi.nordborglab.browser.server.domain.util.GWASResult','READ')")
     public GWASData getGWASDataByViewerId(Long gwasResultId);

@@ -105,9 +105,9 @@ public class RestProviderController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/study/{id}/pvalues")
     public
-    @ResponseBody
+    @ResponseBody                                       
     GWASData getPvalues(@PathVariable("id") Long id) {
-        GWASData data = gwasDataService.getGWASDataByStudyId(id, null);
+        GWASData data = gwasDataService.getGWASDataByStudyId(id, null,false);
         data.setFilename(id + ".pvals");
         return data;
     }

@@ -87,18 +87,20 @@ public class HDF5GWASDataService implements GWASDataService {
 
 
     @Override
-    public GWASData getGWASDataByStudyId(Long studyId, Double limit) {
+    public GWASData getGWASDataByStudyId(Long studyId, Double limit,boolean addAnnotation) {
         TraitUom trait = traitUomRepository.findByStudyId(studyId);
         GWASReader gwasReader = new HDF5GWASReader(GWAS_STUDY_FOLDER);
         GWASData gwasData = gwasReader.readAll(studyId + ".hdf5", limit);
         gwasData.sortByPosition();
-        gwasData = addAnnotation(gwasData);
+        if (addAnnotation) {
+            gwasData = addAnnotation(gwasData);
+        }
         return gwasData;
     }
 
     @Override
     public GWASData getGWASDataByStudyId(Long studyId) {
-        return getGWASDataByStudyId(studyId, 2500D);
+        return getGWASDataByStudyId(studyId, 2500D,true);
     }
 
     @Override
