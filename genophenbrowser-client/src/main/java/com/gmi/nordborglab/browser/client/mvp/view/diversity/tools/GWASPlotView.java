@@ -33,10 +33,42 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
 
     }
 
+    class GWASFilterChangeHandler implements GWASGeneViewer.FilterChangeHandler {
+
+        private GWASGeneViewer gwasViewer;
+
+        GWASFilterChangeHandler(GWASGeneViewer gwasViewer) {
+            this.gwasViewer = gwasViewer;
+        }
+
+        @Override
+        public void onChange() {
+            GWASGeneViewer.MINOR_FILTER filterType = gwasViewer.getFilterType();
+            double value = 0.0;
+            switch (filterType) {
+                case MAC:
+                    value = gwasViewer.getMinMAC();
+                    break;
+                case MAF:
+                    value = gwasViewer.getMinMAF();
+                    break;
+            }
+            for (GWASGeneViewer viewer : gwasGeneViewers) {
+                if (viewer != gwasViewer) {
+                    viewer.setFilterType(filterType);
+                    viewer.setMinMAC(gwasViewer.getMinMAC());
+                    viewer.setMinMAF(gwasViewer.getMinMAF());
+                    viewer.filterAndDraw();
+                }
+            }
+        }
+    }
+
     private final Widget widget;
     private String[] colors = {"blue", "green", "red", "cyan", "purple"};
     private String[] gene_mark_colors = {"red", "red", "blue", "red", "green"};
     protected List<GWASGeneViewer> gwasGeneViewers = new ArrayList<GWASGeneViewer>();
+    protected List<GWASGeneViewer.FilterChangeHandler> filterChangeHandlers = new ArrayList<GWASGeneViewer.FilterChangeHandler>();
     private final DataSource geneDataSource;
 
     @UiField
@@ -69,6 +101,9 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
             if (chart == null)
             {
                 chart = new GWASGeneViewer("Chr"+i.toString(), color, gene_marker_color, geneDataSource,null);
+                GWASFilterChangeHandler filterChangeHandler = new GWASFilterChangeHandler(chart);
+                chart.setFilterChangeHandler(filterChangeHandler);
+                filterChangeHandlers.add(filterChangeHandler);
                 gwasGeneViewers.add(chart);
                 chart.setGeneInfoUrl("http://arabidopsis.org/servlets/TairObject?name={0}&type=gene");
                 container.add((IsWidget)chart);
