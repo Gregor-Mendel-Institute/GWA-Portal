@@ -28,13 +28,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <mavenVersion>3.0</mavenVersion>
-        <guava.version>15.0</guava.version>
-        <gwt.version>2.5.1</gwt.version>
+        <guava.version>16.0.1</guava.version>
+        <gwt.version>2.6.0</gwt.version>
         <junit.version>4.11</junit.version>
         <mockito.version>1.9.5</mockito.version>
         <hibernate-validator.version>4.2.0.Final</hibernate-validator.version>
-        <slf4j.version>1.7.5</slf4j.version>
-        <logback.version>1.0.13</logback.version>
+        <slf4j.version>1.7.6</slf4j.version>
+        <logback.version>1.1.1</logback.version>
         <maven.clean.plugin>2.5</maven.clean.plugin>
         <maven.deploy.plugin>2.7</maven.deploy.plugin>
         <maven.install.plugin>2.4</maven.install.plugin>
