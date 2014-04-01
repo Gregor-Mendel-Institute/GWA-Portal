@@ -108,8 +108,8 @@
         <property name="password" value="${database.password}"/>
     </bean>
 
-
-    <bean id="hibernateStatisticsBean" class="org.hibernate.jmx.StatisticsService">
+    <!-- disabled because of this https://hibernate.atlassian.net/browse/HHH-6190 -->
+    <!--<bean id="hibernateStatisticsBean" class="org.hibernate.jmx.StatisticsService">
         <property name="statisticsEnabled" value="true"/>
         <property name="sessionFactory" value="#{entityManagerFactory.sessionFactory}"/>
     </bean>
@@ -120,7 +120,7 @@
                 <entry key="Hibernate:application=Statistics" value-ref="hibernateStatisticsBean"/>
             </map>
         </property>
-    </bean>
+    </bean>-->
 
 </beans>
 
