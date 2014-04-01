@@ -35,7 +35,7 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 public class StudyDetailPresenter extends
@@ -172,7 +172,8 @@ public class StudyDetailPresenter extends
         getView().showActionBtns(currentUser.hasEdit(study));
         getProxy().getTab().setTargetHistoryToken(
                 placeManager.buildHistoryToken(placeManager
-                        .getCurrentPlaceRequest()));
+                        .getCurrentPlaceRequest())
+        );
         calculateGeoChartData();
         calculateHistogramData();
         getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
@@ -231,7 +232,8 @@ public class StudyDetailPresenter extends
         TabData tabData = getProxy().getTabData();
         getProxy().changeTab(
                 new TabDataDynamic(tabData.getLabel(), tabData.getPriority(),
-                        historyToken));
+                        historyToken)
+        );
     }
 
     private void calculateHistogramData() {

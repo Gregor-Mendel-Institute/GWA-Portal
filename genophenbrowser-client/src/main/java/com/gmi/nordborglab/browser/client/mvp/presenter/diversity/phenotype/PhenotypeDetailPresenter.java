@@ -42,7 +42,7 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 
@@ -347,7 +347,8 @@ public class PhenotypeDetailPresenter
             builder.put(
                     lowBound,
                     data.subMultiset(lowBound, BoundType.CLOSED,
-                            upperBound, BoundType.CLOSED).size());
+                            upperBound, BoundType.CLOSED).size()
+            );
         }
         builder.put(max, 0);
         histogramData = builder.build();

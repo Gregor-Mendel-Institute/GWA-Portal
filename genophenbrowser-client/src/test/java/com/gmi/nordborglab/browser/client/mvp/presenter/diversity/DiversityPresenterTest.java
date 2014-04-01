@@ -5,7 +5,7 @@ import com.gmi.nordborglab.browser.client.testutils.PresenterTestBase;
 import com.gmi.nordborglab.browser.client.testutils.PresenterTestModule;
 import com.gmi.nordborglab.browser.shared.proxy.BreadcrumbItemProxy;
 import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

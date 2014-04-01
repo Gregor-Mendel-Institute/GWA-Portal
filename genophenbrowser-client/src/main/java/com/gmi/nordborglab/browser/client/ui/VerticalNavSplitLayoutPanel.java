@@ -67,19 +67,6 @@ public class VerticalNavSplitLayoutPanel extends Composite implements HasWidgets
             splitter.addStyleName(style.splitter_min());
         }
         isHidden = !isHidden;
-        /*workaround for bug http://code.google.com/p/google-web-toolkit/issues/detail?id=7188*/
-        layoutPanel.animate(0, new AnimationCallback() {
-
-            @Override
-            public void onLayout(Layer layer, double progress) {
-            }
-
-            @Override
-            public void onAnimationComplete() {
-                layoutPanel.forceLayout();
-            }
-        });
-        ;
     }
 
     @Override
