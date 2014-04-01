@@ -56,7 +56,7 @@ import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.annotations.UseGatekeeper;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 import javax.annotation.Nullable;
@@ -263,7 +263,9 @@ public class StudyWizardPresenter extends
                         .subList(
                                 1,
                                 currentUser.getAppData().getStatisticTypeList()
-                                        .size()));
+                                        .size()
+                        )
+        );
         getView().getPhenotypesDisplay().setSelectionModel(
                 phenotypeSelectionModel);
         phenotypeSelectionModel
@@ -403,7 +405,8 @@ public class StudyWizardPresenter extends
                                     }
 
                                 }, phenotype.getId(), study.getAlleleAssay()
-                                .getId(), null);
+                                        .getId(), null
+                        );
                     }
                     state = STATE.PHENOTYPE;
                 }
@@ -477,7 +480,8 @@ public class StudyWizardPresenter extends
                                 missingGenotypesDataProvider.setList(response);
                             }
 
-                        }, phenotypeId, value.getId());
+                        }, phenotypeId, value.getId()
+                );
             }
         }
     }
@@ -514,7 +518,8 @@ public class StudyWizardPresenter extends
             builder.put(
                     lowBound,
                     histogramData.subMultiset(lowBound, BoundType.CLOSED,
-                            upperBound, BoundType.CLOSED).size());
+                            upperBound, BoundType.CLOSED).size()
+            );
         }
         builder.put(max, 0);
         ImmutableSortedMap<Double, Integer> histogram = builder.build();
@@ -565,7 +570,8 @@ public class StudyWizardPresenter extends
                                         .getPassport().getCollection()
                                         .getLocality().getOrigcty();
                             }
-                        }));
+                        }
+                ));
         getView().setCountriesToFilter(countriesToFilter);
         phenotypesDataProvider.setList(filteredPhenotypeValues);
     }

@@ -8,7 +8,7 @@ import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

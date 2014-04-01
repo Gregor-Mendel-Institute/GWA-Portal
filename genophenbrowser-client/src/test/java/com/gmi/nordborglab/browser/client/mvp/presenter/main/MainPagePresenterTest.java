@@ -8,7 +8,7 @@ import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.vm.AutoBeanFactorySource;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import org.junit.Before;
 import org.junit.Test;
 

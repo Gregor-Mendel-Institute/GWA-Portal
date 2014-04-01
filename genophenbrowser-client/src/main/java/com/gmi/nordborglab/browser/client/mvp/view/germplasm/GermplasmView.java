@@ -24,7 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -208,7 +208,8 @@ public class GermplasmView extends ViewImpl implements
                     subItem.setTargetHistoryToken(placeManager
                             .buildHistoryToken(requestPassports.with(
                                     "alleleAssayId", alleleAssay.getId()
-                                    .toString()).build()));
+                                            .toString()
+                            ).build()));
                     subItem.getElement().setAttribute("alleleAssayId",
                             alleleAssay.getId().toString());
                     requestPassports.with("alleleAssayId", alleleAssay.getId()
