@@ -17,7 +17,7 @@ public class PreBootstrapperImpl implements PreBootstrapper {
             @Override
             public void onUncaughtException(Throwable e) {
                 Logger logger = Logger.getLogger("uncaught");
-                logger.log(Level.SEVERE, "Uncaught Exception", e);
+                logger.log(Level.SEVERE, "Uncaught Exception" + e.getMessage(), e);
             }
         });
     }
