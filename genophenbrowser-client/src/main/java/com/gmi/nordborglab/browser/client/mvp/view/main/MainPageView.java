@@ -263,7 +263,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
         notifyBubble.removeClassName("wiggle");
         notifyBubble.getStyle().setDisplay(newCount > 0 ? Display.INLINE : Display.NONE);
         if (newCount > 0) {
-            $(notifyBubble).animate(null, 1, new Function() {
+            $(notifyBubble).animate("", 1, new Function() {
                 public void f(Element e) {
                     e.addClassName("wiggle");
                 }
