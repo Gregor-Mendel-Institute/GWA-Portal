@@ -1,6 +1,8 @@
 package com.gmi.nordborglab.browser.server.controller;
 
 import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.data.isatab.IsaTabExporter;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeValue;
@@ -19,6 +21,7 @@ import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.StudyGWASData;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.gmi.nordborglab.browser.server.service.CdvService;
+import com.gmi.nordborglab.browser.server.service.ExperimentService;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
@@ -61,6 +64,7 @@ import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -73,7 +77,13 @@ import java.util.Set;
 public class RestProviderController {
 
     @Resource
+    private IsaTabExporter isaTabExporter;
+
+    @Resource
     private CdvService cdvService;
+
+    @Resource
+    private ExperimentService experimentService;
 
     @Resource
     private TraitService traitService;
@@ -117,6 +127,15 @@ public class RestProviderController {
     @ResponseBody
     FileSystemResource getPvaluesHDF5(@PathVariable("id") Long id) {
         return new FileSystemResource(gwasDataService.getHDF5StudyFile(id));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/study/{id}/{filename}", produces = {"application/zip"})
+    public
+    @ResponseBody
+    FileSystemResource getISATab(@PathVariable("id") Long id) throws IOException {
+        Experiment experiment = experimentService.findExperiment(id);
+        FileSystemResource file = new FileSystemResource(isaTabExporter.save(experiment, true));
+        return file;
     }
 
 

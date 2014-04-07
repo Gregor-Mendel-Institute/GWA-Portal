@@ -23,6 +23,7 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import javax.swing.text.html.parser.Entity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,11 @@ public class AclManager {
         return aclService.readAclById(oid);
     }
 
+
+    public <T extends SecureEntity> AppUser getAppUserFromEntity(T entity) {
+        Acl acl = getAcl(entity);
+        return getAppUserFromSid(acl.getOwner());
+    }
 
     public <T extends SecureEntity> List<T> setPermissionAndOwners(List<T> entities) {
         List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
