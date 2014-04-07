@@ -5,6 +5,7 @@ import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.Form;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.ModalFooter;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.Tooltip;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
@@ -107,6 +108,8 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     ButtonGroup ontologyTypeBtnGrp;
     @UiField
     HTMLPanel actionBarPanel;
+    @UiField
+    NavLink navLinkIsaTab;
     private final ExperimentEditDriver experimentEditDriver;
     private final ExperimentDisplayDriver experimentDisplayDriver;
     private final MainResources resources;
@@ -581,5 +584,10 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
             currentOntologyType = ConstEnums.ONTOLOGY_TYPE.ENVIRONMENT;
             drawDataTable();
         }
+    }
+
+    @Override
+    public void setDownloadLink(String url) {
+        navLinkIsaTab.setHref(url);
     }
 }

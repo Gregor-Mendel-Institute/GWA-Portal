@@ -95,6 +95,8 @@ public class ExperimentDetailPresenter
         void setShareTooltip(String toopltipMsg, IconType icon);
 
         void displayStats(List<FacetProxy> stats, int numberOfPhenotypes, long numberOfAnalysis);
+
+        void setDownloadLink(String url);
     }
 
     public static enum State {
@@ -200,6 +202,10 @@ public class ExperimentDetailPresenter
         getView().setShareTooltip(toolTipText, toolTipIcon);
         publicationDataProvider.setList(ImmutableList.copyOf(experiment.getPublications()));
         getView().displayStats(experiment.getStats(), experiment.getNumberOfPhenotypes(), experiment.getNumberOfAnalyses());
+        getView().setDownloadLink(placeManager.buildHistoryToken(new PlaceRequest.Builder()
+                .nameToken(NameTokens.isaTabDownload)
+                .with("id", experiment.getId().toString())
+                .with("name", experiment.getName().replace(" ", "_") + ".zip").build()));
         fireEvent(new LoadingIndicatorEvent(false));
     }
 

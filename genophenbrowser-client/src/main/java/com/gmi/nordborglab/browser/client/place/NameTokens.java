@@ -42,6 +42,7 @@ public class NameTokens {
     public static final String experimentsEnrichments = "/study/{id}/enrichments";
     public static final String phenotypeEnrichments = "/phenotype/{id}/enrichments";
     public static final String studyEnrichments = "/analysis/{id}/enrichments";
+    public static final String isaTabDownload = "/provider/study/{id}/{name}";
 
     public static final ImmutableMap<SearchItemProxy.SUB_CATEGORY, String> subCategory2Token = ImmutableMap.<SearchItemProxy.SUB_CATEGORY, String>builder()
             .put(SearchItemProxy.SUB_CATEGORY.STUDY, NameTokens.experiments)
