@@ -1,0 +1,141 @@
+.card {
+    background: white;
+    padding: 10px 15px 10px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-transition: box-shadow 0.2s linear, color 0.2s linear;
+    -moz-transition: box-shadow 0.2s linear, color 0.2s linear;
+    -o-transition: box-shadow 0.2s linear, color 0.2s linear;
+    -ms-transition: box-shadow 0.2s linear, color 0.2s linear;
+    transition: box-shadow 0.2s linear, color 0.2s linear;
+    margin: 0 auto;
+    -webkit-box-shadow: 0 2px 10px 2px #CDCECF;
+    -moz-box-shadow: 0 2px 10px 2px #cdcecf;
+    box-shadow: 0 2px 10px 2px #CDCECF;
+    cursor: pointer;
+    box-sizing: border-box;
+    width: 260px;
+}
+
+.card:hover {
+    border-color: #a5a5a5;
+    color: #444;
+    text-shadow: 0 1px 0 #fff;
+    -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, .25);
+    -moz-box-shadow: 0 0 3px rgba(0, 0, 0, .25);
+    box-shadow: 0 0 3px rgba(0, 0, 0, .25);
+}
+
+.card_selected {
+    -webkit-box-shadow: 0px 0px 5px 0px green !important;
+    -moz-box-shadow: 0px 0px 5px 0px green !important;
+    box-shadow: 0px 0px 5px 0px green !important;
+    cursor: text !important;
+}
+
+.card li {
+    display: inline-block;
+    padding-right: 15px;
+    font-size: 120%;
+}
+
+.title {
+    margin-bottom: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ok {
+    color: green;
+    font-weight: bold;
+    font-size: 200%;
+}
+
+.empty_ok {
+    color: #EEE;
+    font-weight: bold;
+    font-size: 200%;
+    cursor: pointer;
+}
+
+.stats_icon {
+    font-size: 20px;
+    margin-right: 5px;
+    margin-left: 6px;
+    margin: 0;
+}
+
+.sub_title {
+    font-size: 80%;
+    color: #666;
+    margin-left: 5px;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card_container {
+    margin-right: 30px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.card_container:focus {
+    -webkit-box-shadow: 0px 0px 5px 0px green !important;
+    -moz-box-shadow: 0px 0px 5px 0px green !important;
+    box-shadow: 0px 0px 5px 0px green !important;
+    outline: none;
+}
+
+.newCardContainer {
+    color: #808080;
+    text-align: center;
+    padding: 15px; /* required so that they have the same height */
+}
+
+.icon {
+    font-size: 60px;
+}
+
+.icon_text {
+    padding-top: 4px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.icon_new {
+    position: absolute;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16px;
+    top: 0;
+    right: -10px;
+    color: #fff;
+    overflow: hidden;
+    height: 32px;
+    width: 32px;
+    text-shadow: none;
+    border-top-right-radius: 3px;
+    pointer-events: none;
+}
+
+.icon_new:before {
+    content: '';
+    display: inline-block;
+    border-right: 32px solid;
+    border-bottom: 32px solid transparent;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-right-color: #aa433a;
+}
+
+.new_icon_icon {
+    right: 4px;
+    top: 3px;
+    position: absolute;
+}
