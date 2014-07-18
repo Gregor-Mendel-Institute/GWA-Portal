@@ -251,8 +251,8 @@ public class TraitUomServiceTest extends BaseTest {
 
     private void getPhenotypeUploadData(PhenotypeUploadData data) {
         data.setName("Testphenotype");
-        data.setTraitOntology("TO:TEST");
-        data.setEnvironmentOntology("TO:TEST");
+        //data.setTraitOntology("TO:TEST");
+        //data.setEnvironmentOntology("TO:TEST");
         data.setProtocol("TEST");
         data.setUnitOfMeasure("days");
         data.setValueHeader(Arrays.asList("mean", "std"));

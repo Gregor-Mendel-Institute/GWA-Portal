@@ -117,8 +117,8 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
         data.getTraitUom().setLocalTraitName(data.getName());
         data.getTraitUom().setTraitProtocol(data.getProtocol());
         data.getTraitUom().setUnitOfMeasure(getUnitOfMeasureFromName(data.getUnitOfMeasure()));
-        data.getTraitUom().setToAccession(data.getTraitOntology());
-        data.getTraitUom().setEoAccession(data.getEnvironmentOntology());
+        data.getTraitUom().setTraitOntologyTerm(data.getTraitOntology());
+        data.getTraitUom().setEnvironOntologyTerm(data.getEnvironmentOntology());
         data.setPhenotypeUploadValues(values);
     }
 
