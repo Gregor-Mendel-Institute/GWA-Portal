@@ -6,9 +6,7 @@
                is-required="true" is-hidden="false" is-forced-ontology="false">
             <description>
                 <![CDATA[Sources are considered as the starting biological material used in a study.]]></description>
-            <default-value><![CDATA[
-
-                    ]]></default-value>
+            <default-value><![CDATA[]]></default-value>
         </field>
         <field header="Characteristics[Organism]" data-type="Ontology term" is-file-field="true"
                is-multiple-value="false" is-required="true" is-hidden="false" is-forced-ontology="false">
@@ -44,9 +42,7 @@
                is-required="false" is-hidden="false" is-forced-ontology="false">
             <description>
                 <![CDATA[Samples represent major outputs resulting from a protocol application other than the special case outputs of Extract or a Labeled Extract.]]></description>
-            <default-value><![CDATA[
-
-                    ]]></default-value>
+            <default-value><![CDATA[]]></default-value>
         </field>
         <structured-field name="characteristics"/>
         <structured-field name="factors"/>

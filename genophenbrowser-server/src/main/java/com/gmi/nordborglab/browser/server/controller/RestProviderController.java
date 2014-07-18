@@ -4,6 +4,7 @@ import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.data.isatab.IsaTabExporter;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeValue;
 import com.gmi.nordborglab.browser.server.data.annotation.FetchGeneInfoResult;
@@ -115,9 +116,9 @@ public class RestProviderController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/study/{id}/pvalues")
     public
-    @ResponseBody                                       
+    @ResponseBody
     GWASData getPvalues(@PathVariable("id") Long id) {
-        GWASData data = gwasDataService.getGWASDataByStudyId(id, null,false);
+        GWASData data = gwasDataService.getGWASDataByStudyId(id, null, false);
         data.setFilename(id + ".pvals");
         return data;
     }
@@ -198,21 +199,24 @@ public class RestProviderController {
                                         public Long apply(@Nullable Trait input) {
                                             return input.getStatisticType().getId();
                                         }
-                                    }).immutableSortedCopy(entry.getValue()),
+                                    }
+                            ).immutableSortedCopy(entry.getValue()),
                             new Function<Trait, String>() {
                                 @Nullable
                                 @Override
                                 public String apply(@Nullable Trait input) {
                                     return input.getStatisticType().getStatType();
                                 }
-                            }),
+                            }
+                    ),
                     new Function<Trait, String>() {
                         @Nullable
                         @Override
                         public String apply(@Nullable Trait input) {
                             return input.getValue();
                         }
-                    });
+                    }
+            );
             values.add(new PhenotypeValue(passportId, phenValues));
         }
         return values;
@@ -261,6 +265,21 @@ public class RestProviderController {
         Study study = gwasService.uploadStudyGWASResult(id, file);
         studyId = study.getId();
         return studyId;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/isatab/upload")
+    public
+    @ResponseBody
+    ExperimentUploadData uploadISATabArchive(@RequestParam("file") CommonsMultipartFile file) throws IOException {
+        ExperimentUploadData data = null;
+        try {
+            byte[] isaTabData = IOUtils.toByteArray(file.getInputStream());
+            data = helperService.getExperimentUploadData(isaTabData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+        }
+        return data;
     }
 
 

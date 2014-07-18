@@ -4,6 +4,8 @@ import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.pages.ExperimentPage;
 import com.gmi.nordborglab.browser.server.domain.pages.PublicationPage;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
+import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
+import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +15,8 @@ import java.util.Set;
 
 public interface ExperimentService {
 
+    @PreAuthorize("hasRole('ROLE_USER')")
+    Experiment saveExperimentUploadData(ExperimentUploadData data);
 
     ExperimentPage findByAclAndFilter(ConstEnums.TABLE_FILTER filter, String searchString, int page, int size);
 

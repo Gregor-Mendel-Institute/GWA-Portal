@@ -41,7 +41,7 @@
         <apache.commons.math>3.2</apache.commons.math>
         <freemaker.version>2.3.20</freemaker.version>
         <mail.version>1.5.0-b01</mail.version>
-        <isatab.version>1.7.6</isatab.version>
+        <isatab.version>1.7.8</isatab.version>
     </properties>
 
 

@@ -2,12 +2,17 @@ package com.gmi.nordborglab.browser.server.data.isatab;
 
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
+import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
+import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
+import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
+import com.sun.jdori.common.sco.Date;
 import org.isatools.isacreator.model.Investigation;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,6 +21,8 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Enumeration;
 import java.util.zip.ZipFile;
 
@@ -34,6 +41,8 @@ public class IsaTabExporterTest extends BaseTest {
 
     @Resource
     private ExperimentRepository experimentRepository;
+
+    private final String parentDir = "/tmp/1401200536112-0";
 
     @Before
     public void setUp() {
@@ -67,6 +76,41 @@ public class IsaTabExporterTest extends BaseTest {
         String zipFile = isaTabExporter.save(experiment, true);
         assertThat(zipFile, is(notNullValue()));
         checkZip(zipFile, experiment);
+    }
+
+    @Test
+    public void testImportFromZip() {
+
+    }
+
+    @Test
+    public void testImportFromDir() {
+        ExperimentUploadData data = isaTabExporter.getExperimentUploadDataFromArchive(parentDir);
+        assertNotNull(data);
+        assertThat(data.getPhenotypes().size(), is(107));
+        assertThat(data.getName(), is(String.format("%s - %s", "1", "Atwell et. al, Nature 2010")));
+        assertThat(data.getDoi(), is("10.1038/nature08800"));
+        assertThat(data.getOriginator(), is("Susanna Atwell"));
+        assertThat(data.getDescription(), is("GWAS of 107 phenotypes in Arabidopsis thaliana inbred lines using ~250k SNPs in 199 accessions"));
+        try {
+            assertThat(data.getCreated(), is(IsaTabExporter.dateFormatter.parseObject("27/06/2013")));
+            assertThat(data.getPublished(), is(IsaTabExporter.dateFormatter.parseObject("03/06/2010")));
+        } catch (ParseException e) {
+            Assert.fail(e.getMessage());
+        }
+        PhenotypeUploadData phenotype = data.getPhenotypes().get(0);
+        assertThat(phenotype.getName(), is("At1"));
+        assertThat(phenotype.getProtocol(), is("Four days after inoculation, leaves were scored by eye for disease symptom using a scale from 0 (no visible symptom) to 10 (leaves collapse and turn yellow), with an increment of 1."));
+        assertThat(phenotype.getPhenotypeUploadValues().size(), is(175));
+        assertThat(phenotype.getValueHeader().size(), is(1));
+        assertThat(phenotype.getValueHeader().get(0), is("MEASURE"));
+        PhenotypeUploadValue value = phenotype.getPhenotypeUploadValues().get(0);
+        assertThat(value.getSourceId(), is("4932"));
+        assertThat(value.getPassportId(), is(4932L));
+        assertThat(value.getAccessionName(), is("UKSW06-334"));
+        assertThat(value.getValues().size(), is(1));
+        assertThat(value.getValues().get(0), is("0.167"));
+        assertThat(phenotype.getTraitOntology().getAcc(), is("TO:0000315"));
     }
 
     private void checkZip(String zipFileName, Experiment experiment) throws IOException {

@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
+import com.gmi.nordborglab.browser.server.data.isatab.IsaTabExporter;
 import com.gmi.nordborglab.browser.server.domain.AppData;
 import com.gmi.nordborglab.browser.server.domain.BreadcrumbItem;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
@@ -42,6 +43,7 @@ import com.gmi.nordborglab.browser.server.repository.TransformationRepository;
 import com.gmi.nordborglab.browser.server.repository.UnitOfMeasureRepository;
 import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
+import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
@@ -52,6 +54,7 @@ import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramFacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
 import com.gmi.nordborglab.browser.shared.service.HelperFactory;
+import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
@@ -69,6 +72,7 @@ import org.elasticsearch.search.facet.FacetBuilder;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.Facets;
 import org.elasticsearch.search.facet.datehistogram.DateHistogramFacet;
+import org.isatools.isatab.export.isatab.ISATABExporter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -134,6 +138,9 @@ public class HelperServiceImpl implements HelperService {
     }
 
     @Resource
+    private IsaTabExporter isaTabExporter;
+
+    @Resource
     private CandidateGeneListRepository candidateGeneListRepository;
 
     @Resource
@@ -144,6 +151,9 @@ public class HelperServiceImpl implements HelperService {
 
     @Resource
     private UserNotificationRepository userNotificationRepository;
+
+    @Resource
+    private TermRepository termRepository;
 
     @Resource
     private StockRepository stockRepository;
@@ -419,16 +429,11 @@ public class HelperServiceImpl implements HelperService {
         return recentNotifications;
     }
 
-
-    private PhenotypeUploadValue parseAndCheckPhenotypeValue(List<String> phenotypeValues) {
-        boolean hasError = false;
+    public PhenotypeUploadValue parseAndUpdateAccession(PhenotypeUploadValue value) {
         boolean isIdKnown = false;
-        PhenotypeUploadValue parsedValue = new PhenotypeUploadValue();
+        boolean hasError = false;
         try {
-            String sourceId = phenotypeValues.get(0);
-            parsedValue.setValues(phenotypeValues.subList(1, phenotypeValues.size()));
-            parsedValue.setSourceId(sourceId);
-            Long id = Long.parseLong(sourceId);
+            Long id = Long.parseLong(value.getSourceId());
             Long passportId = null;
             Long stockId = null;
             String accessionName = null;
@@ -445,14 +450,28 @@ public class HelperServiceImpl implements HelperService {
                 passportId = stock.getPassport().getId();
                 accessionName = stock.getPassport().getAccename();
             }
-            parsedValue.setAccessionName(accessionName);
-            parsedValue.setStockId(stockId);
-            parsedValue.setPassportId(passportId);
+            value.setAccessionName(accessionName);
+            value.setStockId(stockId);
+            value.setPassportId(passportId);
+            value.setIdKnown(isIdKnown);
         } catch (Exception e) {
             hasError = true;
         }
-        parsedValue.setParseError(hasError);
-        parsedValue.setIdKnown(isIdKnown);
+        value.setParseError(hasError);
+        return value;
+    }
+
+
+    private PhenotypeUploadValue parseAndCheckPhenotypeValue(List<String> phenotypeValues) {
+        PhenotypeUploadValue parsedValue = new PhenotypeUploadValue();
+        try {
+            String sourceId = phenotypeValues.get(0);
+            parsedValue.setValues(phenotypeValues.subList(1, phenotypeValues.size()));
+            parsedValue.setSourceId(sourceId);
+            parsedValue = parseAndUpdateAccession(parsedValue);
+        } catch (Exception e) {
+            parsedValue.setParseError(true);
+        }
         return parsedValue;
     }
 
@@ -465,9 +484,9 @@ public class HelperServiceImpl implements HelperService {
         if (metaInfo.containsKey("protocol"))
             data.setProtocol(metaInfo.get("protocol"));
         if (metaInfo.containsKey("traitontology"))
-            data.setTraitOntology(metaInfo.get("traitontology"));
+            data.setTraitOntology(termRepository.findByAcc(metaInfo.get("traitontology")));
         if (metaInfo.containsKey("environmentontology"))
-            data.setEnvironmentOntology(metaInfo.get("environmentontology"));
+            data.setEnvironmentOntology(termRepository.findByAcc(metaInfo.get("environmentontology")));
     }
 
     private static Map<String, String> getMetaInformationFromHeader(String[] header) {
@@ -605,6 +624,11 @@ public class HelperServiceImpl implements HelperService {
             }
         }
         return study;
+    }
+
+    @Override
+    public ExperimentUploadData getExperimentUploadData(byte[] isaTabData) {
+        return isaTabExporter.getExperimentUploadDataFromArchive(isaTabData);
     }
 
 
