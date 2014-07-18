@@ -1,0 +1,116 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+
+    <ui:style>
+        .filedroppanel {
+            border: 2px dashed #00848e;
+            background-color: #ebf5f7;
+            text-align: center;
+            color: #b8b8b8;
+            font-size: 2em;
+            font-family: Arial, sans-serif;
+            height: 250px;
+        }
+
+        .filedroppanel h1 {
+            line-height: 220px;
+        }
+
+        .fileinput {
+            visibility: hidden;
+        }
+
+        .uploadButtonRow {
+            margin-top: 20px;
+        }
+
+        .fileSelectTable {
+            width: 100%;
+        }
+
+        .uploadContainer {
+            overflow: auto;
+        }
+
+        .checkFileTableContainer {
+            border: 2px dashed #00848e;
+            height: 250px;
+        }
+
+        .multipleFilesPanel {
+            height: 250px;
+            border: 2px dashed #00848e;
+        }
+
+        .buttonWithMargin {
+            margin-left: 10px !important;
+        }
+
+
+    </ui:style>
+
+    <b:FluidContainer ui:field="uploadContainer" addStyleNames="{style.uploadContainer}">
+        <b:FluidRow>
+            <b:Column size="12">
+                <b:FluidRow>
+                    <b:Column size="12">
+                        <g:HTML ui:field="uploadDropPanel">
+                            <div class="{style.filedroppanel}" ui:field="fileDropText">
+                                <h1 ui:field="uploadDropPanelText">Drag and drop files from your computer here</h1>
+                            </div>
+                            <div ui:field="multipleFilesPanel" style="display:none;" class="{style.multipleFilesPanel}">
+                                <h1 ui:field="multipleFileCheckText"></h1>
+                            </div>
+                            <div ui:field="checkFileTableContainer" style="display:none;"
+                                 class="{style.checkFileTableContainer}">
+                                <h5 id="checkFileTableHeader" style="margin-left:5px;"></h5>
+                                <table class="table table-striped" ui:field="checkFileTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr></tr>
+                                    </tbody>
+                                </table>
+                                <h1 style="color: #b8b8b8;text-align: center;margin-top: 60px;">Drag and drop more
+                                    files...
+                                </h1>
+                            </div>
+                        </g:HTML>
+                    </b:Column>
+                </b:FluidRow>
+            </b:Column>
+        </b:FluidRow>
+        <b:FluidRow addStyleNames="{style.uploadButtonRow}">
+            <b:Column size="3">
+                <b:Controls>
+                    <b:Form ui:field="uploadForm">
+                        <b:ButtonGroup>
+                            <b:Button type="SUCCESS" icon="PLUS" ui:field="fileBrowseBtn">Add files...</b:Button>
+                            <b:Button type="WARNING" icon="BAN_CIRCLE" ui:field="fileUploadCancelBtn"
+                                      visible="false" addStyleNames="{style.buttonWithMargin}">Cancel
+                            </b:Button>
+                            <b:Button icon="UPLOAD" type="PRIMARY" ui:field="fileUploadStartBtn" visible="false"
+                                      addStyleNames="{style.buttonWithMargin}">Start Upload
+                            </b:Button>
+                            <b:Button type="PRIMARY" ui:field="fileUploadCloseBtn" visible="false"
+                                      addStyleNames="{style.buttonWithMargin}">Close
+                            </b:Button>
+                        </b:ButtonGroup>
+                        <b:FileUpload ui:field="fileUploadBtn" addStyleNames="{style.fileinput}"></b:FileUpload>
+                    </b:Form>
+                </b:Controls>
+            </b:Column>
+            <b:Column size="9">
+                <g:HTMLPanel ui:field="fileSelectPanel" addStyleNames="fade">
+                    <div class="alert">
+                        <span id="checkStatusMsg" style="font-size:130%"></span>
+                    </div>
+                    <table class="{style.fileSelectTable} table table-striped" id="fileToUploadTable">
+                        <tbody>
+                        </tbody>
+                    </table>
+                </g:HTMLPanel>
+            </b:Column>
+        </b:FluidRow>
+    </b:FluidContainer>
+</ui:UiBinder>
