@@ -3,6 +3,8 @@ package com.gmi.nordborglab.browser.shared.service;
 
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentUploadDataProxy;
+import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
@@ -20,6 +22,8 @@ public interface ExperimentRequest extends RequestContext {
     Request<ExperimentPageProxy> findByAclAndFilter(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
 
     Request<ExperimentProxy> findExperiment(Long id);
+
+    Request<ExperimentProxy> saveExperimentUploadData(ExperimentUploadDataProxy data);
 
     Request<ExperimentProxy> save(ExperimentProxy experiment);
 

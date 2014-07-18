@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.home;
 
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.IsaTabUploadSavedEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PhenotypeUploadedEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
@@ -8,6 +9,7 @@ import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
 import com.gmi.nordborglab.browser.client.manager.HelperManager;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.BasicStudyWizardUiHandlers;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.IsaTabUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
@@ -156,9 +158,11 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
         void setStepNumber(int stepNumber);
 
         HasValue<Boolean> getIsCreateEnrichments();
+
     }
 
     static class PhenotypeNamePredicate implements Predicate<PhenotypeProxy> {
+
         private String query;
 
         public PhenotypeNamePredicate(String query) {
@@ -182,6 +186,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
     @ContentSlot
     public static final GwtEvent.Type<RevealContentHandler<?>> TYPE_SetPhenotypeUploadContent = new GwtEvent.Type<RevealContentHandler<?>>();
+    public static Object TYPE_SetIsaTabUploadContent = new Object();
+
     private final PlaceManager placeManager;
     private ImmutableSortedMap<Double, Integer> histogram;
     private final ExperimentManager experimentManager;
@@ -197,6 +203,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     private List<PhenotypeProxy> phenotypeList;
     private final CurrentUser currentUser;
     private final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizard;
+    private final IsaTabUploadWizardPresenterWidget isaTabUploadWizard;
     private ImmutableList<TraitProxy> phenotypeValues = null;
     private StudyProtocolProxy selectedStudyProtocol;
     private ImmutableList<TraitProxy> filteredPhenotypeValues = null;
@@ -287,7 +294,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                                      final CdvManager cdvManager,
                                      final CurrentUser currentUser,
                                      final HelperManager helperManager,
-                                     final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizard
+                                     final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizard,
+                                     final IsaTabUploadWizardPresenterWidget isaTabUploadWizard
     ) {
         super(eventBus, view, proxy, MainPagePresenter.TYPE_SetMainContent);
         this.currentUser = currentUser;
@@ -305,6 +313,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
         phenotypeDataProvider.addDataDisplay(getView().getPhenotypeListDisplay());
         missingGenotypeDataProvider.addDataDisplay(getView().getMissingGenotypeDisplay());
         this.phenotypeUploadWizard = phenotypeUploadWizard;
+        this.isaTabUploadWizard = isaTabUploadWizard;
         phenotypeSelectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange(SelectionChangeEvent selectionChangeEvent) {
@@ -716,6 +725,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     protected void onBind() {
         super.onBind();
         setInSlot(TYPE_SetPhenotypeUploadContent, phenotypeUploadWizard);
+        setInSlot(TYPE_SetIsaTabUploadContent, isaTabUploadWizard);
         registerHandler(PhenotypeUploadedEvent.register(getEventBus(), new PhenotypeUploadedEvent.Handler() {
             @Override
             public void onPhenotypeUploaded(PhenotypeUploadedEvent event) {
@@ -723,6 +733,13 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     loadPhenotypesForExperiment(event.getPhentoypeId());
                     getView().onShowPhenotypeUploadPanel(false);
                 }
+            }
+        }));
+        registerHandler(IsaTabUploadSavedEvent.register(getEventBus(), new IsaTabUploadSavedEvent.Handler() {
+            @Override
+            public void onSave(IsaTabUploadSavedEvent event) {
+                addExperimentToAvailableSetAndDisplay(event.getExperiment());
+                getView().hideCreateExperimentPopup();
             }
         }));
     }
@@ -769,6 +786,20 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
             });
         }
 
+    }
+
+    @Override
+    public void onCloseCreateExperimentPopup() {
+        isaTabUploadWizard.reset();
+    }
+
+    @Override
+    public void onSaveIsaTabUpload() {
+        try {
+            isaTabUploadWizard.save();
+        } catch (Exception e) {
+
+        }
     }
 
 

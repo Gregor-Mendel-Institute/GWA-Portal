@@ -10,7 +10,7 @@ import com.gwtplatform.mvp.client.UiHandlers;
  * Time: 8:07 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface BasicStudyWizardUiHandlers extends UiHandlers{
+public interface BasicStudyWizardUiHandlers extends UiHandlers {
     void onCancel();
 
     void onNext();
@@ -28,4 +28,8 @@ public interface BasicStudyWizardUiHandlers extends UiHandlers{
     void onSaveExperiment(String name, String originator, String design);
 
     void onSelectStatisticType(StatisticTypeProxy statisticType);
+
+    void onCloseCreateExperimentPopup();
+
+    void onSaveIsaTabUpload();
 }

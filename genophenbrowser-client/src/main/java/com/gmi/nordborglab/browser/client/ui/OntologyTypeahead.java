@@ -4,6 +4,9 @@ import com.github.gwtbootstrap.client.ui.Typeahead;
 import com.github.gwtbootstrap.client.ui.base.TextBoxBase;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.gwt.editor.client.LeafValueEditor;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.user.client.ui.SuggestOracle;
 
 /**
@@ -16,6 +19,7 @@ import com.google.gwt.user.client.ui.SuggestOracle;
 public class OntologyTypeahead extends Typeahead implements LeafValueEditor<TermProxy> {
 
     private TermProxy value;
+    private ChangeHandler changeHandler;
 
     public OntologyTypeahead(OntologyTermSuggestOracle oracle) {
         super(oracle);
@@ -24,11 +28,18 @@ public class OntologyTypeahead extends Typeahead implements LeafValueEditor<Term
             @Override
             public String onSelection(SuggestOracle.Suggestion selectedSuggestion) {
                 value = ((OntologyTermSuggestOracle.OntologySuggestion) selectedSuggestion).getTerm();
+                if (changeHandler != null) {
+                    changeHandler.onChange(null);
+                }
                 return selectedSuggestion.getReplacementString();
 
             }
         });
         reconfigure();
+    }
+
+    public void setChangeHandler(ChangeHandler changeHandler) {
+        this.changeHandler = changeHandler;
     }
 
     @Override

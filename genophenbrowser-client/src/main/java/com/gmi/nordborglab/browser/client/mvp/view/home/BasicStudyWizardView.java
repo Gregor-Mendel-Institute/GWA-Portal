@@ -14,6 +14,7 @@ import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
+import com.github.gwtbootstrap.client.ui.event.HideEvent;
 import com.gmi.nordborglab.browser.client.events.SelectMethodEvent;
 import com.gmi.nordborglab.browser.client.events.SelectTransformationEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.BasicStudyWizardUiHandlers;
@@ -51,6 +52,7 @@ import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -58,6 +60,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -76,6 +79,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeLayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.visualization.client.DataTable;
@@ -183,6 +187,10 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     CheckBox studyJobCb;
     @UiField
     CheckBox enrichmentJobCb;
+    @UiField
+    SimpleLayoutPanel isaTabUploadContainer;
+    @UiField
+    TabLayoutPanel createExperimentTabPanel;
     private Modal phenotypeUploadPopup = new Modal();
     private ResizeLayoutPanel phenotypeUploadPanel = new ResizeLayoutPanel();
 
@@ -335,6 +343,11 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         initCallouts();
     }
 
+    @UiHandler("createExperimentPanel")
+    public void onHideCreateExperimentPopup(HideEvent e) {
+        getUiHandlers().onCloseCreateExperimentPopup();
+    }
+
     private void initCallouts() {
 
         phenotypeList.getElement().setId("phenotypelist");
@@ -423,6 +436,26 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
             card.setEventBus(eventBus);
             methodContainer.add(card);
         }
+    }
+
+    @UiHandler("createExperimentTabPanel")
+    public void onBeforeSelectTab(BeforeSelectionEvent<Integer> event) {
+        if (event.getItem() == 1) {
+            int height = Window.getClientHeight() - 50;
+            int width = Window.getClientWidth() - 50;
+            int maxHeight = height - 200;
+            createExperimentPanel.setMaxHeigth(maxHeight + "px");
+            createExperimentPanel.setHeight(height + "px");
+            createExperimentPanel.setWidth(width);
+            createExperimentTabPanel.setHeight(maxHeight + "px");
+
+        } else {
+            createExperimentPanel.setWidth(560);
+            createExperimentPanel.getElement().getStyle().clearHeight();
+            createExperimentPanel.getElement().getStyle().clearWidth();
+            createExperimentTabPanel.setHeight(400 + "px");
+        }
+
     }
 
 
@@ -518,7 +551,11 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
 
     @UiHandler("saveExperimentBtn")
     public void onClickSaveExperimentBtn(ClickEvent e) {
-        getUiHandlers().onSaveExperiment(experimentNameTb.getText(), experimentOriginatorTb.getText(), experimentDesignTb.getText());
+        if (createExperimentTabPanel.getSelectedIndex() == 0) {
+            getUiHandlers().onSaveExperiment(experimentNameTb.getText(), experimentOriginatorTb.getText(), experimentDesignTb.getText());
+        } else {
+            getUiHandlers().onSaveIsaTabUpload();
+        }
     }
 
 
@@ -844,6 +881,8 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     public void setInSlot(Object slot, IsWidget content) {
         if (slot == BasicStudyWizardPresenter.TYPE_SetPhenotypeUploadContent) {
             phenotypeUploadPanel.add(content);
+        } else if (slot == BasicStudyWizardPresenter.TYPE_SetIsaTabUploadContent) {
+            isaTabUploadContainer.add(content);
         } else {
             super.setInSlot(slot, content);
         }
