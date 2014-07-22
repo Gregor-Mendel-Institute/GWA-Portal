@@ -27,6 +27,7 @@
     <inherits name="com.googlecode.gwt.charts.Charts"/>
     <inherits name='com.eemi.gwt.tour.GwtTour'/>
     <inherits name='com.gwtplatform.mvp.MvpWithEntryPoint'/>
+    <inherits name='org.gwtsupercsv.GWTSuperCSV'/>
     <!-- Other module inherits                                      -->
 
     <!-- Specify the paths for translatable code                    -->

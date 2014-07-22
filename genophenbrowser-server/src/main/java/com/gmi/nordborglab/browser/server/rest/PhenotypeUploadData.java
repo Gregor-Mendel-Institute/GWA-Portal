@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.rest;
 
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.jpaontology.model.Term;
 import org.springframework.util.comparator.BooleanComparator;
 
 import java.util.ArrayList;
@@ -21,8 +22,8 @@ public class PhenotypeUploadData {
     private String name;
     private String unitOfMeasure;
     private String protocol;
-    private String traitOntology;
-    private String environmentOntology;
+    private Term traitOntology;
+    private Term environmentOntology;
     private List<PhenotypeUploadValue> phenotypeUploadValues = new ArrayList<PhenotypeUploadValue>();
     private String errorMessage;
     private List<String> valueHeader;
@@ -55,11 +56,11 @@ public class PhenotypeUploadData {
         this.protocol = protocol;
     }
 
-    public void setTraitOntology(String traitOntology) {
+    public void setTraitOntology(Term traitOntology) {
         this.traitOntology = traitOntology;
     }
 
-    public void setEnvironmentOntology(String environmentOntology) {
+    public void setEnvironmentOntology(Term environmentOntology) {
         this.environmentOntology = environmentOntology;
     }
 
@@ -79,11 +80,11 @@ public class PhenotypeUploadData {
         return protocol;
     }
 
-    public String getTraitOntology() {
+    public Term getTraitOntology() {
         return traitOntology;
     }
 
-    public String getEnvironmentOntology() {
+    public Term getEnvironmentOntology() {
         return environmentOntology;
     }
 

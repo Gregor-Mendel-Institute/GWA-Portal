@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.gin;
 
+import com.gmi.nordborglab.browser.client.resources.CardRendererResources;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.google.inject.Inject;
 
@@ -8,7 +9,8 @@ import com.google.inject.Inject;
  */
 public class ResourceLoader {
     @Inject
-    ResourceLoader(MainResources resources) {
+    ResourceLoader(MainResources resources, CardRendererResources cardRendererResources) {
+        cardRendererResources.style().ensureInjected();
         resources.style().ensureInjected();
     }
 }

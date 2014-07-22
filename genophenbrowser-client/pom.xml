@@ -37,6 +37,7 @@
         <javax.validation.version>1.0.0.GA</javax.validation.version>
         <gwt-charts.version>0.9.9</gwt-charts.version>
         <gwt-tour.version>0.1</gwt-tour.version>
+        <gwt-supercsv>0.0.1-SNAPSHOT</gwt-supercsv>
     </properties>
     <repositories>
         <repository>
@@ -58,6 +59,10 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.gwt-supercsv</groupId>
+            <artifactId>gwt-supercsv</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.eemi.gwt.tour.GwtTour</groupId>
             <artifactId>GwtTour</artifactId>
@@ -181,6 +186,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.github.gwt-supercsv</groupId>
+                <artifactId>gwt-supercsv</artifactId>
+                <version>${gwt-supercsv}</version>
+            </dependency>
             <dependency>
                 <groupId>com.eemi.gwt.tour.GwtTour</groupId>
                 <artifactId>GwtTour</artifactId>

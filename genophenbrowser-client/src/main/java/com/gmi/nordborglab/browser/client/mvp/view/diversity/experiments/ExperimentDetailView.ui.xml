@@ -135,6 +135,13 @@
                                                       ui:field="share"/>
                                         </b:Tooltip>
                                     </b:ButtonGroup>
+                                    <b:ButtonGroup>
+                                        <b:DropdownButton text="Download" size="SMALL" type="INFO"
+                                                          icon="DOWNLOAD">
+                                            <b:NavLink text="ISA-TAB"
+                                                       ui:field="navLinkIsaTab"></b:NavLink>
+                                        </b:DropdownButton>
+                                    </b:ButtonGroup>
                                 </b:ButtonToolbar>
                             </div>
                         </g:HTMLPanel>

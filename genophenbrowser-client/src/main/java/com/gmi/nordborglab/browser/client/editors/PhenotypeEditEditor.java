@@ -15,6 +15,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -126,6 +128,14 @@ public class PhenotypeEditEditor extends Composite implements Editor<PhenotypePr
 
     public void setAcceptableValuesForUnitOfMeasure(Collection<UnitOfMeasureProxy> values) {
         unitOfMeasure.setAcceptableValues(values);
+    }
+
+    public HasChangeHandlers getLocalTraitName() {
+        return localTraitName;
+    }
+
+    public void addChangeHandlerToTypeAhead(ChangeHandler changeHandler) {
+        traitOntologyTerm.setChangeHandler(changeHandler);
     }
 
     public void setOntologyManager(OntologyManager ontologyManager) {

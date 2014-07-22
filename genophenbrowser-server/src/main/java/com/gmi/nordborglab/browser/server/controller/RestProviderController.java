@@ -1,7 +1,10 @@
 package com.gmi.nordborglab.browser.server.controller;
 
 import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.data.isatab.IsaTabExporter;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeValue;
 import com.gmi.nordborglab.browser.server.data.annotation.FetchGeneInfoResult;
@@ -19,6 +22,7 @@ import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.StudyGWASData;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.gmi.nordborglab.browser.server.service.CdvService;
+import com.gmi.nordborglab.browser.server.service.ExperimentService;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
@@ -61,6 +65,7 @@ import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -73,7 +78,13 @@ import java.util.Set;
 public class RestProviderController {
 
     @Resource
+    private IsaTabExporter isaTabExporter;
+
+    @Resource
     private CdvService cdvService;
+
+    @Resource
+    private ExperimentService experimentService;
 
     @Resource
     private TraitService traitService;
@@ -105,9 +116,9 @@ public class RestProviderController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/study/{id}/pvalues")
     public
-    @ResponseBody                                       
+    @ResponseBody
     GWASData getPvalues(@PathVariable("id") Long id) {
-        GWASData data = gwasDataService.getGWASDataByStudyId(id, null,false);
+        GWASData data = gwasDataService.getGWASDataByStudyId(id, null, false);
         data.setFilename(id + ".pvals");
         return data;
     }
@@ -117,6 +128,15 @@ public class RestProviderController {
     @ResponseBody
     FileSystemResource getPvaluesHDF5(@PathVariable("id") Long id) {
         return new FileSystemResource(gwasDataService.getHDF5StudyFile(id));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/study/{id}/{filename}", produces = {"application/zip"})
+    public
+    @ResponseBody
+    FileSystemResource getISATab(@PathVariable("id") Long id) throws IOException {
+        Experiment experiment = experimentService.findExperiment(id);
+        FileSystemResource file = new FileSystemResource(isaTabExporter.save(experiment, true));
+        return file;
     }
 
 
@@ -179,21 +199,24 @@ public class RestProviderController {
                                         public Long apply(@Nullable Trait input) {
                                             return input.getStatisticType().getId();
                                         }
-                                    }).immutableSortedCopy(entry.getValue()),
+                                    }
+                            ).immutableSortedCopy(entry.getValue()),
                             new Function<Trait, String>() {
                                 @Nullable
                                 @Override
                                 public String apply(@Nullable Trait input) {
                                     return input.getStatisticType().getStatType();
                                 }
-                            }),
+                            }
+                    ),
                     new Function<Trait, String>() {
                         @Nullable
                         @Override
                         public String apply(@Nullable Trait input) {
                             return input.getValue();
                         }
-                    });
+                    }
+            );
             values.add(new PhenotypeValue(passportId, phenValues));
         }
         return values;
@@ -242,6 +265,21 @@ public class RestProviderController {
         Study study = gwasService.uploadStudyGWASResult(id, file);
         studyId = study.getId();
         return studyId;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/isatab/upload")
+    public
+    @ResponseBody
+    ExperimentUploadData uploadISATabArchive(@RequestParam("file") CommonsMultipartFile file) throws IOException {
+        ExperimentUploadData data = null;
+        try {
+            byte[] isaTabData = IOUtils.toByteArray(file.getInputStream());
+            data = helperService.getExperimentUploadData(isaTabData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+        }
+        return data;
     }
 
 

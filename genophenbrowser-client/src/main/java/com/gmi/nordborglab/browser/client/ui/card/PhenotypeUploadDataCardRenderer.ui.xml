@@ -1,0 +1,58 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+
+    <ui:with field="name" type='com.google.gwt.safehtml.shared.SafeHtml'/>
+    <ui:with field="traitOntology" type='java.lang.String'/>
+    <ui:with field="unitType" type='java.lang.String'/>
+    <ui:with field="numberOfObsUnits" type='java.lang.String'/>
+    <ui:with field="status" type="java.lang.String"/>
+    <ui:with field="statusStyle" type="java.lang.String"/>
+    <ui:with field="statusIconStyle" type="java.lang.String"/>
+
+
+    <ui:with type="com.gmi.nordborglab.browser.client.resources.CardCellListResources" field="cardRes"></ui:with>
+    <ui:with type="com.gmi.nordborglab.browser.client.resources.CardRendererResources" field="cardRen"></ui:with>
+
+    <ui:style type="com.gmi.nordborglab.browser.client.ui.card.PhenotypeUploadDataCardRenderer.MyStyle">
+        .statusStyle {
+            padding-right: 5px;
+            margin-top: 20px;
+            margin-bottom: 0px;
+        }
+    </ui:style>
+
+    <div class="{cardRen.style.card_container}">
+        <div class="{cardRen.style.card}">
+            <div ui:field="cardContent">
+                <h4 class="{cardRen.style.title}">
+                    <ui:safehtml from="{name}"/>
+                </h4>
+                <p class="{cardRen.style.sub_title}">
+                    <ui:text from="{traitOntology}"/>
+                </p>
+                <ul class="unstyled">
+                    <li>
+                        <span class="{cardRen.style.stats_icon}">
+                            <i class="e_icon-tag"/>
+                        </span>
+                        <span>
+                            <ui:text from="{unitType}"/>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="{cardRen.style.stats_icon}">
+                            <i class="e_icon-flow-tree"/>
+                        </span>
+                        <span>
+                            <ui:text from="{numberOfObsUnits}"/>
+                        </span>
+                    </li>
+                </ul>
+                <div class="alert {statusStyle} {style.statusStyle}">
+                    <ui:text from="{status}"></ui:text>
+                    <i class="pull-right {statusIconStyle}" style="font-size:20px"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ui:UiBinder>

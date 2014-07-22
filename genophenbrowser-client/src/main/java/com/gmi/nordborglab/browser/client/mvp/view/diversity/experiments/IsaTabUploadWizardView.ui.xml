@@ -1,0 +1,98 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
+             xmlns:widgets='urn:import:com.gmi.nordborglab.browser.client.mvp.widgets'
+             xmlns:c='urn:import:com.google.gwt.user.cellview.client'
+             xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+        >
+    <ui:style>
+
+        .uploadPanel {
+            margin-top: 50px;
+        }
+
+        .phenotypelist {
+            padding-left: 16px;
+            padding-top: 16px;
+        }
+
+        .phenotypeValueStatus {
+            line-height: 30px;
+        }
+
+        .phenotypeValueStatusIcon {
+            margin-right: 10px;
+        }
+    </ui:style>
+    <g:DeckLayoutPanel animationDuration="100">
+        <g:ScrollPanel ui:field="phenotypeUploadPanel">
+            <widgets:FileUploadWidget ui:field="fileUploadWidget" addStyleNames="{style.uploadPanel}">
+            </widgets:FileUploadWidget>
+        </g:ScrollPanel>
+        <g:DockLayoutPanel ui:field="resultPanel" unit="EM">
+            <g:west size="21">
+                <g:ScrollPanel>
+                    <c:CellList ui:field="phenotypeList" addStyleNames="{style.phenotypelist}"></c:CellList>
+                </g:ScrollPanel>
+            </g:west>
+            <g:center>
+                <g:DeckLayoutPanel
+                        ui:field="contentContainer">
+                    <g:LayoutPanel ui:field="detailStudyPanel">
+                        <g:layer top="0" height="40px">
+                            <g:HTMLPanel>
+                                <h4 style="margin-left:16px;">
+                                    Study
+                                    <span style="margin-left:20px;" class="alert" ui:field="studyStatus"></span>
+                                </h4>
+                            </g:HTMLPanel>
+                        </g:layer>
+                        <g:layer top="47px" bottom="0">
+                            <g:HTMLPanel>
+                                <div>
+                                    <ed:ExperimentEditEditor ui:field="experimentEditor"/>
+                                </div>
+                                <div>
+                                    Stats
+                                </div>
+                            </g:HTMLPanel>
+                        </g:layer>
+                    </g:LayoutPanel>
+                    <g:LayoutPanel ui:field="detailPhenotypePanel">
+                        <g:layer top="0" height="40px">
+                            <g:HTMLPanel>
+                                <h4>
+                                    Phenotype
+                                </h4>
+                            </g:HTMLPanel>
+                        </g:layer>
+                        <g:layer top="47px" height="300px">
+                            <ed:PhenotypeUploadDataListEditor ui:field="phenotypeListEditor"/>
+                        </g:layer>
+                        <g:layer top="310px" bottom="0">
+                            <g:LayoutPanel>
+                                <g:layer top="0" height="70px">
+                                    <b:Alert type="DEFAULT" close="false" animation="true" visible="false"
+                                             addStyleNames="{style.phenotypeValueStatus}"
+                                             ui:field="phenotypeValueStatus">
+                                        <b:Icon ui:field="phenotypeValueStatusIcon"
+                                                addStyleNames="{style.phenotypeValueStatusIcon}" type="OK"
+                                                iconSize="LARGE"/>
+                                    </b:Alert>
+                                </g:layer>
+                                <g:layer top="55px" bottom="70px">
+                                    <c:DataGrid ui:field="phenotypeValuesDataGrid"/>
+                                </g:layer>
+                                <g:layer height="50px" bottom="0">
+                                    <gui:CustomPager ui:field="phenotypeValuePager"/>
+                                </g:layer>
+                            </g:LayoutPanel>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:DeckLayoutPanel>
+            </g:center>
+        </g:DockLayoutPanel>
+
+    </g:DeckLayoutPanel>
+</ui:UiBinder>

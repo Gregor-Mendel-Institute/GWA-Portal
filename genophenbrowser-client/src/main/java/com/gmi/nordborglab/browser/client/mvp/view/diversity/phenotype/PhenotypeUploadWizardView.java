@@ -84,11 +84,11 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
     }
 
-    private static class ValueColumn extends Column<PhenotypeUploadValueProxy, String> {
+    public static class ValueColumn extends Column<PhenotypeUploadValueProxy, String> {
 
         private final int headerIx;
 
-        private ValueColumn(int headerIx) {
+        public ValueColumn(int headerIx) {
             super(new TextCell());
             this.headerIx = headerIx;
         }

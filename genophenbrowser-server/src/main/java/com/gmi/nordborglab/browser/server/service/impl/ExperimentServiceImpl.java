@@ -10,6 +10,8 @@ import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
 import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
+import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
+import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.search.PublicationSearchProcessor;
 import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
@@ -191,6 +193,19 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
         return builder;
     }
 
+
+    @Transactional(readOnly = false)
+    @Override
+    public Experiment saveExperimentUploadData(ExperimentUploadData data) {
+        Experiment experiment = data.getExperiment();
+        experiment = save(experiment);
+        // acd DOI
+        //add phenotypes
+        for (PhenotypeUploadData phenotype : data.getPhenotypes()) {
+            traitUomService.savePhenotypeUploadData(experiment.getId(), phenotype);
+        }
+        return experiment;
+    }
 
     @Override
     public ExperimentPage findByAclAndFilter(ConstEnums.TABLE_FILTER filter, String searchString, int page, int size) {

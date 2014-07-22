@@ -64,23 +64,33 @@
                 </g:HTMLPanel>
                 <b:Modal ui:field="createExperimentPanel" title="Create new experiment" backdrop="STATIC"
                          keyboard="true" animation="true">
-                    <b:WellForm>
-                        <b:ControlLabel>Name</b:ControlLabel>
-                        <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT">
-                            <b:TextBox placeholder="Name" alternateSize="XLARGE"
-                                       ui:field="experimentNameTb"></b:TextBox>
-                        </b:Tooltip>
-                        <b:ControlLabel>Originator</b:ControlLabel>
-                        <b:Tooltip text='Originator of the study' trigger="FOCUS" placement="RIGHT">
-                            <b:TextBox placeholder="Originator" alternateSize="XLARGE"
-                                       ui:field="experimentOriginatorTb"></b:TextBox>
-                        </b:Tooltip>
-                        <b:ControlLabel>Design</b:ControlLabel>
-                        <b:Tooltip text='Design of the study' trigger="FOCUS" placement="RIGHT">
-                            <b:TextArea placeholder="Design" visibleLines="8" alternateSize="XLARGE"
-                                        ui:field="experimentDesignTb"></b:TextArea>
-                        </b:Tooltip>
-                    </b:WellForm>
+                    <g:TabLayoutPanel barHeight="2.5" barUnit="EM" height="400px" ui:field="createExperimentTabPanel">
+                        <g:tab>
+                            <g:header>Create</g:header>
+                            <b:WellForm>
+                                <b:ControlLabel>Name</b:ControlLabel>
+                                <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT">
+                                    <b:TextBox placeholder="Name" alternateSize="XLARGE"
+                                               ui:field="experimentNameTb"></b:TextBox>
+                                </b:Tooltip>
+                                <b:ControlLabel>Originator</b:ControlLabel>
+                                <b:Tooltip text='Originator of the study' trigger="FOCUS" placement="RIGHT">
+                                    <b:TextBox placeholder="Originator" alternateSize="XLARGE"
+                                               ui:field="experimentOriginatorTb"></b:TextBox>
+                                </b:Tooltip>
+                                <b:ControlLabel>Design</b:ControlLabel>
+                                <b:Tooltip text='Design of the study' trigger="FOCUS" placement="RIGHT">
+                                    <b:TextArea placeholder="Design" visibleLines="8" alternateSize="XLARGE"
+                                                ui:field="experimentDesignTb"></b:TextArea>
+                                </b:Tooltip>
+                            </b:WellForm>
+                        </g:tab>
+                        <g:tab>
+                            <g:header>Upload ISA-TAB</g:header>
+                            <g:SimpleLayoutPanel ui:field="isaTabUploadContainer"/>
+                        </g:tab>
+                    </g:TabLayoutPanel>
+
                     <b:ModalFooter>
                         <b:Button icon="FILE" type="PRIMARY" ui:field="saveExperimentBtn">Save</b:Button>
                     </b:ModalFooter>

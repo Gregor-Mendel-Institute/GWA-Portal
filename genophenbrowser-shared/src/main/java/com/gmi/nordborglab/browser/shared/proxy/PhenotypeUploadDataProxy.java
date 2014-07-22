@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.shared.proxy;
 
+import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
 import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
@@ -19,9 +20,9 @@ public interface PhenotypeUploadDataProxy extends ValueProxy {
 
     String getProtocol();
 
-    String getTraitOntology();
+    TermProxy getTraitOntology();
 
-    String getEnvironmentOntology();
+    TermProxy getEnvironmentOntology();
 
     String getUnitOfMeasure();
 

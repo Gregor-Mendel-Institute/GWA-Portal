@@ -9,10 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles(profiles = "dev")
-@ContextConfiguration(locations={
-		"classpath:META-INF/applicationContext.xml",
-		"classpath:META-INF/spring-security.xml",
-		"classpath:META-INF/spring-acl.xml"})
+@ContextConfiguration(locations = {
+        "classpath:META-INF/applicationContext.xml"})
 @TransactionConfiguration
 @Transactional
 public abstract class BaseTest {
