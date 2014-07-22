@@ -8,6 +8,7 @@
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta name="google-site-verification" content="Z9H5Jrii90VQNMVAIR8xlTtjRJjH6Qm2NX35kLVh_OQ" />
     <title>GWA-Portal</title>
     <link rel="icon" type="image/ico" href="/img/favicon.ico"/>
     <link rel="stylesheet" href="<c:url value='/css/m-styles.min.css'/>"/>
