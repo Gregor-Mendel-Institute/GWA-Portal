@@ -2,8 +2,6 @@ package com.gmi.nordborglab.browser.server.rest;
 
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
-import com.google.common.collect.Lists;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.isatools.isacreator.model.Contact;
 import org.isatools.isacreator.model.Investigation;
 
