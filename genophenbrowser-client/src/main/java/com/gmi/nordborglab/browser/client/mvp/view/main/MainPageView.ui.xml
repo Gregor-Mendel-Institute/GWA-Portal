@@ -89,6 +89,8 @@
         .footer_content {
             width: 500px;
             margin: 0 auto;
+            line-height: 3.423em;
+            height: 3.423em;
         }
 
         .footer_items {
@@ -369,9 +371,10 @@
         <g:center>
             <g:SimpleLayoutPanel ui:field="container"/>
         </g:center>
-        <g:south size="3.423">
+        <g:south size="4.423">
             <g:HTMLPanel addStyleNames="{style.footer}" ui:field="footerPanel">
-                <div class="{style.footer_content}" ui:field="footerContentPanel">
+                <div ui:field="footerContentPanel">
+                <div class="{style.footer_content}" >
                     <div class="{style.footer_items}">
                         @ 2012 GMI
                     </div>
@@ -379,6 +382,8 @@
                     <div class="{mainRes.style.transplant_logo_footer} {style.footer_items}"></div>
                     <div class="{mainRes.style.fp7_logo_footer} {style.footer_items}"></div>
                     <div class="{mainRes.style.eu_logo_footer} {style.footer_items}"></div>
+                </div>
+                <div style="font-size: 10px;line-height: 10px;">The transPLANT project is funded by the European Commission within its 7th Framework Programme, under the thematic area "Infrastructures", contract number 283496.</div>
                 </div>
                 <div ui:field="loadingIndicator" class="{style.loading_indicator}">Loading ...</div>
             </g:HTMLPanel>

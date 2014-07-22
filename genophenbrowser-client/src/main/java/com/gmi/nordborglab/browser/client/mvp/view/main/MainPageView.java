@@ -225,7 +225,7 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
     }
 
     private void showFooter(boolean showFooter) {
-        mainContainer.setWidgetSize(footerPanel, showFooter ? 3.423 : 0.5);
+        mainContainer.setWidgetSize(footerPanel, showFooter ? 4.423 : 0.5);
         footerContentPanel.getStyle().setDisplay(showFooter ? Display.BLOCK : Display.NONE);
     }
 
