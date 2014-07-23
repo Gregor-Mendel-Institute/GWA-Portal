@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.client.csv;
 
 import com.gmi.nordborglab.browser.client.mvp.widgets.FileUploadWidget;
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.gwtsupercsv.cellprocessor.CellProcessorAdaptor;
 import org.gwtsupercsv.cellprocessor.ParseDouble;
@@ -13,6 +14,7 @@ import org.gwtsupercsv.cellprocessor.ift.CellProcessor;
 import org.gwtsupercsv.io.CsvListReader;
 import org.gwtsupercsv.io.ICsvListReader;
 import org.gwtsupercsv.prefs.CsvPreference;
+import static com.google.common.base.Preconditions.*;
 
 import java.util.List;
 import java.util.Set;
@@ -24,11 +26,12 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
 
     private final List<String> fileExtensions;
     private final List<String> csvMimeTypes;
-    private final CellProcessor[] headerCellProcessors;
-    private final CellProcessor[] contentCellProcessors;
+    private final Optional<CellProcessor[]> headerCellProcessors;
+    private final Optional<CellProcessor[]> contentCellProcessors;
 
 
     public DefaultFileChecker(List<String> fileExtensions, List<String> csvMimeTypes, CellProcessor[] headerCellProcessors, CellProcessor[] contentCellProcessors) {
+
         this.fileExtensions = fileExtensions;
         this.csvMimeTypes = csvMimeTypes;
         /*if (contentCellProcessors.length != headerCellProcessors.length) {
@@ -38,7 +41,10 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
         this.headerCellProcessors = addSuppressionCellProcessor(headerCellProcessors);
     }
 
-    private CellProcessor[] addSuppressionCellProcessor(CellProcessor[] cellProcessors) {
+    private Optional<CellProcessor[]> addSuppressionCellProcessor(CellProcessor[] cellProcessors) {
+        Optional<CellProcessor[]> cellProcessorsOptional = Optional.fromNullable(cellProcessors);
+        if (!cellProcessorsOptional.isPresent())
+            return cellProcessorsOptional;
         CellProcessor[] updatedCellProcessors = new CellProcessor[cellProcessors.length];
         for (int i = 0; i < cellProcessors.length; i++) {
             CellProcessor processor = cellProcessors[i];
@@ -47,7 +53,7 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
             }
             updatedCellProcessors[i] = processor;
         }
-        return updatedCellProcessors;
+        return Optional.of(updatedCellProcessors);
     }
 
     @Override
@@ -62,6 +68,8 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
 
     @Override
     public boolean parse(String content, FileUploadWidget.FileCheckerResult result) {
+        CellProcessor[] headerCells = headerCellProcessors.get();
+        CellProcessor[] contentCells = contentCellProcessors.get();
         resetSupressionCellProcessors();
         boolean parseError = false;
         List<FileUploadWidget.ParseResult> headerParseResults = Lists.newArrayList();
@@ -69,9 +77,9 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
         ICsvListReader reader = null;
         try {
             reader = new CsvListReader(content, CsvPreference.STANDARD_PREFERENCE);
-            List<Object> header = reader.read(headerCellProcessors);
-            List<Object> firstLine = reader.read(contentCellProcessors);
-            for (CellProcessor processor : headerCellProcessors) {
+            List<Object> header = reader.read(headerCells);
+            List<Object> firstLine = reader.read(contentCells);
+            for (CellProcessor processor : headerCells) {
                 SupressException cell = (SupressException) processor;
                 if (cell.getSuppressedException() != null) {
                     parseError = true;
@@ -79,7 +87,7 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
                 headerParseResults.add(getParseResultFromHeader(cell));
             }
 
-            for (CellProcessor processor : contentCellProcessors) {
+            for (CellProcessor processor : contentCells) {
                 SupressException cell = (SupressException) processor;
                 if (cell.getSuppressedException() != null) {
                     parseError = true;
@@ -99,12 +107,14 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
     }
 
     private void resetSupressionCellProcessors() {
-        for (CellProcessor processor : contentCellProcessors) {
+        CellProcessor[] headerCells = headerCellProcessors.get();
+        CellProcessor[] contentCells = contentCellProcessors.get();
+        for (CellProcessor processor : contentCells) {
             SupressException cell = (SupressException) processor;
             cell.reset();
         }
 
-        for (CellProcessor processor : headerCellProcessors) {
+        for (CellProcessor processor : headerCells) {
             SupressException cell = (SupressException) processor;
             cell.reset();
         }
