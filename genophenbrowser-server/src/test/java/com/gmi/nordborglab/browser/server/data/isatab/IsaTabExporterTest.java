@@ -9,21 +9,16 @@ import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
-import com.sun.jdori.common.sco.Date;
 import org.isatools.isacreator.model.Investigation;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import javax.annotation.Resource;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Enumeration;
 import java.util.zip.ZipFile;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
