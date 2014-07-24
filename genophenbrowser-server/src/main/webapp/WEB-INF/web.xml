@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/j2ee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         metadata-complete="true">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         metadata-complete="true"
+         version="3.0">
 
+    <!-- required because ProxyServlet has assync-support and all filters must also set it to true -->
     <filter>
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
         <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter
         </filter-class>
+
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>entityManagerFactoryBeanName</param-name>
             <param-value>entityManagerFactory</param-value>
@@ -18,6 +23,7 @@
         <filter-name>Spring OpenEntityManagerInViewFilter Ontology</filter-name>
         <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter
         </filter-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>entityManagerFactoryBeanName</param-name>
             <param-value>entityManagerFactoryOntology</param-value>
@@ -37,6 +43,7 @@
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy
         </filter-class>
+        <async-supported>true</async-supported>
     </filter>
 
     <filter-mapping>
@@ -59,6 +66,7 @@
     <filter>
         <filter-name>GzipFilter</filter-name>
         <filter-class>org.eclipse.jetty.servlets.GzipFilter</filter-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>methods</param-name>
             <param-value>GET,POST</param-value>
@@ -113,10 +121,11 @@
     </servlet>
     <servlet>
         <servlet-name>DOIProxy</servlet-name>
-        <servlet-class>org.eclipse.jetty.servlets.ProxyServlet$Transparent</servlet-class>
+        <servlet-class>org.eclipse.jetty.proxy.ProxyServlet$Transparent</servlet-class>
         <load-on-startup>1</load-on-startup>
+        <async-supported>true</async-supported>
         <init-param>
-            <param-name>ProxyTo</param-name>
+            <param-name>proxyTo</param-name>
             <param-value>http://data.crossref.org</param-value>
         </init-param>
         <init-param>
