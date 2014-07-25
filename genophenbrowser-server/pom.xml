@@ -17,15 +17,15 @@
         <maven>${mavenVersion}</maven>
     </prerequisites>
     <properties>
-        <org.springframework.version>3.2.8.RELEASE</org.springframework.version>
-        <org.springframework.data.version>1.5.1.RELEASE</org.springframework.data.version>
-        <org.springframework.security.version>3.2.3.RELEASE</org.springframework.security.version>
-        <org.springframework.amqp.version>1.3.1.RELEASE</org.springframework.amqp.version>
-        <rabbitmq.version>3.2.4</rabbitmq.version>
-        <hibernate.version>4.3.4.Final</hibernate.version>
+        <org.springframework.version>4.0.6.RELEASE</org.springframework.version>
+        <org.springframework.data.version>1.6.1.RELEASE</org.springframework.data.version>
+        <org.springframework.security.version>3.2.4.RELEASE</org.springframework.security.version>
+        <org.springframework.amqp.version>1.3.5.RELEASE</org.springframework.amqp.version>
+        <rabbitmq.version>3.3.4</rabbitmq.version>
+        <hibernate.version>4.3.6.Final</hibernate.version>
         <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
-        <querydsl.version>3.3.2</querydsl.version>
-        <ehcache.version>2.8.1</ehcache.version>
+        <querydsl.version>3.4.1</querydsl.version>
+        <ehcache.version>2.8.3</ehcache.version>
         <jhdf5.version>13.06.2</jhdf5.version>
         <jstl.version>1.2</jstl.version>
         <esapi.version>2.1.0</esapi.version>
@@ -35,10 +35,11 @@
         <gson.version>2.2.4</gson.version>
         <maven.enforcer.plugin>1.0.1</maven.enforcer.plugin>
         <maven.version.range>[2.2.1,3.1.0)</maven.version.range>
-        <jackson.verison>2.3.2</jackson.verison>
-        <jackson.annotations.version>2.3.2</jackson.annotations.version>
-        <supercsv.version>2.1.0</supercsv.version>
-        <apache.commons.math>3.2</apache.commons.math>
+        <jackson.verison>2.4.1.1</jackson.verison>
+        <jackson.databaing.version>2.4.1.3</jackson.databaing.version>
+        <jackson.annotations.version>2.4.1</jackson.annotations.version>
+        <supercsv.version>2.2.0</supercsv.version>
+        <apache.commons.math>3.3</apache.commons.math>
         <freemaker.version>2.3.20</freemaker.version>
         <mail.version>1.5.0-b01</mail.version>
         <isatab.version>1.7.8-SPECIAL</isatab.version>
@@ -134,7 +135,11 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-proxy</artifactId>
         </dependency>
         <dependency>
             <groupId>ch.systemsx.cisd.hdf5</groupId>
@@ -193,6 +198,10 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -533,6 +542,12 @@
                 <scope>runtime</scope>
             </dependency>
             <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-proxy</artifactId>
+                <version>${jetty.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-math3</artifactId>
                 <version>${apache.commons.math}</version>
@@ -571,7 +586,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson.verison}</version>
+                <version>${jackson.databaing.version}</version>
             </dependency>
             <!-- Logging with SLF4J & LogBack -->
             <dependency>
@@ -625,6 +640,11 @@
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
@@ -893,7 +913,7 @@
                 <pluginManagement>
                     <plugins>
                         <plugin>
-                            <groupId>org.mortbay.jetty</groupId>
+                            <groupId>org.eclipse.jetty</groupId>
                             <artifactId>jetty-maven-plugin</artifactId>
                             <version>${maven.jetty.plugin}</version>
                             <configuration>
