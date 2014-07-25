@@ -5,12 +5,13 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
-import org.jboss.errai.bus.client.api.Message;
-import org.jboss.errai.bus.client.api.MessageCallback;
 import org.jboss.errai.bus.client.api.QueueSession;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
-import org.jboss.errai.bus.client.framework.RequestDispatcher;
+import org.jboss.errai.bus.client.api.messaging.Message;
+import org.jboss.errai.bus.client.api.messaging.MessageCallback;
+import org.jboss.errai.bus.client.api.messaging.RequestDispatcher;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.protocols.MessageParts;
 import org.jboss.errai.common.client.protocols.Resources;
 
@@ -87,9 +88,18 @@ public class ClientComService implements MessageCallback {
                     .signalling()
                     .with("type", type)
                     .with("id", id)
-                    .noErrorHandling()
+                    .errorsHandledBy(new ErrorCallback<Message>() {
+
+                        @Override
+                        public boolean error(Message o, Throwable throwable) {
+                            throwable.printStackTrace();
+
+                            return true;
+                        }
+                    })
                     .sendNowWith(dispatcher);
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
