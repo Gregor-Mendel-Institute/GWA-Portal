@@ -135,7 +135,8 @@
     </servlet>
     <servlet>
         <servlet-name>ErraiServlet</servlet-name>
-        <servlet-class>org.jboss.errai.bus.server.servlet.DefaultBlockingServlet</servlet-class>
+        <servlet-class>org.jboss.errai.bus.server.servlet.StandardAsyncServlet</servlet-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>auto-discover-services</param-name>
             <param-value>true</param-value>
