@@ -9,12 +9,7 @@ import com.gwtplatform.mvp.client.UiHandlers;
  * Time: 4:06 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface GWASUploadWizardUiHandlers extends UiHandlers{
-
-
-    void onUploadError(String responseText);
-
-    void onUploadFinished(String responseText);
+public interface GWASUploadWizardUiHandlers extends UiHandlers {
 
     void onClose();
 

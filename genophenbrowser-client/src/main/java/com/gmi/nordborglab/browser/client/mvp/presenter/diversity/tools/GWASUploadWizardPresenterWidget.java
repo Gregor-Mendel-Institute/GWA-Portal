@@ -28,8 +28,6 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
 
     public interface MyView extends View, HasUiHandlers<GWASUploadWizardUiHandlers> {
 
-        void showUploadPanel();
-
         void setmultipleUpload(boolean multipleUpload);
 
         void setRestURL(String restUrl);
@@ -39,19 +37,6 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
     public GWASUploadWizardPresenterWidget(EventBus eventBus, MyView view) {
         super(eventBus, view);
         getView().setUiHandlers(this);
-    }
-
-    @Override
-    public void onUploadError(String responseText) {
-        //DisplayNotificationEvent.fireError(this,"Upload error",responseText);
-        //getView().showUploadPanel();
-    }
-
-    @Override
-    public void onUploadFinished(String responseText) {
-        //Long id = Long.parseLong(responseText);
-        //getView().showUploadPanel();
-        //GWASUploadedEvent.fire(getEventBus(),id);
     }
 
     @Override

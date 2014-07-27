@@ -53,9 +53,24 @@
     <b:FluidContainer ui:field="uploadContainer" addStyleNames="{style.uploadContainer}">
         <b:FluidRow>
             <b:Column size="12">
+                <g:HTMLPanel>
+                    <h4>File-Format:</h4>
+                    <p ui:field="supportedFileFormatsLb"></p>
+                    <span ui:field="additionalInfoLb"></span>
+                    <table class="table table-striped" ui:field="csvTable">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </g:HTMLPanel>
+            </b:Column>
+        </b:FluidRow>
+        <b:FluidRow>
+            <b:Column size="12">
                 <b:FluidRow>
                     <b:Column size="12">
                         <g:HTML ui:field="uploadDropPanel">
+                            <h4>Upload</h4>
+                            <p>Use one of the methods below to upload a file:</p>
                             <div class="{style.filedroppanel}" ui:field="fileDropText">
                                 <h1 ui:field="uploadDropPanelText">Drag and drop files from your computer here</h1>
                             </div>
@@ -71,7 +86,8 @@
                                         <tr></tr>
                                     </tbody>
                                 </table>
-                                <h1 style="color: #b8b8b8;text-align: center;margin-top: 60px;">Drag and drop more
+                                <h1 style="color: #b8b8b8;text-align: center;margin-top: 60px; display:none"
+                                    ui:field="dropMoreLb">Drag and drop more
                                     files...
                                 </h1>
                             </div>

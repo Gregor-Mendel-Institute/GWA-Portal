@@ -4,7 +4,6 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.FileUpload;
 import com.github.gwtbootstrap.client.ui.FluidContainer;
 import com.github.gwtbootstrap.client.ui.Form;
-import com.gmi.nordborglab.browser.client.csv.DefaultFileChecker;
 import com.gmi.nordborglab.browser.client.events.FileUploadCloseEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadEndEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadErrorEvent;
@@ -15,7 +14,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.GWT;
@@ -23,15 +21,14 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.InputElement;
-import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.ParagraphElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.DragOverEvent;
 import com.google.gwt.event.dom.client.DropEvent;
-import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.query.client.Function;
 import com.google.gwt.query.client.GQuery;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -41,8 +38,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.google.web.bindery.event.shared.EventBus;
 import elemental.client.Browser;
 import elemental.events.Event;
 import elemental.events.EventListener;
@@ -153,6 +148,12 @@ public class FileUploadWidget extends Composite {
         public boolean canParse(String extension);
 
         public boolean parse(String content, FileCheckerResult result);
+
+        public String getSupportedFileTypes();
+
+        public List<String> getCSVHeaderFormat();
+
+        public List<String> getCSVContentFormat();
     }
 
     private Function clickOnCancelFileFunc = new Function() {
@@ -204,6 +205,14 @@ public class FileUploadWidget extends Composite {
     DivElement fileDropText;
     @UiField
     DivElement checkFileTableContainer;
+    @UiField
+    ParagraphElement supportedFileFormatsLb;
+    @UiField
+    TableElement csvTable;
+    @UiField
+    HeadingElement dropMoreLb;
+    @UiField
+    SpanElement additionalInfoLb;
     private boolean multiUpload = false;
     private Map<File, FileCheckerResult> filesToUpload = Maps.newLinkedHashMap();
     private List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
@@ -554,17 +563,46 @@ public class FileUploadWidget extends Composite {
 
     public void setMultiUpload(boolean multiUpload) {
         this.multiUpload = multiUpload;
+        dropMoreLb.getStyle().setDisplay(multiUpload ? Style.Display.BLOCK : Style.Display.NONE);
     }
 
     public void setRestURL(String restUrl) {
         this.restURL = restUrl;
     }
 
-    private boolean isValidCSVType(String type) {
-        return csvMimeTypes.contains(type);
-    }
-
     public void setFileChecker(FileChecker fileChecker) {
         this.fileChecker = fileChecker;
+        updateFileFormat();
     }
+
+    public void setAdditionalInfo(String info) {
+        additionalInfoLb.setInnerHTML(info);
+    }
+
+    private void updateFileFormat() {
+        GQuery query = $(csvTable);
+        query.find("tbody > tr").remove();
+        query.find("thead > th").remove();
+        supportedFileFormatsLb.setInnerText("any format");
+        if (fileChecker == null)
+            return;
+        supportedFileFormatsLb.setInnerText(fileChecker.getSupportedFileTypes());
+        List<String> headerFormat = fileChecker.getCSVHeaderFormat();
+        if (headerFormat != null) {
+            GQuery tr = query.find("tbody").append($("<tr>"));
+            for (String item : headerFormat) {
+                GQuery row = $("<th>").text(item);
+                tr.append(row);
+            }
+        }
+        List<String> contentFormat = fileChecker.getCSVContentFormat();
+        if (contentFormat != null) {
+            GQuery tr = query.find("tbody").append($("<tr>"));
+            for (String item : contentFormat) {
+                GQuery row = $("<td>").text(item);
+                tr.append(row);
+            }
+        }
+    }
+
 }

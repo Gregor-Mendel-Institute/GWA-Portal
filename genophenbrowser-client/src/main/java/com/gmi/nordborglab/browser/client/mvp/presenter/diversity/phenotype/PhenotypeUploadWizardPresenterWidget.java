@@ -58,12 +58,7 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
 
         void showPhenotypeUploadPanel();
 
-
-        void showConstraintViolations();
-
         PhenotypeUploadWizardView.PhenotypeDriver getDriver();
-
-        void showActionButtns(boolean show);
     }
 
     protected PhenotypeUploadDataProxy data = null;
@@ -175,10 +170,6 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
                 }
             });
         }
-    }
-
-    public void showActionButtns(boolean isShow) {
-        getView().showActionButtns(isShow);
     }
 
     @Override
