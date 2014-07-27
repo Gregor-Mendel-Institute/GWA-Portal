@@ -2,49 +2,40 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype;
 
 import com.github.gwtbootstrap.client.ui.Alert;
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.FileUpload;
-import com.github.gwtbootstrap.client.ui.Form;
 import com.github.gwtbootstrap.client.ui.constants.AlertType;
+import com.gmi.nordborglab.browser.client.csv.DefaultFileChecker;
+import com.gmi.nordborglab.browser.client.csv.SupressException;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeEditEditor;
+import com.gmi.nordborglab.browser.client.events.FileUploadCloseEvent;
+import com.gmi.nordborglab.browser.client.events.FileUploadErrorEvent;
+import com.gmi.nordborglab.browser.client.events.FileUploadFinishedEvent;
+import com.gmi.nordborglab.browser.client.events.FileUploadStartEvent;
 import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeUploadWizardUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeUploadWizardPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.widgets.FileUploadWidget;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.BooleanIconCell;
-import com.gmi.nordborglab.browser.client.util.HTML5Helper;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadValueProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
-import com.google.common.base.Predicate;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.HashBiMap;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.TableElement;
-import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.DragOverEvent;
-import com.google.gwt.event.dom.client.DropEvent;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.query.client.Function;
-import com.google.gwt.query.client.GQuery;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -53,22 +44,17 @@ import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
-import elemental.client.Browser;
-import elemental.events.Event;
-import elemental.events.EventListener;
-import elemental.events.ProgressEvent;
-import elemental.html.Blob;
-import elemental.html.File;
-import elemental.html.FileList;
-import elemental.html.FileReader;
-import elemental.xml.XMLHttpRequest;
+import org.gwtsupercsv.cellprocessor.ParseDouble;
+import org.gwtsupercsv.cellprocessor.ParseInt;
+import org.gwtsupercsv.cellprocessor.ParseLong;
+import org.gwtsupercsv.cellprocessor.ift.CellProcessor;
+import org.gwtsupercsv.io.CsvListReader;
+import org.gwtsupercsv.io.ICsvListReader;
+import org.gwtsupercsv.prefs.CsvPreference;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-
-import static com.google.gwt.query.client.GQuery.$;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -82,6 +68,91 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
     interface Binder extends UiBinder<Widget, PhenotypeUploadWizardView> {
 
+    }
+
+
+    private class PhenotypeFileChecker implements FileUploadWidget.FileChecker {
+
+        @Override
+        public boolean isValidExtension(String extension) {
+            return allowedExtensions.contains(extension) || csvMimeTypes.contains(extension);
+        }
+
+        @Override
+        public boolean canParse(String extension) {
+            return true;
+        }
+
+        @Override
+        public boolean parse(String content, FileUploadWidget.FileCheckerResult result) {
+            boolean parseError = false;
+            List<FileUploadWidget.ParseResult> headerParseResults = Lists.newArrayList();
+            List<FileUploadWidget.ParseResult> firstLineParseResults = Lists.newArrayList();
+            ICsvListReader reader = null;
+            try {
+                reader = new CsvListReader(content, CsvPreference.STANDARD_PREFERENCE);
+                List<String> header = reader.read();
+                Set<String> headers = processors.keySet();
+                CellProcessor[] cellProcessors = new CellProcessor[header.size()];
+                cellProcessors[0] = new SupressException(new ParseInt());
+                cellProcessors[1] = new SupressException(new ParseDouble());
+                if (header.size() == 0) {
+                    headerParseResults.add(new FileUploadWidget.ParseResult("MISSING", true, "accessionid"));
+                    headerParseResults.add(new FileUploadWidget.ParseResult("MISSING", true, "VALUE"));
+                } else if (header.size() == 1) {
+                    headerParseResults.add(new FileUploadWidget.ParseResult(header.get(0), "accessionid" != header.get(0), "accessionid"));
+                    headerParseResults.add(new FileUploadWidget.ParseResult("MISSING", true, "VALUE"));
+                } else {
+                    for (int i = 0; i < header.size(); i++) {
+                        if (i == 0) {
+                            headerParseResults.add(new FileUploadWidget.ParseResult(header.get(0), "accessionid" != header.get(0), "accessionid"));
+                        } else {
+
+                            if (headers.contains(header.get(i))) {
+                                cellProcessors[i] = new SupressException(processors.get(header.get(i)));
+                                headerParseResults.add(new FileUploadWidget.ParseResult(header.get(i), false, header.get(i)));
+                            } else {
+                                cellProcessors[i] = new SupressException(new ParseDouble());
+                                headerParseResults.add(new FileUploadWidget.ParseResult("UNKOWN", true, header.get(i)));
+                            }
+                        }
+                    }
+                }
+
+                List<Object> firstLine = reader.read(cellProcessors);
+                for (CellProcessor processor : cellProcessors) {
+                    SupressException cell = (SupressException) processor;
+                    if (cell.getSuppressedException() != null) {
+                        parseError = true;
+                    }
+                    firstLineParseResults.add(DefaultFileChecker.getParseResultFromFirstLine(cell));
+                }
+            } catch (Exception e) {
+                parseError = true;
+                result.setParseErrorMsg(e.getMessage());
+            } finally {
+
+            }
+            result.setParsedFirstLineResult(firstLineParseResults);
+            result.setParsedHeaderResult(headerParseResults);
+            result.setHasParseErrors(parseError);
+            return parseError;
+        }
+
+        @Override
+        public String getSupportedFileTypes() {
+            return Joiner.on(", ").join(Iterables.concat(csvMimeTypes, allowedExtensions));
+        }
+
+        @Override
+        public List<String> getCSVHeaderFormat() {
+            return headerColumns;
+        }
+
+        @Override
+        public List<String> getCSVContentFormat() {
+            return defaultValues;
+        }
     }
 
     public static class ValueColumn extends Column<PhenotypeUploadValueProxy, String> {
@@ -106,22 +177,6 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
 
     @UiField
-    HTMLPanel fileSelectPanel;
-
-    @UiField
-    Button phenotypeFileUploadCancelBtn;
-
-    @UiField
-    Button phenotypeFileUploadStartBtn;
-
-    @UiField
-    FileUpload phenotypeFileUploadBtn;
-
-    @UiField
-    Form phenotypeUploadForm;
-    @UiField
-    HTML phenotypeFileDropPanel;
-    @UiField
     LayoutPanel uploadPhenotypePanel;
     @UiField
     LayoutPanel phenotypeValuePanel;
@@ -137,59 +192,39 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     @UiField
     PhenotypeEditEditor phenotypeEditor;
     @UiField
-    DivElement checkFileTableContainer;
-    @UiField
-    DivElement phenotypeFileDropText;
-    @UiField
-    TableElement checkFileTable;
-    @UiField
-    TableElement checkMetaTable;
-    @UiField
-    Button phenotypeFileBrowseBtn;
-    @UiField
     Button createPhenotypeBtn;
     @UiField
     Button cancelPhenotypeBtn;
     @UiField
     HTMLPanel phenotypeFormPanel;
+    @UiField
+    FileUploadWidget fileUploadWidget;
 
 
     private final PhenotypeDriver driver;
-    private boolean multipleUpload = false;
-    private Map<File, Boolean> filesToUpload = Maps.newLinkedHashMap();
+    private final String restURL = "/provider/phenotype/upload";
     private static List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
-    private BiMap<File, Element> filesToRow = HashBiMap.create();
+    private final List<String> allowedExtensions = Lists.newArrayList();
     private List<String> headerColumns = ImmutableList.of("accessionid", "MEAN", "MEASURE", "STD", "MODE", "COUNT", "VARIANCE", "MEDIAN");
-    private File file = null;
-    private Queue<File> filesInUploadQueue = Lists.newLinkedList();
-    private int currentUploadCount = 0;
+    private List<String> defaultValues = ImmutableList.of("6909", "12.2", "20.2", "12.23", "30", "40", "12.5", "14.5");
+    private FileUploadWidget.FileChecker fileChecker;
+    private final Map<String, CellProcessor> processors;
 
-
-    private Function clickOnCancelFileFunc = new Function() {
-        @Override
-        public boolean f(com.google.gwt.user.client.Event e) {
-            Element elem = $(e).closest("tr").get(0);
-            File file = filesToRow.inverse().get(elem);
-            removeFile(file);
-            return true;
-        }
-    };
-
-    private Function clickOnFileFunc = new Function() {
-        @Override
-        public boolean f(com.google.gwt.user.client.Event e) {
-            Element elem = $(e).closest("tr").get(0);
-            File file = filesToRow.inverse().get(elem);
-            checkFileContents(file);
-            return true;
-        }
-    };
 
     @Inject
     public PhenotypeUploadWizardView(final Binder binder,
                                      final CustomDataGridResources dataGridResources, final PhenotypeDriver driver,
                                      final OntologyManager ontologyManager) {
         this.driver = driver;
+        processors = ImmutableMap.<String, CellProcessor>builder()
+                .put("accessionid", new ParseLong())
+                .put("MEAN", new ParseDouble())
+                .put("MEASURE", new ParseDouble())
+                .put("STD", new ParseDouble())
+                .put("MODE", new ParseInt())
+                .put("COUNT", new ParseInt())
+                .put("VARIANCE", new ParseDouble())
+                .put("MEDIAN", new ParseDouble()).build();
         phenotypeValuesDataGrid = new DataGrid<PhenotypeUploadValueProxy>(50, dataGridResources);
         initCellTable();
         widget = binder.createAndBindUi(this);
@@ -198,6 +233,44 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         driver.initialize(phenotypeEditor);
         phenotypeEditor.setOntologyManager(ontologyManager);
         phenotypeFormPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        initFileUploadWidget();
+    }
+
+    private void initFileUploadWidget() {
+
+        fileChecker = new PhenotypeFileChecker();
+        fileUploadWidget.setMultiUpload(false);
+        fileUploadWidget.setAdditionalInfo("At the minimum the <b>accessionid</b> column and one <b>value column</b> (i.e. MEAN) have to be provided");
+        fileUploadWidget.setRestURL(restURL);
+        fileUploadWidget.setFileChecker(fileChecker);
+        fileUploadWidget.addHandler(new FileUploadCloseEvent.FileUploadCloseHandler() {
+            @Override
+            public void onFileUploadClose(FileUploadCloseEvent event) {
+                getUiHandlers().onCancel();
+            }
+        }, FileUploadCloseEvent.TYPE);
+
+        fileUploadWidget.addHandler(new FileUploadStartEvent.FileUploadStartHandler() {
+
+            @Override
+            public void onFileUploadStart(FileUploadStartEvent event) {
+                getUiHandlers().startUpload();
+            }
+        }, FileUploadStartEvent.TYPE);
+
+        fileUploadWidget.addHandler(new FileUploadFinishedEvent.FileUploadFinishedHandler() {
+            @Override
+            public void onFileUploadFinished(FileUploadFinishedEvent event) {
+                getUiHandlers().onUploadFinished(event.getResponseText());
+            }
+        }, FileUploadFinishedEvent.TYPE);
+
+        fileUploadWidget.addHandler(new FileUploadErrorEvent.FileUploadErrorHandler() {
+            @Override
+            public void onFileUploadError(FileUploadErrorEvent event) {
+                getUiHandlers().onUploadError(event.getResponseText());
+            }
+        }, FileUploadErrorEvent.TYPE);
     }
 
     private void initCellTable() {
@@ -240,123 +313,12 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         phenotypeValuesDataGrid.setColumnWidth(0, "50px");
     }
 
-    private <C> void addColumn(Column<PhenotypeUploadValueProxy, C> column, String header) {
-        phenotypeValuesDataGrid.addColumn(column, header);
-    }
-
-
     @Override
     public Widget asWidget() {
         return widget;
     }
 
 
-    @UiHandler("phenotypeFileBrowseBtn")
-    public void onClickPhenotypeFileBrowseBtn(ClickEvent e) {
-        phenotypeFileUploadBtn.getElement().<InputElement>cast().click();
-    }
-
-    @UiHandler("phenotypeFileUploadBtn")
-    public void onHandlePhenotypeFileSelect(ChangeEvent e) {
-
-        try {
-            elemental.html.InputElement input = (elemental.html.InputElement) phenotypeFileUploadBtn.getElement();
-            FileList fileList = input.getFiles();
-            updateSelectedPhenotypeFileTable(fileList);
-        } catch (Exception ex) {
-        }
-    }
-
-    private void updateSelectedPhenotypeFileTable(FileList fileList) {
-        if (fileList.length() == 0)
-            return;
-        if (!multipleUpload && filesToUpload.size() == 1)
-            return;
-        fileSelectPanel.addStyleName("in");
-        int fileListLength = multipleUpload ? fileList.getLength() : 1;
-        for (int i = 0; i < fileListLength; i++) {
-            File file = fileList.item(i);
-            boolean fileExtOk = checkFileExtOk(file);
-            boolean isParseOk = true;
-            filesToUpload.put(file, (fileExtOk & isParseOk));
-            addFileToTable(file, fileExtOk, isParseOk);
-            if (fileExtOk && isValidCSVType(file.getType())) {
-                checkFileContents(file);
-            }
-        }
-        updateFileUploadControls();
-    }
-
-    private boolean checkFileExtOk(File file) {
-        String fileExt = file.getType();
-        return isValidCSVType(fileExt);
-    }
-
-    private boolean isValidCSVType(String type) {
-        return csvMimeTypes.contains(type);
-    }
-
-    private void addFileToTable(File file, boolean isExtOk, boolean isParseOk) {
-        String nameCell = "<td>" + file.getName() + "</td>";
-        String sizeCell = "<td>" + String.valueOf(Math.round(file.getSize() / 1024)) + " KB</td>";
-        String extCell = "<td>" + file.getType() + "</td>";
-        String progressBarCell = "";
-        if (isExtOk) {
-            progressBarCell = "<td><div class=\"progress progress-striped active\" style=\"width:200px\"><div class=\"bar\" style=\"width: 0%;\"></div></div></td>";
-            if (isValidCSVType(file.getType()))
-                nameCell = "<td><a href=\"javascript:;\">" + file.getName() + "</a></td>";
-        } else {
-            progressBarCell = "<td><span class=\"label label-important\">Error</span> Filetype not allowed</div></td>";
-        }
-        String cancelBtnCell = "<td><a href=\"javascript:;\" class=\"btn btn-warning\" style=\"\" aria-hidden=\"false\"><i class=\"icon-ban-circle\"></i> Remove </a></td>";
-        GQuery row = $("<tr>" + nameCell + sizeCell + extCell + progressBarCell + cancelBtnCell + "</tr>").appendTo($("#fileToUploadTable > tbody:last"));
-        Element elem = row.get(0);
-        $("a", elem.getChild(0)).bind(com.google.gwt.user.client.Event.ONCLICK, clickOnFileFunc);
-        $("a", elem.getChild(4)).bind(com.google.gwt.user.client.Event.ONCLICK, clickOnCancelFileFunc);
-        filesToRow.put(file, elem);
-    }
-
-    @UiHandler("phenotypeFileUploadCancelBtn")
-    public void onClickPhenotypeFileUploadCancelBtn(ClickEvent e) {
-        resetUploadForm();
-    }
-
-    private void resetUploadForm() {
-        phenotypeUploadForm.reset();
-        phenotypeFileUploadStartBtn.setVisible(false);
-        phenotypeFileUploadCancelBtn.setVisible(false);
-        phenotypeFileBrowseBtn.setVisible(true);
-        fileSelectPanel.removeStyleName("in");
-        phenotypeFileDropText.getStyle().setDisplay(Style.Display.BLOCK);
-        checkFileTableContainer.getStyle().setDisplay(Style.Display.NONE);
-        filesToUpload.clear();
-        filesToRow.clear();
-        filesInUploadQueue.clear();
-        clearTable();
-    }
-
-
-    private void clearTable() {
-        $("#fileToUploadTable > tbody > tr").remove();
-    }
-
-    @UiHandler("phenotypeFileDropPanel")
-    public void onPhenotypeFileDrop(DropEvent e) {
-        e.stopPropagation();
-        ;
-        e.preventDefault();
-
-        HTML5Helper.ExtDataTransfer dataTransfer = (HTML5Helper.ExtDataTransfer) e.getDataTransfer();
-        FileList fileList = dataTransfer.getFiles();
-        updateSelectedPhenotypeFileTable(fileList);
-    }
-
-
-    @UiHandler("phenotypeFileDropPanel")
-    public void onGWASFileDragOver(DragOverEvent e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
 
     @UiHandler("cancelPhenotypeBtn")
     public void onClickCancelPhenotypeBtn(ClickEvent e) {
@@ -369,123 +331,9 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     }
 
 
-    @UiHandler("phenotypeFileUploadStartBtn")
-    public void onClickPhenotypeFileUploadStartBtn(ClickEvent e) {
-        if (countFilesWithError() > 0)
-            return;
-        phenotypeFileBrowseBtn.setVisible(false);
-        phenotypeFileUploadCancelBtn.setVisible(false);
-        phenotypeFileUploadStartBtn.setVisible(false);
-        filesInUploadQueue.addAll(filesToUpload.keySet());
-        //getUiHandlers().onUploadStart();
-        startPartialUpload();
-    }
-
-    private void startPartialUpload() {
-        int remainingUploadSlots = 3 - currentUploadCount;
-        if (remainingUploadSlots > filesInUploadQueue.size())
-            remainingUploadSlots = filesInUploadQueue.size();
-        for (int i = 0; i < remainingUploadSlots; i++) {
-            final XMLHttpRequest xhr = Browser.getWindow().newXMLHttpRequest();
-            final File file = filesInUploadQueue.poll();
-            xhr.getUpload().setOnerror(new EventListener() {
-                @Override
-                public void handleEvent(Event event) {
-                    deccCurrentUploadCount();
-                    getUiHandlers().onUploadError(xhr.getResponseText());
-                    updateFileUploadStatus(file, false);
-                }
-            });
-            xhr.getUpload().setOnprogress(new EventListener() {
-                @Override
-                public void handleEvent(Event event) {
-                    if (event instanceof ProgressEvent) {
-                        ProgressEvent progressEvent = (ProgressEvent) event;
-                        if (progressEvent.isLengthComputable()) {
-                            double max = progressEvent.getTotal();
-                            double current = progressEvent.getLoaded();
-                            updateProgressBar(file, max, current);
-                        }
-                    }
-                }
-            });
-            xhr.setOnerror(new EventListener() {
-                @Override
-                public void handleEvent(Event event) {
-                    deccCurrentUploadCount();
-                    getUiHandlers().onUploadError(xhr.getResponseText());
-                    updateFileUploadStatus(file, false);
-                }
-            });
-            xhr.setOnload(new EventListener() {
-                @Override
-                public void handleEvent(Event event) {
-                    deccCurrentUploadCount();
-                    if (xhr.getStatus() != 200) {
-                        getUiHandlers().onUploadError(xhr.getResponseText());
-                        updateFileUploadStatus(file, false);
-                    } else {
-                        getUiHandlers().onUploadFinished(xhr.getResponseText());
-                        updateFileUploadStatus(file, true);
-                    }
-                }
-            });
-            HTML5Helper.ExtJsFormData formData = HTML5Helper.ExtJsFormData.newExtJsForm();
-            formData.append("file", file, file.getName());
-            xhr.open("POST", GWT.getHostPageBaseURL() + "provider/phenotype/upload");
-            xhr.send(formData);
-            currentUploadCount += 1;
-        }
-        if (remainingUploadSlots == 0 && filesInUploadQueue.size() == 0) {
-            updateUploadStatus();
-        }
-    }
-
-    private void deccCurrentUploadCount() {
-        if (currentUploadCount > 1)
-            currentUploadCount -= 1;
-        startPartialUpload();
-    }
-
-    private void updateFileUploadStatus(File file, boolean isSuccess) {
-        Element elem = filesToRow.get(file);
-        GQuery query = $(elem);
-        if (isSuccess) {
-            query.find("td:nth-child(4)").html("<span class=\"label label-success\">FINISHED</div>");
-        } else {
-            filesToUpload.put(file, false);
-            query.find("td:nth-child(4)").html("<span class=\"label label-important\">FAILED</div>");
-        }
-        query.find("td:nth-child(5)").hide();
-        updateUploadStatus();
-    }
-
-    private void updateUploadStatus() {
-        //getUiHandlers().onUploadEnd();
-        //gwasFileUploadCloseBtn.setVisible(true);
-        GQuery query = $("#checkStatusMsg");
-        int totalCount = filesToUpload.size();
-        int errorCount = countFilesWithError();
-        if (errorCount == 0) {
-            query.html("All added files (" + totalCount + ") successfully uploaded!");
-            query.closest("div").removeClass("alert-error").addClass("alert-success");
-        } else {
-            query.html(errorCount + " out of " + totalCount + " file(s) failed to upload!");
-            query.closest("div").removeClass("alert-success").addClass("alert-error");
-        }
-    }
-
-
-    private void updateProgressBar(File file, double max, double current) {
-        Element elem = filesToRow.get(file);
-        GQuery query = $(elem).find("td:nth-child(4)");
-        long percentage = Math.round((current * 100.0 / max));
-        query.find("div > div").css("width", percentage + "%").html(percentage + "%");
-    }
-
     @Override
     public void showPhenotypeValuePanel(PhenotypeUploadDataProxy data) {
-        resetUploadForm();
+        fileUploadWidget.resetUploadForm();
         String message = "All phentoype values successfully parsed. Click \"Create\" to finish!";
         AlertType messageType = AlertType.SUCCESS;
         if (data.getErrorValueCount() > 0) {
@@ -506,7 +354,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
     @Override
     public void showPhenotypeUploadPanel() {
-        resetUploadForm();
+        fileUploadWidget.resetUploadForm();
         phenotypeValueStatus.setVisible(false);
         phenotypeValueStatus.setText("");
         uploadPhenotypePanel.setWidgetVisible(phenotypeValuePanel, false);
@@ -537,236 +385,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
 
     @Override
-    public void showConstraintViolations() {
-
-    }
-
-    @Override
     public PhenotypeDriver getDriver() {
         return driver;
-    }
-
-    @Override
-    public void showActionButtns(boolean show) {
-        createPhenotypeBtn.setVisible(show);
-        cancelPhenotypeBtn.setVisible(show);
-    }
-
-
-    public final native void logPhenotypeValue(String value) /*-{
-        return $wnd.console.log(value);
-    }-*/;
-
-    private void updateFileInTable(File file) {
-        if (!filesToUpload.get(file)) {
-            Element elem = filesToRow.get(file);
-            GQuery query = $(elem);
-            query.find("td:nth-child(4)").html("<span class=\"label label-important\">Error</span> Parse error</div>");
-        }
-    }
-
-    private void removeFile(final File file) {
-        Element elem = filesToRow.get(file);
-        $(elem).remove();
-        filesToRow.remove(file);
-        filesToUpload.remove(file);
-        updateFileUploadControls();
-        if (filesToUpload.size() == 0) {
-            resetUploadForm();
-        }
-    }
-
-    private boolean parseAndDisplayFileContents(String fileContent) {
-        //TODO regular expression
-        String[] lines = fileContent.split("\n");
-        if (lines.length == 1)
-            lines = fileContent.split("\r");
-        String meta = null;
-        String header = null;
-        String firstLine = null;
-        if (lines.length > 0) {
-            meta = lines[0];
-            if (!meta.substring(0, 7).equalsIgnoreCase("#HEADER")) {
-                header = meta;
-                meta = null;
-                if (lines.length > 1) {
-                    firstLine = lines[1];
-                }
-            } else {
-                if (lines.length > 1) {
-                    header = lines[1];
-                }
-                if (lines.length > 2) {
-                    firstLine = lines[2];
-                }
-            }
-        }
-        boolean isMetaOK = checkMeta(meta);
-        boolean isHeaderOk = checkHeader(header);
-        boolean isFirstLineOk = checkFirstLine(firstLine);
-        checkFileTableContainer.getStyle().setDisplay(Style.Display.BLOCK);
-        phenotypeFileDropText.getStyle().setDisplay(Style.Display.NONE);
-        return (isHeaderOk & isFirstLineOk & isMetaOK);
-    }
-
-    private boolean checkMeta(String meta) {
-        if (meta == null) {
-            checkMetaTable.getStyle().setDisplay(Style.Display.NONE);
-        } else {
-            checkMetaTable.getStyle().setDisplay(Style.Display.BLOCK);
-            $(checkMetaTable).find("thead th").html(meta);
-        }
-        return true;
-    }
-
-    private boolean checkHeader(String header) {
-        String[] columns = new String[0];
-        if (header != null)
-            columns = header.split(",");
-        $(checkFileTable).find("thead tr th").remove();
-        GQuery query = $(checkFileTable).find("thead tr");
-        boolean isOk = true;
-        if (columns.length == 0) {
-            query.append("<th>accessionid [MISSING]</th>").css("color", "red");
-            query.append("<th>VALUE [MISSING]</th>").css("color", "red");
-            return false;
-        } else if (columns.length == 1) {
-            query.append("<th>" + columns[0] + "</th>").css("color", "grey");
-            query.append("<th>VALUE [MISSING]</th>").css("color", "red");
-        } else {
-            for (int i = 0; i < columns.length; i++) {
-                if (i == 0) {
-                    if (columns[i].trim().equalsIgnoreCase("accessionid")) {
-                        query.append("<th style=\"color:green\">accessionid</th>");
-                    } else {
-                        query.append("<th style=\"color:red\">accessionid [" + columns[i] + "]</th>");
-                        isOk = false;
-                    }
-                } else {
-                    String color = "green";
-                    if (!headerColumns.contains(columns[i].trim())) {
-                        color = "red";
-                        isOk = false;
-                    } else {
-                    }
-                    query.append("<th style=\"color:" + color + "\">" + columns[i] + "</th>");
-                }
-            }
-        }
-        return isOk;
-    }
-
-
-    private boolean checkFirstLine(String firstLine) {
-        boolean isOk = true;
-        String[] values = new String[0];
-        if (firstLine != null)
-            values = firstLine.split(",");
-
-        $(checkFileTable).find("tbody tr td").remove();
-        GQuery query = $(checkFileTable).find("tbody tr");
-        if (values.length == 0) {
-            query.append("<td>6909 [MISSING]</td>").css("color", "red");
-            query.append("<th>12.5 [MISSING]</th>").css("color", "red");
-            return false;
-        } else if (values.length == 1) {
-            query.append("<td>" + values[0] + "</td>").css("color", "grey");
-            query.append("<th>12.5 [MISSING]</th>").css("color", "red");
-        } else {
-            for (int i = 0; i < values.length; i++) {
-                String color = "green";
-                if (i == 0) {
-                    if (!checkLong(values[i].trim())) {
-                        color = "red";
-                        isOk = false;
-                    }
-                    query.append("<td>" + values[i] + "</td>").css("color", color);
-                } else {
-                    if (!checkDouble(values[i].trim())) {
-                        color = "red";
-                        isOk = false;
-                    }
-                    query.append("<td>" + values[i] + "</td>").css("color", color);
-                }
-            }
-        }
-        return isOk;
-    }
-
-    private boolean checkLong(String value) {
-        boolean isOk = true;
-        try {
-            Long.parseLong(value);
-        } catch (Exception e) {
-            isOk = false;
-        }
-        return isOk;
-    }
-
-    private boolean checkDouble(String value) {
-        boolean isOk = true;
-        try {
-            Double.parseDouble(value);
-        } catch (Exception e) {
-            isOk = false;
-        }
-        return isOk;
-    }
-
-
-    private void checkFileContents(final File file) {
-        if (file == null || !isValidCSVType(file.getType()))
-            return;
-        FileReader reader = Browser.getWindow().newFileReader();
-        Blob blob = ((HTML5Helper.ExtJsFile) file).webkitSlice(0, 100, file.getType(), "test");
-        reader.addEventListener("loadend", new EventListener() {
-            @Override
-            public void handleEvent(Event event) {
-                FileReader reader = (FileReader) event.getTarget();
-                if (reader.getReadyState() == FileReader.DONE) {
-                    String fileContent = reader.getResult().toString();
-                    boolean isParseOk = parseAndDisplayFileContents(fileContent);
-                    $("#checkFileTableHeader").html(file.getName() + ":");
-                    filesToUpload.put(file, isParseOk);
-                    if (!isParseOk) {
-                        updateFileInTable(file);
-                        updateFileUploadControls();
-                    }
-                }
-            }
-        }, false);
-        reader.readAsText(blob);
-    }
-
-
-    private void updateFileUploadControls() {
-        boolean hasFiles = filesToUpload.size() > 0;
-        phenotypeFileUploadCancelBtn.setVisible(hasFiles);
-        phenotypeFileUploadStartBtn.setVisible(hasFiles);
-        if (!multipleUpload && hasFiles) {
-            phenotypeFileBrowseBtn.setVisible(false);
-        }
-        GQuery query = $("#checkStatusMsg");
-        int totalCount = filesToUpload.size();
-        int errorCount = countFilesWithError();
-        if (errorCount == 0) {
-            query.html("All added files (" + totalCount + ") are valid!");
-            query.closest("div").removeClass("alert-error").addClass("alert-success");
-            phenotypeFileUploadStartBtn.setEnabled(true);
-        } else {
-            query.html(errorCount + " out of " + totalCount + " file(s) have errors. Please fix!");
-            query.closest("div").removeClass("alert-success").addClass("alert-error");
-            phenotypeFileUploadStartBtn.setEnabled(false);
-        }
-    }
-
-    private int countFilesWithError() {
-        return Collections2.filter(filesToUpload.values(), new Predicate<Boolean>() {
-
-            @Override
-            public boolean apply(@Nullable Boolean input) {
-                return !input;
-            }
-        }).size();
     }
 }
