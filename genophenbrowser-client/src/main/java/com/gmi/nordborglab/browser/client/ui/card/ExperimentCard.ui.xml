@@ -2,168 +2,34 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
 
-    <ui:style type="com.gmi.nordborglab.browser.client.ui.card.ExperimentCard.MyStyle">
-        .card {
-            background: white;
-            float: left;
-            padding: 10px 15px 10px;
-            margin-top: 30px;
-            -webkit-border-radius: 6px;
-            -moz-border-radius: 6px;
-            border-radius: 6px;
-            -webkit-transition: box-shadow 0.2s linear, color 0.2s linear;
-            -moz-transition: box-shadow 0.2s linear, color 0.2s linear;
-            -o-transition: box-shadow 0.2s linear, color 0.2s linear;
-            -ms-transition: box-shadow 0.2s linear, color 0.2s linear;
-            transition: box-shadow 0.2s linear, color 0.2s linear;
-            width: 100%;
-            margin: 0 auto;
-            -webkit-box-shadow: 0 2px 10px 2px #CDCECF;
-            -moz-box-shadow: 0 2px 10px 2px #cdcecf;
-            box-shadow: 0 2px 10px 2px #CDCECF;
-            min-width: 260px;
-            cursor: pointer;
-            box-sizing: border-box;
-            width: 260px;
-        }
-
-        .card:hover {
-            border-color: #a5a5a5;
-            color: #444;
-            text-shadow: 0 1px 0 #fff;
-            -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, .25);
-            -moz-box-shadow: 0 0 3px rgba(0, 0, 0, .25);
-            box-shadow: 0 0 3px rgba(0, 0, 0, .25);
-        }
-
-        .card_selected {
-            -webkit-box-shadow: 0px 0px 5px 0px green !important;
-            -moz-box-shadow: 0px 0px 5px 0px green !important;
-            box-shadow: 0px 0px 5px 0px green !important;
-            cursor: text !important;
-        }
-
-        .card li {
-            display: inline-block;
-            padding-right: 25px;
-            font-size: 120%;
-        }
-
-        .title {
-            margin-bottom: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .ok {
-            color: green;
-            font-weight: bold;
-            font-size: 200%;
-        }
-
-        .empty_ok {
-            color: #EEE;
-            font-weight: bold;
-            font-size: 200%;
-            cursor: pointer;
-        }
-
-        .stats_icon {
-            font-size: 20px;
-            margin-right: 10px;
-            margin-left: 6px;
-            line-height: 25px;
-        }
-
-        .sub_title {
-            font-size: 80%;
-            color: #666;
-            margin-left: 5px;
-            height: 20px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
+    <ui:with type="com.gmi.nordborglab.browser.client.resources.CardRendererResources" field="cardRen"></ui:with>
+    <ui:style>
         .card_container {
-            margin-right: 30px;
-            margin-bottom: 20px;
             float: left;
-            position: relative;
+        }
+        .stats_icon {
+            margin-left: 6px !important;
+            margin-right: 5px !important;
         }
 
-        .card_container:focus {
-            -webkit-box-shadow: 0px 0px 5px 0px green !important;
-            -moz-box-shadow: 0px 0px 5px 0px green !important;
-            box-shadow: 0px 0px 5px 0px green !important;
-            outline: none;
+        .newContainer {
+            padding: 20px !important;
         }
-
-        .icon {
-            font-size: 60px;
-        }
-
-        .newCardContainer {
-            color: #808080;
-            text-align: center;
-            padding: 20px; /* required so that they have the same height */
-        }
-
-        .icon_new {
-            position: absolute;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 16px;
-            top: 0;
-            right: 0;
-            color: #fff;
-            overflow: hidden;
-            height: 32px;
-            width: 32px;
-            text-shadow: none;
-            border-top-right-radius: 3px;
-            pointer-events: none;
-        }
-
-        .icon_new:before {
-            content: '';
-            display: inline-block;
-            border-right: 32px solid;
-            border-bottom: 32px solid transparent;
-            position: absolute;
-            top: 0;
-            right: 0;
-            border-right-color: #aa433a;
-        }
-
-        .icon_text {
-            padding-top: 4px;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .new_icon_icon {
-            right: 4px;
-            top: 3px;
-            position: absolute;
-        }
-
     </ui:style>
 
-    <g:FocusPanel addStyleNames="{style.card_container}">
+
+    <g:FocusPanel addStyleNames="{cardRen.style.card_container} {style.card_container}">
         <g:HTMLPanel>
-            <div class="{style.card}" ui:field="card">
+            <div class="{cardRen.style.card}" ui:field="card">
                 <g:HTMLPanel ui:field="cardContent" visible="false">
-                    <h4 class="{style.title}" ui:field="title"></h4>
-                    <p class="{style.sub_title}" ui:field="subtitle"></p>
+                    <h4 class="{cardRen.style.title}" ui:field="title"></h4>
+                    <p class="{cardRen.style.sub_title}" ui:field="subtitle"></p>
                     <ul class="unstyled">
                         <li>
                             <b:Tooltip text="Number of phenotypes" placement="RIGHT">
                                 <g:HTML>
-                                    <span class="{style.stats_icon} ">
-                                        <i class="e_icon-feather"/>
+                                    <span class="{cardRen.style.stats_icon} {style.stats_icon}">
+                                    <i class="e_icon-feather"/>
                                     </span>
                                     <span ui:field="phenotypeCountLabel"></span>
                                 </g:HTML>
@@ -172,14 +38,15 @@
                     </ul>
                     <p>
                         <span class="label label-success" ui:field="permissionLabel">PUBLIC</span>
-                        <b:Icon type="OK" addStyleNames="pull-right {style.empty_ok}" ui:field="selectIcon"/>
+                        <b:Icon type="OK" addStyleNames="pull-right {cardRen.style.empty_ok}" ui:field="selectIcon"/>
                     </p>
                 </g:HTMLPanel>
-                <g:HTMLPanel ui:field="newCardContent" addStyleNames="{style.newCardContainer}">
-                    <i class="icon-file-alt {style.icon}"></i>
-                    <div class="{style.icon_text}">Create new study</div>
-                    <span class="{style.icon_new}">
-                        <i class="icon-plus {style.new_icon_icon}"></i>
+                <g:HTMLPanel ui:field="newCardContent"
+                             addStyleNames="{cardRen.style.newCardContainer} {style.newContainer}">
+                    <i class="icon-file-alt {cardRen.style.icon}"></i>
+                    <div class="{cardRen.style.icon_text}">Create new study</div>
+                    <span class="{cardRen.style.icon_new}">
+                        <i class="icon-plus {cardRen.style.new_icon_icon}"></i>
                     </span>
                 </g:HTMLPanel>
             </div>

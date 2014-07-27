@@ -8,111 +8,41 @@
     <ui:with field="overlapLabelStyle" type='java.lang.String'/>
 
     <ui:with type="com.gmi.nordborglab.browser.client.resources.CardCellListResources" field="cardRes"/>
+    <ui:with type="com.gmi.nordborglab.browser.client.resources.CardRendererResources" field="cardRen"></ui:with>
 
-
-    <ui:style type="com.gmi.nordborglab.browser.client.ui.card.PhenotypeCardRenderer.MyStyle">
-        .card {
-            background: white;
-            padding: 10px 15px 10px;
-            -webkit-border-radius: 6px;
-            -moz-border-radius: 6px;
-            border-radius: 6px;
-            -webkit-transition: box-shadow 0.2s linear, color 0.2s linear;
-            -moz-transition: box-shadow 0.2s linear, color 0.2s linear;
-            -o-transition: box-shadow 0.2s linear, color 0.2s linear;
-            -ms-transition: box-shadow 0.2s linear, color 0.2s linear;
-            transition: box-shadow 0.2s linear, color 0.2s linear;
-            margin: 0 auto;
-            -webkit-box-shadow: 0 2px 10px 2px #CDCECF;
-            -moz-box-shadow: 0 2px 10px 2px #cdcecf;
-            box-shadow: 0 2px 10px 2px #CDCECF;
-            cursor: pointer;
-            box-sizing: border-box;
-            width: 250px;
-            overflow: auto;
-        }
-
-        .card_selected {
-            -webkit-box-shadow: 0px 0px 5px 0px green !important;
-            -moz-box-shadow: 0px 0px 5px 0px green !important;
-            box-shadow: 0px 0px 5px 0px green !important;
-            cursor: text !important;
-        }
-
-        .card li {
-            display: inline-block;
-            padding-right: 15px;
-            font-size: 120%;
-        }
-
-        .title {
-            margin-bottom: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .ok {
-            color: green;
-            font-weight: bold;
-            font-size: 200%;
-        }
-
-        .empty_ok {
-            color: #EEE;
-            font-weight: bold;
-            font-size: 200%;
-            cursor: pointer;
-        }
+    <ui:style>
 
         .stats_icon {
-            font-size: 20px;
+            line-height: 20px;
             margin-right: 5px;
             margin-left: 6px;
         }
 
-        .sub_title {
-            font-size: 80%;
-            color: #666;
-            margin-left: 5px;
-            height: 20px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .card_container {
-            margin-right: 30px;
-            margin-bottom: 20px;
-        }
-
-        .card_container:focus {
-            -webkit-box-shadow: 0px 0px 5px 0px green !important;
-            -moz-box-shadow: 0px 0px 5px 0px green !important;
-            box-shadow: 0px 0px 5px 0px green !important;
-            outline: none;
+        .card {
+            width: 250px !important;
         }
     </ui:style>
-    <div class="{style.card_container}">
-        <div class="{style.card}">
-            <h4 class="{style.title}">
-                <ui:text from="{name}"/>
+
+    <div class="{cardRen.style.card_container}">
+        <div class="{cardRen.style.card} {style.card}">
+            <h4 class="{cardRen.style.title}">
+            <ui:text from="{name}"/>
             </h4>
-            <p class="{style.sub_title}">
-                <ui:text from="{producer}"/>
+            <p class="{cardRen.style.sub_title}">
+            <ui:text from="{producer}"/>
             </p>
             <ul class="unstyled">
                 <li>
-                    <span class="{style.stats_icon}">
-                        <i class="e_icon-tag"/>
+                    <span class="{cardRen.style.stats_icon} {style.stats_icon}">
+                    <i class="e_icon-tag"/>
                     </span>
                     <span>
                         <ui:text from="{scoringTechType}"/>
                     </span>
                 </li>
                 <li>
-                    <span class="{style.stats_icon}">
-                        <i class="e_icon-database"/>
+                    <span class="{cardRen.style.stats_icon} {style.stats_icon}">
+                    <i class="e_icon-database"/>
                     </span>
                     <span>
                         <ui:text from="{polyType}"/>
@@ -126,7 +56,7 @@
                 </span>
             </p>
             <p>
-                <i class="pull-right {style.empty_ok} icon-ok-circle {cardRes.cellListStyle.selectedCard}"/>
+                <i class="pull-right {cardRen.style.empty_ok} icon-ok-circle {cardRes.cellListStyle.selectedCard}"/>
             </p>
         </div>
     </div>

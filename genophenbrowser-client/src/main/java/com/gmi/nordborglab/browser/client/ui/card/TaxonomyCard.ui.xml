@@ -1,29 +1,11 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
         >
+    <ui:with type="com.gmi.nordborglab.browser.client.resources.CardRendererResources" field="cardRen"></ui:with>
 
     <ui:style>
         .card {
-            background: white;
-            float: left;
-            padding: 10px 15px 10px;
-            margin-top: 30px;
-            -webkit-border-radius: 6px;
-            -moz-border-radius: 6px;
-            border-radius: 6px;
-            -webkit-transition: box-shadow 0.2s linear, color 0.2s linear;
-            -moz-transition: box-shadow 0.2s linear, color 0.2s linear;
-            -o-transition: box-shadow 0.2s linear, color 0.2s linear;
-            -ms-transition: box-shadow 0.2s linear, color 0.2s linear;
-            transition: box-shadow 0.2s linear, color 0.2s linear;
-            width: 100%;
-            margin: 0 auto;
-            -webkit-box-shadow: 0 2px 10px 2px #CDCECF;
-            -moz-box-shadow: 0 2px 10px 2px #cdcecf;
-            box-shadow: 0 2px 10px 2px #CDCECF;
-            cursor: pointer;
-            box-sizing: border-box;
-            width: 440px;
+            width: 440px !important;
         }
 
         .card:hover {
@@ -39,23 +21,10 @@
             font-size: 120%;
         }
 
-        .title {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
         .card_container {
+            float: left;
             margin-top: 30px;
             margin-right: 30px;
-            float: left;
-        }
-
-        .card_container:focus {
-            -webkit-box-shadow: 0px 0px 5px 0px green !important;
-            -moz-box-shadow: 0px 0px 5px 0px green !important;
-            box-shadow: 0px 0px 5px 0px green !important;
-            outline: none;
         }
 
         .image {
@@ -92,8 +61,8 @@
 
     <g:FocusPanel ui:field="focusPanel" addStyleNames="{style.card_container}">
         <g:HTMLPanel>
-            <div class="{style.card}" ui:field="card">
-                <h4 class="{style.title}" ui:field="title"></h4>
+            <div class="{cardRen.style.card} {style.card}" ui:field="card">
+                <h4 ui:field="title"></h4>
                 <table>
                     <tr style="vertical-align:top;">
                         <td style="width:50%;">

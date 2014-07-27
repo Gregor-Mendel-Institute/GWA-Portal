@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.client.ui.card;
 import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.events.SelectTransformationEvent;
+import com.gmi.nordborglab.browser.client.resources.CardRendererResources;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationProxy;
@@ -13,7 +14,6 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -35,15 +35,6 @@ import com.google.web.bindery.event.shared.EventBus;
 public class TransformationCard extends Composite implements RequiresResize {
 
 
-    public interface MyStyle extends CssResource {
-
-        String card_selected();
-
-        String ok();
-
-        String empty_ok();
-
-    }
 
     interface TransformationCardUiBinder extends UiBinder<FocusPanel, TransformationCard> {
     }
@@ -68,10 +59,11 @@ public class TransformationCard extends Composite implements RequiresResize {
 
     @UiField
     Icon selectIcon;
-    @UiField
-    MyStyle style;
+
     @UiField
     FocusPanel focusPanel;
+    @UiField
+    CardRendererResources cardRen;
     private boolean layoutScheduled = false;
     private final Scheduler.ScheduledCommand layoutCmd = new Scheduler.ScheduledCommand() {
         public void execute() {
@@ -145,15 +137,15 @@ public class TransformationCard extends Composite implements RequiresResize {
 
     private void updateSelected() {
         if (isSelected) {
-            card.addClassName(style.card_selected());
-            selectIcon.removeStyleName(style.empty_ok());
-            selectIcon.addStyleName(style.ok());
+            card.addClassName(cardRen.style().card_selected());
+            selectIcon.removeStyleName(cardRen.style().empty_ok());
+            selectIcon.addStyleName(cardRen.style().ok());
             selectIcon.setType(IconType.OK);
 
         } else {
-            card.removeClassName(style.card_selected());
-            selectIcon.removeStyleName(style.ok());
-            selectIcon.addStyleName(style.empty_ok());
+            card.removeClassName(cardRen.style().card_selected());
+            selectIcon.removeStyleName(cardRen.style().ok());
+            selectIcon.addStyleName(cardRen.style().empty_ok());
             selectIcon.setType(IconType.OK_CIRCLE);
         }
 
