@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.client.ui.card;
 import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.events.SelectMethodEvent;
+import com.gmi.nordborglab.browser.client.resources.CardRendererResources;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProtocolProxy;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -11,7 +12,6 @@ import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -30,14 +30,6 @@ public class MethodCard extends Composite {
     interface MethodCardUiBinder extends UiBinder<FocusPanel, MethodCard> {
     }
 
-    public interface MyStyle extends CssResource {
-        String card_selected();
-
-        String ok();
-
-        String empty_ok();
-    }
-
     private static MethodCardUiBinder ourUiBinder = GWT.create(MethodCardUiBinder.class);
 
     @UiField
@@ -48,12 +40,13 @@ public class MethodCard extends Composite {
     ParagraphElement subtitle;
     @UiField
     DivElement card;
-    @UiField
-    MyStyle style;
+
     @UiField
     SpanElement typeLabel;
     @UiField
     SpanElement runTimeDuration;
+    @UiField
+    CardRendererResources cardRen;
 
     protected EventBus eventBus;
 
@@ -95,15 +88,15 @@ public class MethodCard extends Composite {
 
     private void updateSelected() {
         if (isSelected) {
-            card.addClassName(style.card_selected());
-            selectIcon.removeStyleName(style.empty_ok());
-            selectIcon.addStyleName(style.ok());
+            card.addClassName(cardRen.style().card_selected());
+            selectIcon.removeStyleName(cardRen.style().empty_ok());
+            selectIcon.addStyleName(cardRen.style().ok());
             selectIcon.setType(IconType.OK);
 
         } else {
-            card.removeClassName(style.card_selected());
-            selectIcon.removeStyleName(style.ok());
-            selectIcon.addStyleName(style.empty_ok());
+            card.removeClassName(cardRen.style().card_selected());
+            selectIcon.removeStyleName(cardRen.style().ok());
+            selectIcon.addStyleName(cardRen.style().empty_ok());
             selectIcon.setType(IconType.OK_CIRCLE);
         }
     }

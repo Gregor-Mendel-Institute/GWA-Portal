@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.ui.card;
 
 import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.gmi.nordborglab.browser.client.resources.CardRendererResources;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -11,7 +12,6 @@ import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -31,13 +31,6 @@ public class ExperimentCard extends Composite {
 
     }
 
-    public interface MyStyle extends CssResource {
-        String card_selected();
-
-        String ok();
-
-        String empty_ok();
-    }
 
     private static ExperimentCardUiBinder uiBinder = GWT.create(ExperimentCardUiBinder.class);
     protected ExperimentProxy experiment;
@@ -56,12 +49,15 @@ public class ExperimentCard extends Composite {
     ParagraphElement subtitle;
     @UiField
     DivElement card;
-    @UiField
-    MyStyle style;
+
     @UiField
     HTMLPanel cardContent;
     @UiField
     HTMLPanel newCardContent;
+
+    @UiField
+    CardRendererResources cardRen;
+
     protected boolean isSelected;
 
     public ExperimentCard() {
@@ -108,15 +104,15 @@ public class ExperimentCard extends Composite {
 
     private void updateSelected() {
         if (isSelected) {
-            card.addClassName(style.card_selected());
-            selectIcon.removeStyleName(style.empty_ok());
-            selectIcon.addStyleName(style.ok());
+            card.addClassName(cardRen.style().card_selected());
+            selectIcon.removeStyleName(cardRen.style().empty_ok());
+            selectIcon.addStyleName(cardRen.style().ok());
             selectIcon.setType(IconType.OK);
 
         } else {
-            card.removeClassName(style.card_selected());
-            selectIcon.removeStyleName(style.ok());
-            selectIcon.addStyleName(style.empty_ok());
+            card.removeClassName(cardRen.style().card_selected());
+            selectIcon.removeStyleName(cardRen.style().ok());
+            selectIcon.addStyleName(cardRen.style().empty_ok());
             selectIcon.setType(IconType.OK_CIRCLE);
         }
 
