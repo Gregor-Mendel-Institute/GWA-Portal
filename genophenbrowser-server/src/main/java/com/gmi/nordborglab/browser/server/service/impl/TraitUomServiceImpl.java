@@ -345,6 +345,9 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         List<StatisticType> statisticTypes = getStatisticTypesFromString(data.getValueHeader());
         TraitUom traitUom = data.getTraitUom();
         for (PhenotypeUploadValue value : data.getPhenotypeUploadValues()) {
+            if (value.hasError()) {
+                continue;
+            }
             ObsUnit obsUnit = lookUpForObsUnit.get(value.getPassportId());
             if (obsUnit == null) {
                 Passport passport = passportRepository.findOne(value.getPassportId());

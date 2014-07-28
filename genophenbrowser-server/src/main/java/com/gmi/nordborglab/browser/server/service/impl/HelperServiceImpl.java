@@ -57,6 +57,7 @@ import com.gmi.nordborglab.browser.shared.service.HelperFactory;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.web.bindery.autobean.vm.AutoBeanFactorySource;
@@ -79,6 +80,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.CellProcessorAdaptor;
 import org.supercsv.cellprocessor.ParseDouble;
+import org.supercsv.cellprocessor.ParseInt;
 import org.supercsv.cellprocessor.ParseLong;
 import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -134,6 +136,49 @@ public class HelperServiceImpl implements HelperService {
             throw new SuperCsvCellProcessorException(String.format("Could not parse '%s' as a phenotype value type", value), context, this);
         }
 
+    }
+
+    private static class SupressException extends CellProcessorAdaptor {
+
+        private SuperCsvCellProcessorException suppressedException;
+        private Object value;
+
+        public SupressException(CellProcessor next) {
+            super(next);
+        }
+
+        public Object execute(Object value, CsvContext context) {
+            try {
+                // attempt to execute the next processor
+                this.value = value;
+                return next.execute(value, context);
+
+            } catch (SuperCsvCellProcessorException e) {
+                // save the exception
+                if (value == null) {
+                    this.value = "MISSING";
+                }
+                suppressedException = e;
+            } finally {
+
+            }
+            // and suppress it (null is written as "")
+            return value;
+        }
+
+
+        public SuperCsvCellProcessorException getSuppressedException() {
+            return suppressedException;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public void reset() {
+            suppressedException = null;
+            value = null;
+        }
     }
 
     @Resource
@@ -199,6 +244,19 @@ public class HelperServiceImpl implements HelperService {
     @Resource
     protected EsAclManager esAclManager;
 
+    private final Map<ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES, CellProcessor> phenotype2CellProcessors;
+
+
+    public HelperServiceImpl() {
+        phenotype2CellProcessors = ImmutableMap.<ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES, CellProcessor>builder()
+                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.MEAN, new ParseDouble())
+                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.MEASURE, new ParseDouble())
+                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.STD, new ParseDouble())
+                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.MODE, new ParseInt())
+                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.COUNT, new ParseInt())
+                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.VARIANCE, new ParseDouble())
+                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.MEDIAN, new ParseDouble()).build();
+    }
 
     @Override
     public List<BreadcrumbItem> getBreadcrumbs(Long id, String object) {
@@ -334,10 +392,10 @@ public class HelperServiceImpl implements HelperService {
 
 
             final int columnCount = valueHeader.length;
-            data.setValueHeader(Arrays.asList(valueHeader).subList(1, valueHeader.length));
+            List<String> headers = Arrays.asList(valueHeader).subList(1, valueHeader.length);
+            data.setValueHeader(headers);
 
             CellProcessor[] valueHeaderCellProccessors = createValueHeaderCellProcessors(columnCount);
-            CellProcessor[] valueCellProcessors = createValueCellProcessors(columnCount);
 
             valueHeaderReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
             if (hasMetaInfo)
@@ -348,10 +406,10 @@ public class HelperServiceImpl implements HelperService {
             if (hasMetaInfo)
                 valueReader.getHeader(true);
             valueReader.getHeader(false);
-
-            List<String> phenotypeValues = null;
-            while ((phenotypeValues = valueReader.read()) != null) {
-                PhenotypeUploadValue value = parseAndCheckPhenotypeValue(phenotypeValues);
+            CellProcessor[] valueCellProcessors = createValueCellProcessors(headers);
+            List<Object> phenotypeValues = null;
+            while ((phenotypeValues = valueReader.read(valueCellProcessors)) != null) {
+                PhenotypeUploadValue value = parseAndCheckPhenotypeValue(phenotypeValues, getParseErrorFromProcessor(valueCellProcessors));
                 if (value != null)
                     data.addPhenotypeValue(value);
             }
@@ -365,8 +423,21 @@ public class HelperServiceImpl implements HelperService {
             if (metaInformationReader != null)
                 metaInformationReader.close();
         }
-
         return data;
+    }
+
+
+    private boolean getParseErrorFromProcessor(CellProcessor[] processors) {
+        boolean hasError = false;
+        for (CellProcessor processor : processors) {
+            if (processor instanceof SupressException) {
+                SupressException cell = (SupressException) processor;
+                if (cell.getSuppressedException() != null)
+                    hasError = true;
+                cell.reset();
+            }
+        }
+        return hasError;
     }
 
     @Override
@@ -430,7 +501,6 @@ public class HelperServiceImpl implements HelperService {
 
     public PhenotypeUploadValue parseAndUpdateAccession(PhenotypeUploadValue value) {
         boolean isIdKnown = false;
-        boolean hasError = false;
         try {
             Long id = Long.parseLong(value.getSourceId());
             Long passportId = null;
@@ -454,19 +524,24 @@ public class HelperServiceImpl implements HelperService {
             value.setPassportId(passportId);
             value.setIdKnown(isIdKnown);
         } catch (Exception e) {
-            hasError = true;
+            value.setParseError(true);
         }
-        value.setParseError(hasError);
+
         return value;
     }
 
 
-    private PhenotypeUploadValue parseAndCheckPhenotypeValue(List<String> phenotypeValues) {
+    private PhenotypeUploadValue parseAndCheckPhenotypeValue(List<Object> phenotypeValues, boolean valueError) {
         PhenotypeUploadValue parsedValue = new PhenotypeUploadValue();
         try {
-            String sourceId = phenotypeValues.get(0);
-            parsedValue.setValues(phenotypeValues.subList(1, phenotypeValues.size()));
-            parsedValue.setSourceId(sourceId);
+            parsedValue.setParseError(valueError);
+            Long sourceId = (Long) phenotypeValues.get(0);
+            List<String> values = Lists.newArrayList();
+            for (Object obj : phenotypeValues) {
+                values.add(String.valueOf(obj));
+            }
+            parsedValue.setValues(values.subList(1, values.size()));
+            parsedValue.setSourceId(sourceId.toString());
             parsedValue = parseAndUpdateAccession(parsedValue);
         } catch (Exception e) {
             parsedValue.setParseError(true);
@@ -507,15 +582,24 @@ public class HelperServiceImpl implements HelperService {
         return processors;
     }
 
-    private static CellProcessor[] createValueCellProcessors(int valueColumns) {
-        StringCellProcessor valueCell = new NotNull(new ParseDouble());
-        CellProcessor[] processors = new CellProcessor[valueColumns];
+    private CellProcessor[] createValueCellProcessors(List<String> header) {
+        CellProcessor processor = null;
+        CellProcessor[] processors = new CellProcessor[header.size() + 1];
         processors[0] = new NotNull(new ParseLong());
-        for (int i = 1; i < valueColumns; i++) {
+        for (int i = 1; i < processors.length; i++) {
+            try {
+                processor = phenotype2CellProcessors.get(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.valueOf(header.get(i - 1)));
+            } catch (Exception e) {
+
+            }
+            if (processor == null) {
+                processor = new ParseDouble();
+            }
+            SupressException valueCell = new SupressException(new NotNull(processor));
             processors[i] = valueCell;
         }
         //TODO properly implement parse issues on the backend.
-        return null;
+        return processors;
 
     }
 
