@@ -4,7 +4,6 @@ import com.github.gwtbootstrap.client.ui.Alert;
 import com.github.gwtbootstrap.client.ui.Icon;
 import com.gmi.nordborglab.browser.client.csv.DefaultFileChecker;
 import com.gmi.nordborglab.browser.client.editors.ExperimentEditEditor;
-import com.gmi.nordborglab.browser.client.editors.PhenotypeEditEditor;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeUploadDataListEditor;
 import com.gmi.nordborglab.browser.client.events.FileUploadFinishedEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadStartEvent;
@@ -19,15 +18,11 @@ import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.card.PhenotypeUploadDataCardCell;
 import com.gmi.nordborglab.browser.client.ui.cells.BooleanIconCell;
-import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentUploadDataProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadValueProxy;
 import com.google.common.collect.Lists;
-import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -43,23 +38,14 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import elemental.html.File;
-import org.gwtsupercsv.cellprocessor.Optional;
-import org.gwtsupercsv.cellprocessor.ParseDouble;
-import org.gwtsupercsv.cellprocessor.ParseLong;
-import org.gwtsupercsv.cellprocessor.Trim;
-import org.gwtsupercsv.cellprocessor.constraint.Equals;
-import org.gwtsupercsv.cellprocessor.constraint.IsIncludedIn;
-import org.gwtsupercsv.cellprocessor.ift.CellProcessor;
 
 import java.util.List;
 
-import static com.google.gwt.query.client.GQuery.$;
 
 /**
  * Created by uemit.seren on 5/28/14.
@@ -148,7 +134,7 @@ public class IsaTabUploadWizardView extends ViewWithUiHandlers<IsaTabUploadWizar
         phenotypeValuesDataGrid.addColumn(new Column<PhenotypeUploadValueProxy, Boolean>(new BooleanIconCell()) {
             @Override
             public Boolean getValue(PhenotypeUploadValueProxy object) {
-                return (!object.hasParseError() && object.isIdKnown());
+                return (!object.isParseError() && object.isIdKnown());
             }
         });
 
