@@ -10,7 +10,7 @@ public class PhenotypeUploadValue {
     private Long passportId;
     private String accessionName;
     private List<String> values;
-    private boolean hasParseError = false;
+    private boolean isParseError = false;
     private boolean isIdKnown = false;
 
     public PhenotypeUploadValue() {
@@ -46,8 +46,8 @@ public class PhenotypeUploadValue {
         return values;
     }
 
-    public boolean hasParseError() {
-        return hasParseError;
+    public boolean isParseError() {
+        return isParseError;
     }
 
     public void setStockId(Long stockId) {
@@ -66,8 +66,8 @@ public class PhenotypeUploadValue {
         this.values = values;
     }
 
-    public void setParseError(boolean hasParseError) {
-        this.hasParseError = hasParseError;
+    public void setParseError(boolean isParseError) {
+        this.isParseError = isParseError;
     }
 
     public void setIdKnown(boolean idKnown) {
@@ -75,7 +75,7 @@ public class PhenotypeUploadValue {
     }
 
     public boolean hasError() {
-        return !isIdKnown || hasParseError;
+        return !isIdKnown || isParseError;
     }
 
 }

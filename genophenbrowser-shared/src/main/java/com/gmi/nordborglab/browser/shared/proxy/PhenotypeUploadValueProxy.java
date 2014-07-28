@@ -26,7 +26,7 @@ public interface PhenotypeUploadValueProxy extends ValueProxy {
 
     List<String> getValues();
 
-    boolean hasParseError();
+    boolean isParseError();
 
     boolean isIdKnown();
 

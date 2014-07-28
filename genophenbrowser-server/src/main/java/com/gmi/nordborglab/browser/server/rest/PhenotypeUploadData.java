@@ -44,6 +44,7 @@ public class PhenotypeUploadData {
     public List<PhenotypeUploadValue> getPhenotypeUploadValues() {
         return phenotypeUploadValues;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -105,7 +106,7 @@ public class PhenotypeUploadData {
     }
 
     public void addPhenotypeValue(PhenotypeUploadValue phenotypeUploadValue) {
-        if (phenotypeUploadValue.hasParseError() || !phenotypeUploadValue.isIdKnown())
+        if (phenotypeUploadValue.isParseError() || !phenotypeUploadValue.isIdKnown())
             errorValueCount++;
         phenotypeUploadValues.add(phenotypeUploadValue);
     }
@@ -119,10 +120,10 @@ public class PhenotypeUploadData {
     }
 
     public void sortByErrors() {
-        Collections.sort(phenotypeUploadValues,new Comparator<PhenotypeUploadValue>() {
+        Collections.sort(phenotypeUploadValues, new Comparator<PhenotypeUploadValue>() {
             @Override
             public int compare(PhenotypeUploadValue o1, PhenotypeUploadValue o2) {
-                return BooleanComparator.TRUE_LOW.compare(o1.hasError(),o2.hasError());
+                return BooleanComparator.TRUE_LOW.compare(o1.hasError(), o2.hasError());
             }
         });
     }
