@@ -99,9 +99,11 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
                 if (header.size() == 0) {
                     headerParseResults.add(new FileUploadWidget.ParseResult("MISSING", true, "accessionid"));
                     headerParseResults.add(new FileUploadWidget.ParseResult("MISSING", true, "VALUE"));
+                    parseError = true;
                 } else if (header.size() == 1) {
                     headerParseResults.add(new FileUploadWidget.ParseResult(header.get(0), "accessionid" != header.get(0), "accessionid"));
                     headerParseResults.add(new FileUploadWidget.ParseResult("MISSING", true, "VALUE"));
+                    parseError = true;
                 } else {
                     for (int i = 0; i < header.size(); i++) {
                         if (i == 0) {
@@ -114,12 +116,16 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
                             } else {
                                 cellProcessors[i] = new SupressException(new ParseDouble());
                                 headerParseResults.add(new FileUploadWidget.ParseResult("UNKOWN", true, header.get(i)));
+                                parseError = true;
                             }
                         }
                     }
                 }
 
                 List<Object> firstLine = reader.read(cellProcessors);
+                if (firstLine == null) {
+                    parseError = true;
+                }
                 for (CellProcessor processor : cellProcessors) {
                     SupressException cell = (SupressException) processor;
                     if (cell.getSuppressedException() != null) {
@@ -279,7 +285,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         phenotypeValuesDataGrid.addColumn(new Column<PhenotypeUploadValueProxy, Boolean>(new BooleanIconCell()) {
             @Override
             public Boolean getValue(PhenotypeUploadValueProxy object) {
-                return (!object.hasParseError() && object.isIdKnown());
+                return (!object.isParseError() && object.isIdKnown());
             }
         });
 
@@ -338,7 +344,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         AlertType messageType = AlertType.SUCCESS;
         if (data.getErrorValueCount() > 0) {
             messageType = AlertType.ERROR;
-            message = data.getErrorValueCount() + " of " + data.getPhenotypeUploadValues().size() + " phenotype values haven an error.";
+            message = data.getErrorValueCount() + " of " + data.getPhenotypeUploadValues().size() + " phenotype values haven an error. They will be removed!";
         }
         if (data.getErrorMessage() != null && !data.getErrorMessage().equals("")) {
             messageType = AlertType.ERROR;
