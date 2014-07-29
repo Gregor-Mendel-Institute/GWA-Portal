@@ -8,7 +8,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.gwtsupercsv.cellprocessor.CellProcessorAdaptor;
-import org.gwtsupercsv.cellprocessor.ParseChar;
 import org.gwtsupercsv.cellprocessor.ParseDouble;
 import org.gwtsupercsv.cellprocessor.ParseInt;
 import org.gwtsupercsv.cellprocessor.ParseLong;
@@ -18,7 +17,6 @@ import org.gwtsupercsv.cellprocessor.ift.CellProcessor;
 import org.gwtsupercsv.io.CsvListReader;
 import org.gwtsupercsv.io.ICsvListReader;
 import org.gwtsupercsv.prefs.CsvPreference;
-import static com.google.common.base.Preconditions.*;
 
 import java.util.List;
 import java.util.Set;
@@ -165,6 +163,8 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
             }
             if (value == null || value == "NA") {
                 while (adaptor.getNext() != null) {
+                    if (!(adaptor.getNext() instanceof CellProcessorAdaptor))
+                        break;
                     adaptor = (CellProcessorAdaptor) adaptor.getNext();
                     if (adaptor instanceof org.gwtsupercsv.cellprocessor.Optional) {
                         isOptional = true;
@@ -208,6 +208,8 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
             value = "Double";
         } else if (adaptor instanceof ParseInt) {
             value = "Integer";
+        } else if (adaptor instanceof ParseLong) {
+            value = "Long";
         } else if (adaptor instanceof GWASUploadWizardView.ParseNAs) {
             value = "NA";
         }
