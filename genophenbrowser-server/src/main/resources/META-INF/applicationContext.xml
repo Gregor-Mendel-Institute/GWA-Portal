@@ -3,16 +3,20 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:cache="http://www.springframework.org/schema/cache"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	   		http://www.springframework.org/schema/beans/spring-beans.xsd
 	   		http://www.springframework.org/schema/context
 	   		http://www.springframework.org/schema/context/spring-context.xsd
 			http://www.springframework.org/schema/task
-			http://www.springframework.org/schema/task/spring-task.xsd">
+			http://www.springframework.org/schema/task/spring-task.xsd
+            http://www.springframework.org/schema/cache
+            http://www.springframework.org/schema/cache/spring-cache.xsd">
 
 
     <!-- Activates various annotations to be detected in bean classes -->
     <context:annotation-config/>
+    <cache:annotation-driven/>
 
     <!-- Scans the classpath for annotated components that will be auto-registered as Spring beans.
      For example @Controller and @Service. Make sure to set the correct base-package -->
@@ -23,6 +27,8 @@
 
     <bean id="validator"
           class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <import resource="spring-cache.xml"/>
 
     <!-- Imports datasource configuration -->
     <import resource="spring-data.xml"/>
@@ -37,6 +43,8 @@
     <import resource="spring-security.xml"/>
 
     <import resource="spring-acl.xml"/>
+
+    <import resource="spring-jmx.xml"/>
 
 
     <task:annotation-driven executor="executor" scheduler="scheduler"/>

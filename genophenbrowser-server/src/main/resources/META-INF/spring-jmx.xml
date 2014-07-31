@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!-- disabled because of this https://hibernate.atlassian.net/browse/HHH-6190 -->
+    <!--<bean id="hibernateStatisticsBean" class="org.hibernate.jmx.Statistics">
+        <property name="statisticsEnabled" value="true"/>
+        <property name="sessionFactory" value="#{entityManagerFactory.sessionFactory}"/>
+    </bean>
+    -->
+
+    <bean id="managementService"
+          class="net.sf.ehcache.management.ManagementService"
+          init-method="init"
+          destroy-method="dispose">
+
+        <constructor-arg ref="ehcache"/>
+        <constructor-arg ref="mbeanServer"/>
+        <constructor-arg index="2" value="true"/>
+        <constructor-arg index="3" value="true"/>
+        <constructor-arg index="4" value="true"/>
+        <constructor-arg index="5" value="true"/>
+    </bean>
+
+    <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
+        <property name="locateExistingServerIfPossible" value="true"/>
+    </bean>
+
+    <bean id="hibernateStatisticsBean" class="com.gmi.nordborglab.browser.server.util.HibernateStatisticsFactoryBean">
+    </bean>
+
+
+    <bean id="jmxExporter" class="org.springframework.jmx.export.MBeanExporter">
+        <property name="beans">
+            <map>
+                <!-- does't work see above issue -->
+                <!--<entry key="Hibernate:application=Statistics" value-ref="hibernateStatisticsBean"/>-->
+                <entry key="Hibernate:application=Statistics" value-ref="hibernateStatisticsBean"/>
+            </map>
+        </property>
+        <property name="server" ref="mbeanServer"/>
+    </bean>
+</beans>
