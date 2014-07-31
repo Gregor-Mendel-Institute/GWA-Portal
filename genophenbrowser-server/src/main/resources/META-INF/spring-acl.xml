@@ -1,64 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
-	default-lazy-init="false">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+       default-lazy-init="false">
 
 
-  <bean id="aclCache" class="org.springframework.security.acls.domain.EhCacheBasedAclCache">
-    <constructor-arg>
-      <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager">
-          <bean class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-          	<!-- <property name="configLocation" value="classpath:META-INF/ehcache.xml"/> -->
-          </bean>
+    <bean id="aclCache" class="org.springframework.security.acls.domain.EhCacheBasedAclCache">
+        <constructor-arg>
+            <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+                <property name="cacheManager" ref="ehcache"/>
+                <property name="cacheName" value="aclCache"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <bean id="permissionGrantingStrategy"
+          class="com.gmi.nordborglab.browser.server.security.BitmaskPermissionGrantingStrategy">
+        <constructor-arg>
+            <bean class="org.springframework.security.acls.domain.ConsoleAuditLogger"/>
+        </constructor-arg>
+    </bean>
+
+    <bean id="permissionFactory" class="com.gmi.nordborglab.browser.server.security.CustomPermissionFactory"/>
+
+    <bean id="sidRetrievalStrategy" class="org.springframework.security.acls.domain.SidRetrievalStrategyImpl">
+        <constructor-arg ref="roleHierarchy"/>
+    </bean>
+
+    <bean id="lookupStrategy"
+          class="org.springframework.security.acls.jdbc.BasicLookupStrategy">
+        <constructor-arg ref="dataSource"/>
+        <constructor-arg ref="aclCache"/>
+        <constructor-arg>
+            <bean class="org.springframework.security.acls.domain.AclAuthorizationStrategyImpl">
+                <constructor-arg>
+                    <bean class="org.springframework.security.core.authority.SimpleGrantedAuthority">
+                        <constructor-arg value="ROLE_ADMIN"/>
+                    </bean>
+                </constructor-arg>
+                <property name="sidRetrievalStrategy" ref="sidRetrievalStrategy"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg ref="permissionGrantingStrategy"/>
+        <property name="permissionFactory" ref="permissionFactory"/>
+    </bean>
+
+    <bean id="aclService" class="org.springframework.security.acls.jdbc.JdbcMutableAclService">
+        <constructor-arg ref="dataSource"/>
+        <constructor-arg ref="lookupStrategy"/>
+        <constructor-arg ref="aclCache"/>
+        <property name="classIdentityQuery">
+            <value>select currval(pg_get_serial_sequence('acl_class', 'id'))</value>
         </property>
-        <property name="cacheName" value="aclCache"/>
-      </bean>
-    </constructor-arg>
-  </bean>
-  
-  <bean id="permissionGrantingStrategy" class="com.gmi.nordborglab.browser.server.security.BitmaskPermissionGrantingStrategy">
-  	<constructor-arg>
-      <bean class="org.springframework.security.acls.domain.ConsoleAuditLogger"/>
-    </constructor-arg>
-  </bean>
-
- <bean id="permissionFactory" class="com.gmi.nordborglab.browser.server.security.CustomPermissionFactory" />
-
- <bean id="sidRetrievalStrategy" class="org.springframework.security.acls.domain.SidRetrievalStrategyImpl">
- 	<constructor-arg ref="roleHierarchy" />
- </bean>  
-
-  <bean id="lookupStrategy"
-  	class="org.springframework.security.acls.jdbc.BasicLookupStrategy">
-    <constructor-arg ref="dataSource"/>
-    <constructor-arg ref="aclCache"/>
-    <constructor-arg>
-        <bean class="org.springframework.security.acls.domain.AclAuthorizationStrategyImpl">
-            <constructor-arg>
-                <bean class="org.springframework.security.core.authority.SimpleGrantedAuthority">
-                    <constructor-arg value="ROLE_ADMIN"/>
-                </bean>
-            </constructor-arg>
-            <property name="sidRetrievalStrategy" ref="sidRetrievalStrategy" />
-        </bean>
-    </constructor-arg>
-    <constructor-arg ref="permissionGrantingStrategy" />
-    <property name="permissionFactory" ref="permissionFactory"/>
-  </bean>
-
-  <bean id="aclService" class="org.springframework.security.acls.jdbc.JdbcMutableAclService">
-    <constructor-arg ref="dataSource"/>
-    <constructor-arg ref="lookupStrategy"/>
-    <constructor-arg ref="aclCache"/>
-    <property name="classIdentityQuery">
-    	<value>select currval(pg_get_serial_sequence('acl_class', 'id'))</value>
-    </property>
-    <property name="sidIdentityQuery">
-    	<value>select currval(pg_get_serial_sequence('acl_sid', 'id'))</value>
-    </property>
-  </bean>
+        <property name="sidIdentityQuery">
+            <value>select currval(pg_get_serial_sequence('acl_sid', 'id'))</value>
+        </property>
+    </bean>
 
 </beans>

@@ -42,9 +42,11 @@
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
                 <property name="generateDdl" value="false"/>
-                <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect"/>
+                <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             </bean>
         </property>
+        <!-- required because of  http://stackoverflow.com/questions/3663979/how-to-use-jpa2s-cacheable-instead-of-hibernates-cache -->
+        <property name="sharedCacheMode" value="DISABLE_SELECTIVE"/>
     </bean>
 
     <bean id="entityManagerFactoryOntology"
@@ -55,9 +57,10 @@
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
                 <property name="generateDdl" value="false"/>
-                <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect"/>
+                <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             </bean>
         </property>
+        <property name="sharedCacheMode" value="DISABLE_SELECTIVE"/>
     </bean>
 
     <bean id="persistenceUnitManager"
@@ -88,8 +91,13 @@
         <entry key="hibernate.generate_statistics" value="${database.statistics}"/>
         <entry key="hibernate.show_sql" value="${database.show_sql}"/>
         <entry key="hibernate.format_sql" value="${database.show_sql}"/>
-        <entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+        <entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
         <entry key="hibernate.id.new_generator_mappings" value="true"/>
+        <entry key="hibernate.cache.use_second_level_cache" value="true"></entry>
+        <entry key="hibernate.cache.use_query_cache" value="true"></entry>
+        <entry key="hibernate.cache.region.factory_class"
+               value="org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory"></entry>
+        <entry key="net.sf.ehcache.configurationResourceName" value="/META-INF/ehcache-jpa.xml"/>
     </util:map>
 
     <bean id="dataSource"
@@ -107,21 +115,6 @@
         <property name="username" value="${database.username}"/>
         <property name="password" value="${database.password}"/>
     </bean>
-
-    <!-- disabled because of this https://hibernate.atlassian.net/browse/HHH-6190 -->
-    <!--<bean id="hibernateStatisticsBean" class="org.hibernate.jmx.StatisticsService">
-        <property name="statisticsEnabled" value="true"/>
-        <property name="sessionFactory" value="#{entityManagerFactory.sessionFactory}"/>
-    </bean>
-
-    <bean id="jmxExporter" class="org.springframework.jmx.export.MBeanExporter">
-        <property name="beans">
-            <map>
-                <entry key="Hibernate:application=Statistics" value-ref="hibernateStatisticsBean"/>
-            </map>
-        </property>
-    </bean>-->
-
 </beans>
 
 
