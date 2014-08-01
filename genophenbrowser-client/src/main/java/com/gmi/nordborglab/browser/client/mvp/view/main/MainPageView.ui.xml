@@ -7,17 +7,10 @@
              ui:generateLocales='default'>
     <ui:with type="com.gmi.nordborglab.browser.client.place.NameTokens"
              field="nameTokens"></ui:with>
+    <ui:with field="mainRes" type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
 
-    <!-- <ui:image field="logo" src='../../resources/gmi-logo-transp.png' /> -->
-
-    <ui:with field="mainRes"
-             type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
-    <ui:style ui:field='style'
-              type='com.gmi.nordborglab.browser.client.mvp.view.main.MainPageView.MyStyle'>
-        .userInfo {
-            float: right;
-            margin: 0px 20px 0 0;
-        }
+    <ui:style ui:field="style"
+              type="com.gmi.nordborglab.browser.client.mvp.view.main.MainPageView.MyStyle">
 
         .navigation {
             float: left;
@@ -32,7 +25,6 @@
         .navigation ul {
             margin: 0;
             padding: 0;
-            #height: 3.423em;
         }
 
         .navigation a {
@@ -56,8 +48,6 @@
         .navigation li:hover {
             color: white;
             background: #51850d;
-            #text-shadow: 0 0 10px #336699;
-            #text-shadow: 0 0 10px rgba(51, 102, 153, 0.8);
             -webkit-transition: color 0.1s linear;
             -moz-transition: color 0.1s linear;
         }
