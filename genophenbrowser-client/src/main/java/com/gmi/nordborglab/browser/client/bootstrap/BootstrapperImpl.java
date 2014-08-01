@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.bootstrap;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
+import com.eemi.gwt.tour.client.GwtTour;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.ParallelRunnable;
 import com.gmi.nordborglab.browser.client.util.ParentCallback;
@@ -70,6 +71,7 @@ public class BootstrapperImpl implements Bootstrapper {
             }
         });
 
+        GwtTour.load();
         initUserData();
         final ParallelRunnable visualizationRunnable = new ParallelRunnable();
         final ParallelRunnable rfRunnalbe = new ParallelRunnable();

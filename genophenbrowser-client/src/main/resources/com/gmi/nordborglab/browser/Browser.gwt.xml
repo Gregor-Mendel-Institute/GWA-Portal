@@ -25,13 +25,14 @@
     <inherits name="elemental.Elemental"/>
     <inherits name="org.jboss.errai.bus.ErraiBus"/>
     <inherits name="com.googlecode.gwt.charts.Charts"/>
-    <inherits name='com.eemi.gwt.tour.GwtTour'/>
+    <inherits name='com.eemi.gwt.tour.GwtTourScriptLoader'/>
     <inherits name='com.gwtplatform.mvp.MvpWithEntryPoint'/>
     <inherits name='org.gwtsupercsv.GWTSuperCSV'/>
     <!-- Other module inherits                                      -->
 
     <!-- Specify the paths for translatable code                    -->
     <source path='client'/>
+    <source path='public'/>
     <source path='shared'/>
 
     <set-property name="gwt.logging.enabled" value="TRUE"/>
@@ -56,8 +57,5 @@
     </replace-with>
 
     <add-linker name="xsiframe"/>
-
-    <!-- FIXME use until  https://github.com/eemi2010/gwt-tour/issues/1 is fixed !-->
-    <set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
 
 </module>

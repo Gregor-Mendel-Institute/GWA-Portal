@@ -8,10 +8,9 @@
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <meta name="google-site-verification" content="Z9H5Jrii90VQNMVAIR8xlTtjRJjH6Qm2NX35kLVh_OQ" />
+    <meta name="google-site-verification" content="Z9H5Jrii90VQNMVAIR8xlTtjRJjH6Qm2NX35kLVh_OQ"/>
     <title>GWA-Portal</title>
     <link rel="icon" type="image/ico" href="/img/favicon.ico"/>
-    <link rel="stylesheet" href="<c:url value='/css/m-styles.min.css'/>"/>
     <link rel="stylesheet" href="<c:url value='/css/entypo.css'/>"/>
     <link rel="stylesheet" href="<c:url value='/css/animate.min.css'/>"/>
     <script type="text/javascript">
@@ -20,13 +19,9 @@
         </sec:authorize>
         var appData = {'data': '${appData}', 'jBrowseUrl':${jbrowseUrl}}
     </script>
-    <script type="text/javascript" src="<c:url value='/js/m-radio.min.js' />"></script>
     <!-- FIXME use until https://github.com/eemi2010/gwt-tour/issues/1 is fixed -->
-    <script type="text/javascript"
-            src="<c:url value='/js/hopscotch.min.js' />"></script>
-    <script type="text/javascript"
+    <script async type="text/javascript"
             src="<c:url value='/js/favico.min.js' />"></script>
-    <script type="text/javascript" src="<c:url value='/js/m-radio.min.js' />"></script>
     <script type="text/javascript" src="<c:url value='/browser/browser.nocache.js'/>"></script>
 </head>
 
