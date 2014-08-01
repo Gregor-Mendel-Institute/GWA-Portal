@@ -8,6 +8,7 @@ import com.gmi.nordborglab.browser.shared.proxy.AppDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.maps.client.LoadApi;
 import com.google.gwt.visualization.client.VisualizationUtils;
@@ -19,6 +20,7 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.gwtplatform.mvp.client.Bootstrapper;
+import com.gwtplatform.mvp.client.googleanalytics.GoogleAnalytics;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 
 import java.util.ArrayList;
@@ -33,19 +35,41 @@ public class BootstrapperImpl implements Bootstrapper {
     private final CurrentUser currentUser;
     private final CustomRequestFactory rf;
     private final AppUserFactory appUserFactory;
+    private final GoogleAnalytics googleAnalytics;
 
     @Inject
     public BootstrapperImpl(PlaceManager placeManager, CurrentUser currentUser,
-                            CustomRequestFactory rf, AppUserFactory appUserFactory
+                            CustomRequestFactory rf, AppUserFactory appUserFactory,
+                            GoogleAnalytics googleAnalytics
+
     ) {
         this.placeManager = placeManager;
         this.currentUser = currentUser;
         this.rf = rf;
         this.appUserFactory = appUserFactory;
+        this.googleAnalytics = googleAnalytics;
     }
 
     @Override
     public void onBootstrap() {
+        GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
+
+            @Override
+            public void onUncaughtException(Throwable e) {
+                Logger logger = Logger.getLogger("uncaught");
+                logger.log(Level.SEVERE, "Uncaught Exception" + e.getMessage(), e);
+                int userId = 0;
+                String place = "";
+                if (placeManager != null) {
+                    place = placeManager.getCurrentPlaceRequest().toString();
+                }
+                if (currentUser != null && currentUser.getAppUser() != null && currentUser.getAppUser().getId() != null) {
+                    userId = currentUser.getAppUser().getId().intValue();
+                }
+                googleAnalytics.trackEvent("Error", "Place: " + place + "Exception:" + e.getMessage(), "uncaught", userId, true);
+            }
+        });
+
         initUserData();
         final ParallelRunnable visualizationRunnable = new ParallelRunnable();
         final ParallelRunnable rfRunnalbe = new ParallelRunnable();
