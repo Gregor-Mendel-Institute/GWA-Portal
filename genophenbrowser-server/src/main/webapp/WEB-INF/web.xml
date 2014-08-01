@@ -70,9 +70,16 @@
         <init-param>
             <param-name>methods</param-name>
             <param-value>GET,POST</param-value>
-            <param-name>mimeTypes</param-name>
+        </init-param>
+        <!-- required because if GWT creates .gz files DispatchServlet won't serve them automatically -->
+        <init-param>
+            <param-name>checkGzExists</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <init-param>
+            <param-name>excludedMimeTypes</param-name>
             <param-value>
-                application/json,text/html,text/plain,text/xml,application/xhtml+xml,text/css,application/javascript,application/x-javascript,image/svg+xml,image/x-icon
+                application/compress,application/zip,application/gzip
             </param-value>
         </init-param>
     </filter>
