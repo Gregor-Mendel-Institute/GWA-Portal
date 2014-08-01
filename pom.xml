@@ -43,7 +43,7 @@
         <maven.compiler.plugin>3.1</maven.compiler.plugin>
         <maven.source.plugin>2.2.1</maven.source.plugin>
         <maven.war.plugin>2.3</maven.war.plugin>
-        <jetty.version>9.2.1.v20140609</jetty.version>
+        <jetty.version>9.2.2.v20140723</jetty.version>
         <maven.jar.plugin>2.4</maven.jar.plugin>
         <maven.resources.plugin>2.6</maven.resources.plugin>
         <maven.versions.plugin>2.1</maven.versions.plugin>
