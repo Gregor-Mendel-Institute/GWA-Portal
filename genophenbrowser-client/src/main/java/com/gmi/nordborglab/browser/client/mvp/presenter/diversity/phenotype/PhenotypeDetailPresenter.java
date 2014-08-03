@@ -1,49 +1,51 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-
-
-import javax.validation.ConstraintViolation;
-
-import com.gmi.nordborglab.browser.client.manager.OntologyManager;
-import com.gmi.nordborglab.browser.client.place.NameTokens;
-import com.gmi.nordborglab.browser.client.security.CurrentUser;
-import com.google.common.collect.*;
-import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadPhenotypeEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
+import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeDetailView.PhenotypeDisplayDriver;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeDetailView.PhenotypeEditDriver;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StatisticTypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.gmi.nordborglab.browser.shared.service.PhenotypeRequest;
+import com.google.common.collect.BoundType;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultiset;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.SortedMultiset;
+import com.google.common.collect.TreeMultiset;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
-
+import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.TabData;
-
+import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+
+import javax.validation.ConstraintViolation;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 
 public class PhenotypeDetailPresenter
@@ -162,13 +164,17 @@ public class PhenotypeDetailPresenter
         getProxy().getTab().setTargetHistoryToken(placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest()));
         if (isRefresh) {
             getView().setStatisticTypes(statisticTypes);
-            getView().setGeoChartData(null);
-            getView().setHistogramChartData(null);
-            getView().setPhenotypExplorerData(null);
         }
         getView().setPhenotypeId(phenotype.getId());
         getView().scheduledLayout();
 
+    }
+
+    private void resetCharts() {
+        getView().setStatisticTypes(null);
+        getView().setGeoChartData(null);
+        getView().setHistogramChartData(null);
+        getView().setPhenotypExplorerData(null);
     }
 
 
@@ -201,6 +207,7 @@ public class PhenotypeDetailPresenter
                 statisticTypes = null;
                 cache.clear();
                 phenotypeManager.findOne(receiver, phenotypeId);
+                resetCharts();
             } else {
                 isRefresh = false;
                 getProxy().manualReveal(PhenotypeDetailPresenter.this);
