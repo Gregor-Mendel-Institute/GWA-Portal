@@ -6,7 +6,6 @@ import com.google.gwt.visualization.client.visualizations.MotionChart;
 
 public class ResizeableMotionChart extends MotionChart implements RequiresResize {
 
-
     public ResizeableMotionChart(AbstractDataTable data, MotionChart.Options options) {
         super(data, options);
     }
@@ -19,7 +18,11 @@ public class ResizeableMotionChart extends MotionChart implements RequiresResize
         }
         options.setWidth(getParent().getOffsetWidth());
         options.setHeight(getParent().getOffsetHeight());
-        draw(dataTable, options);
+        try {
+            draw(dataTable, options);
+        } catch (Exception e) {
+
+        }
     }
 
 
