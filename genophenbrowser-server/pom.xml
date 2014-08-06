@@ -27,6 +27,7 @@
         <querydsl.version>3.4.2</querydsl.version>
         <!-- keep version 2.8.2 because of http://jsoftbiz.wordpress.com/2013/03/14/hibernate-4-and-ehcache-higher-than-2-4-3/ -->
         <ehcache.version>2.8.2</ehcache.version>
+        <javax.el-api.version>3.0.0</javax.el-api.version>
         <jhdf5.version>13.06.2</jhdf5.version>
         <jstl.version>1.2</jstl.version>
         <esapi.version>2.1.0</esapi.version>
@@ -180,6 +181,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
+        <!-- required for hibernate and other components -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+        </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -207,6 +213,13 @@
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
+        </dependency>
+        <!-- required for validation to work -->
+        <!-- http://hibernate.org/validator/documentation/getting-started/-->
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>${javax.el-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -377,10 +390,12 @@
                         <artifactId>xmlbeans</artifactId>
                     </exclusion>
                     -->
-                    <!--<exclusion>
+                    <!-- required because hibernate 4 won't log into logback -->
+                    <!--http://stackoverflow.com/a/13312037/356594-->
+                    <exclusion>
                         <groupId>log4j</groupId>
                         <artifactId>log4j</artifactId>
-                    </exclusion>-->
+                    </exclusion>
                     <exclusion>
                         <groupId>junit</groupId>
                         <artifactId>junit</artifactId>
@@ -606,6 +621,11 @@
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-access</artifactId>
                 <version>${logback.version}</version>
@@ -662,6 +682,11 @@
                 <groupId>javax.validation</groupId>
                 <artifactId>validation-api</artifactId>
                 <version>${javax.validation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.el</groupId>
+                <artifactId>javax.el-api</artifactId>
+                <version>${javax.el-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
