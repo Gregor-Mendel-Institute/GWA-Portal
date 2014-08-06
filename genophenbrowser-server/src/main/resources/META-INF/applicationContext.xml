@@ -22,36 +22,41 @@
      For example @Controller and @Service. Make sure to set the correct base-package -->
     <context:component-scan base-package="com.gmi.nordborglab.browser.server"/>
 
-    <context:property-placeholder
-            location="classpath:META-INF/persistence_${spring.profiles.active}.properties,classpath:META-INF/application_${spring.profiles.active}.properties"/>
+    <beans profile="dev">
+        <context:property-placeholder
+                location="classpath:META-INF/persistence_dev.properties,classpath:META-INF/application_dev.properties,classpath:META-INF/es_dev.properties"/>
+    </beans>
+    <beans profile="prod">
+        <context:property-placeholder
+                location="classpath:META-INF/persistence_prod.properties,classpath:META-INF/application_prod.properties,classpath:META-INF/es_prod.properties"/>
+    </beans>
+    <beans>
+        <bean id="validator"
+              class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 
-    <bean id="validator"
-          class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+        <import resource="spring-cache.xml"/>
 
-    <import resource="spring-cache.xml"/>
+        <!-- Imports datasource configuration -->
+        <import resource="spring-data.xml"/>
 
-    <!-- Imports datasource configuration -->
-    <import resource="spring-data.xml"/>
+        <!-- Imports datasource configuration -->
+        <import resource="spring-elasticsearch.xml"/>
 
-    <!-- Imports datasource configuration -->
-    <import resource="spring-elasticsearch.xml"/>
+        <import resource="spring-amqp.xml"/>
 
-    <import resource="spring-amqp.xml"/>
+        <import resource="spring-mail.xml"/>
 
-    <import resource="spring-mail.xml"/>
+        <import resource="spring-security.xml"/>
 
-    <import resource="spring-security.xml"/>
+        <import resource="spring-acl.xml"/>
 
-    <import resource="spring-acl.xml"/>
-
-    <import resource="spring-jmx.xml"/>
+        <import resource="spring-jmx.xml"/>
 
 
-    <task:annotation-driven executor="executor" scheduler="scheduler"/>
+        <task:annotation-driven executor="executor" scheduler="scheduler"/>
 
-    <task:executor id="executor" pool-size="5"/>
+        <task:executor id="executor" pool-size="5"/>
 
-    <task:scheduler id="scheduler" pool-size="10"/>
-
+        <task:scheduler id="scheduler" pool-size="10"/>
+    </beans>
 </beans>
-	
