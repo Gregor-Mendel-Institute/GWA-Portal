@@ -19,6 +19,8 @@ import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.ColumnDescription;
 import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.datatable.value.ValueType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,7 @@ public class JBrowseAnnotationDataService implements AnnotationDataService {
 
     private Map<String, JBrowseChrTrackData> map = Maps.newHashMap();
     private Map<String, GeneAnnotation> annotationMap;
+    private static final Logger logger = LoggerFactory.getLogger(JBrowseAnnotationDataService.class);
 
     @Value("${JBROWSE.data_folder}")
     private String JBROWSE_DATA_FOLDER;
@@ -94,15 +97,19 @@ public class JBrowseAnnotationDataService implements AnnotationDataService {
         }
         if (statList.contains("genecount")) {
             table.addColumn(new ColumnDescription("genecount", ValueType.NUMBER, "# genes"));
-            JBrowseChrTrackData trackData = getJBrowseChrTrackData(chr);
-            Integer[] geneCount = trackData.getHistogramData();
-            HistogramMeta meta = trackData.getHistogramMeta();
-            for (int i = 0; i < geneCount.length; i++) {
-                try {
-                    table.addRowFromValues(i * meta.getBasesPerBin(), geneCount[i]);
-                } catch (TypeMismatchException e) {
+            try {
+                JBrowseChrTrackData trackData = getJBrowseChrTrackData(chr);
+                Integer[] geneCount = trackData.getHistogramData();
+                HistogramMeta meta = trackData.getHistogramMeta();
+                for (int i = 0; i < geneCount.length; i++) {
+                    try {
+                        table.addRowFromValues(i * meta.getBasesPerBin(), geneCount[i]);
+                    } catch (TypeMismatchException e) {
 
+                    }
                 }
+            } catch (Exception e) {
+                logger.error("Error retrieving gene count", e);
             }
         } else {
         }
