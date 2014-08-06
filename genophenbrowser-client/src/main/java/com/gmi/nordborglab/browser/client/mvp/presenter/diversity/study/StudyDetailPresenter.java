@@ -1,28 +1,31 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-
-import com.gmi.nordborglab.browser.client.events.*;
+import com.gmi.nordborglab.browser.client.TabDataDynamic;
+import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.GWASUploadedEvent;
+import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
+import com.gmi.nordborglab.browser.client.events.LoadStudyEvent;
+import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
+import com.gmi.nordborglab.browser.client.events.StudyModifiedEvent;
+import com.gmi.nordborglab.browser.client.manager.CdvManager;
+import com.gmi.nordborglab.browser.client.mvp.handlers.StudyDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASUploadWizardPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyDetailView.StudyDisplayDriver;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyDetailView.StudyEditDriver;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.Statistics;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
-import com.gmi.nordborglab.browser.shared.util.PhenotypeHistogram;
-import com.google.common.collect.*;
-import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.HasUiHandlers;
-import com.gmi.nordborglab.browser.client.TabDataDynamic;
-import com.gmi.nordborglab.browser.client.manager.CdvManager;
-import com.gmi.nordborglab.browser.client.mvp.handlers.StudyDetailUiHandlers;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyDetailView.StudyDisplayDriver;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyDetailView.StudyEditDriver;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.service.CdvRequest;
+import com.gmi.nordborglab.browser.shared.util.PhenotypeHistogram;
+import com.google.common.collect.ImmutableMultiset;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multiset;
+import com.google.gwt.core.client.Duration;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -35,13 +38,17 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+
+import javax.validation.ConstraintViolation;
+import java.util.List;
+import java.util.Set;
 
 public class StudyDetailPresenter extends
         Presenter<StudyDetailPresenter.MyView, StudyDetailPresenter.MyProxy> implements StudyDetailUiHandlers {
 
-    public interface MyView extends View, HasUiHandlers<StudyDetailUiHandlers> {
+    public interface MyView extends com.gwtplatform.mvp.client.View, com.gwtplatform.mvp.client.HasUiHandlers<StudyDetailUiHandlers> {
 
         StudyDisplayDriver getDisplayDriver();
 
@@ -287,6 +294,7 @@ public class StudyDetailPresenter extends
     public void onStartAnalysis() {
         if (study.getJob() != null)
             return;
+        final Duration duration = new Duration();
         cdvManager.createStudyJob(new Receiver<StudyProxy>() {
 
             @Override
@@ -294,6 +302,12 @@ public class StudyDetailPresenter extends
                 study = response;
                 getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
                 StudyModifiedEvent.fire(getEventBus(), response);
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Start", "Study:" + study.getId().toString(), (int) duration.elapsedMillis()));
+            }
+
+            @Override
+            public void onFailure(ServerFailure error) {
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Start", "Study:" + study.getId().toString() + ", Error" + error.getMessage(), (int) duration.elapsedMillis()));
             }
         }, study.getId());
     }
@@ -333,6 +347,7 @@ public class StudyDetailPresenter extends
     public void onDeleteJob() {
         if (study.getJob() == null)
             return;
+        final Duration duration = new Duration();
         cdvManager.deleteStudyJob(new Receiver<StudyProxy>() {
 
             @Override
@@ -340,6 +355,12 @@ public class StudyDetailPresenter extends
                 study = response;
                 getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
                 StudyModifiedEvent.fire(getEventBus(), response);
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Delete", "Study:" + study.getId().toString(), (int) duration.elapsedMillis()));
+            }
+
+            @Override
+            public void onFailure(ServerFailure error) {
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Delete", "Study:" + study.getId().toString() + ", Error" + error.getMessage(), (int) duration.elapsedMillis()));
             }
         }, study.getId());
     }
@@ -349,6 +370,7 @@ public class StudyDetailPresenter extends
         if (study.getJob() == null || !study.getJob().getStatus().equalsIgnoreCase("Error")) {
             return;
         }
+        final Duration duration = new Duration();
         cdvManager.rerunAnalysis(new Receiver<StudyProxy>() {
 
             @Override
@@ -356,6 +378,12 @@ public class StudyDetailPresenter extends
                 study = response;
                 getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
                 StudyModifiedEvent.fire(getEventBus(), response);
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Rerun", "Study:" + study.getId().toString(), (int) duration.elapsedMillis()));
+            }
+
+            @Override
+            public void onFailure(ServerFailure error) {
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Rerun", "Study:" + study.getId().toString() + ", Error" + error.getMessage(), (int) duration.elapsedMillis()));
             }
         }, study.getId());
     }

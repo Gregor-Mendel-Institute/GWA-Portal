@@ -9,6 +9,7 @@ import com.gmi.nordborglab.browser.client.mvp.handlers.GWASUploadWizardUiHandler
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.widgets.FileUploadWidget;
 import com.google.common.collect.Lists;
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
@@ -49,6 +50,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     private final List<String> allowedExtensions = Lists.newArrayList("application/x-hdf");
     private static List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel");
     private FileUploadWidget.FileChecker fileChecker;
+    private Duration duration = new Duration();
 
     public static class ParseNAs extends CellProcessorAdaptor {
 
@@ -103,6 +105,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
 
             @Override
             public void onFileUploadStart(FileUploadStartEvent event) {
+                duration = new Duration();
                 getUiHandlers().onUploadStart();
             }
         }, FileUploadStartEvent.TYPE);
@@ -110,14 +113,14 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
         fileUploadWidget.addHandler(new FileUploadFinishedEvent.FileUploadFinishedHandler() {
             @Override
             public void onFileUploadFinished(FileUploadFinishedEvent event) {
-                getUiHandlers().onUploadEnd();
+                getUiHandlers().onUploadEnd(duration.elapsedMillis());
             }
         }, FileUploadFinishedEvent.TYPE);
 
         fileUploadWidget.addHandler(new FileUploadErrorEvent.FileUploadErrorHandler() {
             @Override
             public void onFileUploadError(FileUploadErrorEvent event) {
-                getUiHandlers().onUploadError(event.getResponseText());
+                getUiHandlers().onUploadError(event.getResponseText(), duration.elapsedMillis());
             }
         }, FileUploadErrorEvent.TYPE);
 

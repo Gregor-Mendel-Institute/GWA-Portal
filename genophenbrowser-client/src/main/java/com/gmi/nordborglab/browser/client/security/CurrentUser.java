@@ -50,6 +50,14 @@ public class CurrentUser {
         initComChanel();
     }
 
+    public int getUserId() {
+        int userId = 0;
+        if (getAppUser() != null && getAppUser().getId() != null) {
+            userId = getAppUser().getId().intValue();
+        }
+        return userId;
+    }
+
     public boolean isLoggedIn() {
         return appUser != null;
     }

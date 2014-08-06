@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.home;
 
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.IsaTabUploadSavedEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PhenotypeUploadedEvent;
@@ -40,6 +41,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
@@ -589,7 +591,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                 break;
             case SUMMARY:
                 CdvRequest ctx = cdvManager.getContext();
-                StudyProxy study = ctx.create(StudyProxy.class);
+                final StudyProxy study = ctx.create(StudyProxy.class);
                 study.setAlleleAssay(genotypeSelectionModel.getSelectedObject());
                 study.setName(getView().getStudyText().getText());
                 study.setProtocol(selectedStudyProtocol);
@@ -606,22 +608,26 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     study.setJob(studyJob);
                 }
                 fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
+                final Duration duration = new Duration();
                 ctx.saveStudy(study).fire(new Receiver<StudyProxy>() {
                     @Override
                     public void onSuccess(StudyProxy response) {
                         fireEvent(new LoadingIndicatorEvent(false));
+                        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Study", "Create", "Study:" + response.getId().toString(), (int) duration.elapsedMillis()));
                         PlaceRequest placeRequest = new PlaceRequest.Builder()
                                 .nameToken(NameTokens.study)
                                 .with("id", response.getId().toString()).build();
                         placeManager.setOnLeaveConfirmation(null);
                         placeManager.revealPlace(placeRequest);
                         resetState();
+
                     }
 
                     @Override
                     public void onFailure(ServerFailure error) {
                         fireEvent(new LoadingIndicatorEvent(false));
                         fireEvent(new DisplayNotificationEvent("Error", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, DisplayNotificationEvent.DURATION_NORMAL));
+                        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Study", "Error - Create", "Error:" + error.getMessage(), (int) duration.elapsedMillis()));
                     }
                 });
                 break;

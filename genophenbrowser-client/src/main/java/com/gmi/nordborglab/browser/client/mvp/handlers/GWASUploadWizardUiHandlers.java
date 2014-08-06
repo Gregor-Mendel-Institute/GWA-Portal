@@ -15,7 +15,7 @@ public interface GWASUploadWizardUiHandlers extends UiHandlers {
 
     void onUploadStart();
 
-    void onUploadEnd();
+    void onUploadEnd(double duration);
 
-    void onUploadError(String errorMessage);
+    void onUploadError(String errorMessage, double duration);
 }

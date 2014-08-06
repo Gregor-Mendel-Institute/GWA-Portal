@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.bootstrap;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.eemi.gwt.tour.client.GwtTour;
+import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.ParallelRunnable;
 import com.gmi.nordborglab.browser.client.util.ParentCallback;
@@ -19,6 +20,7 @@ import com.google.gwt.visualization.client.visualizations.corechart.CoreChart;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.gwtplatform.mvp.client.Bootstrapper;
 import com.gwtplatform.mvp.client.googleanalytics.GoogleAnalytics;
@@ -37,16 +39,18 @@ public class BootstrapperImpl implements Bootstrapper {
     private final CustomRequestFactory rf;
     private final AppUserFactory appUserFactory;
     private final GoogleAnalytics googleAnalytics;
+    private final EventBus eventBus;
 
     @Inject
     public BootstrapperImpl(PlaceManager placeManager, CurrentUser currentUser,
                             CustomRequestFactory rf, AppUserFactory appUserFactory,
-                            GoogleAnalytics googleAnalytics
+                            GoogleAnalytics googleAnalytics, EventBus eventBus
 
     ) {
         this.placeManager = placeManager;
         this.currentUser = currentUser;
         this.rf = rf;
+        this.eventBus = eventBus;
         this.appUserFactory = appUserFactory;
         this.googleAnalytics = googleAnalytics;
     }
@@ -59,15 +63,26 @@ public class BootstrapperImpl implements Bootstrapper {
             public void onUncaughtException(Throwable e) {
                 Logger logger = Logger.getLogger("uncaught");
                 logger.log(Level.SEVERE, "Uncaught Exception" + e.getMessage(), e);
-                int userId = 0;
+                int userId = currentUser.getUserId();
                 String place = "";
                 if (placeManager != null) {
                     place = placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest());
                 }
-                if (currentUser != null && currentUser.getAppUser() != null && currentUser.getAppUser().getId() != null) {
-                    userId = currentUser.getAppUser().getId().intValue();
+                googleAnalytics.trackEvent("Errors", "Uncaught", "Place: " + place + ", User:" + userId + ", Exception:" + e.getMessage(), 0, true);
+            }
+        });
+
+        eventBus.addHandler(GoogleAnalyticsEvent.TYPE, new GoogleAnalyticsEvent.Handler() {
+            @Override
+            public void onTrack(GoogleAnalyticsEvent event) {
+                int userId = currentUser.getUserId();
+                GoogleAnalyticsEvent.GAEventData data = event.getEventData();
+                // required because otehrwiase intValue will cause nullpointer
+                if (data.getValue() == null) {
+                    googleAnalytics.trackEvent(data.getCategory(), data.getAction(), data.getLabel() + ", UserId:" + userId);
+                } else {
+                    googleAnalytics.trackEvent(data.getCategory(), data.getAction(), data.getLabel() + ", UserId:" + userId, data.getValue(), data.isNoninteraction());
                 }
-                googleAnalytics.trackEvent("Error", "Place: " + place + ", User:" + userId + ", Exception:" + e.getMessage(), "uncaught", 0, true);
             }
         });
 

@@ -4,6 +4,7 @@ import com.gmi.nordborglab.browser.client.dto.MyFactory;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadFinishedEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadStartEvent;
+import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.IsaTabUploadSavedEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
@@ -13,16 +14,14 @@ import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.AutoBeanCloneUtils;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentUploadDataProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadValueProxy;
 import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
-import com.gmi.nordborglab.browser.shared.service.PhenotypeRequest;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.gwt.editor.client.Editor;
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -40,7 +39,6 @@ import com.gwtplatform.mvp.client.View;
 import elemental.html.File;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -185,11 +183,13 @@ public class IsaTabUploadWizardPresenterWidget extends PresenterWidget<IsaTabUpl
         getView().getDriver().edit(data, ctx);
         ///TODO Fix this better.
         List<String> paths = ImmutableList.<String>builder().addAll(Arrays.asList(getView().getDriver().getPaths())).build();
+        final Duration duration = new Duration();
         ctx.saveExperimentUploadData(data).with(paths.toArray(new String[0])).to(new Receiver<ExperimentProxy>() {
             @Override
             public void onSuccess(ExperimentProxy response) {
                 fireEvent(new LoadingIndicatorEvent(false));
                 IsaTabUploadSavedEvent.fire(getEventBus(), response);
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Upload - ISATAB", "Experiment:" + data.getExperiment().getName(), (int) duration.elapsedMillis()));
             }
 
             @Override
@@ -197,6 +197,7 @@ public class IsaTabUploadWizardPresenterWidget extends PresenterWidget<IsaTabUpl
                 fireEvent(new LoadingIndicatorEvent(false));
                 DisplayNotificationEvent.fireError(IsaTabUploadWizardPresenterWidget.this, "Error", "Failed to save ISA-Tab");
                 onEditExperiment();
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Error - Upload - ISATAB", "Error:" + message.getMessage(), (int) duration.elapsedMillis()));
             }
         });
     }

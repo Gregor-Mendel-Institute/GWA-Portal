@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype;
 
 import com.gmi.nordborglab.browser.client.dto.MyFactory;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PhenotypeUploadedEvent;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
@@ -14,6 +15,7 @@ import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadValueProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.gmi.nordborglab.browser.shared.service.PhenotypeRequest;
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.inject.Inject;
@@ -155,18 +157,21 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
 
         if (checkValidation()) {
             fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
+            final Duration duration = new Duration();
             ctx.savePhenotypeUploadData(experiment.getId(), data).fire(new Receiver<Long>() {
                 @Override
                 public void onFailure(ServerFailure error) {
                     fireEvent(new LoadingIndicatorEvent(false));
                     fireEvent(new DisplayNotificationEvent("Phenotype upload", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, DisplayNotificationEvent.DURATION_NORMAL));
+                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Error - Upload - CSV", "Experiment:" + experiment.getId().toString() + ",Error:" + error.getMessage(), (int) duration.elapsedMillis()));
                 }
 
                 @Override
-                public void onSuccess(Long phentoypeId) {
+                public void onSuccess(Long phenotypeId) {
                     fireEvent(new LoadingIndicatorEvent(false));
+                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Upload - CSV", "Experiment:" + experiment.getId().toString() + ",Phenotype: " + phenotypeId, (int) duration.elapsedMillis()));
                     onCancel();
-                    PhenotypeUploadedEvent.fire(getEventBus(), phentoypeId);
+                    PhenotypeUploadedEvent.fire(getEventBus(), phenotypeId);
                 }
             });
         }

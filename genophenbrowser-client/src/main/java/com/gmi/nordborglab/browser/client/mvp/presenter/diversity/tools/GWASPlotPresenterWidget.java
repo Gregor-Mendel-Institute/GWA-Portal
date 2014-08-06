@@ -4,8 +4,10 @@ import com.gmi.nordborglab.browser.client.dispatch.CustomCallback;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataActionResult;
 import com.gmi.nordborglab.browser.client.dto.GWASDataDTO;
+import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASPlotUiHandlers;
+import com.google.gwt.core.client.Duration;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.dispatch.rpc.shared.DispatchAsync;
@@ -46,12 +48,20 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
     }
 
     private void loadDataFromServer() {
+        final Duration duration = new Duration();
         dispatch.execute(new GetGWASDataAction(id, type), new CustomCallback<GetGWASDataActionResult>(getEventBus()) {
 
             @Override
             public void onSuccess(GetGWASDataActionResult result) {
                 getView().drawGWASPlots(result.getResultData());
                 LoadingIndicatorEvent.fire(this, false);
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Display", "Type:" + type + ",ID:" + id, (int) (duration.elapsedMillis())));
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Error - Display", "Type:" + type + ",ID:" + id + ",Error:" + caught.getMessage(), (int) (duration.elapsedMillis())));
+                super.onFailure(caught);
             }
         });
     }
