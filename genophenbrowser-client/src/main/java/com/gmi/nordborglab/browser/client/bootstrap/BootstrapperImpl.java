@@ -62,12 +62,12 @@ public class BootstrapperImpl implements Bootstrapper {
                 int userId = 0;
                 String place = "";
                 if (placeManager != null) {
-                    place = placeManager.getCurrentPlaceRequest().toString();
+                    place = placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest());
                 }
                 if (currentUser != null && currentUser.getAppUser() != null && currentUser.getAppUser().getId() != null) {
                     userId = currentUser.getAppUser().getId().intValue();
                 }
-                googleAnalytics.trackEvent("Error", "Place: " + place + "Exception:" + e.getMessage(), "uncaught", userId, true);
+                googleAnalytics.trackEvent("Error", "Place: " + place + ", User:" + userId + ", Exception:" + e.getMessage(), "uncaught", 0, true);
             }
         });
 
