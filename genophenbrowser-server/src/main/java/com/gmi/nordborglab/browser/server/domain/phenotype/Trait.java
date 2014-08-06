@@ -14,6 +14,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -23,6 +27,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+@NamedEntityGraphs(
+        @NamedEntityGraph(
+                name = "statistics",
+                attributeNodes = @NamedAttributeNode(value = "obsUnit", subgraph = "obsUnit"),
+                subgraphs = {
+                        @NamedSubgraph(name = "obsUnit", attributeNodes = @NamedAttributeNode(value = "stock", subgraph = "stock")),
+                        @NamedSubgraph(name = "stock", attributeNodes = @NamedAttributeNode(value = "passport", subgraph = "passport")),
+                        @NamedSubgraph(name = "passport", attributeNodes = {
+                                @NamedAttributeNode(value = "collection", subgraph = "collection"),
+                                @NamedAttributeNode(value = "alleles", subgraph = "alleles")
+                        }),
+                        @NamedSubgraph(name = "collection", attributeNodes = @NamedAttributeNode(value = "locality")),
+                        @NamedSubgraph(name = "alleles", attributeNodes = @NamedAttributeNode(value = "alleleAssay"))
+                }
+        )
+)
 @Entity
 @Table(name = "div_trait", schema = "phenotype")
 @AttributeOverride(name = "id", column = @Column(name = "div_trait_id"))
@@ -34,15 +54,15 @@ public class Trait extends BaseEntity {
             joinColumns = @JoinColumn(name = "div_trait_id", referencedColumnName = "div_trait_id"))
     private List<Study> studies = new ArrayList<Study>();
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "div_trait_uom_id")
     private TraitUom traitUom;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "div_statistic_type_id")
     private StatisticType statisticType;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "div_obs_unit_id")
     private ObsUnit obsUnit;
 
