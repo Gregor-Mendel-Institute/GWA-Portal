@@ -46,7 +46,7 @@
             </bean>
         </property>
         <!-- required because of  http://stackoverflow.com/questions/3663979/how-to-use-jpa2s-cacheable-instead-of-hibernates-cache -->
-        <property name="sharedCacheMode" value="DISABLE_SELECTIVE"/>
+        <property name="sharedCacheMode" value="ENABLE_SELECTIVE"/>
     </bean>
 
     <bean id="entityManagerFactoryOntology"
@@ -91,10 +91,12 @@
         <entry key="hibernate.generate_statistics" value="${database.statistics}"/>
         <entry key="hibernate.show_sql" value="${database.show_sql}"/>
         <entry key="hibernate.format_sql" value="${database.show_sql}"/>
+        <entry key="hibernate.use_sql_comments" value="${database.show_sql}"/>
         <entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
         <entry key="hibernate.id.new_generator_mappings" value="true"/>
-        <entry key="hibernate.cache.use_second_level_cache" value="true"></entry>
-        <entry key="hibernate.cache.use_query_cache" value="true"></entry>
+        <entry key="hibernate.cache.use_second_level_cache" value="${cache.second_level_cache}"></entry>
+        <entry key="hibernate.cache.use_query_cache" value="${cache.query_cache}"></entry>
+        <entry key="hibernate.cache.use_structured_entries" value="true"></entry>
         <entry key="hibernate.cache.region.factory_class"
                value="org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory"></entry>
         <entry key="net.sf.ehcache.configurationResourceName" value="/META-INF/ehcache-jpa.xml"/>
