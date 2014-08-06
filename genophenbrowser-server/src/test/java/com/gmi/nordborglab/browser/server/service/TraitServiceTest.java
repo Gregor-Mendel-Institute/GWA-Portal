@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.server.service;
 
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitStats;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
 import com.google.common.collect.ImmutableList;
@@ -55,10 +56,22 @@ public class TraitServiceTest extends BaseTest {
     public void testFindAllPhenotypeValuesByStatisticType() {
         SecurityUtils.setAnonymousUser();
         List<Trait> traits = service.findAllTraitValuesByStatisticType(1L, 2L);
+        for (Trait trait : traits) {
+            assertNotNull(trait.getObsUnit().getStock().getPassport().getCollection().getLocality());
+            assertNotNull(trait.getObsUnit().getStock().getPassport().getAlleleAssays().size());
+        }
         assertNotNull("nothin returned", traits);
         assertEquals("Wrong number returned", 167, traits.size());
         assertNotNull(traits.get(0).getAlleles());
         assertEquals(1, traits.get(0).getAlleles().size());
+    }
+
+    @Test
+    public void testFindStatsByStatisticType() {
+        SecurityUtils.setAnonymousUser();
+        List<TraitStats> traits = service.findTraitStatsByStatisticType(1L, 2L);
+        assertNotNull("nothin returned", traits);
+        assertEquals("Wrong number returned", 167, traits.size());
     }
 
 

@@ -4,6 +4,7 @@ import com.gmi.nordborglab.browser.shared.proxy.PhenotypePageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.PhenotypeRequest;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
@@ -49,6 +50,10 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
     public void findAllTraitValuesByType(Long phenotypeId, Long statisticTypeId,
                                          Receiver<List<TraitProxy>> receiver) {
         rf.traitRequest().findAllTraitValuesByStatisticType(phenotypeId, statisticTypeId).with("obsUnit.stock.passport.collection.locality", "obsUnit.stock.passport.alleleAssays").fire(receiver);
+    }
+
+    public void findTraitStatsByStatisticType(Long phenotypeId, Long statisticTypeId, Receiver<List<TraitStatsProxy>> receiver) {
+        rf.traitRequest().findTraitStatsByStatisticType(phenotypeId, statisticTypeId).fire(receiver);
     }
 
 

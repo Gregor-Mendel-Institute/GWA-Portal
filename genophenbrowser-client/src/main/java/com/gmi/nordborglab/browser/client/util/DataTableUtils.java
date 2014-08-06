@@ -5,6 +5,7 @@ import com.gmi.nordborglab.browser.shared.proxy.FacetTermProxy;
 import com.gmi.nordborglab.browser.shared.proxy.LocalityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multiset;
@@ -38,6 +39,42 @@ public class DataTableUtils {
     }
 
     public static DataTable createPhentoypeExplorerTable(ImmutableList<TraitProxy> traits) {
+        DataTable dataTable = getDataTableForPhenotypeExplorereTable();
+        dataTable.addRows(traits.size());
+        int i = 0;
+        String name = "";
+        Long id = null;
+        String accession = "";
+        Double longitude = null;
+        Double latitude = null;
+        Double phenotype = null;
+        String country = "";
+        for (TraitProxy trait : traits) {
+            try {
+                PassportProxy passport = trait.getObsUnit().getStock()
+                        .getPassport();
+                id = passport.getId();
+                accession = passport.getAccename();
+                name = accession + " ID:" + passport.getId() + " Phenotype:"
+                        + trait.getValue();
+                if (trait.getValue() != null && !trait.getValue().equals(""))
+                    phenotype = Double.parseDouble(trait.getValue());
+                LocalityProxy locality = trait.getObsUnit().getStock()
+                        .getPassport().getCollection().getLocality();
+                longitude = locality.getLongitude();
+                latitude = locality.getLatitude();
+                country = locality.getCountry();
+
+            } catch (Exception e) {
+
+            }
+            addRowToPhentoypeExplorerTable(dataTable, i, accession, id, latitude, longitude, phenotype, country);
+            i = i + 1;
+        }
+        return dataTable;
+    }
+
+    private static DataTable getDataTableForPhenotypeExplorereTable() {
         DataTable dataTable = DataTable.create();
         dataTable.addColumn(AbstractDataTable.ColumnType.STRING, "ID Name Phenotype");
         dataTable.addColumn(AbstractDataTable.ColumnType.NUMBER, "Date");
@@ -46,6 +83,27 @@ public class DataTableUtils {
         dataTable.addColumn(AbstractDataTable.ColumnType.NUMBER, "Phenotype");
         dataTable.addColumn(AbstractDataTable.ColumnType.STRING, "Accession");
         dataTable.addColumn(AbstractDataTable.ColumnType.STRING, "Country");
+        return dataTable;
+    }
+
+    private static void addRowToPhentoypeExplorerTable(DataTable dataTable, int index, String accession, Long id, Double latitude, Double longitude, Double value, String country) {
+        String name = accession + " ID:" + id + " Phenotype:"
+                + value;
+        dataTable.setValue(index, 0, name);
+        dataTable.setValue(index, 1, 1900);
+        if (longitude != null)
+            dataTable.setValue(index, 2, longitude);
+        if (latitude != null)
+            dataTable.setValue(index, 3, latitude);
+        if (value != null)
+            dataTable.setValue(index, 4, value);
+        dataTable.setValue(index, 5, accession);
+        dataTable.setValue(index, 6, country);
+    }
+
+
+    public static DataTable createPhentoypeExplorerTableFromStats(ImmutableList<TraitStatsProxy> traits) {
+        DataTable dataTable = getDataTableForPhenotypeExplorereTable();
         if (traits != null) {
             dataTable.addRows(traits.size());
             int i = 0;
@@ -55,35 +113,8 @@ public class DataTableUtils {
             Double latitude = null;
             Double phenotype = null;
             String country = "";
-            for (TraitProxy trait : traits) {
-                try {
-                    PassportProxy passport = trait.getObsUnit().getStock()
-                            .getPassport();
-                    accession = passport.getAccename();
-                    name = accession + " ID:" + passport.getId() + " Phenotype:"
-                            + trait.getValue();
-                    if (trait.getValue() != null && !trait.getValue().equals(""))
-                        phenotype = Double.parseDouble(trait.getValue());
-                    LocalityProxy locality = trait.getObsUnit().getStock()
-                            .getPassport().getCollection().getLocality();
-                    longitude = locality.getLongitude();
-                    latitude = locality.getLatitude();
-                    country = locality.getCountry();
-
-                } catch (Exception e) {
-
-                }
-
-                dataTable.setValue(i, 0, name);
-                dataTable.setValue(i, 1, 1900);
-                if (longitude != null)
-                    dataTable.setValue(i, 2, longitude);
-                if (latitude != null)
-                    dataTable.setValue(i, 3, latitude);
-                if (phenotype != null)
-                    dataTable.setValue(i, 4, phenotype);
-                dataTable.setValue(i, 5, accession);
-                dataTable.setValue(i, 6, country);
+            for (TraitStatsProxy trait : traits) {
+                addRowToPhentoypeExplorerTable(dataTable, i, trait.getAccename(), trait.getPassportId(), trait.getLatitude(), trait.getLongitude(), trait.getAvgValue(), trait.getCountry());
                 i = i + 1;
             }
         }

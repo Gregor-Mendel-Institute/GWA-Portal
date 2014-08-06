@@ -22,7 +22,7 @@ import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StatisticTypeProxy;
-import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
@@ -40,7 +40,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
-import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.visualizations.MotionChart;
@@ -235,6 +234,8 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     @Override
     public void setStatisticTypes(List<StatisticTypeProxy> statisticTypes) {
         resetStatisticTypeLinks();
+        if (statisticTypes == null)
+            return;
         for (int i = 0; i < statisticTypes.size(); i++) {
             StatisticTypeProxy statisticType = statisticTypes.get(i);
             NavLink link = statisticTypeLinks.get(statisticType);
@@ -299,8 +300,8 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     }
 
     @Override
-    public void setPhenotypExplorerData(ImmutableList<TraitProxy> traits) {
-        phenotypeExplorerData = DataTableUtils.createPhentoypeExplorerTable(traits);
+    public void setPhenotypExplorerData(ImmutableList<TraitStatsProxy> traits) {
+        phenotypeExplorerData = DataTableUtils.createPhentoypeExplorerTableFromStats(traits);
     }
 
 
@@ -396,14 +397,12 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
                 columnChart.draw2(histogramData, createColumnChartOptions());
             }
         } else {
-            if (lowerChartContainer.getWidget() == null) {
-                motionChart = new ResizeableMotionChart(phenotypeExplorerData,
-                        createMotionChartOptions());
-                lowerChartContainer.add(motionChart);
-            } else {
-                motionChart = (ResizeableMotionChart) lowerChartContainer.getWidget();
-                motionChart.draw(phenotypeExplorerData, createMotionChartOptions());
+            if (lowerChartContainer.getWidget() != null) {
+                lowerChartContainer.clear();
             }
+            motionChart = new ResizeableMotionChart(phenotypeExplorerData,
+                    createMotionChartOptions());
+            lowerChartContainer.add(motionChart);
         }
     }
 

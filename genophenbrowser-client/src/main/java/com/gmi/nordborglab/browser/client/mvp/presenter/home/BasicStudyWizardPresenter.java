@@ -59,9 +59,9 @@ import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.UseGatekeeper;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -806,7 +806,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     private void displayTraitValues(List<TraitProxy> traitValues) {
         getView().setPhenotypeHistogramData(PhenotypeHistogram.getHistogram(Lists.transform(traitValues, Statistics.traitToDouble), BIN_COUNT));
         getView().setPhenotypExplorerData(ImmutableList.copyOf(traitValues));
-        getView().setGeoChartData(Statistics.getGeoChartData(traitValues));
+        getView().setGeoChartData(Statistics.getGeoChartDataFromTrai(traitValues));
         getView().showPhenotypeCharts();
     }
 

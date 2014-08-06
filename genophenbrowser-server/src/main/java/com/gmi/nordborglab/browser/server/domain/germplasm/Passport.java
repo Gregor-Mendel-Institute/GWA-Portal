@@ -8,6 +8,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 import com.mysema.query.annotations.QueryInit;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -29,6 +32,7 @@ import java.util.Set;
 @Table(name = "div_passport", schema = "germplasm")
 @AttributeOverride(name = "id", column = @Column(name = "div_passport_id"))
 @SequenceGenerator(name = "idSequence", sequenceName = "germplasm.div_passport_div_passport_id_seq", allocationSize = 1)
+@BatchSize(size = 100)
 public class Passport extends BaseEntity {
 
     @ManyToOne()
@@ -44,6 +48,7 @@ public class Passport extends BaseEntity {
     private List<Stock> stocks = new ArrayList<Stock>();
 
     @OneToMany(mappedBy = "passport", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Fetch(FetchMode.JOIN)
     private Set<Allele> alleles = new HashSet<Allele>();
 
     @ManyToOne()
@@ -144,7 +149,8 @@ public class Passport extends BaseEntity {
                             public AlleleAssay apply(Allele allele) {
                                 return allele.getAlleleAssay();
                             }
-                        }));
+                        }
+                ));
         return alleleAssays;
     }
 
