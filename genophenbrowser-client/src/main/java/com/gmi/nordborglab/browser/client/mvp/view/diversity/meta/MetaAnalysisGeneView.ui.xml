@@ -70,10 +70,10 @@
 
     </ui:style>
 
-    <g:LayoutPanel>
+    <g:LayoutPanel ui:field="container">
         <g:layer top="10" height="50px">
-            <g:HTMLPanel addStyleNames="{style.geneControlContainer}">
-                <div class="{style.searchContainer}">
+            <g:HTMLPanel addStyleNames="{style.geneControlContainer}" ui:field="searchContainer">
+            <div class="{style.searchContainer}">
                     <b:InputAddOn prependIcon="SEARCH">
                         <b:Typeahead ui:field="searchGeneTa">
                             <b:TextBox placeholder="search for a gene" ui:field="searchGeneTb"/>

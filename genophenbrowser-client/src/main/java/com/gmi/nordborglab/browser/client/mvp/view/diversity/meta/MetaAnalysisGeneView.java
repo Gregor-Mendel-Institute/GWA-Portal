@@ -116,6 +116,10 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
     Typeahead searchGeneTa;
     @UiField
     SimplePanel filterContainer;
+    @UiField
+    LayoutPanel container;
+    @UiField
+    HTMLPanel searchContainer;
 
     private final PlaceManager placeManger;
 
@@ -164,6 +168,10 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
         geneLb.setInnerText("----------------");
         //TODO workaround for showing scrollbar when min-width is not met
         tableContainer.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.AUTO);
+
+
+        container.getWidgetContainerElement(searchContainer).getStyle().setOverflow(Style.Overflow.VISIBLE);
+
         pager.setDisplay(dataGrid);
         searchGeneTa.setUpdaterCallback(new Typeahead.UpdaterCallback() {
             @Override
