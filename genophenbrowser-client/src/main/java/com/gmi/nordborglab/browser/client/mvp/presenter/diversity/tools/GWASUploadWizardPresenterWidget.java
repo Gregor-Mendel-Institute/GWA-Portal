@@ -52,6 +52,12 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
     @Override
     public void onUploadEnd() {
         fireEvent(new LoadingIndicatorEvent(false));
+
+    }
+
+    @Override
+    public void onUploadError(String errorMessage) {
+        fireEvent(new LoadingIndicatorEvent(false));
     }
 
     public void setMultipleUpload(boolean multipleUpload) {

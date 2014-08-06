@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.tools;
 
 import com.gmi.nordborglab.browser.client.csv.DefaultFileChecker;
 import com.gmi.nordborglab.browser.client.events.FileUploadCloseEvent;
+import com.gmi.nordborglab.browser.client.events.FileUploadErrorEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadFinishedEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadStartEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASUploadWizardUiHandlers;
@@ -112,6 +113,13 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
                 getUiHandlers().onUploadEnd();
             }
         }, FileUploadFinishedEvent.TYPE);
+
+        fileUploadWidget.addHandler(new FileUploadErrorEvent.FileUploadErrorHandler() {
+            @Override
+            public void onFileUploadError(FileUploadErrorEvent event) {
+                getUiHandlers().onUploadError(event.getResponseText());
+            }
+        }, FileUploadErrorEvent.TYPE);
 
     }
 
