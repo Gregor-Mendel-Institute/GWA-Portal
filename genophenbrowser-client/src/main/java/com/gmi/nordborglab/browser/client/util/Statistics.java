@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.util;
 
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMultiset;
 
@@ -29,13 +30,35 @@ public class Statistics {
         }
     };
 
+    public static Function<TraitStatsProxy, Double> statsToValue = new Function<TraitStatsProxy, Double>() {
+        @Nullable
+        @Override
+        public Double apply(@Nullable TraitStatsProxy traitStatsProxy) {
+            if (traitStatsProxy == null)
+                return null;
+            return traitStatsProxy.getAvgValue();
+        }
+    };
 
-    public static ImmutableMultiset getGeoChartData(List<TraitProxy> traitValues) {
+    public static ImmutableMultiset getGeoChartDataFromTrai(List<TraitProxy> traitValues) {
         ImmutableMultiset.Builder<String> builder = ImmutableMultiset.builder();
         for (TraitProxy trait : traitValues) {
             try {
                 String cty = trait.getObsUnit().getStock().getPassport()
                         .getCollection().getLocality().getCountry();
+                builder.add(cty);
+            } catch (NullPointerException e) {
+
+            }
+        }
+        return builder.build();
+    }
+
+    public static ImmutableMultiset getGeoChartData(List<TraitStatsProxy> traitValues) {
+        ImmutableMultiset.Builder<String> builder = ImmutableMultiset.builder();
+        for (TraitStatsProxy trait : traitValues) {
+            try {
+                String cty = trait.getCountry();
                 builder.add(cty);
             } catch (NullPointerException e) {
 

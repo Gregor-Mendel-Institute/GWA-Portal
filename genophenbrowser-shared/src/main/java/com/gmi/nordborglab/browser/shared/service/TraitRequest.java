@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.shared.service;
 
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServiceName;
@@ -13,4 +14,6 @@ public interface TraitRequest extends RequestContext {
     Request<List<TraitProxy>> findAllTraitValues(Long phenotypeId, Long alleleAssayId, Long statisticTypeId);
 
     Request<List<TraitProxy>> findAllTraitValuesByStatisticType(Long phenotypeId, Long statisticTypeId);
+
+    Request<List<TraitStatsProxy>> findTraitStatsByStatisticType(Long phenotypeId, Long statisticTypeId);
 }

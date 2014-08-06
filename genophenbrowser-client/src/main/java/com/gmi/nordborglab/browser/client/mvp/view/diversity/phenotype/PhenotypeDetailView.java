@@ -22,7 +22,7 @@ import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StatisticTypeProxy;
-import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
@@ -300,8 +300,8 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     }
 
     @Override
-    public void setPhenotypExplorerData(ImmutableList<TraitProxy> traits) {
-        phenotypeExplorerData = DataTableUtils.createPhentoypeExplorerTable(traits);
+    public void setPhenotypExplorerData(ImmutableList<TraitStatsProxy> traits) {
+        phenotypeExplorerData = DataTableUtils.createPhentoypeExplorerTableFromStats(traits);
     }
 
 

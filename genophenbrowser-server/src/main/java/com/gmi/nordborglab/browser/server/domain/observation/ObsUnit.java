@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.server.domain.observation;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -23,6 +24,7 @@ import java.util.Set;
 @Table(name = "div_obs_unit", schema = "observation")
 @AttributeOverride(name = "id", column = @Column(name = "div_obs_unit_id"))
 @SequenceGenerator(name = "idSequence", sequenceName = "observation.div_obs_unit_div_obs_unit_id_seq", allocationSize = 1)
+@BatchSize(size = 200)
 public class ObsUnit extends BaseEntity {
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -34,6 +36,7 @@ public class ObsUnit extends BaseEntity {
     private Stock stock;
 
     @OneToMany(mappedBy = "obsUnit", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @BatchSize(size = 100)
     private Set<Trait> traits = new HashSet<Trait>();
 
     @ManyToOne(cascade = {CascadeType.ALL})
