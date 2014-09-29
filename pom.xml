@@ -28,7 +28,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <mavenVersion>3.0</mavenVersion>
-        <guava.version>17.0</guava.version>
+        <guava.version>18.0</guava.version>
         <gwt.version>2.6.1</gwt.version>
         <junit.version>4.11</junit.version>
         <mockito.version>1.9.5</mockito.version>
@@ -69,7 +69,7 @@
         <maven.assembly.plugin>2.3</maven.assembly.plugin>
         <maven.antrun.plugin>1.7</maven.antrun.plugin>
         <java.version>1.7</java.version>
-        <errai.version>3.0.1.Final</errai.version>
+        <errai.version>3.1.0.CR1</errai.version>
         <javassist.version>3.18.2-GA</javassist.version>
     </properties>
 
