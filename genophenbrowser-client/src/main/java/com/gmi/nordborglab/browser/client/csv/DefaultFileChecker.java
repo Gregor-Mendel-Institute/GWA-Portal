@@ -217,7 +217,6 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
     }
 
 
-
     private void resetSupressionCellProcessors() {
         CellProcessor[] headerCells = headerCellProcessors.get();
         CellProcessor[] contentCells = contentCellProcessors.get();
@@ -248,7 +247,7 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
                 break;
             }
         }
-        return new FileUploadWidget.ParseResult(cell.getValue().toString(), cell.getSuppressedException() != null, expextedValue);
+        return new FileUploadWidget.ParseResult(String.valueOf(cell.getValue()), cell.getSuppressedException() != null, expextedValue);
     }
 
     public static FileUploadWidget.ParseResult getParseResultFromFirstLine(SupressException cell) {
