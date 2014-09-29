@@ -26,10 +26,10 @@
         <hibernate-validator.version>4.1.0.Final</hibernate-validator.version>
         <javax.validation.version>1.0.0.GA</javax.validation.version>
         <jsr305.version>3.0.0</jsr305.version>
-        <gwtp.version>1.2.1</gwtp.version>
+        <gwtp.version>1.3.1</gwtp.version>
         <gin.version>2.1.2</gin.version>
         <gwtquery.version>1.4.2</gwtquery.version>
-        <jukito.version>1.4</jukito.version>
+        <jukito.version>1.4.1</jukito.version>
         <gwtchosen.version>1.2.0</gwtchosen.version>
         <gwtbootstrap.version>2.3.2.0</gwtbootstrap.version>
         <gwasgeneviewer.version>0.4.13-SNAPSHOT</gwasgeneviewer.version>
