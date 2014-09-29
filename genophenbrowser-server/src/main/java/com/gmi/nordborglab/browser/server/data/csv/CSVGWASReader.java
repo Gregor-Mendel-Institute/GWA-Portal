@@ -15,6 +15,7 @@ import org.supercsv.cellprocessor.Trim;
 import org.supercsv.cellprocessor.constraint.Equals;
 import org.supercsv.cellprocessor.constraint.IsIncludedIn;
 import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.cellprocessor.ift.StringCellProcessor;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.ICsvListReader;
 import org.supercsv.prefs.CsvPreference;
@@ -41,7 +42,7 @@ public class CSVGWASReader implements GWASReader {
             new Optional(new Trim(new Equals("GVE")))
     };
 
-    private static class ParseNAs extends CellProcessorAdaptor {
+    private static class ParseNAs extends CellProcessorAdaptor implements StringCellProcessor {
 
         private ParseNAs() {
         }
@@ -62,7 +63,7 @@ public class CSVGWASReader implements GWASReader {
     }
 
     private static CellProcessor[] cellProcessors = new CellProcessor[]{
-            new ParseInt(), new ParseDouble(), new ParseDouble(), new Optional(new ParseNAs(new ParseDouble())), new Optional(new ParseNAs(new ParseInt())), new Optional(new ParseNAs(new ParseDouble()))
+            new Trim(new ParseInt()), new Trim(new ParseDouble()), new Trim(new ParseDouble()), new Optional(new Trim(new ParseNAs(new ParseDouble()))), new Optional(new Trim(new ParseNAs(new ParseInt()))), new Optional(new Trim(new ParseNAs(new ParseDouble())))
     };
 
     public CSVGWASReader() {

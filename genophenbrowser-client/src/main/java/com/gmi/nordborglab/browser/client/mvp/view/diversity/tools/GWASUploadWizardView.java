@@ -24,6 +24,7 @@ import org.gwtsupercsv.cellprocessor.Trim;
 import org.gwtsupercsv.cellprocessor.constraint.Equals;
 import org.gwtsupercsv.cellprocessor.constraint.IsIncludedIn;
 import org.gwtsupercsv.cellprocessor.ift.CellProcessor;
+import org.gwtsupercsv.cellprocessor.ift.StringCellProcessor;
 import org.gwtsupercsv.util.CsvContext;
 
 import java.util.List;
@@ -52,7 +53,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     private FileUploadWidget.FileChecker fileChecker;
     private Duration duration = new Duration();
 
-    public static class ParseNAs extends CellProcessorAdaptor {
+    public static class ParseNAs extends CellProcessorAdaptor implements StringCellProcessor {
 
         public ParseNAs() {
         }
@@ -81,15 +82,15 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     private void initFileUploaWidget() {
         CellProcessor[] headerCellProcessors = new CellProcessor[]{
                 new Trim(new Equals("chr")), new Trim(new Equals("pos")), new Trim(new IsIncludedIn(new String[]{"score", "pvalue"})),
-                new Optional(new Trim(new Equals("maf"))),
-                new Optional(new Trim(new Equals("mac"))),
-                new Optional(new Trim(new Equals("GVE")))
+                (new Trim(new Equals("maf"))),
+                (new Trim(new Equals("mac"))),
+                (new Trim(new Equals("GVE")))
         };
         CellProcessor[] contentCellProcesors = new CellProcessor[]{
-                new ParseInt(), new ParseLong(), new ParseDouble(),
-                new Optional(new ParseNAs(new ParseDouble())),
-                new Optional(new ParseNAs(new ParseInt())),
-                new Optional(new ParseNAs(new ParseDouble()))
+                new Trim(new ParseInt()), new Trim(new ParseLong()), new Trim(new ParseDouble()),
+                new Optional(new Trim(new ParseNAs(new ParseDouble()))),
+                new Optional(new Trim(new ParseNAs(new ParseInt()))),
+                new Optional(new Trim(new ParseNAs(new ParseDouble())))
         };
         List<String> defaultValues = Lists.newArrayList("1", "6083872", "0.023 | 5.1673", "0.3191", "30", "0.0016");
         fileChecker = new DefaultFileChecker(allowedExtensions, csvMimeTypes, headerCellProcessors, contentCellProcesors, defaultValues);
