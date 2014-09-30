@@ -108,10 +108,9 @@ public class BootstrapperImpl implements Bootstrapper {
                 placeManager.revealCurrentPlace();
             }
         };
-
-        // Can't be used because of   https://code.google.com/p/gwt-charts/issues/detail?id=40
-        //ChartLoader chartLoader = new ChartLoader(ChartPackage.CORECHART);
-        //chartLoader.loadApi(chartsRunnable);
+        /* FIXME https://code.google.com/p/gwt-charts/issues/detail?id=53 */
+        /*ChartLoader chartLoader = new ChartLoader(ChartPackage.CORECHART,ChartPackage.ORGCHART,ChartPackage.GEOCHART);
+        chartLoader.loadApi(chartsRunnable);*/
 
         VisualizationUtils.loadVisualizationApi(visualizationRunnable, CoreChart.PACKAGE, MotionChart.PACKAGE, GeoChart.PACKAGE, OrgChart.PACKAGE);
 

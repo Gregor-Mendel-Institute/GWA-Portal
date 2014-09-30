@@ -35,7 +35,7 @@
         <gwasgeneviewer.version>0.4.13-SNAPSHOT</gwasgeneviewer.version>
         <gwtmaps.version>3.8.0-beta2</gwtmaps.version>
         <geochart.version>0.1.4-SNAPSHOT</geochart.version>
-        <gwt-charts.version>0.9.9</gwt-charts.version>
+        <gwt-charts.version>0.9.10</gwt-charts.version>
         <gwt-tour.version>1.0-SNAPSHOT</gwt-tour.version>
         <gwt-supercsv>0.0.1-SNAPSHOT</gwt-supercsv>
     </properties>

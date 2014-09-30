@@ -78,7 +78,7 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
 
     BiMap<MetaAnalysisTopResultsPresenter.STATS, PieChart> stats2Chart;
     Map<MetaAnalysisTopResultsPresenter.STATS, DataTable> stats2DataTable;
-    Map<MetaAnalysisTopResultsPresenter.STATS, JsArray<Selection>> stats2Selection;
+    Map<MetaAnalysisTopResultsPresenter.STATS, Selection[]> stats2Selection;
 
     private List<MetaAnalysisTopResultsPresenter.STATS> chartsToUpdate;
     private boolean layoutScheduled = false;
@@ -90,27 +90,9 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
             forceLayout();
         }
     };
-    private PieSclice greySliceOption = PieSclice.create();
+    private Slice greySliceOption = Slice.create();
     //private DataTable emptyDataTable;
 
-    //WORKAROUND because chart doesN't have the setter
-    public static class PieSclice extends Slice {
-
-        public static PieSclice create() {
-            return createObject().cast();
-        }
-
-        protected PieSclice() {
-        }
-
-        public final native void setColor(String color)/*-{
-            this.color = color;
-        }-*/;
-
-        public final native void setTextStyle(String textStyle)/*-{
-            this.textStyle = textStyle;
-        }-*/;
-    }
 
     public class ChartSelectHandler extends com.googlecode.gwt.charts.client.event.SelectHandler {
 
@@ -123,11 +105,20 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
         @Override
         public void onSelect(SelectEvent selectEvent) {
             PieChart chart = stats2Chart.get(stat);
-            JsArray<Selection> selections = chart.getSelection();
+            JsArray<Selection> sel = chart.getSelection();
+            // FIXME because of https://code.google.com/p/gwt-charts/issues/detail?id=52
+            if (sel.length() == 0) {
+                chart.setSelection();
+            }
+            // FIXME because chart.getSelections return jsarray we have to convert
+            Selection[] selections = new Selection[sel.length()];
+            for (int i = 0; i < sel.length(); i++) {
+                selections[i] = sel.get(i);
+            }
             greyOutSlices(stat, selections);
             Integer row = null;
-            if (selections.length() > 0) {
-                row = selections.get(0).getRow();
+            if (selections.length > 0) {
+                row = selections[0].getRow();
             }
             getUiHandlers().onChangeSelections(stat, row);
         }
@@ -143,9 +134,9 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
 
         @Override
         public void onReady(ReadyEvent readyEvent) {
-            final JsArray<Selection> selections = stats2Selection.get(stat);
+            final Selection[] selections = stats2Selection.get(stat);
             PieChart chart = stats2Chart.get(stat);
-            if (selections != null && selections.length() != 0) {
+            if (selections != null && selections.length != 0) {
                 chart.setSelection(selections);
             }
         }
@@ -202,28 +193,27 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
     }
 
 
-    private void greyOutSlices(MetaAnalysisTopResultsPresenter.STATS stat, JsArray<Selection> selections) {
+    private void greyOutSlices(MetaAnalysisTopResultsPresenter.STATS stat, Selection[] selections) {
         stats2Selection.put(stat, selections);
         PieChart pieChart = stats2Chart.get(stat);
         PieChartOptions options = getPieOptions(getTitleFromStat(stat), false);
         DataTable dataTable = stats2DataTable.get(stat);
-        JsArray<Slice> sliceOptions = getGreySlicesFromSelection(dataTable, selections);
+        Slice[] sliceOptions = getGreySlicesFromSelection(dataTable, selections);
         options.setSlices(sliceOptions);
         pieChart.draw(dataTable, options);
     }
 
-    private JsArray<Slice> getGreySlicesFromSelection(DataTable dataTable, JsArray<Selection> selections) {
-        JsArray<Slice> options = Slice.createArray().cast();
-        //Options options = Options.create();
-        if (selections.length() == 0) {
-            return options;
+    private Slice[] getGreySlicesFromSelection(DataTable dataTable, Selection[] selections) {
+        if (selections.length == 0) {
+            return new Slice[]{};
         }
+        Slice[] options = new Slice[dataTable.getNumberOfRows()];
         for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
-            PieSclice sliceOption = PieSclice.create();
-            if (i != selections.get(0).getRow()) {
+            Slice sliceOption = Slice.create();
+            if (i != selections[0].getRow()) {
                 sliceOption = greySliceOption;
             }
-            options.push(sliceOption);
+            options[i] = sliceOption;
         }
         return options;
     }
@@ -272,13 +262,13 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
     public void resetSelection(List<MetaAnalysisTopResultsPresenter.STATS> stats) {
         if (stats == null) {
             for (PieChart chart : stats2Chart.values()) {
-                chart.setSelection(null);
+                chart.setSelection(new Selection[]{});
             }
             stats2Selection.clear();
         } else {
             for (MetaAnalysisTopResultsPresenter.STATS stat : stats) {
                 PieChart chart = stats2Chart.get(stat);
-                chart.setSelection(null);
+                chart.setSelection(new Selection[]{});
                 stats2Selection.put(stat, null);
             }
         }
@@ -308,8 +298,8 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
     private void drawCharts() {
         for (Map.Entry<MetaAnalysisTopResultsPresenter.STATS, PieChart> entry : stats2Chart.entrySet()) {
             if (stats2DataTable.containsKey(entry.getKey())) {
-                JsArray<Selection> selections = stats2Selection.get(entry.getKey());
-                if (selections == null || selections.length() == 0) {
+                Selection[] selections = stats2Selection.get(entry.getKey());
+                if (selections == null || selections.length == 0) {
                     PieChart chart = entry.getValue();
                     entry.getValue().draw(stats2DataTable.get(entry.getKey()), getPieOptions(getTitleFromStat(entry.getKey()), false));
                 }
