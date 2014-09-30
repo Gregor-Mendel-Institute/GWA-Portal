@@ -4,9 +4,9 @@
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:c='urn:import:com.google.gwt.user.cellview.client'
              xmlns:card="urn:import:com.gmi.nordborglab.browser.client.ui.card">
-    <ui:with field="bootstrap" type="com.github.gwtbootstrap.client.ui.constants.Constants"/>
 
-    <ui:with field="mainRes"
+
+<ui:with field="mainRes"
              type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
 
 
