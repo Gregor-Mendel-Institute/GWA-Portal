@@ -49,15 +49,14 @@ import com.google.web.bindery.requestfactory.shared.ServerFailure;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.TabData;
-import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.annotations.UseGatekeeper;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
@@ -149,7 +148,7 @@ public class StudyWizardPresenter extends
         }
     }
 
-    public interface MyView extends View, HasUiHandlers<StudyWizardUiHandlers> {
+    public interface MyView extends com.gwtplatform.mvp.client.View, HasUiHandlers<StudyWizardUiHandlers> {
 
         StudyCreateDriver getStudyCreateDriver();
 
