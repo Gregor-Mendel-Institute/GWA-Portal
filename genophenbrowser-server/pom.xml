@@ -114,6 +114,7 @@
         <dependency>
             <groupId>com.google.web.bindery</groupId>
             <artifactId>requestfactory-apt</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>

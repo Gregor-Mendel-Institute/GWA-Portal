@@ -36,8 +36,6 @@
     <source path='shared'/>
 
     <set-property name="gwt.logging.enabled" value="TRUE"/>
-    <set-property name="gwt.logging.popupHandler" value="DISABLED"/>
-
 
     <set-configuration-property name="gin.ginjector.modules"
                                 value="com.gmi.nordborglab.browser.client.gin.ClientModule"/>

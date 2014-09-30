@@ -29,7 +29,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <mavenVersion>3.0</mavenVersion>
         <guava.version>18.0</guava.version>
-        <gwt.version>2.6.1</gwt.version>
+        <gwt.version>2.7.0-beta1</gwt.version>
         <junit.version>4.11</junit.version>
         <mockito.version>1.9.5</mockito.version>
         <hibernate-validator.version>5.1.2.Final</hibernate-validator.version>
@@ -51,7 +51,7 @@
         <maven.tomcat6.plugin>2.1</maven.tomcat6.plugin>
         <maven.tomcat7.plugin>2.1</maven.tomcat7.plugin>
         <maven.build-helper.plugin>1.8</maven.build-helper.plugin>
-        <maven.gwt.plugin>2.6.1</maven.gwt.plugin>
+        <maven.gwt.plugin>2.7.0-beta1</maven.gwt.plugin>
         <maven.exec.plugin>1.2.1</maven.exec.plugin>
         <maven.apt.plugin>1.1.1</maven.apt.plugin>
         <maven.release.plugin>2.4.1</maven.release.plugin>
@@ -69,9 +69,22 @@
         <maven.assembly.plugin>2.3</maven.assembly.plugin>
         <maven.antrun.plugin>1.7</maven.antrun.plugin>
         <java.version>1.7</java.version>
-        <errai.version>3.1.0.CR1</errai.version>
+        <errai.version>3.0.3.Final</errai.version>
         <javassist.version>3.18.2-GA</javassist.version>
     </properties>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>codehaus-snapshots</id>
+            <url>https://nexus.codehaus.org/content/groups/snapshots-group/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
     <repositories>
         <repository>
@@ -82,10 +95,27 @@
             <id>nordborglab-releases</id>
             <url>https://github.com/timeu/maven-repos/raw/master/releases/</url>
         </repository>
+        <repository>
+            <id>google-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/google-snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
     </repositories>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt</artifactId>
+                <version>${gwt.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- required because Hibernate 4.3 only works with javassist > 3.16 and errai-bus includes 3.15 -->
             <dependency>
                 <groupId>org.javassist</groupId>
@@ -96,34 +126,6 @@
                 <groupId>org.jboss.errai</groupId>
                 <artifactId>errai-bus</artifactId>
                 <version>${errai.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.gwt</groupId>
-                <artifactId>gwt-user</artifactId>
-                <version>${gwt.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.google.gwt</groupId>
-                <artifactId>gwt-elemental</artifactId>
-                <version>${gwt.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.google.web.bindery</groupId>
-                <artifactId>requestfactory-apt</artifactId>
-                <version>${gwt.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.google.web.bindery</groupId>
-                <artifactId>requestfactory-client</artifactId>
-                <version>${gwt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.web.bindery</groupId>
-                <artifactId>requestfactory-server</artifactId>
-                <version>${gwt.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
