@@ -83,12 +83,10 @@
         </init-param>
     </filter>
 
-    <!-- disable until is fixed Bug #47 https://bugs.eclipse.org/bugs/show_bug.cgi?id=435322
     <filter-mapping>
         <filter-name>GzipFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>

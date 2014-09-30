@@ -245,12 +245,6 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
 
     @Override
     protected void onHide() {
-        // Required because of this: https://code.google.com/p/gwt-charts/issues/detail?id=41
-        getView().resetSelection(null);
-        currentFilters.clear();
-        criteria = null;
-        stats2DataTable.clear();
-        stats.clear();
         super.onHide();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
