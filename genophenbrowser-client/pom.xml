@@ -307,7 +307,7 @@
                 <artifactId>gwt-maven-plugin</artifactId>
                 <configuration>
                     <module>${gwt.module}</module>
-                    <strict>true</strict>
+                    <failOnError>true</failOnError>
                     <draftCompile>${gwt.draftCompile}</draftCompile>
                     <style>${gwt.style}</style>
                     <genParam>${gwt.genParam}</genParam>
