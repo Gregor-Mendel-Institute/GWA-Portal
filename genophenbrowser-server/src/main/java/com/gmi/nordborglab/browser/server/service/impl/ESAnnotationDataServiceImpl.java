@@ -86,16 +86,16 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
         Gene gene = null;
         if (matcher.matches()) {
             String chr = "chr" + matcher.group(1);
-            GetRequestBuilder builder = client.prepareGet(String.format(INDEX_PREFIX, chr), "gene", id).setFields("name", "chr", "start_pos", "end_pos", "annotation", "strand", "isoforms");
+            GetRequestBuilder builder = client.prepareGet(String.format(INDEX_PREFIX, chr), "gene", id).setFields("name", "chr", "start_pos", "end_pos", "annotation", "strand").setFetchSource("isoforms", null);
             GetResponse response = builder.execute().actionGet();
             if (response != null) {
                 //TODO fix long int boolean stuff
                 gene = new Gene(Long.valueOf((Integer) response.getField("start_pos").getValue()), Long.valueOf((Integer) response.getField("end_pos").getValue()), ((Boolean) response.getField("strand").getValue() ? 1 : 0), (String) response.getField("name").getValue(), null);
                 gene.setAnnotation((String) response.getField("annotation").getValue());
-                if (response.getFields().containsKey("isoforms")) {
-                    List<Object> isoForms = response.getField("isoforms").getValues();
+                if (response.getSourceAsMap().containsKey("isoforms")) {
+                    List<Map<String, Object>> isoForms = (List<Map<String, Object>>) response.getSourceAsMap().get("isoforms");
                     if (isoForms != null && isoForms.size() > 0) {
-                        Map<String, Object> isoFormFields = (Map<String, Object>) isoForms.get(0);
+                        Map<String, Object> isoFormFields = isoForms.get(0);
                         gene.setShortDescription((String) isoFormFields.get("short_description"));
                         gene.setCuratorSummary((String) isoFormFields.get("curator_summary"));
                         gene.setDescription((String) isoFormFields.get("description"));

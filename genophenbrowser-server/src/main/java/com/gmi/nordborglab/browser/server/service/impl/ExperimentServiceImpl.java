@@ -239,7 +239,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
                     request.addSort("name", SortOrder.ASC);
         }
         // set filter
-        request.setFilter(searchFilter);
+        request.setPostFilter(searchFilter);
 
         SearchResponse response = request.execute().actionGet();
         List<Long> idsToFetch = Lists.newArrayList();

@@ -71,13 +71,13 @@ public class SearchServiceImpl implements SearchService {
             GeneSearchProcessor geneSearchprocessor = new GeneSearchProcessor(term);
 
             requestBuilder.add(experimentProcessor.getSearchBuilder(client
-                    .prepareSearch(esAclManager.getIndex())).setFilter(filter));
+                    .prepareSearch(esAclManager.getIndex())).setPostFilter(filter));
 
             requestBuilder.add(phenotypeProcessor.getSearchBuilder(client
-                    .prepareSearch(esAclManager.getIndex())).setFilter(filter));
+                    .prepareSearch(esAclManager.getIndex())).setPostFilter(filter));
 
             requestBuilder.add(studyProcessor.getSearchBuilder(client
-                    .prepareSearch(esAclManager.getIndex())).setFilter(filter));
+                    .prepareSearch(esAclManager.getIndex())).setPostFilter(filter));
 
             requestBuilder.add(ontologySearchProcessor.getSearchBuilder(client
                     .prepareSearch(ONTOLOGY_INDEX_NAME)));
@@ -186,7 +186,7 @@ public class SearchServiceImpl implements SearchService {
         FilterBuilder aclFilter = esAclManager.getAclFilter(Lists.newArrayList("read"));
         SearchProcessor searchProcessor = getSearchProcessorFromFilter(query, filter);
         if (searchProcessor != null) {
-            SearchRequestBuilder request = searchProcessor.getSearchBuilder(client.prepareSearch(esAclManager.getIndex()).setFilter(aclFilter));
+            SearchRequestBuilder request = searchProcessor.getSearchBuilder(client.prepareSearch(esAclManager.getIndex()).setPostFilter(aclFilter));
             SearchResponse response = request.execute().actionGet();
             searchFacetPage = searchProcessor.extractSearchFacetPage(response);
         }
