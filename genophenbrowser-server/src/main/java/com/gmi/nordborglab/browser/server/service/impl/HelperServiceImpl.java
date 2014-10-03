@@ -621,9 +621,9 @@ public class HelperServiceImpl implements HelperService {
 
         FilterBuilder filter = esAclManager.getAclFilter(Lists.newArrayList("read"));
         //  get studies
-        requestBuilder.add(getStatsSearchBuilder().setTypes("experiment").setFilter(filter));
-        requestBuilder.add(getStatsSearchBuilder().setTypes("phenotype").setFilter(filter));
-        requestBuilder.add(getStatsSearchBuilder().setTypes("study").setFilter(filter));
+        requestBuilder.add(getStatsSearchBuilder().setTypes("experiment").setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter)));
+        requestBuilder.add(getStatsSearchBuilder().setTypes("phenotype").setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter)));
+        requestBuilder.add(getStatsSearchBuilder().setTypes("study").setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter)));
         requestBuilder.add(getStatsSearchBuilder().setTypes("publication"));
 
         MultiSearchResponse multiResponse = requestBuilder.execute().actionGet();

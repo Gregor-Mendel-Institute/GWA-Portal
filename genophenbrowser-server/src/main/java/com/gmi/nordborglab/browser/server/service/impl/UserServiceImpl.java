@@ -354,7 +354,7 @@ public class UserServiceImpl implements UserService {
                     request.addSort("firstname.name", SortOrder.ASC);
         }
         // set filter
-        request.setFilter(searchFilter);
+        request.setPostFilter(searchFilter);
 
         SearchResponse response = request.execute().actionGet();
         long totalCount = response.getHits().getTotalHits();

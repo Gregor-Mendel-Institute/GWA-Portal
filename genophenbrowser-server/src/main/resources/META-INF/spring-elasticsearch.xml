@@ -2,8 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-						http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+						http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.3.xsd">
 
 
     <beans profile="dev">
@@ -16,15 +19,7 @@
     </beans>
 
     <beans>
-        <bean id="esClient"
-              class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean">
-            <property name="esNodes">
-                <list>
-                    <value>${ELASTICSEARCH.host}</value>
-                </list>
-            </property>
-            <property name="properties" ref="esproperties"/>
-        </bean>
+        <elasticsearch:client id="esClient" properties="esproperties" esNodes="${ELASTICSEARCH.host}"/>
     </beans>
 
 </beans>

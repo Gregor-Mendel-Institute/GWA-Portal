@@ -257,7 +257,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
                     request.addSort("local_trait_name", SortOrder.ASC);
         }
         // set filter
-        request.setFilter(searchFilter);
+        request.setPostFilter(searchFilter);
 
         SearchResponse response = request.execute().actionGet();
         List<Long> idsToFetch = Lists.newArrayList();

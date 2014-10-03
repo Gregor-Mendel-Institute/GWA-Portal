@@ -13,6 +13,7 @@ import com.google.gwt.thirdparty.guava.common.collect.Iterables;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -84,14 +85,14 @@ public class OntologyServiceImpl implements OntologyService {
         query = query.trim();
         List<Term> terms = Lists.newArrayList();
         long numberOfHits = 0;
+        FilterBuilder filter = FilterBuilders.termFilter("type", type.name().toLowerCase());
         SearchRequestBuilder request = client.prepareSearch(SearchServiceImpl.ONTOLOGY_INDEX_NAME)
                 .setTypes("term").setNoFields()
-                .setSize(limit)
-                .setFilter(FilterBuilders.termFilter("type", type.name().toLowerCase()));
+                .setSize(limit);
         if (query != null && !query.isEmpty()) {
-            request.setQuery(QueryBuilders.multiMatchQuery(query, "name^3.5", "name.partial^1.5", "definition", "synonyms", "term_id"));
+            request.setQuery(QueryBuilders.filteredQuery(QueryBuilders.multiMatchQuery(query, "name^3.5", "name.partial^1.5", "definition", "synonyms", "term_id"), filter));
         } else {
-            request.setQuery(QueryBuilders.matchAllQuery());
+            request.setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter));
         }
         SearchResponse response = request.execute().actionGet();
         numberOfHits = response.getHits().getTotalHits();

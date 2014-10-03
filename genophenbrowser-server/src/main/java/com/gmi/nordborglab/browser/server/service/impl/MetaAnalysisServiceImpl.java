@@ -177,7 +177,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         if (filterItemFilter != null) {
             filter.must(filterItemFilter);
         }
-        builder.setSize(size).setFrom(start).addSort("score", SortOrder.DESC).addFields("position", "mac", "maf", "_parent", "score", "overFDR", "studyid", "gene", "annotation", "inGene").setTypes("meta_analysis_snps").setQuery(QueryBuilders.constantScoreQuery(filter));
+        builder.setSize(size).setFrom(start).addSort("score", SortOrder.DESC).addFields("position", "mac", "maf", "_parent", "score", "overFDR", "studyid", "annotation", "inGene").setTypes("meta_analysis_snps").setQuery(QueryBuilders.constantScoreQuery(filter));
         response = builder.execute().actionGet();
         for (SearchHit searchHit : response.getHits()) {
             try {
@@ -500,7 +500,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         } else {
             builder.setQuery(QueryBuilders.constantScoreQuery(filter));
         }
-        builder.setSize(size).setFrom(start).addSort("score", SortOrder.DESC).addFields("position", "mac", "maf", "chr", "score", "overFDR", "studyid", "_parent", "gene", "annotation", "inGene", "_parent").setTypes("meta_analysis_snps");
+        builder.setSize(size).setFrom(start).addSort("score", SortOrder.DESC).addFields("position", "mac", "maf", "chr", "score", "overFDR", "studyid", "_parent", "gene.name", "annotation", "inGene", "_parent").setTypes("meta_analysis_snps");
         SearchResponse response = builder.execute().actionGet();
 
         for (SearchHit searchHit : response.getHits()) {
@@ -520,9 +520,8 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                     annot.setAnnotation((String) fields.get("annotation").getValue());
                     annot.setInGene((Boolean) fields.get("inGene").getValue());
                 }
-                if (fields.containsKey("gene")) {
-                    Map<String, Object> gene = (Map<String, Object>) ((List<Map<String, Object>>) fields.get("gene").getValues().get(0)).get(0);
-                    annot.setGene((String) gene.get("name"));
+                if (fields.containsKey("gene.name")) {
+                    annot.setGene((String) fields.get("gene.name").getValue());
 
                 }
                 MetaSNPAnalysis.Builder metaAnalysisBuilder = new MetaSNPAnalysis.Builder()
@@ -583,7 +582,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                     request.addSort("name", SortOrder.ASC);
         }
         // set filter
-        request.setFilter(searchFilter);
+        request.setPostFilter(searchFilter);
 
         SearchResponse response = request.execute().actionGet();
         List<Long> idsToFetch = Lists.newArrayList();
@@ -742,7 +741,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         CandidateGeneList candidateGeneList = candidateGeneListRepository.findOne(id);
         List<Gene> genes = Lists.newArrayList();
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
-        request.setSize(size).setFrom(page).setTypes("candidate_gene_list").addFields("genes");
+        request.setSize(size).setFrom(page).setTypes("candidate_gene_list").setFetchSource("genes", null);
         request.setQuery(QueryBuilders.constantScoreQuery(FilterBuilders.idsFilter().addIds(candidateGeneList.getId().toString())));
         request.addFacet(FacetBuilders.termsFacet("annotation").field("annotation").nested("genes").size(5));
         request.addFacet(FacetBuilders.termsFacet("chr").field("chr").nested("genes").size(5))
@@ -896,7 +895,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 request.setQuery(multiMatchQuery(searchString, "name^3.5", "name.partial^1.5", "protocol.analysis_method^3.5", "allele_assay.name^1.5", "allele_assay.producer", "owner.name", "experiment.name", "phenotype.name"));
             }
             FilterBuilder searchFilter = FilterBuilders.boolFilter().must(aclFilter, availableFilter);
-            request.setFilter(searchFilter);
+            request.setPostFilter(searchFilter);
 
             SearchResponse response = request.execute().actionGet();
             Set<Long> idsToFetch = Sets.newHashSet();
@@ -935,7 +934,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
             List<String> ids = findCandidateListsCountForStudy(entity.getId());
             SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
             request.setTypes("candidate_gene_list").setNoFields().setSize(size).setFrom(page);
-            request.setFilter(FilterBuilders.boolFilter().must(
+            request.setPostFilter(FilterBuilders.boolFilter().must(
                     esAclManager.getAclFilter(Lists.newArrayList("read")),
                     FilterBuilders.notFilter(FilterBuilders.idsFilter().addIds(ids.toArray(new String[]{})))));
             SearchResponse response = request.execute().actionGet();
@@ -991,7 +990,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         FilterBuilder entityFilter = getEntityFilterForEnrichment(entity);
 
         if (searchString != null && !searchString.equalsIgnoreCase("")) {
-            request.setQuery(multiMatchQuery(searchString, "candidategenelist.name", "study.name", "phenotype.name", "experiment.name"));
+            request.setQuery(multiMatchQuery(searchString, "name^3.5", "name.partial^1.5", "protocol.analysis_method^3.5", "allele_assay.name^1.5", "allele_assay.producer", "owner.name", "experiment.name", "phenotype.name"));
         }
         FilterBuilder typeFilter = null;
         switch (currentFilter) {
@@ -1014,7 +1013,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         FilterBuilder searchFilter = FilterBuilders.boolFilter().must(aclFilter, entityFilter, typeFilter);
 
         // set filter
-        request.setFilter(searchFilter);
+        request.setPostFilter(searchFilter);
 
         SearchResponse response = request.execute().actionGet();
         //required because of possible duplicates when routing is wrongly assigned
@@ -1081,7 +1080,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         if (availableFilter != null) {
             request.addFacet(FacetBuilders.filterFacet(ConstEnums.ENRICHMENT_FILTER.AVAILABLE.name()).facetFilter(aclFilter).filter(availableFilter));
         }
-        request.setFilter(aclFilter);
+        request.setPostFilter(aclFilter);
         SearchResponse response = request.execute().actionGet();
         Facets searchFacets = response.getFacets();
         List<ESFacet> facets = Lists.newArrayList();
@@ -1107,7 +1106,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         List<String> ids = findCandidateListsCountForStudy(studyId);
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setTypes("candidate_gene_list").setNoFields().setSize(0);
-        request.setFilter(FilterBuilders.boolFilter().must(
+        request.setPostFilter(FilterBuilders.boolFilter().must(
                 esAclManager.getAclFilter(Lists.newArrayList("read")),
                 FilterBuilders.notFilter(FilterBuilders.idsFilter().addIds(ids.toArray(new String[]{})))));
         SearchResponse response = request.execute().actionGet();
@@ -1119,7 +1118,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
 
         request.setTypes("candidate_gene_list_enrichment").addField("candidategenelist.id").setSize(count)
-                .setFilter(FilterBuilders.boolFilter().must(
+                .setPostFilter(FilterBuilders.boolFilter().must(
                         esAclManager.getAclFilter(Lists.newArrayList("read"), "candidate_gene_list_acl", false, false),
                         FilterBuilders.termFilter("study_.id", studyId)
                 ));
@@ -1298,10 +1297,10 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
 
     private List<Gene> extractGeneInfos(SearchHit hit) {
         List<Gene> genes = Lists.newArrayList();
-        if (hit.getFields().size() > 0) {
-            List<Object> fields = (List<Object>) hit.getFields().get("genes").getValues().get(0);
-            for (Object geneFields : fields) {
-                Map<String, Object> field = (Map<String, Object>) geneFields;
+        final Map<String, Object> source = hit.getSource();
+        if (source != null && !source.isEmpty()) {
+            List<Map<String, Object>> items = (List<Map<String, Object>>) source.get("genes");
+            for (Map<String, Object> field : items) {
                 Gene gene = new Gene((long) (Integer) field.get("start_pos"), (long) (Integer) field.get("end_pos"), (Integer) field.get("strand"), (String) field.get("name"), null);
                 gene.setAnnotation((String) field.get("annotation"));
                 gene.setCuratorSummary((String) field.get("curator_summary"));
@@ -1324,7 +1323,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
     private List<Gene> getGeneInfos(CandidateGeneList candidateGeneList) {
         List<Gene> genes = Lists.newArrayList();
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
-        request.setTypes("candidate_gene_list").addFields("genes");
+        request.setTypes("candidate_gene_list").setFetchSource("genes", null);
         request.setQuery(QueryBuilders.constantScoreQuery(FilterBuilders.idsFilter().addIds(candidateGeneList.getId().toString())));
         SearchResponse response = request.execute().actionGet();
         if (response.getHits().getTotalHits() > 0) {
