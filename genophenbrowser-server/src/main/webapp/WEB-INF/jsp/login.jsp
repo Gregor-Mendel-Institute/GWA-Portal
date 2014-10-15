@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="<c:url value='/css/login.css'/>"/>
     <link rel="stylesheet" href="<c:url value='/css/openid-shadow.css'/>"/>
-    <link rel="stylesheet" href="<c:url value='/css/entypo.css'/>"/>
+    <link rel="stylesheet" href="<c:url value='/css/entypo.min.css'/>"/>
 
     <script type="text/javascript" src="<c:url value='/js/jquery-1.2.6.min.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/js/openid-jquery.js'/>"></script>
