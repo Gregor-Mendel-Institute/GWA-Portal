@@ -6,6 +6,7 @@ import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataActionResu
 import com.gmi.nordborglab.browser.client.dto.GWASDataDTO;
 import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
+import com.gmi.nordborglab.browser.client.events.SelectSNPEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASPlotUiHandlers;
 import com.google.gwt.core.client.Duration;
 import com.google.inject.Inject;
@@ -27,6 +28,7 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
     public interface MyView extends View, HasUiHandlers<GWASPlotUiHandlers> {
 
         void drawGWASPlots(GWASDataDTO gwasData);
+
     }
 
     private Long id;
@@ -64,6 +66,11 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
                 super.onFailure(caught);
             }
         });
+    }
+
+    @Override
+    public void onSelectSNP(int chromosome, int xVal, int clientX, int clientY) {
+        getEventBus().fireEventFromSource(new SelectSNPEvent(chromosome, xVal, clientX, clientY), this);
     }
 
 
