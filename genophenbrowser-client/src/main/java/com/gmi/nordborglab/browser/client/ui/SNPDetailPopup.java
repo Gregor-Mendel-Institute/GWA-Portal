@@ -53,7 +53,7 @@ public class SNPDetailPopup extends PopupPanel {
     public void setDataPoint(Long analysisId, Integer chromosome, Integer position) {
         this.chromosome = chromosome;
         this.position = position;
-        final PlaceRequest request = new PlaceRequest.Builder(snpDetailRequest).with("analysisid", String.valueOf(analysisId)).with("snpid", String.valueOf(chromosome) + "_" + String.valueOf(position)).build();
+        final PlaceRequest request = new PlaceRequest.Builder(snpDetailRequest).with("id", String.valueOf(analysisId)).with("chr", String.valueOf(chromosome)).with("position", String.valueOf(position)).build();
         snpInfo.setInnerText(String.valueOf(chromosome) + " : " + String.valueOf(position));
         snpInfoLink.setTargetHistoryToken(placeManager.buildHistoryToken(request));
     }

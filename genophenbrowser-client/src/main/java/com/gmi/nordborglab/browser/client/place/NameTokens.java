@@ -43,6 +43,7 @@ public class NameTokens {
     public static final String phenotypeEnrichments = "/phenotype/{id}/enrichments";
     public static final String studyEnrichments = "/analysis/{id}/enrichments";
     public static final String isaTabDownload = "/provider/study/{id}/{name}";
+    public static final String snps = "/analysis/{id}/snp/{chr}/{position}";
 
     public static final ImmutableMap<SearchItemProxy.SUB_CATEGORY, String> subCategory2Token = ImmutableMap.<SearchItemProxy.SUB_CATEGORY, String>builder()
             .put(SearchItemProxy.SUB_CATEGORY.STUDY, NameTokens.experiments)
@@ -181,5 +182,9 @@ public class NameTokens {
 
     public static String getUserlist() {
         return userlist;
+    }
+
+    public static String getSNPs() {
+        return snps;
     }
 }

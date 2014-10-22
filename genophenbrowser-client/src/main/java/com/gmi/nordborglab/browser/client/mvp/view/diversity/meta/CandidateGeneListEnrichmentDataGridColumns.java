@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.meta;
 
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.StudyListDataGridColumns;
+import com.gmi.nordborglab.browser.client.ui.cells.BarCell;
 import com.gmi.nordborglab.browser.client.ui.cells.LabelTypeCell;
 import com.gmi.nordborglab.browser.client.ui.cells.ProgressBarCell;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
@@ -48,48 +49,6 @@ import java.util.List;
  */
 public interface CandidateGeneListEnrichmentDataGridColumns {
 
-    public static class BarChartCellRenderer extends AbstractSafeHtmlRenderer<Number> {
-
-        static interface Template extends SafeHtmlTemplates {
-            @Template("<div style=\"width:{0}%;background-color: #058dc7;display: inline;float: left;height: 1.17em;margin: 0 10px 0 0;min-width: 1px;\"></div>")
-            SafeHtml bar(Double percentage);
-        }
-
-        private static Template template = GWT.create(Template.class);
-        private static BarChartCellRenderer instance = null;
-
-        public static BarChartCellRenderer getInstance() {
-            if (instance == null) {
-                instance = new BarChartCellRenderer();
-            }
-            return instance;
-        }
-
-        @Override
-        public SafeHtml render(Number object) {
-            SafeHtml output = null;
-            if (object != null) {
-                output = template.bar(object.doubleValue());
-            } else {
-                output = template.bar(0D);
-            }
-            return output;
-        }
-    }
-
-    public class PValueBarCell extends AbstractSafeHtmlCell<Number> {
-
-        public PValueBarCell() {
-            super(BarChartCellRenderer.getInstance());
-
-        }
-
-        @Override
-        protected void render(Context context, SafeHtml data, SafeHtmlBuilder sb) {
-            sb.append(data);
-        }
-    }
-
     public static class PValueBarHasCell implements HasCell<CandidateGeneListEnrichmentProxy, Number> {
 
         private double maxPvalue = 0;
@@ -99,7 +58,7 @@ public interface CandidateGeneListEnrichmentDataGridColumns {
 
         @Override
         public Cell<Number> getCell() {
-            return new PValueBarCell();
+            return new BarCell();
         }
 
         @Override

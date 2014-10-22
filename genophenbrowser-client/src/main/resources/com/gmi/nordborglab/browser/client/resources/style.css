@@ -59,6 +59,10 @@
     gwt-image: 'motionchart';
 }
 
+@sprite .tablechart {
+    gwt-image: 'tablechart';
+}
+
 @sprite .plant_icon {
     gwt-image: 'plant1';
 }
