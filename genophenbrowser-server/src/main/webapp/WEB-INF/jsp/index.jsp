@@ -19,7 +19,7 @@
         <sec:authorize access="isAuthenticated()">
         var userData = {'user': '<sec:authentication htmlEscape="false" property="principal.json"/>'};
         </sec:authorize>
-        var appData = {'data': '${appData}', 'jBrowseUrl':${jbrowseUrl}};
+        var appData = {'data': '${appData}', 'jBrowseUrl': '${jbrowseUrl}'};
         <%@ include file="/browser/browser.nocache.js" %>
     </script>
     <script async type="text/javascript" src="<c:url value='/js/favico.min.js' />"></script>
