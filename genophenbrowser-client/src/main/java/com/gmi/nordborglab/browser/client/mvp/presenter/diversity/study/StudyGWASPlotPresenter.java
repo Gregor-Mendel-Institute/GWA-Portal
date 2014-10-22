@@ -4,6 +4,7 @@ import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.events.LoadStudyEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
+import com.gmi.nordborglab.browser.client.events.SelectSNPEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools.GWASPlotPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
@@ -21,9 +22,9 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 public class StudyGWASPlotPresenter
         extends
@@ -31,6 +32,7 @@ public class StudyGWASPlotPresenter
 
     public interface MyView extends View {
 
+        void showSNPPopUp(Long analysisId, SelectSNPEvent event);
     }
 
     @ProxyCodeSplit
@@ -66,6 +68,12 @@ public class StudyGWASPlotPresenter
     protected void onBind() {
         super.onBind();
         setInSlot(TYPE_SetGWASPlotsContent, gwasPlotPresenterWidget);
+        registerHandler(getEventBus().addHandlerToSource(SelectSNPEvent.TYPE, gwasPlotPresenterWidget, new SelectSNPEvent.Handler() {
+            @Override
+            public void onSelectSNP(SelectSNPEvent event) {
+                getView().showSNPPopUp(studyId, event);
+            }
+        }));
     }
 
     @Override
