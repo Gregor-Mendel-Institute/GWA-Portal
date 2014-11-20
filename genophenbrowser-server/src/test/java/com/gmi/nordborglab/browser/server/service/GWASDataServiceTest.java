@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.server.service;
 
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.data.SNPGWASInfo;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.repository.GWASResultRepository;
@@ -28,9 +29,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class GWASDataServiceTest extends BaseTest {
@@ -67,6 +70,20 @@ public class GWASDataServiceTest extends BaseTest {
         assertNotNull("pvalues are null", data.getPvalues());
         assertEquals("Chr is incorred", "chr1", data.getChr());
         assertEquals("Size of positions is not equal to size of pvalues", data.getPositions().length, data.getPvalues().length);
+    }
+
+    @Test
+    public void testGetSNPGWASInfoByStudyId() {
+        SecurityUtils.setAnonymousUser();
+        SNPGWASInfo info = gwasDataService.getSNPGWASInfoByStudyId(156L, 2, 9581605);
+        assertNotNull(info);
+        assertThat(info.getPosition(), is(9581605));
+        assertThat(info.getChr(), is("Chr2"));
+        assertThat(info.getScore(), is(9.917914390563965));
+        assertThat(info.getNumberOfSNPs(), is(206087L));
+        assertThat(info.getBonferroniScore(), is(6.615080592943772));
+        assertThat(info.getMac(), is(47));
+        assertThat(info.getMaf(), is(0.28143712878227234));
     }
 
 
@@ -170,5 +187,4 @@ public class GWASDataServiceTest extends BaseTest {
         SecurityUtils.setAnonymousUser();
         gwasDataService.getGWASDataByStudyId(1L);
     }
-
 }

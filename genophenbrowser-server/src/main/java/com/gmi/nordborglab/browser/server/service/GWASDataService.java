@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.service;
 
 import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.data.SNPGWASInfo;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,9 @@ public interface GWASDataService {
 
     @PreAuthorize("hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
     public GWASData getGWASDataByStudyId(Long studyId, Double limit, boolean addAnnotation);
+
+    @PreAuthorize("hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
+    public SNPGWASInfo getSNPGWASInfoByStudyId(Long studyId, Integer chromosome, Integer position);
 
     @PreAuthorize("hasPermission(#gwasResultId,'com.gmi.nordborglab.browser.server.domain.util.GWASResult','READ')")
     public GWASData getGWASDataByViewerId(Long gwasResultId);

@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.server.service.impl;
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.data.GWASReader;
+import com.gmi.nordborglab.browser.server.data.SNPGWASInfo;
 import com.gmi.nordborglab.browser.server.data.csv.CSVGWASReader;
 import com.gmi.nordborglab.browser.server.data.hdf5.HDF5GWASReader;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
@@ -96,6 +97,13 @@ public class HDF5GWASDataService implements GWASDataService {
             gwasData = addAnnotation(gwasData);
         }
         return gwasData;
+    }
+
+    @Override
+    public SNPGWASInfo getSNPGWASInfoByStudyId(Long studyId, Integer chromosome, Integer position) {
+        TraitUom trait = traitUomRepository.findByStudyId(studyId);
+        GWASReader gwasReader = new HDF5GWASReader(GWAS_STUDY_FOLDER);
+        return gwasReader.readSingle(studyId + ".hdf5", chromosome, position);
     }
 
     @Override
@@ -224,6 +232,7 @@ public class HDF5GWASDataService implements GWASDataService {
     public String getHDF5StudyFile(Long id) {
         return GWAS_STUDY_FOLDER + id + ".hdf5";
     }
+
 
     private GWASResult updateStats(GWASResult gwasResult, Map<String, ChrGWAData> data) {
         float maxScore = 0;
