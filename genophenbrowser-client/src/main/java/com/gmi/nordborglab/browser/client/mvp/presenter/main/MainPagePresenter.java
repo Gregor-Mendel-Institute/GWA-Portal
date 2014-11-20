@@ -23,9 +23,9 @@ import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyStandard;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.Proxy;
 import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -148,7 +148,8 @@ public class MainPagePresenter extends
                 request.matchesNameToken(NameTokens.candidateGeneListDetail) ||
                 request.matchesNameToken(NameTokens.experimentsEnrichments) ||
                 request.matchesNameToken(NameTokens.phenotypeEnrichments) ||
-                request.matchesNameToken(NameTokens.studyEnrichments)
+                request.matchesNameToken(NameTokens.studyEnrichments) ||
+                request.matchesNameToken(NameTokens.snps)
                 )
             menu = MENU.DIVERSITY;
         else if (request.matchesNameToken(NameTokens.taxonomies) ||

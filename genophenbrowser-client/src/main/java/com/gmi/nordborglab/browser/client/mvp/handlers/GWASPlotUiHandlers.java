@@ -9,6 +9,7 @@ import com.gwtplatform.mvp.client.UiHandlers;
  * Time: 3:48 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface GWASPlotUiHandlers extends UiHandlers{
+public interface GWASPlotUiHandlers extends UiHandlers {
 
+    void onSelectSNP(int chromosome, int xVal, int clientX, int clientY);
 }

@@ -1,0 +1,102 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style type="com.gmi.nordborglab.browser.client.ui.SNPDetailPopup.MyStyle">
+
+        .popup {
+            margin-left: 10px;
+            -moz-user-select: none;
+            background: none repeat scroll 0 0 #FFFFFF;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            clip: auto !important;
+            padding: 1px;
+            z-index: 99;
+            font-size: 100%;
+            font-weight: bold;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .title {
+            padding: 8px 14px;
+            margin: 0;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 18px;
+            background-color: #f7f7f7;
+            border-bottom: 1px solid #ebebeb;
+            -webkit-border-radius: 5px 5px 0 0;
+            -moz-border-radius: 5px 5px 0 0;
+            border-radius: 5px 5px 0 0
+        }
+
+        .arrow {
+            position: absolute;
+            display: block;
+            width: 0;
+            height: 0;
+            border-color: transparent;
+            border-style: solid;
+            border-width: 11px;
+            top: 50%;
+            left: -11px;
+            margin-top: -11px;
+            border-right-color: #999;
+            border-right-color: rgba(0, 0, 0, 0.25);
+            border-left-width: 0
+        }
+
+        .arrow:after {
+            border-width: 10px;
+            content: "";
+            position: absolute;
+            display: block;
+            width: 0;
+            height: 0;
+            border-color: transparent;
+            border-style: solid;
+            bottom: -10px;
+            left: 1px;
+            border-right-color: #fff;
+            border-left-width: 0
+        }
+
+        .popup_content {
+
+        }
+
+        .popup_list {
+            list-style: none;
+            padding: 9px 14px;
+            margin: 0px;
+        }
+
+        .popup_list li {
+            margin-bottom: 5px;
+        }
+
+        .actionLink {
+
+        }
+    </ui:style>
+
+    <g:HTMLPanel addStyleNames="{style.popup_content}">
+        <div class="{style.arrow}"></div>
+        <h3 ui:field="snpInfo" class="{style.title}"></h3>
+        <ul class="{style.popup_list}">
+            <li>
+                <g:InlineHyperlink text="Detailed SNP Information" addStyleNames="{style.actionLink}"
+                                   ui:field="snpInfoLink"></g:InlineHyperlink>
+            </li>
+            <!--<li>
+                <g:Anchor ui:field="local_ld_link" text="Show LD in this region" addStyleNames="{style.actionLink}"></g:Anchor>
+            </li>
+            <li>
+                <g:Anchor ui:field="local_exact_ld_link" text="Calculate exact LD in this region" addStyleNames="{style.actionLink}"></g:Anchor>
+            </li>
+            <li>
+                <g:Anchor ui:field="global_ld_link" text="Highlight SNPs in LD for this SNP" addStyleNames="{style.actionLink}"></g:Anchor>
+            </li>-->
+        </ul>
+    </g:HTMLPanel>
+</ui:UiBinder>

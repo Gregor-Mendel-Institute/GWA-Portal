@@ -23,6 +23,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.Phen
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.StudyListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.PublicationDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.publication.PublicationOverviewPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.SNPDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyCandidateGeneListEnrichmentPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyGWASPlotPresenter;
@@ -74,6 +75,7 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.Phenotype
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.StudyListView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.publication.PublicationDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.publication.PublicationOverviewView;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.SNPDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyGWASPlotView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.study.StudyOverviewView;
@@ -267,6 +269,8 @@ public class ApplicationModule extends AbstractPresenterModule {
                 UserListPresenter.MyProxy.class);
 
         bindPresenter(GWASViewerPresenter.class, GWASViewerPresenter.MyView.class, GWASViewerView.class, GWASViewerPresenter.MyProxy.class);
+
+        bindPresenter(SNPDetailPresenter.class, SNPDetailPresenter.MyView.class, SNPDetailView.class, SNPDetailPresenter.MyProxy.class);
 
         bindPresenter(CandidateGeneListPresenter.class, CandidateGeneListPresenter.MyView.class, CandidateGeneListView.class, CandidateGeneListPresenter.MyProxy.class);
         bindPresenter(CandidateGeneListDetailPresenter.class, CandidateGeneListDetailPresenter.MyView.class, CandidateGeneListDetailView.class, CandidateGeneListDetailPresenter.MyProxy.class);

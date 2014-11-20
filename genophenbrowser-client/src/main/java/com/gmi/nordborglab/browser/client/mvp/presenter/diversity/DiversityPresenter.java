@@ -1,33 +1,28 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity;
 
-import java.util.List;
-
-
 import com.gmi.nordborglab.browser.client.events.GWASResultLoadedEvent;
 import com.gmi.nordborglab.browser.client.events.OntologyLoadedEvent;
-import com.gmi.nordborglab.browser.client.place.NameTokens;
-import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
-import com.gwtplatform.mvp.client.View;
 import com.gmi.nordborglab.browser.client.manager.HelperManager;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.SearchPresenter;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView.MENU_ITEM;
+import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.BreadcrumbItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
 import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.gwtplatform.mvp.client.Presenter;
+import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.Proxy;
-import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.DiversityView.MENU_ITEM;
-
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import java.util.List;
 
@@ -161,7 +156,8 @@ public class DiversityPresenter extends
         } else if (
                 request.matchesNameToken(NameTokens.study) ||
                         request.matchesNameToken(NameTokens.studygwas) ||
-                        request.matchesNameToken(NameTokens.studyEnrichments)) {
+                        request.matchesNameToken(NameTokens.studyEnrichments) ||
+                        request.matchesNameToken(NameTokens.snps)) {
             type = "study";
             title = "Analysis";
             subItem = null;

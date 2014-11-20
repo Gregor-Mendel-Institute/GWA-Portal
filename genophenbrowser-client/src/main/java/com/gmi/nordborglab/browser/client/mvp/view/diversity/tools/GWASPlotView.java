@@ -27,7 +27,7 @@ import java.util.List;
  * Time: 3:44 PM
  * To change this template use File | Settings | File Templates.
  */
-public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> implements GWASPlotPresenterWidget.MyView{
+public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> implements GWASPlotPresenterWidget.MyView {
 
     interface Binder extends UiBinder<Widget, GWASPlotView> {
 
@@ -90,23 +90,21 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
     public void drawGWASPlots(GWASDataDTO gwasData) {
         Integer i = 1;
         java.util.Iterator<DataTable> iterator = gwasData.getGwasDataTables().iterator();
-        while(iterator.hasNext())
-        {
-            GWASGeneViewer chart =null;
+        while (iterator.hasNext()) {
+            GWASGeneViewer chart = null;
             DataTable dataTable = iterator.next();
-            String[] color = new String[] {colors[i%colors.length]};
-            String gene_marker_color = gene_mark_colors[i%gene_mark_colors.length];
+            String[] color = new String[]{colors[i % colors.length]};
+            String gene_marker_color = gene_mark_colors[i % gene_mark_colors.length];
             if (gwasGeneViewers.size() >= i)
-                chart = gwasGeneViewers.get((i-1));
-            if (chart == null)
-            {
-                chart = new GWASGeneViewer("Chr"+i.toString(), color, gene_marker_color, geneDataSource,null);
+                chart = gwasGeneViewers.get((i - 1));
+            if (chart == null) {
+                chart = new GWASGeneViewer("Chr" + i.toString(), color, gene_marker_color, geneDataSource, null);
                 GWASFilterChangeHandler filterChangeHandler = new GWASFilterChangeHandler(chart);
                 chart.setFilterChangeHandler(filterChangeHandler);
                 filterChangeHandlers.add(filterChangeHandler);
                 gwasGeneViewers.add(chart);
                 chart.setGeneInfoUrl("http://arabidopsis.org/servlets/TairObject?name={0}&type=gene");
-                container.add((IsWidget)chart);
+                container.add((IsWidget) chart);
                 chart.addSelectionHandler(new SelectHandler() {
 
                     @Override
@@ -115,22 +113,19 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
                         Event mouseEvent = event.event;
                         String id = event.id;
                         int chromosome;
-                        try
-                        {
+                        try {
                             chromosome = Integer.parseInt(id);
+                        } catch (Exception e) {
+                            chromosome = Integer.parseInt(id.charAt(3) + "");
                         }
-                        catch (Exception e)
-                        {
-                            chromosome =Integer.parseInt(id.charAt(3)+"");
-                        }
-                        //getUiHandlers().onSelectSNP(chromosome,(int)point.getXVal(),mouseEvent.getClientX(),mouseEvent.getClientY());
+                        getUiHandlers().onSelectSNP(chromosome, (int) point.getXVal(), mouseEvent.getClientX(), mouseEvent.getClientY());
                     }
 
                 });
             }
             chart.clearDisplayGenes();
             chart.clearSelection();
-            chart.draw(dataTable,gwasData.getMaxScore(),0,gwasData.getChrLengths().get(i-1),gwasData.getBonferroniThreshold());
+            chart.draw(dataTable, gwasData.getMaxScore(), 0, gwasData.getChrLengths().get(i - 1), gwasData.getBonferroniThreshold());
             chart.onResize();
             i++;
         }

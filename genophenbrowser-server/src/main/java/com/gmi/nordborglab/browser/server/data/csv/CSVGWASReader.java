@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.server.data.csv;
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.data.GWASReader;
+import com.gmi.nordborglab.browser.server.data.SNPGWASInfo;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
 import com.google.common.primitives.Ints;
@@ -151,5 +152,10 @@ public class CSVGWASReader implements GWASReader {
     @Override
     public void saveGWASDataToFile(Map<String, ChrGWAData> data, File destFile) throws Exception {
         throw new Exception("not supported");
+    }
+
+    @Override
+    public SNPGWASInfo readSingle(String file, Integer chromosome, Integer position) {
+        throw new RuntimeException("Not supported");
     }
 }

@@ -1,9 +1,12 @@
 package com.gmi.nordborglab.browser.shared.service;
 
+import com.gmi.nordborglab.browser.shared.proxy.SNPAlleleInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServiceName;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,4 +20,6 @@ import com.google.web.bindery.requestfactory.shared.ServiceName;
 public interface AnnotationDataRequest extends RequestContext {
 
     Request<GeneProxy> getGeneById(String id);
+
+    Request<SNPAlleleInfoProxy> getSNPAlleleInfo(Long alelleAssayId,Integer chromosome,Integer position,List<Long> passportIds);
 }

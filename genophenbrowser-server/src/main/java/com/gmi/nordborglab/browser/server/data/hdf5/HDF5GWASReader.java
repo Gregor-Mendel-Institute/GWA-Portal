@@ -8,9 +8,13 @@ import ch.systemsx.cisd.hdf5.IHDF5Writer;
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.data.GWASReader;
+import com.gmi.nordborglab.browser.server.data.SNPGWASInfo;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +23,51 @@ public class HDF5GWASReader implements GWASReader {
 
     private final String dataFolder;
     private static String pValueGroup = "/pvalues/";
+
+    private static class GWASStats  {
+        protected final long numberOfSNPs;
+        protected final double bonferroniScore;
+        protected final float maxScore;
+
+        private GWASStats(long numberOfSNPs,double bonferroniScore, float maxScore) {
+            this.numberOfSNPs = numberOfSNPs;
+            this.bonferroniScore = bonferroniScore;
+            this.maxScore = maxScore;
+        }
+
+        public static GWASStats read(IHDF5Reader reader) {
+            long numberOfSNPs = 0;
+            if (reader.hasAttribute(pValueGroup, "numberOfSNPs")) {
+                numberOfSNPs = reader.getLongAttribute(pValueGroup, "numberOfSNPs");
+            }
+            else {
+                numberOfSNPs = getNumberOfSNPsFromDatasets(reader);
+            }
+            double bonferroniScore = 6;
+            if (reader.hasAttribute(pValueGroup, "bonferroniScore")) {
+                bonferroniScore = reader.getDoubleAttribute(pValueGroup, "bonferroniScore");
+            } else if (reader.hasAttribute(pValueGroup, "bonferroni_threshold")) {
+                bonferroniScore = reader.getDoubleAttribute(pValueGroup, "bonferroni_threshold");
+            }
+            float maxScore = 10;
+            if (reader.hasAttribute(pValueGroup, "maxScore")) {
+                maxScore = reader.getFloatAttribute(pValueGroup, "maxScore");
+            } else if (reader.hasAttribute(pValueGroup, "max_score")) {
+                maxScore = reader.getFloatAttribute(pValueGroup, "max_score");
+            }
+            return new GWASStats(numberOfSNPs,bonferroniScore,maxScore);
+        }
+
+        private static long getNumberOfSNPsFromDatasets(IHDF5Reader reader) {
+            ImmutableSet<String> chromosomes = ImmutableSet.<String>builder().add("chr1","chr2","chr3","chr4","chr5").build();
+            long numberOfSNPs = 0;
+            for (String chr : chromosomes)   {
+                HDF5DataSetInformation info = reader.getDataSetInformation( pValueGroup+chr + "/positions");
+                numberOfSNPs = numberOfSNPs + info.getNumberOfElements();
+            }
+            return numberOfSNPs;
+        }
+    }
 
     public HDF5GWASReader(String dataFolder) {
         this.dataFolder = dataFolder;
@@ -37,26 +86,14 @@ public class HDF5GWASReader implements GWASReader {
         IHDF5Reader reader = getReader(file);
         GWASData gwasData;
         Map<String, ChrGWAData> data = readAll(reader, limit);
-        long numberOfSNPs = 0;
-        if (reader.hasAttribute(pValueGroup, "numberOfSNPs")) {
-            numberOfSNPs = reader.getLongAttribute(pValueGroup, "numberOfSNPs");
-        }
-        double bonferroniScore = 6;
-        if (reader.hasAttribute(pValueGroup, "bonferroniScore")) {
-            bonferroniScore = reader.getDoubleAttribute(pValueGroup, "bonferroniScore");
-        } else if (reader.hasAttribute(pValueGroup, "bonferroni_threshold")) {
-            bonferroniScore = reader.getDoubleAttribute(pValueGroup, "bonferroni_threshold");
-        }
-        float maxScore = 10;
-        if (reader.hasAttribute(pValueGroup, "maxScore")) {
-            maxScore = reader.getFloatAttribute(pValueGroup, "maxScore");
-        } else if (reader.hasAttribute(pValueGroup, "max_score")) {
-            maxScore = reader.getFloatAttribute(pValueGroup, "max_score");
-        }
-        gwasData = new GWASData(data, numberOfSNPs, bonferroniScore, maxScore);
+
+        GWASStats stats = GWASStats.read(reader);
+
+        gwasData = new GWASData(data, stats.numberOfSNPs, stats.bonferroniScore, stats.maxScore);
         reader.close();
         return gwasData;
     }
+
 
     protected Map<String, ChrGWAData> readAll(IHDF5Reader reader, Double limit) {
         List<String> members = reader.getGroupMembers(pValueGroup);
@@ -170,6 +207,48 @@ public class HDF5GWASReader implements GWASReader {
                 writer.close();
         }
     }
+
+    @Override
+    public SNPGWASInfo readSingle(String file, Integer chromosome, Integer position) {
+        SNPGWASInfo gwasInfo = null;
+        //find position index
+        IHDF5Reader reader = getReader(file);
+        GWASStats stats = GWASStats.read(reader);
+
+        String path = pValueGroup + "chr"+chromosome;
+        final int[] positions = reader.readIntArray(path + "/positions");
+        Integer[] idx = new Integer[positions.length];
+        for (int i = 0; i < idx.length; i++) idx[i] = i;
+        Arrays.sort(idx, new Comparator<Integer>() {
+            public int compare(Integer i1, Integer i2) {
+                return Float.compare(positions[i1], positions[i2]);
+            }
+        });
+        Arrays.sort(positions);
+        int ix = idx[Arrays.binarySearch(positions, position)];
+        float maf = 0;
+        int mac = 0;
+        float score =  reader.readFloatArrayBlockWithOffset(path+"/scores",1,ix)[0];
+        float GVE = 0;
+        if (reader.isDataSet(path + "/macs")) {
+            mac = reader.readIntArrayBlockWithOffset(path + "/macs", 1, ix)[0];
+        }
+        if (reader.isDataSet(path + "/mafs")) {
+            maf = reader.readFloatArrayBlockWithOffset(path + "/mafs", 1, ix)[0];
+        }
+        if (reader.isDataSet(path + "/GVEs")) {
+            GVE = reader.readFloatArrayBlockWithOffset(path + "/GVEs", 1, ix)[0];
+        }
+
+        gwasInfo = new SNPGWASInfo("Chr"+chromosome,position,score,(int)stats.numberOfSNPs,mac,maf,GVE,stats.bonferroniScore,stats.maxScore);
+
+        reader.close();
+
+        return gwasInfo;
+
+    }
+
+
 
 
     protected ChrGWAData getForChr(IHDF5Reader reader, String chr, Double limit) {

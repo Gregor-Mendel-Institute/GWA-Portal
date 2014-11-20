@@ -50,6 +50,8 @@ public interface MainResources extends ClientBundle {
         String plant_icon();
 
         String loader();
+
+        String tablechart();
     }
 
     @Source("images/transplant_logo_small.png")
@@ -77,7 +79,7 @@ public interface MainResources extends ClientBundle {
     @Source("images/profile.png")
     ImageResource profile();
 
-    @Source("images/piechart.jpg")
+    @Source("images/piechart.png")
     ImageResource piechart();
 
     @Source("images/earth.png")
@@ -88,6 +90,9 @@ public interface MainResources extends ClientBundle {
 
     @Source("images/columnchart.png")
     ImageResource columnchart();
+
+    @Source("images/table.png")
+    ImageResource tablechart();
 
     @Source("images/plant1.png")
     ImageResource plant1();

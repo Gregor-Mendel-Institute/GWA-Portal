@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.shared.service;
 
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SNPGWASInfoProxy;
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServiceName;
@@ -24,4 +25,6 @@ public interface GWASDataRequest extends RequestContext {
     Request<GWASResultProxy> findOneGWASResult(Long id);
 
     Request<GWASResultProxy> save(GWASResultProxy object);
+
+    Request<SNPGWASInfoProxy> getSNPGWASInfoByStudyId(Long studyId, Integer chromosome, Integer position);
 }
