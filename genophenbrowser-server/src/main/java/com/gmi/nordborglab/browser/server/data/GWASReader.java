@@ -13,4 +13,7 @@ public interface GWASReader {
     public Map<String, ChrGWAData> parseGWASDataFromFile(File originalFile) throws Exception;
 
     public void saveGWASDataToFile(Map<String, ChrGWAData> data, File destFile) throws Exception;
+
+    SNPGWASInfo readSingle(String file, Integer chromosome, Integer position);
+
 }
