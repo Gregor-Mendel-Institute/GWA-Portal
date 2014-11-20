@@ -29,9 +29,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <mavenVersion>3.0</mavenVersion>
         <guava.version>18.0</guava.version>
-        <gwt.version>2.7.0-beta1</gwt.version>
+        <gwt.version>2.7.0</gwt.version>
         <junit.version>4.11</junit.version>
-        <mockito.version>1.9.5</mockito.version>
+        <mockito.version>1.10.8</mockito.version>
         <hibernate-validator.version>5.1.2.Final</hibernate-validator.version>
         <javax.validation.version>1.1.0.Final</javax.validation.version>
         <slf4j.version>1.7.7</slf4j.version>
@@ -51,7 +51,7 @@
         <maven.tomcat6.plugin>2.1</maven.tomcat6.plugin>
         <maven.tomcat7.plugin>2.1</maven.tomcat7.plugin>
         <maven.build-helper.plugin>1.8</maven.build-helper.plugin>
-        <maven.gwt.plugin>2.7.0-beta1</maven.gwt.plugin>
+        <maven.gwt.plugin>2.7.0</maven.gwt.plugin>
         <maven.exec.plugin>1.2.1</maven.exec.plugin>
         <maven.apt.plugin>1.1.1</maven.apt.plugin>
         <maven.release.plugin>2.4.1</maven.release.plugin>
