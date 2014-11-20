@@ -1,8 +1,11 @@
 package com.gmi.nordborglab.browser.server.service;
 
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPAlleleInfo;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import com.google.common.collect.Lists;
+import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,8 +13,11 @@ import org.junit.Test;
 import javax.annotation.Resource;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,6 +60,29 @@ public class ESAnnotationDataServiceTest extends BaseTest {
         assertEquals(23971, gene.getStart());
         assertEquals(26923, gene.getEnd());
         assertEquals(0, gene.getStrand());
+    }
+
+    @Test
+    public void testGetSNPAlleleInfoForAllPassports() {
+        SNPAlleleInfo info = annotationDataService.getSNPAlleleInfo(1L, 1, 4880, null);
+        assertThat("null returned", info, Is.is(notNullValue()));
+        assertThat("wrong number of elements", info.getAlleles().size(), is(1386));
+        checkSNPInfo(info.getSnpAnnot());
+    }
+
+    @Test
+    public void testGetSNPAlleleInfo() {
+        List<Long> passportIds = Lists.asList(new Long(7000), new Long(8320L), null);
+        SNPAlleleInfo info = annotationDataService.getSNPAlleleInfo(1L, 1, 4880, passportIds);
+        assertThat("null returned", info, Is.is(notNullValue()));
+        assertThat("wrong number of elements", info.getAlleles().size(), is(2));
+        checkSNPInfo(info.getSnpAnnot());
+    }
+
+    private void checkSNPInfo(SNPAnnot snpAnnot) {
+        assertThat(snpAnnot.getAnnotation(), is("S"));
+        assertThat(snpAnnot.getRef(), is("C"));
+        assertThat(snpAnnot.getAlt(), is("T"));
     }
 
 }

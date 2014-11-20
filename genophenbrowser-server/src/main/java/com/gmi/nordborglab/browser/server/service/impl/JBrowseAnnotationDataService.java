@@ -9,6 +9,7 @@ import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.annotation.GeneAnnotation;
 import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
 import com.gmi.nordborglab.browser.server.data.annotation.JBrowseChrTrackData;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPAlleleInfo;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
 import com.gmi.nordborglab.browser.server.data.annotation.nclist.HistogramMeta;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
@@ -114,6 +115,11 @@ public class JBrowseAnnotationDataService implements AnnotationDataService {
         } else {
         }
         return table;
+    }
+
+    @Override
+    public SNPAlleleInfo getSNPAlleleInfo(Long alleleAssayId, Integer chromosome, Integer position, List<Long> passportIds) {
+        throw new RuntimeException("not supported");
     }
 
     private JBrowseChrTrackData getJBrowseChrTrackData(String chr) {

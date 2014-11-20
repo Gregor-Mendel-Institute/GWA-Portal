@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.server.service;
 
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPAlleleInfo;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
 import com.google.visualization.datasource.datatable.DataTable;
 
@@ -27,4 +28,7 @@ public interface AnnotationDataService {
     Gene getGeneById(String gene);
 
     DataTable getGenomeStatData(String stats, String chr);
+
+    SNPAlleleInfo getSNPAlleleInfo(Long alleleAssayId, Integer chromosome, Integer position, List<Long> passportIds);
+
 }
