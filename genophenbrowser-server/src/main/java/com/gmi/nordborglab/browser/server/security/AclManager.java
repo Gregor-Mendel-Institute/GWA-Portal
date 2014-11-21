@@ -8,6 +8,7 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
@@ -20,10 +21,10 @@ import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import javax.swing.text.html.parser.Entity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,17 @@ public class AclManager {
     @Resource
     protected UserRepository userRepository;
 
+    @Resource
+    private PermissionEvaluator permissionEvaluator;
+
+
+    public <T extends SecureEntity> boolean hasPermission(Authentication user, T entity, String permission) {
+        return permissionEvaluator.hasPermission(user, entity, permission);
+    }
+
+    public <T extends SecureEntity> boolean hasPermission(Authentication user, T entity, Permission permission) {
+        return permissionEvaluator.hasPermission(user, entity, permission);
+    }
 
     public <T extends SecureEntity> Map<ObjectIdentity, Acl> getAcls(Iterable<T> entities) {
         FluentIterable<T> filtered = FluentIterable.from(entities);

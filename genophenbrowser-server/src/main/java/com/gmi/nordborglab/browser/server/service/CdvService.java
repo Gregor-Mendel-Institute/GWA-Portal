@@ -31,6 +31,8 @@ public interface CdvService {
     @PreAuthorize("hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
     public List<Trait> findTraitValues(Long studyId);
 
+    @PostFilter("hasPermission(filterObject,'READ') and hasPermission(filterObject,'USE')")
+    @PreAuthorize("hasPermission(#phenotypeId,'com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom','READ')")
     public List<AlleleAssay> findAlleleAssaysWithStats(Long phenotypeId, Long statisticTypeId);
 
     @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','EDIT') or hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','ADMINISTRATION'))")
