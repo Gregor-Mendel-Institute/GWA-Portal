@@ -5,6 +5,8 @@ import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.repository.AlleleAssayRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitRepository;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
@@ -49,6 +51,9 @@ public class CdvServiceTest extends BaseTest {
 
     @Resource
     private MutableAclService aclService;
+
+    @Resource
+    private AlleleAssayRepository alleleAssayRepository;
 
     @Before
     public void setUp() {
@@ -99,6 +104,8 @@ public class CdvServiceTest extends BaseTest {
         study.setName("test");
         Set<Trait> traits = new HashSet<Trait>();
         Trait trait = traitRepository.findOne(1L);
+        AlleleAssay alleleAssay = alleleAssayRepository.findOne(1L);
+        study.setAlleleAssay(alleleAssay);
         traits.add(trait);
         study.setTraits(traits);
         study = service.saveStudy(study);
@@ -117,6 +124,16 @@ public class CdvServiceTest extends BaseTest {
         Study study = new Study();
         study.setName("test");
         study = service.saveStudy(study);
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testSaveStudyAccessDeniedWhenNoAccessToAlleleAssay() {
+        Collection<? extends GrantedAuthority> userAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_USER")).asList();
+        SecurityUtils.makeActiveUser("TEST", "TEST", userAuthorities);
+        Study study = new Study();
+        AlleleAssay alleleAssay = alleleAssayRepository.findOne(3L);
+        study.setAlleleAssay(alleleAssay);
+        service.saveStudy(study);
     }
 
 
@@ -157,12 +174,53 @@ public class CdvServiceTest extends BaseTest {
     public void tesFindAlleleAssayWithStats() {
         List<AlleleAssay> alleleAssays = service.findAlleleAssaysWithStats(1L, 2L);
         assertNotNull(alleleAssays);
-        assertEquals(2, alleleAssays.size());
+        assertEquals(3, alleleAssays.size());
         assertEquals(167, alleleAssays.get(0).getAvailableAllelesCount());
         assertEquals(167, alleleAssays.get(0).getTraitValuesCount());
         assertEquals(0, alleleAssays.get(1).getAvailableAllelesCount());
         assertEquals(167, alleleAssays.get(1).getTraitValuesCount());
     }
+
+
+    @Test
+    public void tesFindAlleleAssayWithAsAdmin() {
+        Collection<? extends GrantedAuthority> userAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
+        SecurityUtils.makeActiveUser("TEST", "TEST", userAuthorities);
+        List<AlleleAssay> alleleAssays = service.findAlleleAssaysWithStats(1L, 2L);
+        assertNotNull(alleleAssays);
+        assertEquals(5, alleleAssays.size());
+    }
+
+    @Test
+    public void tesFindAlleleAssayWithStatsCorrectlyFiltered() {
+        Collection<? extends GrantedAuthority> userAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_USER")).asList();
+        SecurityUtils.makeActiveUser("TEST", "TEST", userAuthorities);
+        List<AlleleAssay> alleleAssays = service.findAlleleAssaysWithStats(1L, 2L);
+        assertNotNull(alleleAssays);
+        assertEquals(
+                4, alleleAssays.size());
+    }
+
+
+    @Test(expected = AccessDeniedException.class)
+    public void tesFindAlleleAssayWithStatsAccessDenied() {
+        Collection<? extends GrantedAuthority> adminAuthorities = ImmutableList.of(new SimpleGrantedAuthority("ROLE_ADMIN")).asList();
+        SecurityUtils.makeActiveUser("TEST", "TEST", adminAuthorities);
+        ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class, 1L);
+        List<Sid> authorities = Collections.singletonList((Sid) new GrantedAuthoritySid("ROLE_ANONYMOUS"));
+        MutableAcl acl = (MutableAcl) aclService.readAclById(oid, authorities).getParentAcl();
+
+        for (int i = 0; i < acl.getEntries().size(); i++) {
+            if (acl.getEntries().get(i).getSid().equals(authorities.get(0))) {
+                acl.deleteAce(i);
+                break;
+            }
+        }
+        aclService.updateAcl(acl);
+        SecurityUtils.setAnonymousUser();
+        service.findAlleleAssaysWithStats(1L, 2L);
+    }
+
 
     @Test(expected = AccessDeniedException.class)
     public void testFindStudiesByPhenotypeIdAccessedDenied() {

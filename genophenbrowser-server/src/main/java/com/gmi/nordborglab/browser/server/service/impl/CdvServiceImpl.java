@@ -48,6 +48,7 @@ import org.elasticsearch.search.facet.filter.FilterFacet;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.CumulativePermission;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
@@ -145,6 +146,13 @@ public class CdvServiceImpl implements CdvService {
         if (study.getJob() != null && study.getJob().getAppUser() == null) {
             AppUser appUser = userRepository.findOne(Long.parseLong(SecurityUtil.getUsername()));
             study.getJob().setAppUser(appUser);
+        }
+
+        // check if alleleAssay can be used
+        if (isNewRecord) {
+            if (!aclManager.hasPermission(SecurityUtil.getAuthentication(), study.getAlleleAssay(), CustomPermission.USE)) {
+                throw new AccessDeniedException("No access");
+            }
         }
         study = studyRepository.save(study);
         Long traitUomId = Iterables.get(study.getTraits(), 0).getTraitUom().getId();

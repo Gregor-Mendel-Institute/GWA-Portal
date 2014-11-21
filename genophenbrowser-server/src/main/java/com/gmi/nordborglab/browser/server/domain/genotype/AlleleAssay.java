@@ -1,6 +1,6 @@
 package com.gmi.nordborglab.browser.server.domain.genotype;
 
-import com.gmi.nordborglab.browser.server.domain.BaseEntity;
+import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 
 import javax.persistence.AttributeOverride;
@@ -22,7 +22,7 @@ import java.util.List;
 @Table(name = "div_allele_assay", schema = "genotype")
 @AttributeOverride(name = "id", column = @Column(name = "div_allele_assay_id"))
 @SequenceGenerator(name = "idSequence", sequenceName = "genotype.div_allele_assay_div_allele_assay_id_seq", allocationSize = 1)
-public class AlleleAssay extends BaseEntity {
+public class AlleleAssay extends SecureEntity {
 
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -129,4 +129,13 @@ public class AlleleAssay extends BaseEntity {
         return Collections.unmodifiableList(studies);
     }
 
+    @Override
+    public String getIndexType() {
+        return null;
+    }
+
+    @Override
+    public String getRouting() {
+        return null;
+    }
 }

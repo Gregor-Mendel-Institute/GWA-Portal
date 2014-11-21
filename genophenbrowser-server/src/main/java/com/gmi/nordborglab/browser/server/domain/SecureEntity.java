@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.server.domain;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
 /**
@@ -12,6 +13,8 @@ import javax.persistence.Transient;
  * Time: 1:07 PM
  * To change this template use File | Settings | File Templates.
  */
+
+@MappedSuperclass
 public abstract class SecureEntity extends BaseEntity {
 
     @Transient
