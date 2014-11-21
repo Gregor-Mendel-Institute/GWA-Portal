@@ -102,7 +102,7 @@ public interface SNPDetailDataGridColumns {
 
 
         public RowIDColumn() {
-            super(new NumberCell());
+            super(new NumberCell(NumberFormat.getFormat(NumberFormat.getDecimalFormat().getPattern()).overrideFractionDigits(0)));
         }
 
         @Override

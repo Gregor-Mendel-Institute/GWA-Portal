@@ -29,8 +29,8 @@ import com.googlecode.gwt.charts.client.RoleType;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -220,7 +220,7 @@ public class DataTableUtils {
         return dataTable;
     }
 
-    public static DataTable createSNPAllelePhenotypeTable(List<SNPAllele> snpAlleles) {
+    public static DataTable createSNPAllelePhenotypeTable(Collection<SNPAllele> snpAlleles) {
         DataTable dataTable = getDataTableForSNPAllelePhenotypeTable();
         if (snpAlleles != null) {
             dataTable.addRows(snpAlleles.size());
@@ -241,7 +241,7 @@ public class DataTableUtils {
         return dataTable;
     }
 
-    public static ImmutableMultimap<String, SNPAllele> getAlleleToPhenotype(List<SNPAllele> snpAlleles) {
+    public static ImmutableMultimap<String, SNPAllele> getAlleleToPhenotype(Collection<SNPAllele> snpAlleles) {
         return Multimaps.index(snpAlleles, new Function<SNPAllele, String>() {
             @Nullable
             @Override
@@ -282,16 +282,18 @@ public class DataTableUtils {
             int startix = i * 4;
             //dataTable.setValue(i,0,allele);
             String[] value = stats.get(allele);
-            dataTable.setValue(i, startix + 1, value[0]);
-            dataTable.setValue(i, startix + 2, value[1]);
-            dataTable.setValue(i, startix + 3, value[2]);
-            dataTable.setValue(i, startix + 4, value[3]);
+            if (value != null) {
+                dataTable.setValue(i, startix + 1, value[0]);
+                dataTable.setValue(i, startix + 2, value[1]);
+                dataTable.setValue(i, startix + 3, value[2]);
+                dataTable.setValue(i, startix + 4, value[3]);
+            }
             i = i + 1;
         }
         return dataTable;
     }
 
-    public static com.googlecode.gwt.charts.client.DataTable createSNPAllelePhenotypeForStripChartTable(List<SNPAllele> snpAlleles, SNPAnnotProxy alleleInfo) {
+    public static com.googlecode.gwt.charts.client.DataTable createSNPAllelePhenotypeForStripChartTable(Collection<SNPAllele> snpAlleles, SNPAnnotProxy alleleInfo) {
         String allele1 = alleleInfo.getRef();
         String allele2 = alleleInfo.getAlt();
         com.googlecode.gwt.charts.client.DataTable dataTable = com.googlecode.gwt.charts.client.DataTable.create();
@@ -303,9 +305,9 @@ public class DataTableUtils {
         NumberFormat df = NumberFormat.getDecimalFormat();
         df.overrideFractionDigits(4);
         int jitter = 1;
-        for (int i = 0; i < snpAlleles.size(); i++) {
+        int i = 0;
+        for (SNPAllele allele : snpAlleles) {
             dataTable.addRow();
-            SNPAllele allele = snpAlleles.get(i);
             Double value = Double.valueOf(allele.getPhenotype());
             double random = Random.nextDouble();
             Double xValue = null;
@@ -320,6 +322,7 @@ public class DataTableUtils {
                 dataTable.setValue(i, 4, df.format(value));
             }
             dataTable.setValue(i, 0, xValue);
+            i = i + 1;
         }
         return dataTable;
     }
