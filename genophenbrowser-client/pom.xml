@@ -18,9 +18,6 @@
 
     <properties>
         <gwt.module>com.gmi.nordborglab.browser.Browser</gwt.module>
-        <gwt.draftCompile>false</gwt.draftCompile>
-        <gwt.incremental>false</gwt.incremental>
-        <gwt.style>OBF</gwt.style>
         <gwt.genParam>false</gwt.genParam>
         <!-- keep in sync with genophenbrowser-server -->
         <runTarget>http://localhost:8080/</runTarget>
@@ -339,10 +336,7 @@
                 <artifactId>gwt-maven-plugin</artifactId>
                 <configuration>
                     <module>${gwt.module}</module>
-                    <failOnError>true</failOnError>
-                    <draftCompile>${gwt.draftCompile}</draftCompile>
-                    <compilePerFile>${gwt.incremental}</compilePerFile>
-                    <style>${gwt.style}</style>
+                    <strict>true</strict>
                     <genParam>${gwt.genParam}</genParam>
                     <noserver>true</noserver>
                     <runTarget>${runTarget}</runTarget>
@@ -382,20 +376,6 @@
 
     <profiles>
         <profile>
-            <id>draft</id>
-            <activation>
-                <property>
-                    <name>draft</name>
-                </property>
-            </activation>
-            <properties>
-                <gwt.module>com.gmi.nordborglab.browser.Browser_dev</gwt.module>
-                <gwt.incremental>true</gwt.incremental>
-                <gwt.draftCompile>true</gwt.draftCompile>
-                <gwt.style>PRETTY</gwt.style>
-            </properties>
-        </profile>
-        <profile>
             <id>dev</id>
             <activation>
                 <property>
@@ -411,19 +391,19 @@
                         <executions>
                             <execution>
                                 <id>add-shared-sources-to-classpath</id>
-                                <!-- After 'process-resources' so they're not copied to ${project.build.outputDirectory} -->
-                                <!-- But before 'compile' to make them available to 'gwt:run' -->
-                                <phase>compile</phase>
+                                <!-- After 'compile' so they're not compiled to ${project.build.outputDirectory} -->
+                                <!-- But before 'process-classes' to make them available to 'gwt:run' -->
+                                <!-- Use add-source because gwt-maven-plugin adds sources to the classpath, not resources. -->
+                                <phase>process-classes</phase>
                                 <goals>
-                                    <goal>add-resource</goal>
+                                    <goal>add-source</goal>
                                 </goals>
                                 <configuration>
-                                    <resources>
-                                        <!-- Only sources, resources are already in the classpath, by definition -->
-                                        <resource>
-                                            <directory>${basedir}/../genophenbrowser-shared/src/main/java</directory>
-                                        </resource>
-                                    </resources>
+                                    <sources>
+                                        <!-- Only sources, resources come from target/classes (to support filtering) -->
+                                        <source>${basedir}/../genophenbrowser-shared/src/main/java</source>
+                                        <source>${basedir}/../genophenbrowser-shared/target/classes</source>
+                                    </sources>
                                 </configuration>
                             </execution>
                         </executions>
