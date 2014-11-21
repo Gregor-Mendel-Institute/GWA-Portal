@@ -55,6 +55,8 @@ public class SNPDetailPresenter extends Presenter<SNPDetailPresenter.MyView, SNP
         void setPhenotypeRange(Range<Double> valueRange);
 
         void displayAlleInfo(SNPAnnotProxy snpAnnot);
+
+        void setList(List<SNPAllele> snpAlleles);
     }
     @ContentSlot
     public static final Type<RevealContentHandler<?>> SLOT_SNPDetailView = new Type<RevealContentHandler<?>>();
@@ -156,6 +158,7 @@ public class SNPDetailPresenter extends Presenter<SNPDetailPresenter.MyView, SNP
         double minValue = Double.valueOf(snpOrdering.min(snpAlleles).getPhenotype());
         getView().setPhenotypeRange(Range.closed(minValue, maxValue));
         dataProvider.setList(snpAlleles);
+        getView().setList(dataProvider.getList());
         Integer score = 0;
         getView().displayAlleInfo(alleleInfo.getSnpAnnot());
         getView().setExplorerData(snpAlleles);

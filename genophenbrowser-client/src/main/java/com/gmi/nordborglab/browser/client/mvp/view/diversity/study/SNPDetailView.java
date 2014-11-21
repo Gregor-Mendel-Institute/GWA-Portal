@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.study;
 
+import com.github.gwtbootstrap.client.ui.ListBox;
 import com.gmi.nordborglab.browser.client.dto.SNPAllele;
 import com.gmi.nordborglab.browser.client.mvp.handlers.SNPDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.SNPDetailPresenter;
@@ -10,9 +11,16 @@ import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.SNPAnnotProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPGWASInfoProxy;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
+import com.google.common.primitives.Doubles;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
@@ -20,16 +28,21 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HRElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.layout.client.Layout;
 import com.google.gwt.query.client.GQuery;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.cellview.client.TextHeader;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
@@ -53,7 +66,9 @@ import com.googlecode.gwt.charts.client.options.VAxis;
 import com.googlecode.gwt.charts.client.options.ViewWindowMode;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.google.gwt.query.client.GQuery.$;
@@ -147,7 +162,9 @@ public class SNPDetailView
     @UiField
     SpanElement altAlleleLb;
     private LayoutPanel boxPlotStripContainer = new LayoutPanel();
-
+    private FlowPanel countryContainer = new FlowPanel();
+    private ListBox countryFilter = new ListBox();
+    private List<SNPAllele> snpAlleles;
 
     SNPAnnotProxy alleleInfo;
     private com.googlecode.gwt.charts.client.DataTable stripChartData;
@@ -169,6 +186,7 @@ public class SNPDetailView
     private boolean resizeRefAllele = false;
     private double refMeanValue;
     private double altMeanValue;
+    private ColumnSortEvent.ListHandler<SNPAllele> sortHandler = new ColumnSortEvent.ListHandler<>(null);
 
     private static final String COLOR_REF = "#3366cc";
     private static final String COLOR_ALT = "#dc3912";
@@ -206,9 +224,23 @@ public class SNPDetailView
                 drawStripMeanLines();
             }
         });
+        countryContainer.add(countryFilter);
+        boxPlotStripContainer.add(countryContainer);
+        boxPlotStripContainer.setWidgetVerticalPosition(countryContainer, Layout.Alignment.BEGIN);
+        countryFilter.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent changeEvent) {
+                filterChartData();
+                candlestickChart.draw(boxPlotData, createCandleStickOptions());
+                stripChart.draw(stripChartData, createStripChartOptions());
+            }
+        });
+
     }
 
+
     private void initDataGrid(FlagMap flagMap) {
+
         alleleDataGrid.setWidth("100%");
         alleleDataGrid.setMinimumTableWidth(1000, Style.Unit.PX);
         alleleDataGrid.setEmptyTableWidget(new Label("No Records found"));
@@ -220,6 +252,15 @@ public class SNPDetailView
         cells.add(phenotypeBarHasCell);
         cells.add(new SNPDetailDataGridColumns.PhenotypeHasCell());
         alleleDataGrid.addColumn(new IdentityColumn<SNPAllele>(new SNPDetailDataGridColumns.PhenotypeCell(cells)), new TextHeader("Phenotype"));
+        alleleDataGrid.getColumn(3).setSortable(true);
+        sortHandler.setComparator(alleleDataGrid.getColumn(3), new Comparator<SNPAllele>() {
+            @Override
+            public int compare(SNPAllele o1, SNPAllele o2) {
+                Double v1 = Double.valueOf(o1.getPhenotype());
+                Double v2 = Double.valueOf(o2.getPhenotype());
+                return Doubles.compare(v1, v2);
+            }
+        });
         alleleDataGrid.addColumn(new SNPDetailDataGridColumns.LongitudeColumn(), "Lon");
         alleleDataGrid.setColumnWidth(4, 80, Style.Unit.PX);
         alleleDataGrid.addColumn(new SNPDetailDataGridColumns.LatitudeColumn(), "Lat");
@@ -228,6 +269,22 @@ public class SNPDetailView
         alleleDataGrid.setColumnWidth(6, 80, Style.Unit.PX);
         alleleDataGrid.addColumn(new SNPDetailDataGridColumns.AlleleColumn(), "Allele");
         alleleDataGrid.setColumnWidth(7, 60, Style.Unit.PX);
+        alleleDataGrid.getColumn(7).setSortable(true);
+        sortHandler.setComparator(alleleDataGrid.getColumn(7), new Comparator<SNPAllele>() {
+            @Override
+            public int compare(SNPAllele o1, SNPAllele o2) {
+                if (o1 == o2) {
+                    return 0;
+                }
+
+                // Compare the name columns.
+                if (o1 != null) {
+                    return (o2 != null) ? o1.getAllele().compareTo(o2.getAllele()) : 1;
+                }
+                return -1;
+            }
+        });
+        alleleDataGrid.addColumnSortHandler(sortHandler);
     }
 
     private void showPanel() {
@@ -419,10 +476,36 @@ public class SNPDetailView
 
     @Override
     public void setExplorerData(List<SNPAllele> snpAlleles) {
-        this.explorerData = DataTableUtils.createSNPAllelePhenotypeTable(snpAlleles);
-        this.allele2SnpAllele = DataTableUtils.getAlleleToPhenotype(snpAlleles);
+        this.snpAlleles = snpAlleles;
+        ImmutableListMultimap<String, SNPAllele> countries = Multimaps.index(snpAlleles, new Function<SNPAllele, String>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable SNPAllele input) {
+                return input.getPassport().getCollection().getLocality().getCountry();
+            }
+        });
+        countryFilter.clear();
+        countryFilter.addItem("Worldwide (" + snpAlleles.size() + ")", "");
+        for (String country : Ordering.natural().immutableSortedCopy(countries.keySet())) {
+            countryFilter.addItem(country + " (" + countries.get(country).size() + ")", country);
+        }
+        filterChartData();
+    }
+
+    private void filterChartData() {
+        Collection<SNPAllele> filteredAlleles = Collections2.filter(snpAlleles, new Predicate<SNPAllele>() {
+            @Override
+            public boolean apply(@Nullable SNPAllele input) {
+                if (countryFilter.getSelectedIndex() == 0) {
+                    return true;
+                }
+                return countryFilter.getSelectedValue().equals(input.getPassport().getCollection().getLocality().getCountry());
+            }
+        });
+        this.explorerData = DataTableUtils.createSNPAllelePhenotypeTable(filteredAlleles);
+        this.allele2SnpAllele = DataTableUtils.getAlleleToPhenotype(filteredAlleles);
         this.boxPlotData = DataTableUtils.createSNPAllelePhenotypeForBoxplotTable(allele2SnpAllele, alleleInfo);
-        this.stripChartData = DataTableUtils.createSNPAllelePhenotypeForStripChartTable(snpAlleles, alleleInfo);
+        this.stripChartData = DataTableUtils.createSNPAllelePhenotypeForStripChartTable(filteredAlleles, alleleInfo);
 
         // calculate box sizing
         String refAllele = alleleInfo.getRef() != null ? alleleInfo.getRef() : "N/A";
@@ -469,6 +552,11 @@ public class SNPDetailView
         this.alleleInfo = snpAnnot;
         typeLb.setInnerText(alleleInfo.getAnnotation());
         geneLb.setInnerText(alleleInfo.getGene());
+    }
+
+    @Override
+    public void setList(List<SNPAllele> list) {
+        sortHandler.setList(list);
     }
 
     private GQuery getCandleStickBar(boolean isRef) {
