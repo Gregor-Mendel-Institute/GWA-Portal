@@ -16,7 +16,6 @@ import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.gwtplatform.mvp.client.Presenter;
-import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
@@ -30,7 +29,7 @@ public class DiversityPresenter extends
         Presenter<DiversityPresenter.MyView, DiversityPresenter.MyProxy> {
 
 
-    public interface MyView extends View {
+    public interface MyView extends com.gwtplatform.mvp.client.View {
         void clearBreadcrumbs(int size);
 
         void setBreadcrumbs(int index, String title, String historyToken);

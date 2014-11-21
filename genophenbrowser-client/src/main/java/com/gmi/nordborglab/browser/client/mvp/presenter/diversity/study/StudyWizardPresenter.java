@@ -46,10 +46,8 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
-import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.TabData;
-import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
@@ -149,7 +147,7 @@ public class StudyWizardPresenter extends
         }
     }
 
-    public interface MyView extends View, HasUiHandlers<StudyWizardUiHandlers> {
+    public interface MyView extends com.gwtplatform.mvp.client.View, com.gwtplatform.mvp.client.HasUiHandlers<StudyWizardUiHandlers> {
 
         StudyCreateDriver getStudyCreateDriver();
 
