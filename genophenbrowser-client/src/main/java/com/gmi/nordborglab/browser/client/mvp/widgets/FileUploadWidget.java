@@ -296,11 +296,12 @@ public class FileUploadWidget extends Composite {
         } else {
             progressBarCell = "<td><span class=\"label label-important\">Error</span> Filetype not allowed</div></td>";
         }
-        String cancelBtnCell = "<td><a href=\"javascript:;\" class=\"btn btn-warning\" style=\"\" aria-hidden=\"false\"><i class=\"icon-ban-circle\"></i> Remove </a></td>";
-        GQuery row = $("<tr>" + nameCell + sizeCell + extCell + progressBarCell + cancelBtnCell + "</tr>").appendTo($("#fileToUploadTable > tbody:last"));
+        String cancelBtnCell = "<td><a id=\"test\" class=\"btn btn-warning\" style=\"\" aria-hidden=\"false\"><i class=\"icon-ban-circle\"></i> Remove </a></td>";
+        GQuery row = $("<tr>" + nameCell + sizeCell + extCell + progressBarCell + cancelBtnCell + "</tr>").appendTo($("#fileToUploadTable > tbody",this));
         Element elem = row.get(0);
-        $("a", elem.getChild(0)).bind(com.google.gwt.user.client.Event.ONCLICK, clickOnFileFunc);
-        $("a", elem.getChild(4)).bind(com.google.gwt.user.client.Event.ONCLICK, clickOnCancelFileFunc);
+        $("a", elem.getChild(0)).click(clickOnFileFunc);
+        $("a", elem.getChild(4)).click(clickOnCancelFileFunc);
+
         filesToRow.put(file, elem);
     }
 
