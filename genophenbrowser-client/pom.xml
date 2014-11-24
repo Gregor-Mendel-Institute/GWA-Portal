@@ -343,6 +343,8 @@
                     <genParam>${gwt.genParam}</genParam>
                     <noserver>true</noserver>
                     <runTarget>${runTarget}</runTarget>
+                    <launcherDir>${basedir}/../genophenbrowser-server/target/genophenbrowser-server-${project.version}
+                    </launcherDir>
                     <jsInteropMode>JS</jsInteropMode>
                     <extraJvmArgs>-Xmx2024M -Xms896m -XX:PermSize=64m -XX:MaxPermSize=128m -Xss1M</extraJvmArgs>
                 </configuration>
