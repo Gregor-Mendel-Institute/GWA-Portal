@@ -336,7 +336,10 @@
                 <artifactId>gwt-maven-plugin</artifactId>
                 <configuration>
                     <module>${gwt.module}</module>
-                    <strict>true</strict>
+                    <!-- disable otherwise ErraiBus throws an error:
+                        [ERROR] Failed to execute goal org.codehaus.mojo:gwt-maven-plugin:2.7.0:compile (gwt-compile) on project genophenbrowser-client: GWT Module de.benediktmeurer.gwt.slf4j.api.API not found in project sources or resources
+                    -->
+                    <strict>false</strict>
                     <genParam>${gwt.genParam}</genParam>
                     <noserver>true</noserver>
                     <runTarget>${runTarget}</runTarget>

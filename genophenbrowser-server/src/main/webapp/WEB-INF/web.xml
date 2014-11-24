@@ -10,7 +10,6 @@
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
         <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter
         </filter-class>
-
         <async-supported>true</async-supported>
         <init-param>
             <param-name>entityManagerFactoryBeanName</param-name>
@@ -56,6 +55,7 @@
         <filter-class>
             com.gmi.nordborglab.browser.server.controller.LoginPageFilter
         </filter-class>
+        <async-supported>true</async-supported>
     </filter>
 
     <filter-mapping>
@@ -66,6 +66,7 @@
     <filter>
         <filter-name>GzipFilter</filter-name>
         <filter-class>org.eclipse.jetty.servlets.AsyncGzipFilter</filter-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>methods</param-name>
             <param-value>GET,POST</param-value>

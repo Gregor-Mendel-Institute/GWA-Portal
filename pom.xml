@@ -69,7 +69,7 @@
         <maven.assembly.plugin>2.3</maven.assembly.plugin>
         <maven.antrun.plugin>1.7</maven.antrun.plugin>
         <java.version>1.7</java.version>
-        <errai.version>3.0.3.Final</errai.version>
+        <errai.version>3.1.0-SNAPSHOT</errai.version>
         <javassist.version>3.18.2-GA</javassist.version>
     </properties>
 
@@ -104,6 +104,10 @@
             <releases>
                 <enabled>false</enabled>
             </releases>
+        </repository>
+        <repository>
+            <id>jboss-snapshots</id>
+            <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
