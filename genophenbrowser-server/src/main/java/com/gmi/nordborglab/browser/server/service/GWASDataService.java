@@ -40,11 +40,14 @@ public interface GWASDataService {
     @PreAuthorize("hasRole('ROLE_USER')  AND hasPermission(#gwasResult,'EDIT')")
     public GWASResult save(GWASResult gwasResult);
 
-    @PreAuthorize("hasRole('ROLE_USER') AND hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ') ")
+    @PreAuthorize("hasRole('ROLE_USER') AND hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','EDIT') ")
     Study uploadStudyGWASResult(Long studyId, CommonsMultipartFile file) throws IOException;
 
     public void deleteStudyFile(Long id);
 
     @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
     String getHDF5StudyFile(Long id);
+
+    @PreAuthorize("hasRole('ROLE_USER') AND hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','EDIT') ")
+    Study storeGWASResult(Long id, CommonsMultipartFile file) throws IOException;
 }

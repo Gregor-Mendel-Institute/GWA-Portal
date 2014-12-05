@@ -1,12 +1,6 @@
 package com.gmi.nordborglab.browser.server.controller;
 
 import com.gmi.nordborglab.browser.server.data.GWASData;
-import com.gmi.nordborglab.browser.server.data.isatab.IsaTabExporter;
-import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
-import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
-import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
-import com.gmi.nordborglab.browser.server.rest.PhenotypeData;
-import com.gmi.nordborglab.browser.server.rest.PhenotypeValue;
 import com.gmi.nordborglab.browser.server.data.annotation.FetchGeneInfoResult;
 import com.gmi.nordborglab.browser.server.data.annotation.FetchGeneResult;
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
@@ -14,11 +8,17 @@ import com.gmi.nordborglab.browser.server.data.annotation.GenomeStat;
 import com.gmi.nordborglab.browser.server.data.annotation.GenomeStatsDataResultStatus;
 import com.gmi.nordborglab.browser.server.data.annotation.GenomeStatsResultStatus;
 import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
+import com.gmi.nordborglab.browser.server.data.isatab.IsaTabExporter;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListEnrichmentRepository;
+import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
+import com.gmi.nordborglab.browser.server.rest.PhenotypeData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
+import com.gmi.nordborglab.browser.server.rest.PhenotypeValue;
 import com.gmi.nordborglab.browser.server.rest.StudyGWASData;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.gmi.nordborglab.browser.server.service.CdvService;
@@ -28,15 +28,10 @@ import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
 import com.gmi.nordborglab.browser.server.service.TraitService;
 import com.gmi.nordborglab.browser.server.service.TraitUomService;
-import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
@@ -65,9 +60,7 @@ import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.file.FileSystem;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -244,6 +237,7 @@ public class RestProviderController {
     @ResponseBody
     StudyGWASData getStudyGWASData(@PathVariable("id") Long id) {
         Study study = cdvService.findStudy(id);
+        String transformation = study.getTransformation().getName();
         String csvData = null;
         StringBuilder builder = new StringBuilder();
         Joiner joiner = Joiner.on(",").useForNull("NA");
@@ -253,7 +247,7 @@ public class RestProviderController {
         }
         csvData = builder.toString();
         //todo mapping between alleleassay and genotype
-        StudyGWASData data = new StudyGWASData(csvData, study.getProtocol().getAnalysisMethod(), study.getAlleleAssay().getId().intValue());
+        StudyGWASData data = new StudyGWASData(csvData, study.getProtocol().getAnalysisMethod(), study.getAlleleAssay().getId().intValue(), transformation);
         return data;
     }
 
@@ -263,6 +257,16 @@ public class RestProviderController {
     Long uploadStudyGWASResult(@PathVariable("id") Long id, @RequestParam("file") CommonsMultipartFile file) throws IOException {
         Long studyId = null;
         Study study = gwasService.uploadStudyGWASResult(id, file);
+        studyId = study.getId();
+        return studyId;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/study/{id}/store")
+    public
+    @ResponseBody
+    Long storeStudyGWASResult(@PathVariable("id") Long id, @RequestParam("file") CommonsMultipartFile file) throws IOException {
+        Long studyId = null;
+        Study study = gwasService.storeGWASResult(id, file);
         studyId = study.getId();
         return studyId;
     }
