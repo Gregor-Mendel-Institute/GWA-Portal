@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.server.tasks;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
@@ -19,12 +18,16 @@ import org.elasticsearch.action.count.CountRequestBuilder;
 import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.messaging.handler.annotation.Headers;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+
 /**
  * Created with IntelliJ IDEA.
  * User: uemit.seren
@@ -42,7 +46,7 @@ import java.util.UUID;
  * To change this template use File | Settings | File Templates.
  */
 
-@Component()
+@Component
 @Transactional(readOnly = true)
 public class SubmitAnalysisTask {
 
@@ -71,92 +75,190 @@ public class SubmitAnalysisTask {
     @Resource
     private EsAclManager esAclManager;
 
-    @Value("${AMQP.celery.exchange}")
-    private String CELERY_EXCHANGE;
-
-    @Value("${AMQP.celery.routingKey}")
-    private String CELERY_ROUTING_KEY;
-
-    private static final String GWAS_CHECK_TASK = "gmihpcworkflows.hpc_tasks.check_saga_job";
-    private static final String GWAS_TASK = "gmihpcworkflows.hpc_tasks.start_saga";
-    private static final String GWAS_TOP_SNPS_TASK = "gmihpcworkflows.hpc_tasks.index_top_study_snps";
-    private static final String CANDIDATE_GENE_LIST_ENRICHMENT = "gmihpcworkflows.hpc_tasks.candidate_gene_enrichment";
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SubmitAnalysisTask.class);
 
 
-    @Scheduled(fixedDelay = 60000)
+    private static final String EXCHANGE_GWAS = "gwas";
+    private static final String EXCHANGE_ENRICHMENT = "enrichment";
+    private static final String EXCHANGE_TOPSNPS = "topsnps";
+
+
+    private final String ROUTING_WORKER_SLOW = "gwas.portal.worker.slow";
+    private final String ROUTING_HPC = "gwas.portal.hpc";
+    private final String ROUTING_WORKER_FAST = "gwas.portal.worker.fast";
+    private final String ROUTING_HPC_CHECK_JOBS = ROUTING_HPC + ".check_jobs";
+
+
+    @Value("${AMQP.SLOW_GWAS_THRESHOLD}")
+    private Double SLOW_GWAS_THRESHOLD;
+
+    @Value("${AMQP.celery.task.gwas.hpc.check}")
+    private String GWAS_CHECK_TASK;
+
+    @Value("${AMQP.celery.task.gwas.hpc}")
+    private String GWAS_HPC_TASK;
+
+    @Value("${AMQP.celery.task.topsnps}")
+    private String GWAS_TOP_SNPS_TASK;
+
+    @Value("${AMQP.celery.task.gwas.worker}")
+    private String GWAS_TASK;
+
+    @Value("${AMQP.celery.task.enrichment}")
+    private String CANDIDATE_GENE_LIST_ENRICHMENT;
+
+
     @Transactional(readOnly = false)
-    public synchronized void submitGWASJobs() {
+    @RabbitListener(queues = "gwas.portal.worker.status")
+    public void onUpdateGWASJob(Message message, @Payload CeleryResult result, @Headers Map<String, Object> headers) {
         try {
-            List<StudyJob> studyJobs = studyJobRepository.findByStatusInAndTaskidIsNull("Waiting");
-            for (StudyJob studyJob : studyJobs) {
-                submitStudyJob(studyJob);
+
+            if (!new String(message.getMessageProperties().getCorrelationId()).equals(result.getTask_id()))
+                throw new Exception("Task id does not match correlation_id");
+
+            StudyJob studyJob = studyJobRepository.findByTaskid(result.getTask_id());
+            if (studyJob == null)
+                throw new Exception("StudyJob not found");
+            String status = result.getStatus();
+            Map<String, Object> payload = result.getResult();
+            studyJob.setModificationDate(new Date());
+            if (payload != null && payload.containsKey("progress")) {
+                studyJob.setProgress((int) Math.round(Double.valueOf(payload.get("progress").toString())));
             }
+            if (payload != null && payload.containsKey("task")) {
+                studyJob.setTask((String) payload.get("task"));
+            }
+            if (!status.equalsIgnoreCase(studyJob.getStatus())) {
+                studyJob.setStatus(status);
+                switch (status.toUpperCase()) {
+                    case "SUCCESS":
+                        studyJob.setStatus("FINISHED");
+                        studyJob.setTask("Finished on Worker");
+                        studyJob.setProgress(100);
+                        //submitAnalysisForTopSNPs(studyJob.getStudy());
+                        break;
+                    case "PROGRESS":
+                        studyJob.setTask("Running on the Worker");
+                        break;
+                    case "FAILURE":
+                        studyJob.setStatus("ERROR");
+                        studyJob.setTask("GWAS failed on Worker");
+                        // log error and send email
+                        logger.error("GWAS job failed. Error: " + result.getTraceback());
+                }
+
+                if (studyJob.getAppUser() != null) {
+                    UserNotification notification = getUserNotificationFromStudyJob(studyJob);
+                    userNotificationRepository.save(notification);
+                    ClientComService.pushUserNotification(studyJob.getAppUser().getId().toString(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
+                }
+            }
+            studyJobRepository.save(studyJob);
         } catch (Exception e) {
-            //TODO send an email.
-            String test = "test";
+            e.printStackTrace();
+            throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
     }
 
 
-    @Scheduled(fixedDelay = 30000)
     @Transactional(readOnly = false)
-    public synchronized void checkGWASJobs() {
+    @RabbitListener(queues = "enrichment.status")
+    public void onUpdateCandidateGeneListEnrichment(Message message, @Payload CeleryResult result, @Headers Map<String, Object> headers) {
         try {
-            List<StudyJob> studyJobs = studyJobRepository.findByStatusInAndTaskidIsNull("Pending", "Running");
-            for (StudyJob studyJob : studyJobs) {
-                submitStudyJob(studyJob);
+            if (!new String(message.getMessageProperties().getCorrelationId()).equals(result.getTask_id()))
+                throw new Exception("Task id does not match correlation_id");
+            CandidateGeneListEnrichment enrichment = candidateGeneListEnrichmentRepository.findByTaskid(result.getTask_id());
+            if (enrichment == null)
+                throw new Exception("Enrichment not found");
+            Map<String, Object> payload = result.getResult();
+            String status = result.getStatus();
+            if (!enrichment.getStatus().equalsIgnoreCase(status)) {
+                enrichment.setModified(new Date());
+                enrichment.setStatus(status);
+                switch (status.toUpperCase()) {
+                    case "PROGRESS":
+                        if (payload != null && payload.containsKey("progress")) {
+                            enrichment.setProgress((int) Math.round(Double.valueOf(payload.get("progress").toString())));
+                        }
+                        if (payload != null && payload.containsKey("task")) {
+                            enrichment.setTask((String) payload.get("task"));
+                        }
+                        break;
+                    case "SUCCESS":
+                        Double pValue = Double.parseDouble(payload.get("pvalue").toString());
+                        enrichment.setPayload(null);
+                        enrichment.setStatus("Finished");
+                        enrichment.setTask("Finished on worker");
+                        enrichment.setProgress(100);
+                        enrichment.setPvalue(pValue);
+                        break;
+                    case "FAILED":
+                        enrichment.setStatus("Error");
+                        enrichment.setTask("Enrichment analysis failed");
+                        logger.error("Enrichment job failed. Error: " + result.getTraceback());
+                        break;
+                }
             }
+            candidateGeneListEnrichmentRepository.save(enrichment);
+            indexCandidateGeneListEnrichment(enrichment);
         } catch (Exception e) {
-            //TODO send an email.
-            String test = "test";
+            e.printStackTrace();
+            throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
     }
 
-    @Scheduled(fixedDelay = 60000)
+
     @Transactional(readOnly = false)
-    public synchronized void submitCanidateGeneListEnrichment() {
-        try {
-            List<CandidateGeneListEnrichment> enrichments = candidateGeneListEnrichmentRepository.findByStatusInAndTaskidIsNull("Waiting");
-            for (CandidateGeneListEnrichment enrichment : enrichments) {
-                submitCanidateGeneListEnrichment(enrichment);
+    public void submitGWASJob(StudyJob studyJob) {
+        if (studyJob == null || studyJob.getTaskid() != null || studyJob.getStatus() == null)
+            return;
+        CeleryTask task = null;
+        if (studyJob.getStatus().equalsIgnoreCase("Waiting")) {
+            if (studyJob.getHPC()) {
+                task = getCeleryTaskForHPCJob(studyJob);
+            } else {
+                task = getCeleryTaskForGWAS(studyJob);
             }
-        } catch (Exception e) {
-            //TODO send an email.
-            String test = "test";
         }
+        if (task == null)
+            return;
+        String replyTo = studyJob.getHPC() ? ROUTING_HPC + ".status" : "gwas.portal.worker.status";
+        String routingKey = studyJob.getHPC() ? ROUTING_HPC : getRoutingKeyFromStudyJob(studyJob);
+        submitCeleryTask(task, EXCHANGE_GWAS, routingKey, replyTo);
+        studyJob.setTaskid(task.getId());
+        studyJobRepository.save(studyJob);
     }
 
-    private void submitCanidateGeneListEnrichment(CandidateGeneListEnrichment enrichment) {
+
+    private String getRoutingKeyFromStudyJob(StudyJob studyJob) {
+        String routingKey = ROUTING_WORKER_FAST;
+        if (studyJob.getStudy().getAlleleAssay().getId() != 1 && studyJob.getStudy().getPhenotype().getTraits().size() > SLOW_GWAS_THRESHOLD) {
+            routingKey = ROUTING_WORKER_SLOW;
+        }
+        return routingKey;
+    }
+
+
+    @Transactional(readOnly = false)
+    public void submitCanidateGeneListEnrichment(CandidateGeneListEnrichment enrichment) {
         if (enrichment.getTaskid() != null || enrichment.getStatus() == null)
             return;
         CeleryTask task = null;
         task = getCeleryTaskForEnrichment(enrichment);
         if (task == null)
             return;
-        submitCeleryTask(task);
+        submitCeleryTask(task, EXCHANGE_ENRICHMENT, EXCHANGE_ENRICHMENT, "enrichment.status");
         enrichment.setTaskid(task.getId());
-        enrichment.setProgress(10);
-        enrichment.setTask("Running analysis on worker");
-        enrichment.setStatus("Running");
+        enrichment.setProgress(1);
+        enrichment.setTask("Waiting for worker");
+        enrichment.setStatus("Waiting");
         candidateGeneListEnrichmentRepository.save(enrichment);
         indexCandidateGeneListEnrichment(enrichment);
     }
 
-    @Scheduled(cron = "* 0 0  * * *")
-    @Transactional(readOnly = true)
-    public synchronized void checkMetaAnalysis() {
-        try {
-            List<StudyJob> studyJobs = studyJobRepository.findByStatusInAndTaskidIsNull("Finished");
-            for (StudyJob studyJob : studyJobs) {
-                checkAndSubmitMetaAnalysis(studyJob);
-            }
-        } catch (Exception e) {
-            //TODO send an email.
-            String test = "test";
-        }
-    }
 
-    private void checkAndSubmitMetaAnalysis(StudyJob job) {
+    @Transactional(readOnly = false)
+    public void checkAndSubmitMetaAnalysis(StudyJob job) {
         if (!job.getStatus().equalsIgnoreCase("Finished"))
             return;
         CountRequestBuilder request = client.prepareCount(esAclManager.getIndex())
@@ -167,38 +269,42 @@ public class SubmitAnalysisTask {
         }
     }
 
+    private CeleryTask getCeleryTaskForGWAS(StudyJob studyJob) {
+        String taskId = UUID.randomUUID().toString();
+        List<Object> args = Lists.newArrayList();
+        args.add(studyJob.getStudy().getId());
+        return new CeleryTask(taskId, GWAS_TASK, args);
+    }
 
-    private void submitStudyJob(StudyJob studyJob) {
-
-        if (studyJob.getTaskid() != null || studyJob.getStatus() == null)
+    @Transactional(readOnly = false)
+    public void submitCheckHPCJobs(StudyJob studyJob) {
+        if (studyJob.getTaskid() != null || studyJob.getStatus() == null || !studyJob.getHPC())
             return;
         CeleryTask task = null;
-        if (studyJob.getStatus().equalsIgnoreCase("Waiting")) {
-            task = getCeleryTaskForJob(studyJob);
-        } else if (studyJob.getStatus().equalsIgnoreCase("Pending") || studyJob.getStatus().equalsIgnoreCase("Running")) {
+        if (studyJob.getStatus().equalsIgnoreCase("Pending") || studyJob.getStatus().equalsIgnoreCase("Running")) {
             task = getCeleryTaskForCheckJob(studyJob);
         }
         if (task == null)
             return;
-        submitCeleryTask(task);
+        submitCeleryTask(task, EXCHANGE_GWAS, ROUTING_HPC_CHECK_JOBS, ROUTING_HPC_CHECK_JOBS + ".status");
         studyJob.setTaskid(task.getId());
         studyJobRepository.save(studyJob);
     }
 
-    private void submitCeleryTask(CeleryTask task) {
-        MessageProperties messageProperties = new MessageProperties();
-        if (task == null)
-            return;
-        String payload = "";
-        try {
-            payload = om.writeValueAsString(task);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            throw new RuntimeException("Could not serialize task");
-        }
-        messageProperties.setContentEncoding("utf-8");
-        messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
-        amqpTemplate.send(CELERY_EXCHANGE, CELERY_ROUTING_KEY, new Message(payload.getBytes(), messageProperties));
+
+    private void submitCeleryTask(final CeleryTask task, String exchange, String routingKey, final String repylyTo) {
+        amqpTemplate.convertAndSend(exchange, routingKey, task, new MessagePostProcessor() {
+            @Override
+            public Message postProcessMessage(Message message) throws AmqpException {
+                if (repylyTo != null) {
+                    message.getMessageProperties().setReplyTo(repylyTo);
+                }
+                message.getMessageProperties().setCorrelationId(task.getId().getBytes());
+                return message;
+            }
+
+            ;
+        });
     }
 
 
@@ -208,7 +314,6 @@ public class SubmitAnalysisTask {
         try {
             Map<String, Object> payload = om.readValue(studyJob.getPayload().getBytes(), Map.class);
             args.add(studyJob.getStudy().getId());
-            args.add(studyJob.getId());
             args.add(payload.get("saga_job_id"));
             args.add(payload.get("sge_job_id"));
         } catch (Exception e) {
@@ -220,19 +325,16 @@ public class SubmitAnalysisTask {
         return new CeleryTask(taskId, GWAS_CHECK_TASK, args);
     }
 
-    private CeleryTask getCeleryTaskForJob(StudyJob studyJob) {
+    private CeleryTask getCeleryTaskForHPCJob(StudyJob studyJob) {
         String taskId = UUID.randomUUID().toString();
         List<Object> args = Lists.newArrayList();
         args.add(studyJob.getStudy().getId());
-        args.add(studyJob.getId());
-        args.add(true);
-        return new CeleryTask(taskId, GWAS_TASK, args);
+        return new CeleryTask(taskId, GWAS_HPC_TASK, args);
     }
 
     private CeleryTask getCeleryTaskForEnrichment(CandidateGeneListEnrichment enrichment) {
         String taskId = UUID.randomUUID().toString();
         List<Object> args = Lists.newArrayList();
-        args.add(enrichment.getId());
         args.add(enrichment.getCandidateGeneList().getId());
         args.add(enrichment.getStudy().getId());
         args.add(enrichment.getStudy().getAlleleAssay().getId());
@@ -243,24 +345,32 @@ public class SubmitAnalysisTask {
     }
 
     @Transactional(readOnly = false)
-    public void onUpdateJobId(byte[] message) {
+    @RabbitListener(queues = ROUTING_HPC + ".status")
+    public void onUpdateHPCJobId(Message message, @Payload CeleryResult result, @Headers Map<String, Object> headers) {
         try {
-            Map<String, Object> payload = om.readValue(message, Map.class);
-            Long studyJobId = Long.parseLong(payload.get("studyjobid").toString());
-            StudyJob studyJob = studyJobRepository.findOne(studyJobId);
-            if (studyJob == null) {
-                return;
-            }
-            studyJob.setPayload(new String(message));
-            studyJob.setStatus("Pending");
-            studyJob.setTask("Queued on the HPC");
-            studyJob.setProgress(10);
-            studyJob.setTaskid(null);
-            studyJobRepository.save(studyJob);
-            if (studyJob.getAppUser() != null) {
-                UserNotification notification = getUserNotificationFromStudyJob(studyJob);
-                userNotificationRepository.save(notification);
-                ClientComService.pushUserNotification(studyJob.getAppUser().getId().toString(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
+            if (!new String(message.getMessageProperties().getCorrelationId()).equals(result.getTask_id()))
+                throw new Exception("Task id does not match correlation_id");
+            StudyJob studyJob = studyJobRepository.findByTaskid(result.getTask_id());
+            if (studyJob == null)
+                throw new Exception("StudyJob not found");
+            Map<String, Object> payload = result.getResult();
+            String status = result.getStatus();
+            if (status.equalsIgnoreCase("SUCCESS")) {
+                ObjectMapper mapper = new ObjectMapper();
+                studyJob.setPayload(mapper.writeValueAsString(payload));
+                studyJob.setStatus("Pending");
+                studyJob.setTask("Queued on the HPC");
+                studyJob.setProgress(10);
+                studyJob.setTaskid(null);
+                studyJobRepository.save(studyJob);
+                if (studyJob.getAppUser() != null) {
+                    UserNotification notification = getUserNotificationFromStudyJob(studyJob);
+                    userNotificationRepository.save(notification);
+                    ClientComService.pushUserNotification(studyJob.getAppUser().getId().toString(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
+                }
+            } else {
+                logger.error("Can't handle status: " + status);
+                throw new RuntimeException("Can't handle status: " + status);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -269,14 +379,31 @@ public class SubmitAnalysisTask {
     }
 
     @Transactional(readOnly = false)
-    public void onUpdateJobStatus(byte[] message) {
+    @RabbitListener(queues = "gwas.portal.hpc.progress")
+    public void onUpdateHPCJobProgress(Message message, @Payload CeleryResult result, @Headers Map<String, Object> headers) {
         try {
-            Map<String, Object> payload = om.readValue(message, Map.class);
-            Long studyJobId = Long.parseLong(payload.get("studyjobid").toString());
-            StudyJob studyJob = studyJobRepository.findOne(studyJobId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new AmqpRejectAndDontRequeueException(e.getMessage());
+        }
+    }
+
+
+    @Transactional(readOnly = false)
+    @RabbitListener(queues = "gwas.portal.hpc.check_jobs.status")
+    public void onUpdateHPCJobStatus(Message message, @Payload CeleryResult result, @Headers Map<String, Object> headers) {
+        try {
+            if (!new String(message.getMessageProperties().getCorrelationId()).equals(result.getTask_id()))
+                throw new Exception("Task id does not match correlation_id");
+            StudyJob studyJob = studyJobRepository.findByTaskid(result.getTask_id());
             if (studyJob == null)
                 return;
+            Map<String, Object> payload = result.getResult();
             String status = (String) payload.get("status");
+            if (!result.getStatus().equalsIgnoreCase("SUCCESS")) {
+                throw new Exception(result.getTraceback());
+            }
             studyJob.setTaskid(null);
             if (!studyJob.getStatus().equalsIgnoreCase(status)) {
                 studyJob.setModificationDate(new Date());
@@ -295,11 +422,10 @@ public class SubmitAnalysisTask {
                     studyJob.setTask("Running on the HPC");
                     studyJob.setProgress(30);
                 } else if ("Failed".equalsIgnoreCase(status)) {
+                    logger.error("HPC job failed", studyJob);
                     studyJob.setStatus("Error");
                     studyJob.setTask("HPC job failed");
                 }
-
-
                 if (studyJob.getAppUser() != null) {
                     UserNotification notification = getUserNotificationFromStudyJob(studyJob);
                     userNotificationRepository.save(notification);
@@ -319,7 +445,7 @@ public class SubmitAnalysisTask {
         args.add(study.getId());
         args.add(traitUom.getExperiment().getId());
         CeleryTask task = new CeleryTask(UUID.randomUUID().toString(), GWAS_TOP_SNPS_TASK, args);
-        submitCeleryTask(task);
+        //submitCeleryTask(task);
     }
 
     private static String getBadgeFromStatus(String status) {
@@ -328,7 +454,7 @@ public class SubmitAnalysisTask {
             badge = "warning";
         } else if ("Failed".equalsIgnoreCase(status) || "Error".equalsIgnoreCase(status)) {
             badge = "important";
-        } else if ("Running".equalsIgnoreCase(status)) {
+        } else if ("Running".equalsIgnoreCase(status) || "Progress".equalsIgnoreCase(status)) {
             badge = "info";
         } else if ("Done".equalsIgnoreCase(status) || "Finished".equalsIgnoreCase(status)) {
             badge = "success";
@@ -348,37 +474,6 @@ public class SubmitAnalysisTask {
         return notification;
     }
 
-    @Transactional(readOnly = false)
-    public void onUpdateCandidateGeneListEnrichment(byte[] message) {
-        try {
-            Map<String, Object> payload = om.readValue(message, Map.class);
-            Long candidateGeneListEnrichmentId = Long.parseLong(payload.get("id").toString());
-            Double pValue = Double.parseDouble(payload.get("pvalue").toString());
-            CandidateGeneListEnrichment enrichment = candidateGeneListEnrichmentRepository.findOne(candidateGeneListEnrichmentId);
-            if (enrichment == null)
-                return;
-            String status = (String) payload.get("status");
-            enrichment.setTaskid(null);
-            if (!enrichment.getStatus().equalsIgnoreCase(status)) {
-                enrichment.setModified(new Date());
-                if ("Done".equalsIgnoreCase(status)) {
-                    enrichment.setPayload(null);
-                    enrichment.setStatus("Finished");
-                    enrichment.setTask("Finished on worker");
-                    enrichment.setProgress(100);
-                    enrichment.setPvalue(pValue);
-                } else if ("Failed".equalsIgnoreCase(status)) {
-                    enrichment.setStatus("Error");
-                    enrichment.setTask("Enrichment analysis failed");
-                }
-            }
-            candidateGeneListEnrichmentRepository.save(enrichment);
-            indexCandidateGeneListEnrichment(enrichment);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new AmqpRejectAndDontRequeueException(e.getMessage());
-        }
-    }
 
     private void indexCandidateGeneListEnrichment(CandidateGeneListEnrichment enrichment) {
         metaAnalysisService.indexCandidateGeneListEnrichment(enrichment);

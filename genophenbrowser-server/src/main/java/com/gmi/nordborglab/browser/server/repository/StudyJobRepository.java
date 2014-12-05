@@ -15,4 +15,6 @@ import java.util.List;
 public interface StudyJobRepository extends JpaRepository<StudyJob,Long>{
 
     List<StudyJob> findByStatusInAndTaskidIsNull(String... submitted);
+
+    StudyJob findByTaskid(String taskid);
 }

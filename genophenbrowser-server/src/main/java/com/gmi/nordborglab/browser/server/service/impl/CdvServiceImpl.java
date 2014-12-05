@@ -46,6 +46,7 @@ import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.Facets;
 import org.elasticsearch.search.facet.filter.FilterFacet;
 import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
@@ -105,6 +106,8 @@ public class CdvServiceImpl implements CdvService {
     @Resource
     private MetaAnalysisService cdvService;
 
+    @Value("${AMQP.RUN_BY_DEFAULT_ON_HPC}")
+    private Boolean RUN_BY_DEFAULT_ON_HPC;
 
     //TODO change ACL
     @Override
@@ -152,6 +155,11 @@ public class CdvServiceImpl implements CdvService {
         if (isNewRecord) {
             if (!aclManager.hasPermission(SecurityUtil.getAuthentication(), study.getAlleleAssay(), CustomPermission.USE)) {
                 throw new AccessDeniedException("No access");
+            }
+            if (study.getJob() != null) {
+                if (RUN_BY_DEFAULT_ON_HPC) {
+                    study.getJob().setHPC(true);
+                }
             }
         }
         study = studyRepository.save(study);
@@ -361,6 +369,10 @@ public class CdvServiceImpl implements CdvService {
         job.setCreateDate(new Date());
         job.setModificationDate(new Date());
         job.setTask("Waiting for workflow to start");
+        if (RUN_BY_DEFAULT_ON_HPC) {
+            job.setHPC(true);
+        }
+
         AppUser appUser = userRepository.findOne(Long.parseLong(SecurityUtil.getUsername()));
         job.setAppUser(appUser);
         study.setJob(job);
