@@ -40,6 +40,7 @@ import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.client.util.SearchTerm;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.GWASRuntimeInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StatisticTypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProtocolProxy;
@@ -52,7 +53,6 @@ import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -717,6 +717,21 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @Override
     public HasValue<Boolean> getIsCreateEnrichments() {
         return enrichmentJobCb;
+    }
+
+    @Override
+    public void updateGWASRuntime(GWASRuntimeInfoProxy info, int size) {
+        for (int i = 0; i < methodContainer.getWidgetCount(); i++) {
+            Widget widget = methodContainer.getWidget(i);
+            if (widget instanceof MethodCard) {
+                MethodCard availableCard = (MethodCard) widget;
+                if (availableCard.getStudyProtocol().getId().equals(info.getStudyProtocolId())) {
+                    //multiply by 1000 because this is seconds and fzunction to retrieve duration takes milisecodns
+                    long runtime = Math.round(info.getCoefficient1() * Math.pow(size, 2) + info.getCoefficient2() * size + info.getCoefficient3()) * 1000;
+                    availableCard.setRuntime(runtime);
+                }
+            }
+        }
     }
 
     private void resetStatisticTypeLinks() {

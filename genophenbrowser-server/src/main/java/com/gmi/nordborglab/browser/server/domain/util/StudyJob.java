@@ -32,6 +32,7 @@ import java.util.Date;
 @SequenceGenerator(name = "idSequence", sequenceName = "util.study_job_id_seq", allocationSize = 1)
 public class StudyJob extends BaseEntity {
 
+
     public StudyJob() {
     }
 
@@ -42,6 +43,8 @@ public class StudyJob extends BaseEntity {
     private String status;
 
     private String task;
+
+    private boolean hpc;
 
     private Integer progress;
     @Temporal(TemporalType.TIMESTAMP)
@@ -131,5 +134,13 @@ public class StudyJob extends BaseEntity {
 
     public void setAppUser(AppUser appUser) {
         this.appUser = appUser;
+    }
+
+    public boolean getHPC() {
+        return hpc;
+    }
+
+    public void setHPC(boolean hpc) {
+        this.hpc = hpc;
     }
 }

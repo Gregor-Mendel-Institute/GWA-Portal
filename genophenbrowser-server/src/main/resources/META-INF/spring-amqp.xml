@@ -6,22 +6,39 @@
        http://www.springframework.org/schema/rabbit
                            http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
 
+    <rabbit:annotation-driven/>
+
     <rabbit:connection-factory id="connectionFactory" host="${AMQP.HOST}" port="${AMQP.PORT}"
                                username="${AMQP.username}" password="${AMQP.password}" virtual-host="${AMQP.VHOST}"/>
-    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory"/>
+
+    <bean id="messageConverter" class="org.springframework.amqp.support.converter.Jackson2JsonMessageConverter">
+        <property name="classMapper">
+            <bean class="org.springframework.amqp.support.converter.DefaultClassMapper">
+                <property name="defaultType" value="com.gmi.nordborglab.browser.server.tasks.CeleryResult"/>
+            </bean>
+        </property>
+    </bean>
+
+    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory" message-converter="messageConverter">
+    </rabbit:template>
     <rabbit:admin id="amqpAdmin" connection-factory="connectionFactory"/>
 
-    <rabbit:queue id="gwasJobIds" name="gwas_job_ids"/>
-    <rabbit:queue id="gwasCheckJobs" name="gwas_check_jobs"/>
-    <rabbit:queue id="candidateGeneListEnrichment" name="candidate_gene_list_enrichment"/>
+    <!-- Queues for GWAS worker -->
+    <rabbit:queue id="gwasStatus" name="gwas.portal.worker.status"/>
 
+    <!-- Queues for Enrichment worker -->
+    <rabbit:queue id="enrichmentStatus" name="enrichment.status"/>
 
-    <rabbit:listener-container connection-factory="connectionFactory">
-        <rabbit:listener queues="gwasJobIds" ref="submitAnalysisTask" method="onUpdateJobId"/>
-        <rabbit:listener queues="gwasCheckJobs" ref="submitAnalysisTask" method="onUpdateJobStatus"/>
-        <rabbit:listener queues="candidateGeneListEnrichment" ref="submitAnalysisTask"
-                         method="onUpdateCandidateGeneListEnrichment"/>
-    </rabbit:listener-container>
+    <!-- Queues for GWAS HPC -->
+    <rabbit:queue id="gwas_portal_hpc_jobids" name="gwas.portal.hpc.status"/>
+    <rabbit:queue id="gwas_portal_hpc_progress" name="gwas.portal.hpc.progress"/>
+    <rabbit:queue id="gwas_portal_hpc_status" name="gwas.portal.hpc.check_jobs.status"/>
 
-
+    <bean id="rabbitListenerContainerFactory"
+          class="org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageConverter" ref="messageConverter"/>
+        <property name="concurrentConsumers" value="3"/>
+        <property name="maxConcurrentConsumers" value="10"/>
+    </bean>
 </beans>

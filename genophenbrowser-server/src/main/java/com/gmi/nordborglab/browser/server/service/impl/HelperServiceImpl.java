@@ -22,6 +22,7 @@ import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
 import com.gmi.nordborglab.browser.server.domain.stats.DateStatHistogram;
 import com.gmi.nordborglab.browser.server.domain.stats.DateStatHistogramFacet;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
+import com.gmi.nordborglab.browser.server.domain.util.GWASRuntimeInfo;
 import com.gmi.nordborglab.browser.server.domain.util.NewsItem;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
@@ -29,6 +30,7 @@ import com.gmi.nordborglab.browser.server.math.Transformations;
 import com.gmi.nordborglab.browser.server.repository.AlleleAssayRepository;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListRepository;
 import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
+import com.gmi.nordborglab.browser.server.repository.GWASRuntimeInfoRepository;
 import com.gmi.nordborglab.browser.server.repository.NewsRepository;
 import com.gmi.nordborglab.browser.server.repository.PassportRepository;
 import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
@@ -239,6 +241,9 @@ public class HelperServiceImpl implements HelperService {
     private NewsRepository newsRepository;
 
     @Resource
+    private GWASRuntimeInfoRepository gwasRuntimeInfoRepository;
+
+    @Resource
     private Client client;
 
     @Resource
@@ -354,6 +359,7 @@ public class HelperServiceImpl implements HelperService {
         List<Sampstat> sampStatValues = sampstatRepository.findAll();
         List<Transformation> transformationValues = transformationRepository.findAll();
         List<UserNotification> userNotifications = getUserNotifications(10);
+        List<GWASRuntimeInfo> gwasRuntimeInfos = gwasRuntimeInfoRepository.findAll();
         Page<NewsItem> page = newsRepository.findAll(new PageRequest(0, 10, Sort.Direction.DESC, "createDate"));
 
         AppData appData = new AppData();
@@ -365,6 +371,7 @@ public class HelperServiceImpl implements HelperService {
         appData.setTransformationList(transformationValues);
         appData.setUserNotificationList(userNotifications);
         appData.setStats(getAppStats());
+        appData.setGWASRuntimeInfoList(gwasRuntimeInfos);
         appData.setNews(page.getContent());
         return appData;
     }

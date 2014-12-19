@@ -189,6 +189,7 @@ public class HDF5GWASDataService implements GWASDataService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public Study uploadStudyGWASResult(Long studyId, CommonsMultipartFile file) throws IOException {
         Study study = studyRepository.findOne(studyId);
         if (study.getTraits().size() == 0)
@@ -231,6 +232,33 @@ public class HDF5GWASDataService implements GWASDataService {
     @Override
     public String getHDF5StudyFile(Long id) {
         return GWAS_STUDY_FOLDER + id + ".hdf5";
+    }
+
+
+    @Override
+    @Transactional(readOnly = false)
+    public Study storeGWASResult(Long studyId, CommonsMultipartFile file) throws IOException{
+        Study study = studyRepository.findOne(studyId);
+        File targetFile = new File(GWAS_STUDY_FOLDER + studyId + ".hdf5");
+        try {
+            file.transferTo(targetFile);
+            StudyJob studyJob = study.getJob();
+            if (studyJob == null) {
+                studyJob = new StudyJob();
+                studyJob.setStatus("Running");
+                study.setJob(studyJob);
+                studyJob.setCreateDate(new Date());
+            }
+            studyJob.setProgress(90);
+            studyJob.setTask("Finished...Cleaning up");
+            studyJob.setModificationDate(new Date());
+            studyRepository.save(study);
+        } catch (Exception e) {
+            throw new IOException(e.getMessage());
+        } finally {
+
+        }
+        return study;
     }
 
 

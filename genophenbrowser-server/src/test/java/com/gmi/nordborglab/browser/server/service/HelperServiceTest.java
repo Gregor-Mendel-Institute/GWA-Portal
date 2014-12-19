@@ -23,8 +23,12 @@ import org.junit.Test;
 import javax.annotation.Resource;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class HelperServiceTest extends BaseTest {
@@ -227,6 +231,9 @@ public class HelperServiceTest extends BaseTest {
 
         assertNotNull("Could not retrieve Transformations", data.getTransformationList());
         assertTrue("no elements found for Transformations", data.getTransformationList().size() > 0);
+
+        assertThat(data.getGWASRuntimeInfoList(), is(notNullValue()));
+        assertThat(data.getGWASRuntimeInfoList().size(), is(not(0)));
     }
 
 

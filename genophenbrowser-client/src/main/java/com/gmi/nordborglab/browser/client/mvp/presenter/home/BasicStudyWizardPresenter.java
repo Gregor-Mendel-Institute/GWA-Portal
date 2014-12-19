@@ -21,6 +21,7 @@ import com.gmi.nordborglab.browser.client.util.Statistics;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.GWASRuntimeInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StatisticTypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
@@ -72,6 +73,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -161,6 +163,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
         HasValue<Boolean> getIsCreateEnrichments();
 
+        void updateGWASRuntime(GWASRuntimeInfoProxy info, int size);
     }
 
     static class PhenotypeNamePredicate implements Predicate<PhenotypeProxy> {
@@ -563,6 +566,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     break;
                 }
                 filterAndShowTransformations();
+                calculateAndUpdateRuntime();
                 break;
 
             case TRANSFORMATION:
@@ -637,6 +641,18 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
             currentState = stateIterator.next();
             getView().setNextStep();
         }
+    }
+
+    private void calculateAndUpdateRuntime() {
+        final AlleleAssayProxy selectedAlleleAssay = genotypeSelectionModel.getSelectedObject();
+        if (selectedAlleleAssay == null)
+            return;
+        List<TraitProxy> traits = statisticPhenotypeValueCache.get(getView().getSelectedStatisticType());
+        Set<GWASRuntimeInfoProxy> runtimeInfo = currentUser.getRuntimeInfoFromAlleleAssayId(selectedAlleleAssay.getId());
+        for (GWASRuntimeInfoProxy info : runtimeInfo) {
+            getView().updateGWASRuntime(info, traits.size());
+        }
+
     }
 
     private void loadPhenotypesForExperiment(final Long phenotypeId) {

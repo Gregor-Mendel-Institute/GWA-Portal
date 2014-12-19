@@ -7,11 +7,13 @@ import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AppDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AuthorityProxy;
+import com.gmi.nordborglab.browser.shared.proxy.GWASRuntimeInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -23,6 +25,7 @@ import org.jboss.errai.bus.client.api.messaging.RequestDispatcher;
 
 import javax.annotation.Nullable;
 import java.util.Date;
+import java.util.Set;
 
 
 public class CurrentUser {
@@ -122,6 +125,15 @@ public class CurrentUser {
         appData.getStatisticTypeList().add(0, null);
         appData.getStudyProtocolList().add(0, null);
         appData.getAlleleAssayList().add(0, null);
+    }
+
+    public Set<GWASRuntimeInfoProxy> getRuntimeInfoFromAlleleAssayId(final Long id) {
+        return Sets.newHashSet(Iterables.filter(appData.getGWASRuntimeInfoList(), new Predicate<GWASRuntimeInfoProxy>() {
+            @Override
+            public boolean apply(@Nullable GWASRuntimeInfoProxy input) {
+                return input.getAlleleAssayId().equals(id);
+            }
+        }));
     }
 
     public boolean isAdmin() {

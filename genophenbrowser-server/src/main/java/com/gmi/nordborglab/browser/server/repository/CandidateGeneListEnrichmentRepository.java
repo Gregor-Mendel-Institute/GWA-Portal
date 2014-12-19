@@ -16,4 +16,6 @@ import java.util.List;
 @Repository
 public interface CandidateGeneListEnrichmentRepository extends JpaRepository<CandidateGeneListEnrichment, Long> {
     List<CandidateGeneListEnrichment> findByStatusInAndTaskidIsNull(String... waiting);
+
+    CandidateGeneListEnrichment findByTaskid(String task_id);
 }

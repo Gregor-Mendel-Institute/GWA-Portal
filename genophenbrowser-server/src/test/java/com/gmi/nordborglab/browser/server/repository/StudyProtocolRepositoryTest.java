@@ -6,9 +6,13 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public class StudyProtocolRepositoryTest extends BaseTest {
 
@@ -20,6 +24,8 @@ public class StudyProtocolRepositoryTest extends BaseTest {
         StudyProtocol actual = repository.findOne(1L);
         assertNotNull("did not find expected entity", actual);
         assertEquals((double) 1L, (double) actual.getId(), 0L);
+        assertThat(actual.getGwasRuntimeInfos(), is(notNullValue()));
+        assertThat(actual.getGwasRuntimeInfos().size(), is(not(0)));
     }
 
     @Test
