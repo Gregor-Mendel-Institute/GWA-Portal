@@ -29,7 +29,7 @@ public abstract class DateUtils {
         // Define time units - plural cases are handled inside loop
         String timeElapsedText[] = {"second", "minute", "hour", "day", "week", "month","years"};
         timeElapsed[6] = (int) (milisDiff / yearsInMillis); //years
-        milisDiff = milisDiff & yearsInMillis;
+        milisDiff = milisDiff % yearsInMillis;
         timeElapsed[5] = (int) (milisDiff / monthInMillis); // months
         milisDiff = milisDiff % monthInMillis;
         timeElapsed[4] = (int) (milisDiff / weekInMillis); // weeks
