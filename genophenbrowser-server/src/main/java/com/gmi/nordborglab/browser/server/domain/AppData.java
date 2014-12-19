@@ -7,6 +7,7 @@ import com.gmi.nordborglab.browser.server.domain.germplasm.Sampstat;
 import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
 import com.gmi.nordborglab.browser.server.domain.phenotype.UnitOfMeasure;
 import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
+import com.gmi.nordborglab.browser.server.domain.util.GWASRuntimeInfo;
 import com.gmi.nordborglab.browser.server.domain.util.NewsItem;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 
@@ -20,6 +21,7 @@ public class AppData {
     protected List<StudyProtocol> studyProtocolList;
     protected List<Sampstat> sampStatList;
     protected List<Transformation> transformationList;
+    protected List<GWASRuntimeInfo> gwasRuntimeInfoList;
 
     protected List<UserNotification> userNotificationList;
     private List<AppStat> stats;
@@ -99,5 +101,13 @@ public class AppData {
 
     public List<NewsItem> getNews() {
         return news;
+    }
+
+    public List<GWASRuntimeInfo> getGWASRuntimeInfoList() {
+        return gwasRuntimeInfoList;
+    }
+
+    public void setGWASRuntimeInfoList(List<GWASRuntimeInfo> gwasRuntimeInfoList) {
+        this.gwasRuntimeInfoList = gwasRuntimeInfoList;
     }
 }

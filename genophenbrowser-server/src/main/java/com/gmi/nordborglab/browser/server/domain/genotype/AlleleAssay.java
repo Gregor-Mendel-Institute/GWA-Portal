@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.server.domain.genotype;
 
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.util.GWASRuntimeInfo;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -16,7 +17,9 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "div_allele_assay", schema = "genotype")
@@ -38,6 +41,10 @@ public class AlleleAssay extends SecureEntity {
 
     @OneToMany(mappedBy = "alleleAssay", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Study> studies = new ArrayList<Study>();
+
+    @OneToMany(mappedBy = "alleleAssay", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<GWASRuntimeInfo> gwasRuntimeInfos = new HashSet<>();
+
 
     private String name;
     private String producer;
@@ -137,5 +144,9 @@ public class AlleleAssay extends SecureEntity {
     @Override
     public String getRouting() {
         return null;
+    }
+
+    public Set<GWASRuntimeInfo> getGwasRuntimeInfos() {
+        return gwasRuntimeInfos;
     }
 }

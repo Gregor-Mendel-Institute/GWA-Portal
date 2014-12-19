@@ -38,4 +38,6 @@ public interface AppDataProxy extends ValueProxy {
     public List<AppStatProxy> getStats();
 
     public List<NewsItemProxy> getNews();
+
+    public List<GWASRuntimeInfoProxy> getGWASRuntimeInfoList();
 }

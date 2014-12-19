@@ -8,9 +8,13 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public class AlleleAssayRepositoryTest extends BaseTest {
 
@@ -24,6 +28,8 @@ public class AlleleAssayRepositoryTest extends BaseTest {
         assertEquals((double) 1L, (double) actual.getId(), 0L);
         assertNotNull("did not find attached Taxonomy", actual.getPolyType());
         assertNotNull("did not find attached Collection", actual.getScoringTechType());
+        assertThat(actual.getGwasRuntimeInfos(), is(notNullValue()));
+        assertThat(actual.getGwasRuntimeInfos().size(), is(not(0)));
     }
 
     @Test

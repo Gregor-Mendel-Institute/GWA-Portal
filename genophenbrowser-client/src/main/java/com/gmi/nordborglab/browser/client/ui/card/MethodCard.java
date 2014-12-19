@@ -4,6 +4,7 @@ import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.events.SelectMethodEvent;
 import com.gmi.nordborglab.browser.client.resources.CardRendererResources;
+import com.gmi.nordborglab.browser.client.util.DateUtils;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProtocolProxy;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -54,6 +55,8 @@ public class MethodCard extends Composite {
 
     protected StudyProtocolProxy studyProtocol;
 
+    protected long runtime = 0;
+
     public MethodCard() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
@@ -75,14 +78,14 @@ public class MethodCard extends Composite {
         typeLabel.setInnerText(studyProtocol.getType());
         typeLabel.removeClassName("label-success");
         typeLabel.removeClassName("label-info");
+        // show 2 digits when over 1 hour otherwise only 1
+        runTimeDuration.setInnerText(DateUtils.formatTimeElapsedSinceMillisecond(runtime, runtime > 3600000 ? 2 : 1));
         if (studyProtocol.getType().equals("MIXED")) {
-            runTimeDuration.setInnerText("10 minutes");
             typeLabel.addClassName("label-success");
         } else if (studyProtocol.getType().equals("LINEAR")) {
-            runTimeDuration.setInnerText("2 minutes");
             typeLabel.addClassName("label-info");
         } else {
-            runTimeDuration.setInnerText("0.5 minutes");
+
         }
     }
 
@@ -121,6 +124,11 @@ public class MethodCard extends Composite {
     @UiHandler("focusPanel")
     public void onKeyUp(KeyUpEvent event) {
         SelectMethodEvent.fire(eventBus, this);
+    }
+
+    public void setRuntime(long runtime) {
+        this.runtime = runtime;
+        updateView();
     }
 
 }

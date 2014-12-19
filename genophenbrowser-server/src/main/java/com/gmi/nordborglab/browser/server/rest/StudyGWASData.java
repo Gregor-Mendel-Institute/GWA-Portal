@@ -18,16 +18,18 @@ public class StudyGWASData {
     private String analysisMethod;
     private int genotype;
     private String transformation;
+    private long runtime;
 
     public StudyGWASData() {
     }
 
-    public StudyGWASData(String csvData, String analysisMethod, int genotype, String transformation) {
+    public StudyGWASData(String csvData, String analysisMethod, int genotype, String transformation, long runtime) {
 
         this.csvData = csvData;
         this.analysisMethod = analysisMethod;
         this.genotype = genotype;
         this.transformation = transformation;
+        this.runtime = runtime;
     }
 
     @XmlElement
@@ -48,5 +50,10 @@ public class StudyGWASData {
     @XmlElement
     public String getTransformation() {
         return transformation;
+    }
+
+    @XmlElement
+    public long getRuntime() {
+        return runtime;
     }
 }

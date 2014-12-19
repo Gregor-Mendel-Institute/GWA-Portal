@@ -14,6 +14,7 @@ import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.server.domain.util.GWASRuntimeInfo;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListEnrichmentRepository;
 import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeData;
@@ -30,8 +31,10 @@ import com.gmi.nordborglab.browser.server.service.TraitService;
 import com.gmi.nordborglab.browser.server.service.TraitUomService;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
@@ -236,7 +239,7 @@ public class RestProviderController {
     public
     @ResponseBody
     StudyGWASData getStudyGWASData(@PathVariable("id") Long id) {
-        Study study = cdvService.findStudy(id);
+        final Study study = cdvService.findStudy(id);
         String transformation = study.getTransformation().getName();
         String csvData = null;
         StringBuilder builder = new StringBuilder();
@@ -247,7 +250,17 @@ public class RestProviderController {
         }
         csvData = builder.toString();
         //todo mapping between alleleassay and genotype
-        StudyGWASData data = new StudyGWASData(csvData, study.getProtocol().getAnalysisMethod(), study.getAlleleAssay().getId().intValue(), transformation);
+        //calculate runtime
+
+        GWASRuntimeInfo info = Iterables.find(study.getProtocol().getGwasRuntimeInfos(), new Predicate<GWASRuntimeInfo>() {
+            @Override
+            public boolean apply(@Nullable GWASRuntimeInfo input) {
+                return input.getAlleleAssay().equals(study.getAlleleAssay());
+            }
+        });
+        int sampleSize = study.getTraits().size();
+        long runtime = Math.round(info.getCoefficient1() * Math.pow(sampleSize, 2) + info.getCoefficient2() * sampleSize + info.getCoefficient3());
+        StudyGWASData data = new StudyGWASData(csvData, study.getProtocol().getAnalysisMethod(), study.getAlleleAssay().getId().intValue(), transformation, runtime);
         return data;
     }
 
