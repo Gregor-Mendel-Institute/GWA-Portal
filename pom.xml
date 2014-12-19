@@ -30,11 +30,11 @@
         <mavenVersion>3.0</mavenVersion>
         <guava.version>18.0</guava.version>
         <gwt.version>2.7.0</gwt.version>
-        <junit.version>4.11</junit.version>
-        <mockito.version>1.10.8</mockito.version>
+        <junit.version>4.12</junit.version>
+        <mockito.version>1.10.17</mockito.version>
         <hibernate-validator.version>5.1.2.Final</hibernate-validator.version>
         <javax.validation.version>1.1.0.Final</javax.validation.version>
-        <slf4j.version>1.7.7</slf4j.version>
+        <slf4j.version>1.7.9</slf4j.version>
         <logback.version>1.1.2</logback.version>
         <maven.clean.plugin>2.5</maven.clean.plugin>
         <maven.deploy.plugin>2.7</maven.deploy.plugin>
@@ -43,7 +43,7 @@
         <maven.compiler.plugin>3.1</maven.compiler.plugin>
         <maven.source.plugin>2.4</maven.source.plugin>
         <maven.war.plugin>2.3</maven.war.plugin>
-        <jetty.version>9.2.3.v20140905</jetty.version>
+        <jetty.version>9.2.6.v20141205</jetty.version>
         <maven.jar.plugin>2.4</maven.jar.plugin>
         <maven.resources.plugin>2.6</maven.resources.plugin>
         <maven.versions.plugin>2.1</maven.versions.plugin>
@@ -69,7 +69,7 @@
         <maven.assembly.plugin>2.3</maven.assembly.plugin>
         <maven.antrun.plugin>1.7</maven.antrun.plugin>
         <java.version>1.7</java.version>
-        <errai.version>3.1.0-SNAPSHOT</errai.version>
+        <errai.version>3.1.0.Final</errai.version>
         <javassist.version>3.18.2-GA</javassist.version>
     </properties>
 
