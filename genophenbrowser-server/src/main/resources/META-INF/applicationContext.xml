@@ -24,11 +24,11 @@
 
     <beans profile="dev">
         <context:property-placeholder
-                location="classpath:META-INF/persistence_dev.properties,classpath:META-INF/application_dev.properties,classpath:META-INF/es_dev.properties,classpath:META-INF/amqp_dev.properties"/>
+                location="classpath:META-INF/persistence_dev.properties,classpath:META-INF/application_dev.properties,classpath:META-INF/es_dev.properties,classpath:META-INF/amqp_dev.properties,classpath:META-INF/social.properties"/>
     </beans>
     <beans profile="prod">
         <context:property-placeholder
-                location="classpath:META-INF/persistence_prod.properties,classpath:META-INF/application_prod.properties,classpath:META-INF/es_prod.properties,classpath:META-INF/amqp_prod.properties"/>
+                location="classpath:META-INF/persistence_prod.properties,classpath:META-INF/application_prod.properties,classpath:META-INF/es_prod.properties,classpath:META-INF/amqp_prod.properties,classpath:META-INF/social.properties"/>
     </beans>
     <beans>
         <bean id="validator"
@@ -51,6 +51,8 @@
         <import resource="spring-acl.xml"/>
 
         <import resource="spring-jmx.xml"/>
+
+        <import resource="spring-social.xml"/>
 
 
         <task:annotation-driven executor="executor" scheduler="scheduler"/>

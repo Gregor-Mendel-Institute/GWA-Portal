@@ -23,6 +23,8 @@ public class Registration {
     @NotEmpty
     private String lastname;
 
+    private boolean isSocialAccount = false;
+
 
     @AssertTrue(message = "Password does not match")
     public boolean isPasswordValid() {
@@ -71,5 +73,13 @@ public class Registration {
 
     public String getEmail() {
         return email;
+    }
+
+    public boolean isSocialAccount() {
+        return isSocialAccount;
+    }
+
+    public void setSocialAccount(boolean isSocialAccount) {
+        this.isSocialAccount = isSocialAccount;
     }
 }

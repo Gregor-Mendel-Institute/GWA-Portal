@@ -4,10 +4,11 @@ import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.social.security.SocialUserDetails;
 
 import java.util.Collection;
 
-public class CustomUser extends User {
+public class CustomUser extends User implements SocialUserDetails {
 
     private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
@@ -50,5 +51,10 @@ public class CustomUser extends User {
 
     public String getFullName() {
         return (String.format("%s %s", getFirstname(), getLastname())).trim();
+    }
+
+    @Override
+    public String getUserId() {
+        return getUsername();
     }
 }

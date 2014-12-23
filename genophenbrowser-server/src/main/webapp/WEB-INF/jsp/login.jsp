@@ -8,21 +8,11 @@
 <head>
     <title>Sign In</title>
     <link rel="icon" type="image/ico" href="/img/favicon.ico"/>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="<c:url value='/css/login.css'/>"/>
-    <link rel="stylesheet" href="<c:url value='/css/openid-shadow.css'/>"/>
+    <link rel="stylesheet" href="<c:url value='/css/bootstrap-social.min.css'/>"/>
     <link rel="stylesheet" href="<c:url value='/css/entypo.min.css'/>"/>
-
-    <script type="text/javascript" src="<c:url value='/js/jquery-1.2.6.min.js'/>"></script>
-    <script type="text/javascript" src="<c:url value='/js/openid-jquery.js'/>"></script>
-    <script type="text/javascript" src="<c:url value='/js/openid-en.js' />"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            openid.init('openid_identifier');
-            //openid.setDemoMode(true);
-        });
-    </script>
-    <!-- /Simple OpenID Selector -->
 </head>
 
 <body>
@@ -30,6 +20,8 @@
     <div class="content">
         <div>
             <form class="login-form" action="j_spring_security_check?spring-security-redirect=/${url}" method="post">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="hidden" name="isRegularLogin" value="true"/>
                 <h1>Sign In</h1>
 
                 <div>
@@ -76,37 +68,22 @@
             </form>
         </div>
         <div class="sub_container">
-            <!-- Simple OpenID Selector -->
-            <form action="<c:url value='j_spring_openid_security_check?spring-security-redirect=/${url}'/>"
-                  method="post" id="openid_form">
-                <input type="hidden" name="action" value="verify"/>
+            <p>Sign in using an existing 3rd party account:</p>
+            <a class="btn btn-block btn-social btn-lg btn-google-plus" href="<c:url value='/auth/google' />">
+                <i class="fa fa-google"></i> Sign in with Google
+            </a>
 
-                <div id="openid_choice">
-                    <p>Sign in using an account of one of these sites:</p>
+            <p></p>
+            <a class="btn btn-block btn-social btn-lg btn-github" href="<c:url value='/auth/github' />">
+                <i class="fa fa-github"></i> Sign in with Github
+            </a>
 
-                    <div id="openid_btns"></div>
-                </div>
+            <p></p>
+            <a class="btn btn-block btn-social btn-lg btn-facebook" href="<c:url value='/auth/facebook' />">
+                <i class="fa fa-facebook"></i> Sign in with Facebook
+            </a>
 
-                <div id="openid_input_area">
-                    <input id="openid_identifier" name="openid_identifier" type="text" value="http://"/>
-                    <input id="openid_submit" type="submit" value="Sign-In"/>
-                </div>
-                <div>
-
-                    <div class="checkbox-inline remember_me">
-                        <label>
-                            <input type='checkbox' name='_spring_security_remember_me'>
-                            Keep me signed in
-                        </label>
-                    </div>
-
-                </div>
-                <noscript>
-                    <p>OpenID is a service that allows you to log-on to many different websites using a single identity.
-                        Find out <a href="http://openid.net/what/">more about OpenID</a> and <a
-                                href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
-                </noscript>
-            </form>
+            <p></p>
         </div>
         <div class="sub_container">
             <div class="form_login_info">Don't have an account? <a href="<c:url value='/registration' />">click here to

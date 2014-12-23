@@ -28,6 +28,7 @@ import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchResponse;
@@ -102,7 +103,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = false)
-    public void registerUserIfValid(Registration registration,
+    public AppUser registerUserIfValid(Registration registration,
                                     boolean userIsValid) throws DuplicateRegistrationException {
         if (userIsValid) {
             if (userRepository.findByEmail(registration.getEmail()) != null) {
@@ -114,21 +115,28 @@ public class UserServiceImpl implements UserService {
             appUser.setEmail(registration.getEmail());
             appUser.setFirstname(registration.getFirstname());
             appUser.setLastname(registration.getLastname());
-            appUser.setOpenidUser(false);
             List<Authority> authorities = new ArrayList<Authority>();
             Authority authority = new Authority();
             authority.setAuthority(SecurityUtil.DEFAULT_AUTHORITY);
             authorities.add(authority);
             appUser.setAuthorities(authorities);
-            appUser.setPassword("TEMPORARY");
-            userRepository.save(appUser);
-            appUser.setPassword(encoder.encodePassword(registration.getPassword(), appUser.getId().toString()));
+
+            if (!registration.isSocialAccount()) {
+                appUser.setPassword("TEMPORARY");
+                userRepository.save(appUser);
+                appUser.setPassword(encoder.encodePassword(registration.getPassword(), appUser.getId().toString()));
+            } else {
+                appUser.setOpenidUser(true);
+                appUser.setPassword(RandomStringUtils.random(8));
+            }
             userRepository.save(appUser);
             //FIXME workaround because exception is thrown when AclSid doesnt exist and first time permission is added
             AclSid aclSid = new AclSid(true, appUser.getId().toString());
             aclSidRepository.save(aclSid);
             indexUser(appUser);
+            return appUser;
         }
+        return null;
     }
 
     @Override

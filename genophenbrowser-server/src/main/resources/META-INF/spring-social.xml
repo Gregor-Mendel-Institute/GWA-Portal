@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:social="http://www.springframework.org/schema/social"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social.xsd
+		">
+
+
+    <!--spring social -->
+
+    <beans profile="dev">
+        <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors"
+              factory-method="noOpText"/>
+    </beans>
+
+    <beans profile="prod">
+        <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors"
+              factory-method="text">
+            <constructor-arg value="${security.encryptPassword}"/>
+            <constructor-arg value="${security.encryptSalt}"/>
+        </bean>
+    </beans>
+
+    <beans>
+
+        <social:jdbc-connection-repository/>
+
+        <bean id="userIdSource" class="org.springframework.social.security.AuthenticationNameUserIdSource"/>
+
+        <bean id="usersConnectionRepository"
+              class="org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository">
+            <constructor-arg name="dataSource" ref="dataSource"/>
+            <constructor-arg name="textEncryptor" ref="textEncryptor"/>
+            <constructor-arg name="connectionFactoryLocator" ref="connectionFactoryLocator"/>
+            <property name="connectionSignUp" ref="socialAccountSignUp"/>
+        </bean>
+
+
+        <bean id="springSocialSecurityAuthenticationFilter"
+              class="org.springframework.social.security.SocialAuthenticationFilter">
+            <constructor-arg name="authManager" ref="authenticationManager"/>
+            <constructor-arg name="usersConnectionRepository" ref="usersConnectionRepository"/>
+            <constructor-arg name="userIdSource" ref="userIdSource"/>
+            <constructor-arg name="authServiceLocator" ref="connectionFactoryLocator"/>
+            <property name="signupUrl" value="/registration"/>
+            <property name="defaultFailureUrl" value="/login"/>
+            <property name="rememberMeServices" ref="customPersistentTokenBasedRememberMeServices"/>
+        </bean>
+
+        <bean id="springSocialAuthenticationProvider"
+              class="org.springframework.social.security.SocialAuthenticationProvider">
+            <constructor-arg ref="usersConnectionRepository"/>
+            <constructor-arg ref="simpleSocialUserDetailService"/>
+        </bean>
+
+        <bean id="simpleSocialUserDetailService"
+              class="com.gmi.nordborglab.browser.server.security.SimpleSocialUserDetailsService"/>
+
+        <bean id="connectionFactoryRegistry"
+              class="org.springframework.social.security.SocialAuthenticationServiceRegistry">
+            <property name="authenticationServices">
+                <util:list>
+                    <bean class="org.springframework.social.facebook.security.FacebookAuthenticationService">
+                        <constructor-arg value="${facebook.clientId}"/>
+                        <constructor-arg value="${facebook.clientSecret}"/>
+                        <property name="defaultScope" value="email"/>
+                    </bean>
+                    <bean class="org.springframework.social.google.security.GoogleAuthenticationService">
+                        <constructor-arg value="${google.clientId}"/>
+                        <constructor-arg value="${google.clientSecret}"/>
+                        <property name="defaultScope" value="email"/>
+                    </bean>
+                    <bean class="org.springframework.social.github.security.GitHubAuthenticationService">
+                        <constructor-arg value="${github.clientId}"/>
+                        <constructor-arg value="${github.clientSecret}"/>
+                    </bean>
+                </util:list>
+            </property>
+        </bean>
+        <alias name="connectionFactoryRegistry" alias="connectionFactoryLocator"/>
+    </beans>
+</beans>
