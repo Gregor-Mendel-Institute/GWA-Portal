@@ -9,6 +9,7 @@ import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.elasticsearch.common.joda.time.DateTime;
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -33,7 +34,11 @@ import java.util.List;
 public class AppUser extends BaseEntity {
 
 
+    @Column(unique = true)
+    @Email
+    @NotEmpty
     private String username;
+
     private String password;
     @Column(unique = true)
     @Email
@@ -43,7 +48,8 @@ public class AppUser extends BaseEntity {
     @NotNull
     private String lastname;
     private boolean enabled = true;
-    private boolean openidUser;
+    private boolean openidUser = false;
+    private String openididentifier;
 
     private Date registrationdate = new Date();
 
@@ -303,5 +309,13 @@ public class AppUser extends BaseEntity {
 
     public Date getPasswordResetExpiration() {
         return passwordResetExpiration;
+    }
+
+    public String getOpenididentifier() {
+        return openididentifier;
+    }
+
+    public void setOpenididentifier(String openididentifier) {
+        this.openididentifier = openididentifier;
     }
 }

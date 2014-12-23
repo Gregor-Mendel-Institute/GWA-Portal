@@ -53,7 +53,7 @@ public class OpenIdUserDetailsService implements UserDetailsService,
     public UserDetails loadUserDetails(OpenIDAuthenticationToken token) {
         String id = token.getIdentityUrl();
 
-        AppUser appUser = userRepository.findByUsername(id);
+        AppUser appUser = userRepository.findByOpenididentifier(id);
         if (appUser != null) {
             return SecurityUtil.getUserFromAppUser(appUser);
         }
@@ -104,12 +104,13 @@ public class OpenIdUserDetailsService implements UserDetailsService,
                 return SecurityUtil.getUserFromAppUser(appUser);
             }
         }
-        appUser = new AppUser(id);
+        appUser = new AppUser(email);
         appUser.setEmail(email);
         appUser.setPassword("unused");
         appUser.setFirstname(firstName);
         appUser.setLastname(lastName);
         appUser.setOpenidUser(true);
+        appUser.setOpenididentifier(id);
         List<Authority> authorities = new ArrayList<Authority>();
         Authority authority = new Authority();
         authority.setAuthority(SecurityUtil.DEFAULT_AUTHORITY);
@@ -118,6 +119,7 @@ public class OpenIdUserDetailsService implements UserDetailsService,
         userRepository.save(appUser);
 
         //FIXME WORKAROUND for  http://forum.springsource.org/showthread.php?55490-ACL-Transaction-must-be-running
+        // http://stackoverflow.com/questions/5714046/jdbcmutableaclservice-transaction-must-be-running
         AclSid sid = aclSidRepository.findBySid(appUser.getId().toString());
         if (sid == null) {
             sid = new AclSid(true, appUser.getId().toString());
