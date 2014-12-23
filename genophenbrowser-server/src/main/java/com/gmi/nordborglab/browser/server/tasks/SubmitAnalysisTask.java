@@ -369,7 +369,15 @@ public class SubmitAnalysisTask {
                     ClientComService.pushUserNotification(studyJob.getAppUser().getId().toString(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
                 }
             } else {
-                logger.error("Can't handle status: " + status);
+                logger.error("Can't handle status: " + result.getTraceback());
+                studyJob.setStatus("Error");
+                studyJob.setTask("HPC job failed");
+                studyJobRepository.save(studyJob);
+                if (studyJob.getAppUser() != null) {
+                    UserNotification notification = getUserNotificationFromStudyJob(studyJob);
+                    userNotificationRepository.save(notification);
+                    ClientComService.pushUserNotification(studyJob.getAppUser().getId().toString(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
+                }
                 throw new RuntimeException("Can't handle status: " + status);
             }
         } catch (Exception e) {
@@ -400,9 +408,13 @@ public class SubmitAnalysisTask {
             if (studyJob == null)
                 return;
             Map<String, Object> payload = result.getResult();
-            String status = (String) payload.get("status");
+            String status;
             if (!result.getStatus().equalsIgnoreCase("SUCCESS")) {
-                throw new Exception(result.getTraceback());
+                logger.error("Check HPC Job failed: "+result.getTraceback());
+                status = "Failed";
+            }
+            else {
+                status = (String) payload.get("status");
             }
             studyJob.setTaskid(null);
             if (!studyJob.getStatus().equalsIgnoreCase(status)) {
