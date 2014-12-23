@@ -19,8 +19,17 @@ public class JPAuserDetailsService implements UserDetailsService {
 
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        AppUser appUser = userRepository.findByUsername(username);
         try {
-            AppUser appUser = userRepository.findByUsername(username);
+            // FIXME Because we currently use the ID as username and a PersistentTokenRememberMeService uses the id instead of username
+            if (appUser == null) {
+                try {
+                    Long id = Long.valueOf(username);
+                    appUser = userRepository.findOne(id);
+                } catch (NumberFormatException e) {
+
+                }
+            }
             if (appUser == null) {
                 throw new UsernameNotFoundException(username + " not found");
             }

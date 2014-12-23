@@ -21,6 +21,12 @@
         <org.springframework.data.version>1.7.1.RELEASE</org.springframework.data.version>
         <org.springframework.security.version>3.2.5.RELEASE</org.springframework.security.version>
         <org.springframework.amqp.version>1.4.1.RELEASE</org.springframework.amqp.version>
+        <org.springframework.social>1.1.0.RELEASE</org.springframework.social>
+        <org.springframework.social.facebook>1.1.0.RELEASE</org.springframework.social.facebook>
+        <org.springframework.social.twitter>1.1.0.RELEASE</org.springframework.social.twitter>
+        <org.springframework.social.github>1.0.0.M4</org.springframework.social.github>
+        <org.springframework.social.google>1.0.0.RELEASE</org.springframework.social.google>
+        <org.apache.httpcomponents.httpclient.version>4.3.1</org.apache.httpcomponents.httpclient.version>
         <rabbitmq.version>3.4.2</rabbitmq.version>
         <hibernate.version>4.3.7.Final</hibernate.version>
         <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
@@ -59,11 +65,23 @@
             <id>Java.Net</id>
             <url>http://download.java.net/maven/2/</url>
         </repository>
-
+        <!-- for spring-social-github -->
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>http://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
@@ -248,6 +266,34 @@
             <artifactId>spring-security-taglibs</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-facebook</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-github</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-google</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
         </dependency>
@@ -322,6 +368,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${org.apache.httpcomponents.httpclient.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.isatools</groupId>
                 <artifactId>ISAcreator</artifactId>
@@ -716,7 +767,41 @@
                 <artifactId>spring-context-support</artifactId>
                 <version>${org.springframework.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.springframework.social</groupId>
+                <artifactId>spring-social-core</artifactId>
+                <version>${org.springframework.social}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.social</groupId>
+                <artifactId>spring-social-web</artifactId>
+                <version>${org.springframework.social}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.social</groupId>
+                <artifactId>spring-social-config</artifactId>
+                <version>${org.springframework.social}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.social</groupId>
+                <artifactId>spring-social-security</artifactId>
+                <version>${org.springframework.social}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.social</groupId>
+                <artifactId>spring-social-github</artifactId>
+                <version>${org.springframework.social.github}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.social</groupId>
+                <artifactId>spring-social-facebook</artifactId>
+                <version>${org.springframework.social.facebook}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.social</groupId>
+                <artifactId>spring-social-google</artifactId>
+                <version>${org.springframework.social.google}</version>
+            </dependency>
 
             <!-- spring security has dependency on old version -> problem with spring
                     3.1.x java.lang.NoSuchFieldError: NULL at org.springframework.expression.TypedValue.<clinit>(TypedValue.java:32) -->

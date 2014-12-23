@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface UserService {
 
-    void registerUserIfValid(Registration registration, boolean userIsValid) throws DuplicateRegistrationException;
+    AppUser registerUserIfValid(Registration registration, boolean userIsValid) throws DuplicateRegistrationException;
 
     AppUser findUser(Long id);
 
