@@ -18,12 +18,16 @@
 
     <authentication-manager alias="authenticationManager">
         <authentication-provider user-service-ref="JPAuserDetailsService">
-            <password-encoder hash="md5">
+            <password-encoder ref="migrationEncoder">
                 <salt-source user-property="username"/>
             </password-encoder>
         </authentication-provider>
         <authentication-provider ref="springSocialAuthenticationProvider"/>
     </authentication-manager>
+
+    <beans:bean id="migrationEncoder" class="com.gmi.nordborglab.browser.server.security.MigrateUserPasswordEncoder"/>
+    <beans:bean id="legacyEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
+    <beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
 
 
     <http pattern="/resources" security="none"/>

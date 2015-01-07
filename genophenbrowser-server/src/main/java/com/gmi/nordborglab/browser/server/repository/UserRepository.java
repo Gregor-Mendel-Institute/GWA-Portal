@@ -14,4 +14,6 @@ public interface UserRepository extends JpaRepository<AppUser, Long>, JpaSpecifi
     AppUser findByPasswordResetToken(String token);
 
     AppUser findByOpenididentifier(String identifier);
+
+    AppUser findByPassword(String encPass);
 }

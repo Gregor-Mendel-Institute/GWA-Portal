@@ -25,7 +25,6 @@ import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -205,8 +204,7 @@ public class ExperimentServiceTest extends BaseTest {
     private void createTestUser(String role) {
         AppUser appUser = new AppUser("test@test.at");
         appUser.setOpenidUser(false);
-        Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-        appUser.setPassword(encoder.encodePassword(SecurityUtils.TEST_PASSWORD, null));
+        appUser.setPassword(SecurityUtils.TEST_PASSWORD);
         List<Authority> authorities = new ArrayList<Authority>();
         List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
         SimpleGrantedAuthority auth = new SimpleGrantedAuthority(role);
