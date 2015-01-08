@@ -51,19 +51,18 @@ public class RegistrationController {
         return dto;
     }
 
+    // BindingResult must come after Registration: http://stackoverflow.com/questions/15622098/how-do-i-display-a-user-friendly-error-when-spring-is-unable-to-validate-a-model
     @RequestMapping(method = RequestMethod.POST)
-    public String processForm(@Valid @ModelAttribute(value = "registration") Registration registration, WebRequest request, BindingResult result) {
+    public String processForm(@Valid @ModelAttribute(value = "registration") Registration registration, BindingResult result, WebRequest request) {
         verifyBinding(result);
-
+        if (result.hasErrors()) {
+            return "registrationform";
+        }
         try {
             AppUser user = userService.registerUserIfValid(registration, !result.hasErrors());
             providerSignInUtils.doPostSignUp(user.getUsername(), request);
         } catch (DuplicateRegistrationException e) {
             result.rejectValue("email", "not.unique");
-        }
-
-        if (result.hasErrors()) {
-            return "registrationform";
         }
         // because of  http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html#mvc-redirecting
         return "redirect:/";
