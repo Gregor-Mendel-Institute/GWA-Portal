@@ -6,7 +6,7 @@ import com.gmi.nordborglab.browser.server.service.MailService;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -137,6 +137,9 @@ public class ForgotPasswordController {
     @Resource
     MailService mailService;
 
+    @Resource
+    protected PasswordEncoder encoder;
+
 
     @RequestMapping(value = "/reset-password", method = RequestMethod.GET)
     public String showResetPassword(ModelMap model, @RequestParam("token") String token) {
@@ -177,8 +180,7 @@ public class ForgotPasswordController {
                 result.reject("", "token.expired");
                 return RESET_PAGE;
             }
-            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-            user.setPassword(encoder.encodePassword(passwordReset.getPassword(), user.getId().toString()));
+            user.setPassword(encoder.encode(passwordReset.getPassword()));
             user.setPasswordResetToken(null);
             userRepository.save(user);
             mailService.sendPasswordChanged(user);

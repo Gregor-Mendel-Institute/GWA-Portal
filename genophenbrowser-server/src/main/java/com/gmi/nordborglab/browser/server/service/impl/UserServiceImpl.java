@@ -49,7 +49,7 @@ import org.elasticsearch.search.facet.filter.FilterFacet;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +66,8 @@ import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
+    @Resource
+    private PasswordEncoder encoder;
 
     @Resource
     private UserRepository userRepository;
@@ -109,8 +111,6 @@ public class UserServiceImpl implements UserService {
             if (userRepository.findByEmail(registration.getEmail()) != null) {
                 throw new DuplicateRegistrationException();
             }
-            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-
             AppUser appUser = new AppUser(registration.getEmail());
             appUser.setEmail(registration.getEmail());
             appUser.setFirstname(registration.getFirstname());
@@ -124,7 +124,7 @@ public class UserServiceImpl implements UserService {
             if (!registration.isSocialAccount()) {
                 appUser.setPassword("TEMPORARY");
                 userRepository.save(appUser);
-                appUser.setPassword(encoder.encodePassword(registration.getPassword(), appUser.getId().toString()));
+                appUser.setPassword(encoder.encode(registration.getPassword()));
             } else {
                 appUser.setOpenidUser(true);
                 appUser.setPassword(RandomStringUtils.random(8));
@@ -205,8 +205,7 @@ public class UserServiceImpl implements UserService {
 
         // change password
         if (user.getNewPassword() != null && !user.getNewPassword().isEmpty()) {
-            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-            existingUser.setPassword(encoder.encodePassword(user.getNewPassword(), existingUser.getId().toString()));
+            existingUser.setPassword(encoder.encode(user.getNewPassword()));
             user.setNewPassword(null);
             user.setNewPasswordConfirm(null);
         }
