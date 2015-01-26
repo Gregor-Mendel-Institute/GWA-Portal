@@ -328,10 +328,13 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
                 .from(data.getPhenotypes())
                 .transformAndConcat(getOntologies)
                 .filter(Predicates.notNull()));
-
+        if (ontologies == null || ontologies.isEmpty())
+            return;
         experimentManager.getRequestFactory().ontologyRequest().findAllByAcc(ontologies).fire(new Receiver<Set<TermProxy>>() {
             @Override
             public void onSuccess(Set<TermProxy> response) {
+                if (response == null)
+                    return;
                 Map<String, TermProxy> ontologyMap = FluentIterable.from(response).uniqueIndex(new Function<TermProxy, String>() {
                     @Nullable
                     @Override

@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.server.service;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
 import com.gmi.nordborglab.jpaontology.model.Term;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.junit.After;
 import org.junit.Before;
@@ -54,8 +55,14 @@ public class OntologyServiceTest extends BaseTest {
     }
 
     @Test
-    public void testFindAllbyAcc() {
+    public void testFindAllByAcc() {
         Set<Term> terms = service.findAllByAcc(Sets.newHashSet("TO:0000344", "TO:0000537", "EO:0007256", "ASDASD"));
         assertThat(terms.size(), is(3));
+    }
+
+    @Test
+    public void testFindAllByAccNull() {
+        Set<Term> terms = service.findAllByAcc(Sets.<String>newHashSet());
+        assertThat(terms.size(), is(0));
     }
 }

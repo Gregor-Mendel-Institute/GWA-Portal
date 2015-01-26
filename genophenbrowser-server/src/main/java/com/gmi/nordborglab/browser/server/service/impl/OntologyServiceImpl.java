@@ -9,6 +9,7 @@ import com.gmi.nordborglab.jpaontology.repository.Term2TermRepository;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gwt.thirdparty.guava.common.collect.Iterables;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -105,6 +106,9 @@ public class OntologyServiceImpl implements OntologyService {
 
     @Override
     public Set<Term> findAllByAcc(Set<String> accs) {
+        // FIXME because of https://jira.spring.io/browse/DATAJPA-606
+        if (accs == null || accs.isEmpty())
+            return Sets.newHashSet();
         return termRepository.findAllByAccIn(accs);
     }
 
