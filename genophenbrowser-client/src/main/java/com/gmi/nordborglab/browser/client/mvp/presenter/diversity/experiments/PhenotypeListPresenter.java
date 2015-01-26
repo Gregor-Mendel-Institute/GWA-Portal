@@ -4,8 +4,10 @@ import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadExperimentEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
+import com.gmi.nordborglab.browser.client.events.PhenotypeUploadedEvent;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeListViewUiHandlers;
+import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
@@ -29,8 +31,8 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import java.util.List;
 
@@ -47,6 +49,8 @@ public class PhenotypeListPresenter
         void displayFacets(List<FacetProxy> facets);
 
         void setSearchString(String searchString);
+
+        void onShowPhenotypeUploadPanel(boolean isShow);
     }
 
     @ProxyCodeSplit
@@ -58,6 +62,7 @@ public class PhenotypeListPresenter
     }
 
     protected final AsyncDataProvider<PhenotypeProxy> dataProvider;
+    public static final Object TYPE_SetPhenotypeUploadContent = new Object();
 
     private final PhenotypeManager phenotypeManager;
     private ExperimentProxy experiment;
@@ -68,13 +73,16 @@ public class PhenotypeListPresenter
     private String searchString = null;
     private ConstEnums.TABLE_FILTER currentFilter = ConstEnums.TABLE_FILTER.ALL;
     private List<FacetProxy> facets;
+    private final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizardPresenterWidget;
 
     @Inject
     public PhenotypeListPresenter(final EventBus eventBus, final MyView view,
                                   final MyProxy proxy, final PhenotypeManager phenotypeManager,
-                                  final PlaceManager placeManager) {
+                                  final PlaceManager placeManager,
+                                  final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizardPresenterWidget) {
         super(eventBus, view, proxy, ExperimentDetailTabPresenter.TYPE_SetTabContent);
         getView().setUiHandlers(this);
+        this.phenotypeUploadWizardPresenterWidget = phenotypeUploadWizardPresenterWidget;
         this.phenotypeManager = phenotypeManager;
         this.placeManager = placeManager;
         dataProvider = new AsyncDataProvider<PhenotypeProxy>() {
@@ -120,12 +128,21 @@ public class PhenotypeListPresenter
     @Override
     protected void onBind() {
         super.onBind();
+        setInSlot(TYPE_SetPhenotypeUploadContent, phenotypeUploadWizardPresenterWidget);
+        registerHandler(PhenotypeUploadedEvent.register(getEventBus(), new PhenotypeUploadedEvent.Handler() {
+            @Override
+            public void onPhenotypeUploaded(PhenotypeUploadedEvent event) {
+                getView().onShowPhenotypeUploadPanel(false);
+                getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+            }
+        }));
         dataProvider.addDataDisplay(getView().getDisplay());
     }
 
     @Override
     protected void onReset() {
         super.onReset();
+        phenotypeUploadWizardPresenterWidget.setExperiment(experiment);
         if (fireLoadExperimentEvent) {
             fireEvent(new LoadExperimentEvent(experiment));
             fireLoadExperimentEvent = false;
@@ -199,6 +216,7 @@ public class PhenotypeListPresenter
         return true;
     }
 
+
     @Override
     public void selectFilter(ConstEnums.TABLE_FILTER filter) {
         if (filter != currentFilter) {
@@ -215,5 +233,10 @@ public class PhenotypeListPresenter
     public void updateSearchString(String searchString) {
         this.searchString = searchString;
         getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+    }
+
+    @Override
+    public void onClosePhenotypeUploadPopup() {
+
     }
 }

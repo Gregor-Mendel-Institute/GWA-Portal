@@ -1,8 +1,14 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
+import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
+import com.github.gwtbootstrap.client.ui.constants.BackdropType;
+import com.github.gwtbootstrap.client.ui.event.HideEvent;
+import com.github.gwtbootstrap.client.ui.event.HideHandler;
+import com.github.gwtbootstrap.client.ui.event.ShownEvent;
+import com.github.gwtbootstrap.client.ui.event.ShownHandler;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeListViewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.PhenotypeListPresenter;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
@@ -20,11 +26,15 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.query.client.GQuery;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ResizeLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
@@ -60,7 +70,10 @@ public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListViewUiHan
     @UiField
     TextBox searchBox;
 
+
     protected final PlaceManager placeManager;
+    private ResizeLayoutPanel phenotypeUploadPanel = new ResizeLayoutPanel();
+    private Modal phenotypeUploadPopup = new Modal();
     private final BiMap<ConstEnums.TABLE_FILTER, NavLink> navLinkMap;
 
     @Inject
@@ -75,6 +88,28 @@ public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListViewUiHan
                 .put(ConstEnums.TABLE_FILTER.PUBLISHED, navPublished)
                 .put(ConstEnums.TABLE_FILTER.RECENT, navRecent).build();
         pager.setDisplay(dataGrid);
+        phenotypeUploadPopup.add(phenotypeUploadPanel);
+        phenotypeUploadPopup.setTitle("Upload phenotype");
+        phenotypeUploadPopup.setAnimation(true);
+        phenotypeUploadPopup.setBackdrop(BackdropType.STATIC);
+        phenotypeUploadPopup.addHideHandler(new HideHandler() {
+            @Override
+            public void onHide(HideEvent hideEvent) {
+                getUiHandlers().onClosePhenotypeUploadPopup();
+            }
+        });
+
+        phenotypeUploadPopup.addShownHandler(new ShownHandler() {
+            @Override
+            public void onShown(ShownEvent shownEvent) {
+                int top = GQuery.$(phenotypeUploadPopup).top();
+                int height = Window.getClientHeight() - top;
+                phenotypeUploadPopup.setMaxHeigth(height + "px");
+                phenotypeUploadPopup.setHeight(height + "px");
+                phenotypeUploadPopup.setWidth(Window.getClientWidth() - 50);
+                phenotypeUploadPanel.setHeight(GQuery.$(phenotypeUploadPopup).innerHeight() - 50 + "px");
+            }
+        });
     }
 
     @Override
@@ -144,6 +179,31 @@ public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListViewUiHan
         }
         return "";
     }
+
+    @Override
+    public void setInSlot(Object slot, IsWidget content) {
+        if (slot == PhenotypeListPresenter.TYPE_SetPhenotypeUploadContent) {
+            phenotypeUploadPanel.add(content);
+        } else {
+            super.setInSlot(slot, content);
+        }
+    }
+
+    @UiHandler("uploadPhenotypeBtn")
+    public void onClickUploadBtn(ClickEvent e) {
+        onShowPhenotypeUploadPanel(true);
+    }
+
+    @Override
+    public void onShowPhenotypeUploadPanel(boolean isShow) {
+        if (isShow) {
+            phenotypeUploadPopup.show();
+        } else {
+            phenotypeUploadPopup.hide();
+        }
+    }
+
+
 
     @UiHandler({"navAll", "navPrivate", "navPublished", "navRecent"})
     public void onNavClick(ClickEvent e) {
