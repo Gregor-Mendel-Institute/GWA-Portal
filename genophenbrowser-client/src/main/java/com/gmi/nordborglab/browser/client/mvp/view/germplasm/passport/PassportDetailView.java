@@ -39,14 +39,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
-import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.visualization.client.DataView;
@@ -394,6 +392,7 @@ public class PassportDetailView extends ViewImpl implements
             return;
         container.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.AUTO);
         drawStatsChart(STATS_TYPE.TRAIT_ONTOLOGY);
+        mapWidget.triggerResize();
     }
 
     @Override

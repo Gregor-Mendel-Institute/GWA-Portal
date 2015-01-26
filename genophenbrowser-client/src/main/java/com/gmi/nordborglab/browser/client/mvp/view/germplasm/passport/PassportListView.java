@@ -100,7 +100,7 @@ public class PassportListView extends ViewWithUiHandlers<PassportListViewUiHandl
                         LocalityProxy locality = passport.getCollection().getLocality();
                         LatLng position = LatLng.newInstance(locality.getLatitude(), locality.getLongitude());
                         marker.setPosition(position);
-                        marker.setTitle(passport.getAccename());
+                        marker.setTitle(passport.getAccename() + " (" + passport.getAccename() + ")");
                         marker.setMap(mapWidget);
                     }
                 }
@@ -186,6 +186,7 @@ public class PassportListView extends ViewWithUiHandlers<PassportListViewUiHandl
         mapWidget = new MapWidget(opts);
         mapWidget.setSize("100%", "100%");
         mapContainer.add(mapWidget);
+        mapWidget.triggerResize();
     }
 
 

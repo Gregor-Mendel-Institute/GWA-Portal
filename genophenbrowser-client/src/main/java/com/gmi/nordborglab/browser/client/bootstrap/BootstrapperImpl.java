@@ -116,7 +116,6 @@ public class BootstrapperImpl implements Bootstrapper {
 
         // load all the libs for use in the maps
         ArrayList<LoadApi.LoadLibrary> loadLibraries = new ArrayList<LoadApi.LoadLibrary>();
-        loadLibraries.add(LoadApi.LoadLibrary.ADSENSE);
         loadLibraries.add(LoadApi.LoadLibrary.DRAWING);
         loadLibraries.add(LoadApi.LoadLibrary.GEOMETRY);
         loadLibraries.add(LoadApi.LoadLibrary.PANORAMIO);
