@@ -116,7 +116,9 @@ public class EsAclManager {
             String name = "";
             if (aclSid.getPrincipal()) {
                 AppUser user = userRepository.findOne(Long.parseLong(aclSid.getSid()));
-                name = user.getFirstname() + " " + user.getLastname();
+                if (user != null) {
+                    name = user.getFirstname() + " " + user.getLastname();
+                }
             }
 
             // add owner:
