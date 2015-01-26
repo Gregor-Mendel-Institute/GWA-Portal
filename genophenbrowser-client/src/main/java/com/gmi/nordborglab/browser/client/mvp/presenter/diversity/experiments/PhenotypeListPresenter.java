@@ -9,6 +9,8 @@ import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeListViewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypePageProxy;
@@ -51,6 +53,8 @@ public class PhenotypeListPresenter
         void setSearchString(String searchString);
 
         void onShowPhenotypeUploadPanel(boolean isShow);
+
+        void showUploadBtn(boolean showAdd);
     }
 
     @ProxyCodeSplit
@@ -74,15 +78,18 @@ public class PhenotypeListPresenter
     private ConstEnums.TABLE_FILTER currentFilter = ConstEnums.TABLE_FILTER.ALL;
     private List<FacetProxy> facets;
     private final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizardPresenterWidget;
+    private final CurrentUser currentUser;
 
     @Inject
     public PhenotypeListPresenter(final EventBus eventBus, final MyView view,
                                   final MyProxy proxy, final PhenotypeManager phenotypeManager,
                                   final PlaceManager placeManager,
-                                  final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizardPresenterWidget) {
+                                  final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizardPresenterWidget,
+                                  final CurrentUser currentUser) {
         super(eventBus, view, proxy, ExperimentDetailTabPresenter.TYPE_SetTabContent);
         getView().setUiHandlers(this);
         this.phenotypeUploadWizardPresenterWidget = phenotypeUploadWizardPresenterWidget;
+        this.currentUser = currentUser;
         this.phenotypeManager = phenotypeManager;
         this.placeManager = placeManager;
         dataProvider = new AsyncDataProvider<PhenotypeProxy>() {
@@ -148,6 +155,7 @@ public class PhenotypeListPresenter
             fireLoadExperimentEvent = false;
         }
         LoadingIndicatorEvent.fire(this, false);
+        checkPermissionAndUpdateView();
         //getProxy().getTab().setTargetHistoryToken(placeManager.buildRelativeHistoryToken(0));
     }
 
@@ -238,5 +246,12 @@ public class PhenotypeListPresenter
     @Override
     public void onClosePhenotypeUploadPopup() {
 
+    }
+
+    protected void checkPermissionAndUpdateView() {
+        int permission = currentUser.getPermissionMask(experiment.getUserPermission());
+        boolean showAdd = (((permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT) ||
+                ((permission & AccessControlEntryProxy.ADMINISTRATION) == AccessControlEntryProxy.ADMINISTRATION));
+        getView().showUploadBtn(showAdd);
     }
 }

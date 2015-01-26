@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments;
 
+import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
@@ -69,6 +70,8 @@ public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListViewUiHan
     NavLink navRecent;
     @UiField
     TextBox searchBox;
+    @UiField
+    Button uploadPhenotypeBtn;
 
 
     protected final PlaceManager placeManager;
@@ -203,6 +206,10 @@ public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListViewUiHan
         }
     }
 
+    @Override
+    public void showUploadBtn(boolean showAdd) {
+        uploadPhenotypeBtn.setVisible(showAdd);
+    }
 
 
     @UiHandler({"navAll", "navPrivate", "navPublished", "navRecent"})
