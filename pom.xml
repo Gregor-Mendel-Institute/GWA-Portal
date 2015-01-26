@@ -34,7 +34,7 @@
         <mockito.version>1.10.17</mockito.version>
         <hibernate-validator.version>5.1.2.Final</hibernate-validator.version>
         <javax.validation.version>1.1.0.Final</javax.validation.version>
-        <slf4j.version>1.7.9</slf4j.version>
+        <slf4j.version>1.7.10</slf4j.version>
         <logback.version>1.1.2</logback.version>
         <maven.clean.plugin>2.5</maven.clean.plugin>
         <maven.deploy.plugin>2.7</maven.deploy.plugin>
@@ -69,8 +69,8 @@
         <maven.assembly.plugin>2.3</maven.assembly.plugin>
         <maven.antrun.plugin>1.7</maven.antrun.plugin>
         <java.version>1.7</java.version>
-        <errai.version>3.1.0.Final</errai.version>
-        <javassist.version>3.18.2-GA</javassist.version>
+        <errai.version>3.1.1.Final</errai.version>
+        <javassist.version>3.19.0-GA</javassist.version>
     </properties>
 
     <pluginRepositories>
