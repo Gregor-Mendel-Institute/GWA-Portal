@@ -1,8 +1,10 @@
 package com.gmi.nordborglab.browser.server.service;
 
+import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
+import com.gmi.nordborglab.browser.server.rest.SampleData;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
@@ -34,8 +36,8 @@ public interface TraitUomService {
 
     List<TraitUom> findPhenotypesByExperimentAndAcl(Long id, int permission);
 
-    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#experimentId,'com.gmi.nordborglab.browser.server.domain.observation.Experiment','EDIT') or hasPermission(#experimentId,'com.gmi.nordborglab.browser.server.domain.observation.Experiment','ADMINISTRATION'))")
-    Long savePhenotypeUploadData(Long experimentId, PhenotypeUploadData data);
+    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#experiment,'EDIT') or hasPermission(#experiment,'ADMINISTRATION'))")
+    List<TraitUom> savePhenotypeUploadData(Experiment experiment, List<PhenotypeUploadData> data, List<SampleData> samples);
 
     @PostFilter("hasPermission(filterObject,'READ')")
     List<TraitUom> findAllByOntology(String type, String acc, boolean checkChilds);

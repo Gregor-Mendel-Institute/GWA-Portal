@@ -13,6 +13,7 @@ import com.gmi.nordborglab.browser.server.domain.germplasm.Sampstat;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import com.gmi.nordborglab.browser.server.domain.observation.Locality;
 import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
@@ -47,7 +48,7 @@ import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
-import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
+import com.gmi.nordborglab.browser.server.rest.SampleData;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.HelperService;
@@ -59,7 +60,6 @@ import com.gmi.nordborglab.browser.shared.service.HelperFactory;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.web.bindery.autobean.vm.AutoBeanFactorySource;
@@ -81,9 +81,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.CellProcessorAdaptor;
+import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ParseDouble;
-import org.supercsv.cellprocessor.ParseInt;
 import org.supercsv.cellprocessor.ParseLong;
+import org.supercsv.cellprocessor.Trim;
 import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.cellprocessor.ift.StringCellProcessor;
@@ -99,7 +100,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -111,34 +111,6 @@ public class HelperServiceImpl implements HelperService {
 
     private static HelperFactory helperFactory = AutoBeanFactorySource.create(HelperFactory.class);
 
-    private static class ParsePhenotypeValue extends CellProcessorAdaptor {
-
-
-        public static enum PHENOTYPE_VALUE_TYPES {
-            MEASURE, MEAN, STD, VARIANCE, MODE, MEDIAN, COUNT;
-
-        }
-
-        private ParsePhenotypeValue() {
-            super();
-        }
-
-        private ParsePhenotypeValue(CellProcessor next) {
-            super(next);
-        }
-
-        @Override
-        public Object execute(Object value, CsvContext context) {
-            validateInputNotNull(value, context);
-            for (PHENOTYPE_VALUE_TYPES type : PHENOTYPE_VALUE_TYPES.values()) {
-                if (type.name().equalsIgnoreCase(value.toString())) {
-                    return next.execute(value, context);
-                }
-            }
-            throw new SuperCsvCellProcessorException(String.format("Could not parse '%s' as a phenotype value type", value), context, this);
-        }
-
-    }
 
     private static class SupressException extends CellProcessorAdaptor {
 
@@ -249,18 +221,9 @@ public class HelperServiceImpl implements HelperService {
     @Resource
     protected EsAclManager esAclManager;
 
-    private final Map<ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES, CellProcessor> phenotype2CellProcessors;
-
 
     public HelperServiceImpl() {
-        phenotype2CellProcessors = ImmutableMap.<ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES, CellProcessor>builder()
-                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.MEAN, new ParseDouble())
-                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.MEASURE, new ParseDouble())
-                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.STD, new ParseDouble())
-                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.MODE, new ParseInt())
-                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.COUNT, new ParseInt())
-                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.VARIANCE, new ParseDouble())
-                .put(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.MEDIAN, new ParseDouble()).build();
+
     }
 
     @Override
@@ -316,40 +279,6 @@ public class HelperServiceImpl implements HelperService {
     }
 
 
-	/*@Override
-    public String getAppData() {
-		List<UnitOfMeasure> unitOfMeasureValues = unitOfMeasureRepository.findAll();
-		List<StatisticType> statisticTypeValues = statisticTypeRepository.findAll();
-		String json;
-		AutoBean<AppDataProxy> bean = helperFactory.appData();
-		List<UnitOfMeasureProxy> unitOfMeasures = new ArrayList<UnitOfMeasureProxy>();
-		List<StatisticTypeProxy> statisticTypes = new ArrayList<StatisticTypeProxy>();
-		UnitOfMeasureProxy unitOfMeasureProxy = helperFactory.unitOfMeasure().as();
-		unitOfMeasureProxy.setUnitType("");
-		unitOfMeasures.add(unitOfMeasureProxy);
-		for (UnitOfMeasure unitOfMeasure:unitOfMeasureValues) {
-			unitOfMeasureProxy = helperFactory.unitOfMeasure().as();
-			unitOfMeasureProxy.setId(unitOfMeasure.getId());
-			unitOfMeasureProxy.setUnitType(unitOfMeasure.getUnitType());
-			unitOfMeasures.add(unitOfMeasureProxy);
-		}
-		//bean.setUnitOfMeasureList(unitOfMeasures);
-		for (StatisticType statisticType:statisticTypeValues) {
-			StatisticTypeProxy statisticTypeProxy = helperFactory.statisticType().as();
-			statisticTypeProxy.setId(statisticType.getId());
-			statisticTypeProxy.setStatType(statisticType.getStatType());
-			statisticTypes.add(statisticTypeProxy);
-		}
-		//bean.setStatisticTypeList(statisticTypes);
-		//String key = ser.serialize(someProxy);
-		// Create the flattened representation
-		//String payload = store.encode();
-		json = AutoBeanCodex.encode(bean).getPayload();
-		return json;
-		
-	}*/
-
-
     @Override
     public AppData getAppData() {
         List<UnitOfMeasure> unitOfMeasureValues = unitOfMeasureRepository.findAll();
@@ -377,72 +306,12 @@ public class HelperServiceImpl implements HelperService {
     }
 
 
-    @Override
-    public PhenotypeUploadData getPhenotypeUploadData(byte[] csvData) throws IOException {
-        PhenotypeUploadData data = new PhenotypeUploadData();
-        ICsvListReader metaInformationReader = null;
-        ICsvListReader valueHeaderReader = null;
-        ICsvListReader valueReader = null;
-        boolean hasMetaInfo = false;
-        try {
-            metaInformationReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
-            String[] valueHeader = null;
-            final String[] metaHeader = metaInformationReader.getHeader(true);
-            hasMetaInfo = (metaHeader.length > 0 && metaHeader[0].equals("#HEADER"));
-            if (hasMetaInfo) {
-                final Map<String, String> metaInfo = getMetaInformationFromHeader(metaHeader);
-                updatePhenotypeUploadDataWithMetaInformation(data, metaInfo);
-                valueHeader = metaInformationReader.getHeader(false);
-            } else {
-                valueHeader = metaHeader;
-            }
-
-
-            final int columnCount = valueHeader.length;
-            List<String> headers = Arrays.asList(valueHeader).subList(1, valueHeader.length);
-            data.setValueHeader(headers);
-
-            CellProcessor[] valueHeaderCellProccessors = createValueHeaderCellProcessors(columnCount);
-
-            valueHeaderReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
-            if (hasMetaInfo)
-                valueHeaderReader.getHeader(true);
-            valueHeaderReader.read(valueHeaderCellProccessors);
-
-            valueReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
-            if (hasMetaInfo)
-                valueReader.getHeader(true);
-            valueReader.getHeader(false);
-            CellProcessor[] valueCellProcessors = createValueCellProcessors(headers);
-            List<Object> phenotypeValues = null;
-            while ((phenotypeValues = valueReader.read(valueCellProcessors)) != null) {
-                PhenotypeUploadValue value = parseAndCheckPhenotypeValue(phenotypeValues, getParseErrorFromProcessor(valueCellProcessors));
-                if (value != null)
-                    data.addPhenotypeValue(value);
-            }
-            data.sortByErrors();
-
-        } catch (SuperCsvCellProcessorException e) {
-            data.setErrorMessage(String.format("Error parsing header. '%s'", e.getMessage()));
-        } catch (Exception e) {
-            data.setErrorMessage("General error reading csv file");
-        } finally {
-            if (metaInformationReader != null)
-                metaInformationReader.close();
-        }
-        return data;
-    }
-
-
-    private boolean getParseErrorFromProcessor(CellProcessor[] processors) {
+    private boolean checkCellProcessorForError(CellProcessor processor) {
         boolean hasError = false;
-        for (CellProcessor processor : processors) {
-            if (processor instanceof SupressException) {
-                SupressException cell = (SupressException) processor;
-                if (cell.getSuppressedException() != null)
-                    hasError = true;
-                cell.reset();
-            }
+        if (processor instanceof SupressException) {
+            SupressException cell = (SupressException) processor;
+            hasError = cell.getSuppressedException() != null;
+            cell.reset();
         }
         return hasError;
     }
@@ -506,18 +375,22 @@ public class HelperServiceImpl implements HelperService {
         return recentNotifications;
     }
 
-    public PhenotypeUploadValue parseAndUpdateAccession(PhenotypeUploadValue value) {
+    public SampleData parseAndUpdateAccession(SampleData value) {
         boolean isIdKnown = false;
         try {
             Long id = Long.parseLong(value.getSourceId());
             Long passportId = null;
             Long stockId = null;
             String accessionName = null;
+            Locality locality = null;
             if (passportRepository.exists(id)) {
                 Passport passport = passportRepository.findOne(id);
                 passportId = id;
                 isIdKnown = true;
                 accessionName = passport.getAccename();
+                if (passport.getCollection() != null && passport.getCollection().getLocality() != null) {
+                    locality = passport.getCollection().getLocality();
+                }
 
             } else if (stockRepository.exists(id)) {
                 Stock stock = stockRepository.findOne(id);
@@ -525,6 +398,15 @@ public class HelperServiceImpl implements HelperService {
                 isIdKnown = true;
                 passportId = stock.getPassport().getId();
                 accessionName = stock.getPassport().getAccename();
+                if (stock.getPassport().getCollection() != null && stock.getPassport().getCollection().getLocality() != null) {
+                    locality = stock.getPassport().getCollection().getLocality();
+                }
+            }
+            if (locality != null) {
+                value.setCountry(locality.getCountry());
+                value.setCountryShort(locality.getOrigcty());
+                value.setLongitude(locality.getLongitude());
+                value.setLatitude(locality.getLatitude());
             }
             value.setAccessionName(accessionName);
             value.setStockId(stockId);
@@ -538,38 +420,6 @@ public class HelperServiceImpl implements HelperService {
     }
 
 
-    private PhenotypeUploadValue parseAndCheckPhenotypeValue(List<Object> phenotypeValues, boolean valueError) {
-        PhenotypeUploadValue parsedValue = new PhenotypeUploadValue();
-        try {
-            parsedValue.setParseError(valueError);
-            Long sourceId = (Long) phenotypeValues.get(0);
-            List<String> values = Lists.newArrayList();
-            for (Object obj : phenotypeValues) {
-                values.add(String.valueOf(obj));
-            }
-            parsedValue.setValues(values.subList(1, values.size()));
-            parsedValue.setSourceId(sourceId.toString());
-            parsedValue = parseAndUpdateAccession(parsedValue);
-        } catch (Exception e) {
-            parsedValue.setParseError(true);
-        }
-        return parsedValue;
-    }
-
-    private void updatePhenotypeUploadDataWithMetaInformation(PhenotypeUploadData data, Map<String, String> metaInfo) {
-        if (metaInfo.containsKey("name"))
-            data.setName(metaInfo.get("name"));
-        //TODO retrieve unitofMeasureFromText
-        if (metaInfo.containsKey("unitofmeasure"))
-            data.setUnitOfMeasure(metaInfo.get("unitofmeasure"));
-        if (metaInfo.containsKey("protocol"))
-            data.setProtocol(metaInfo.get("protocol"));
-        if (metaInfo.containsKey("traitontology"))
-            data.setTraitOntology(termRepository.findByAcc(metaInfo.get("traitontology")));
-        if (metaInfo.containsKey("environmentontology"))
-            data.setEnvironmentOntology(termRepository.findByAcc(metaInfo.get("environmentontology")));
-    }
-
     private static Map<String, String> getMetaInformationFromHeader(String[] header) {
         Map<String, String> metaInfo = new HashMap<String, String>();
         for (int i = 1; i < header.length; i++) {
@@ -580,7 +430,7 @@ public class HelperServiceImpl implements HelperService {
     }
 
     private static CellProcessor[] createValueHeaderCellProcessors(int valueColumns) {
-        StringCellProcessor valueHeaderCell = new NotNull(new ParsePhenotypeValue());
+        StringCellProcessor valueHeaderCell = new NotNull(new Trim());
         CellProcessor[] processors = new CellProcessor[valueColumns];
         processors[0] = null;
         for (int i = 1; i < valueColumns; i++) {
@@ -589,25 +439,15 @@ public class HelperServiceImpl implements HelperService {
         return processors;
     }
 
-    private CellProcessor[] createValueCellProcessors(List<String> header) {
+    private CellProcessor[] createValueCellProcessors(int valueColumns) {
         CellProcessor processor = null;
-        CellProcessor[] processors = new CellProcessor[header.size() + 1];
-        processors[0] = new NotNull(new ParseLong());
+        CellProcessor[] processors = new CellProcessor[valueColumns];
+        processors[0] = new SupressException(new NotNull(new Trim(new ParseLong())));
         for (int i = 1; i < processors.length; i++) {
-            try {
-                processor = phenotype2CellProcessors.get(ParsePhenotypeValue.PHENOTYPE_VALUE_TYPES.valueOf(header.get(i - 1)));
-            } catch (Exception e) {
-
-            }
-            if (processor == null) {
-                processor = new ParseDouble();
-            }
-            SupressException valueCell = new SupressException(new NotNull(processor));
+            SupressException valueCell = new SupressException(new Optional(new Trim(new ParseDouble())));
             processors[i] = valueCell;
         }
-        //TODO properly implement parse issues on the backend.
         return processors;
-
     }
 
     private UnitOfMeasure getUnitOfMeasureFromText(String text) {
@@ -717,9 +557,81 @@ public class HelperServiceImpl implements HelperService {
     }
 
     @Override
-    public ExperimentUploadData getExperimentUploadData(byte[] isaTabData) {
+    public ExperimentUploadData getExperimentUploadDataFromIsaTab(byte[] isaTabData) {
         return isaTabExporter.getExperimentUploadDataFromArchive(isaTabData);
     }
+
+    @Override
+    public ExperimentUploadData getExperimentUploadDataFromCsv(byte[] csvData) throws IOException {
+        ExperimentUploadData data = new ExperimentUploadData();
+        ICsvListReader headerReader = null;
+        ICsvListReader reader = null;
+        try {
+            headerReader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
+
+            // get number of header columns
+            String[] header = headerReader.getHeader(true);
+
+            // create cellprocessors for headers
+            CellProcessor[] headerCellProcessors = createValueHeaderCellProcessors(header.length);
+
+            // create cellprocessors for values
+            CellProcessor[] valueCellProcessors = createValueCellProcessors(header.length);
+
+            // check the cellProcessors
+            headerReader.executeProcessors(headerCellProcessors);
+
+            // add the phenotypes
+            List<PhenotypeUploadData> phenotypes = Lists.newArrayList();
+            for (int i = 1; i < header.length; i++) {
+                PhenotypeUploadData phenotype = new PhenotypeUploadData();
+                phenotype.setName(header[i]);
+                phenotypes.add(phenotype);
+            }
+            List<SampleData> sampleData = Lists.newArrayList();
+            List<Object> row;
+            reader = new CsvListReader(new InputStreamReader(new ByteArrayInputStream(csvData)), CsvPreference.STANDARD_PREFERENCE);
+            reader.getHeader(false);
+            int j = 1;
+            while ((row = reader.read(valueCellProcessors)) != null) {
+                // add sample
+                SampleData sample = new SampleData(row.get(0) != null ? String.valueOf(row.get(0)) : null);
+                parseAndUpdateAccession(sample);
+                sampleData.add(sample);
+                for (int i = 1; i < header.length; i++) {
+                    PhenotypeUploadData phenotype = phenotypes.get(i - 1);
+                    boolean parseError = checkCellProcessorForError(valueCellProcessors[i]);
+                    String value = null;
+                    if (row.get(i) != null) {
+                        value = String.valueOf(row.get(i));
+                    }
+                    if (value != null && !value.isEmpty()) {
+                        phenotype.incValueCount();
+                    }
+                    if (parseError || (sample.hasIdError() && value != null && !value.isEmpty())) {
+                        phenotype.addParseError(j);
+                    }
+                    sample.addValue(value, parseError);
+                }
+                j++;
+            }
+            data.setPhenotypes(phenotypes);
+            data.setSampleData(sampleData);
+
+        } catch (SuperCsvCellProcessorException e) {
+            throw new IOException(String.format("Error parsing header. '%s'", e.getMessage()));
+        } catch (Exception e) {
+            throw new IOException("General error reading csv file");
+        } finally {
+            if (headerReader != null)
+                headerReader.close();
+            if (reader != null)
+                reader.close();
+        }
+        data.sortByErrors();
+        return data;
+    }
+
 
 
     private List<DateStatHistogram> getHistogram(Facets facets, DateStatHistogramProxy.INTERVAL interval) {

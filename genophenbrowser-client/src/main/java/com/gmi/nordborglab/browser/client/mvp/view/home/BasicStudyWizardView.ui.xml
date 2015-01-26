@@ -87,11 +87,11 @@
                         </g:tab>
                         <g:tab>
                             <g:header>Upload ISA-TAB</g:header>
-                            <g:SimpleLayoutPanel ui:field="isaTabUploadContainer"/>
+                            <g:ResizeLayoutPanel ui:field="isaTabUploadContainer"/>
                         </g:tab>
                     </g:TabLayoutPanel>
 
-                    <b:ModalFooter>
+                    <b:ModalFooter ui:field="createExperimentPanelFooter">
                         <b:Button icon="FILE" type="PRIMARY" ui:field="saveExperimentBtn">Save</b:Button>
                     </b:ModalFooter>
                 </b:Modal>

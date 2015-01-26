@@ -30,6 +30,4 @@ public interface BasicStudyWizardUiHandlers extends UiHandlers {
     void onSelectStatisticType(StatisticTypeProxy statisticType);
 
     void onCloseCreateExperimentPopup();
-
-    void onSaveIsaTabUpload();
 }

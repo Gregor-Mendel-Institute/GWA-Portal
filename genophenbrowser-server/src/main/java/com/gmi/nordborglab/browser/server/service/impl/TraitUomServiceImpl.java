@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
-import com.gmi.nordborglab.browser.server.domain.AppData;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
@@ -11,12 +10,12 @@ import com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
-import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
 import com.gmi.nordborglab.browser.server.repository.PassportRepository;
+import com.gmi.nordborglab.browser.server.repository.StatisticTypeRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
-import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
+import com.gmi.nordborglab.browser.server.rest.SampleData;
 import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
@@ -62,11 +61,10 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
@@ -79,12 +77,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
     private HelperService helperService;
 
     @Resource
-    private PassportRepository passportRepository;
-
-    @Resource
     private TraitUomRepository traitUomRepository;
-    @Resource
-    private ExperimentRepository experimentRepository;
 
     @Resource
     private CdvService cdvService;
@@ -106,6 +99,12 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
 
     @Resource
     private EsAclManager esAclManager;
+
+    @Resource
+    private StatisticTypeRepository statisticTypeRepository;
+
+    @Resource
+    private PassportRepository passportRepository;
 
     @Override
     public TraitUomPage findPhenotypesByExperiment(Long id, int start, int size) {
@@ -335,54 +334,56 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
 
     @Transactional(readOnly = false)
     @Override
-    public Long savePhenotypeUploadData(Long experimentId, PhenotypeUploadData data) {
-        checkNotNull(data.getValueHeader());
-        checkNotNull(data.getPhenotypeUploadValues());
-        Experiment experiment = experimentRepository.findOne(experimentId);
+    public List<TraitUom> savePhenotypeUploadData(Experiment experiment, List<PhenotypeUploadData> data, List<SampleData> samples) {
         checkNotNull(experiment);
-        List<Sid> authorities = SecurityUtil.getSids(roleHierarchy);
-        Map<Long, ObsUnit> lookUpForObsUnit = getObsUnitMap(experiment.getObsUnits());
-        List<StatisticType> statisticTypes = getStatisticTypesFromString(data.getValueHeader());
-        TraitUom traitUom = data.getTraitUom();
-        for (PhenotypeUploadValue value : data.getPhenotypeUploadValues()) {
-            if (value.hasError()) {
+        checkNotNull(samples);
+        checkNotNull(data);
+        checkArgument(experiment.getId() != null);
+        StatisticType statisticType = statisticTypeRepository.findOne(1L);
+        checkNotNull(statisticType);
+        for (SampleData sample : samples) {
+            if (sample.hasError()) {
                 continue;
             }
-            ObsUnit obsUnit = lookUpForObsUnit.get(value.getPassportId());
-            if (obsUnit == null) {
-                Passport passport = passportRepository.findOne(value.getPassportId());
-                //TODO check if stock is available
-                Stock stock = passport.getStocks().get(0);
-                obsUnit = new ObsUnit();
-                obsUnit.setStock(stock);
-                obsUnit.setExperiment(experiment);
-                lookUpForObsUnit.put(value.getPassportId(), obsUnit);
-            }
-
-            for (int i = 0; i < value.getValues().size(); i++) {
-                String phenValue = value.getValues().get(i);
-                if (phenValue.equals("") || phenValue.equals("NA"))
+            Passport passport = passportRepository.findOne(sample.getPassportId());
+            Stock stock = passport.getStocks().get(0);
+            ObsUnit obsUnit = new ObsUnit();
+            obsUnit.setStock(stock);
+            obsUnit.setExperiment(experiment);
+            for (int i = 0; i < data.size(); i++) {
+                String phenotypeValue = sample.getValues().get(i);
+                if (phenotypeValue == null || phenotypeValue.isEmpty())
                     continue;
-                StatisticType statisticType = statisticTypes.get(i);
+                TraitUom traitUom = data.get(i).getTraitUom();
                 Trait trait = new Trait();
                 trait.setStatisticType(statisticType);
-                trait.setValue(phenValue);
+                trait.setValue(phenotypeValue);
                 trait.setObsUnit(obsUnit);
                 traitUom.addTrait(trait);
             }
         }
-        traitUom = traitUomRepository.save(traitUom);
-        initOntologies(traitUom);
-        CumulativePermission permission = new CumulativePermission();
-        permission.set(CustomPermission.ADMINISTRATION);
-        permission.set(CustomPermission.EDIT);
-        permission.set(CustomPermission.READ);
-        aclManager.addPermission(traitUom, new PrincipalSid(SecurityUtil.getUsername()),
-                permission, Experiment.class, experimentId);
-        aclManager.addPermission(traitUom, new GrantedAuthoritySid("ROLE_ADMIN"), permission, Experiment.class, experimentId);
-        indexTraitUom(traitUom);
-        return traitUom.getId();
+        for (PhenotypeUploadData phenotypeUploadData : data) {
+            TraitUom traitUom = phenotypeUploadData.getTraitUom();
+            traitUomRepository.save(traitUom);
+            initOntologies(traitUom);
+            CumulativePermission permission = new CumulativePermission();
+            permission.set(CustomPermission.ADMINISTRATION);
+            permission.set(CustomPermission.EDIT);
+            permission.set(CustomPermission.READ);
+            aclManager.addPermission(traitUom, new PrincipalSid(SecurityUtil.getUsername()),
+                    permission, Experiment.class, experiment.getId());
+            aclManager.addPermission(traitUom, new GrantedAuthoritySid("ROLE_ADMIN"), permission, Experiment.class, experiment.getId());
+            indexTraitUom(traitUom);
+        }
+        return Lists.newArrayList(Iterables.transform(data, new Function<PhenotypeUploadData, TraitUom>() {
+            @Nullable
+            @Override
+            public TraitUom apply(@Nullable PhenotypeUploadData input) {
+                return input.getTraitUom();
+            }
+        }));
     }
+
 
     private void indexTraitUom(TraitUom traitUom) {
         try {
@@ -466,31 +467,6 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
         for (Term2Term term2Term : term.getChilds()) {
             addChildOntologies(term2Term.getChild(), list);
         }
-    }
-
-    private List<StatisticType> getStatisticTypesFromString(List<String> valueHeader) {
-        //TODO cache it
-        AppData appData = helperService.getAppData();
-        List<StatisticType> statisticTypes = new ArrayList<StatisticType>();
-        for (int i = 0; i < valueHeader.size(); i++) {
-            for (StatisticType type : appData.getStatisticTypeList()) {
-                if (type.getStatType().equalsIgnoreCase(valueHeader.get(i))) {
-                    statisticTypes.add(type);
-                    break;
-                }
-            }
-        }
-        return statisticTypes;
-    }
-
-    private Map<Long, ObsUnit> getObsUnitMap(Set<ObsUnit> obsunits) {
-        Map<Long, ObsUnit> map = Maps.newHashMap();
-        for (ObsUnit obsUnit : obsunits) {
-            Long passportId = obsUnit.getStock().getPassport().getId();
-            if (!map.containsKey(passportId))
-                map.put(passportId, obsUnit);
-        }
-        return map;
     }
 
     private void initOntologies(TraitUom traitUom) {

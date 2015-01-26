@@ -7,7 +7,6 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.Ex
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentDetailTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.ExperimentsOverviewTabPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.IsaTabUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.PhenotypeListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListPresenter;
@@ -60,7 +59,6 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.Experim
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentsOverviewTabView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentsOverviewView;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.IsaTabUploadWizardView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.PhenotypeListView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListView;
@@ -289,8 +287,7 @@ public class ApplicationModule extends AbstractPresenterModule {
         bindPresenterWidget(DropDownFilterItemPresenterWidget.class, DropDownFilterItemPresenterWidget.MyView.class, DropDownFilterItemPresenterWidgetView.class);
         bindPresenterWidget(TypeaheadFilterItemPresenterWidget.class, TypeaheadFilterItemPresenterWidget.MyView.class, TypeaheadFilterItemPresenterWidgetView.class);
 
-        bindSingletonPresenterWidget(PhenotypeUploadWizardPresenterWidget.class, PhenotypeUploadWizardPresenterWidget.MyView.class, PhenotypeUploadWizardView.class);
-        bindSingletonPresenterWidget(IsaTabUploadWizardPresenterWidget.class, IsaTabUploadWizardPresenterWidget.MyView.class, IsaTabUploadWizardView.class);
+        bindPresenterWidget(PhenotypeUploadWizardPresenterWidget.class, PhenotypeUploadWizardPresenterWidget.MyView.class, PhenotypeUploadWizardView.class);
         bindSingletonPresenterWidget(GWASUploadWizardPresenterWidget.class, GWASUploadWizardPresenterWidget.MyView.class, GWASUploadWizardView.class);
         //bindPresenterWidget(CandidateGeneListEnrichmentPresenterWidget.class,CandidateGeneListEnrichmentPresenterWidget.MyView.class,CandidateGeneListEnrichmentPresenterWidgetView.class);
         // have to use that otherwise @Assited throws error

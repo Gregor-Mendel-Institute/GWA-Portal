@@ -6,10 +6,12 @@ import com.gmi.nordborglab.browser.shared.proxy.FacetTermProxy;
 import com.gmi.nordborglab.browser.shared.proxy.LocalityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPAnnotProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SampleDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multimaps;
@@ -26,6 +28,8 @@ import com.google.gwt.visualization.client.visualizations.corechart.Options;
 import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataColumn;
 import com.googlecode.gwt.charts.client.RoleType;
+import com.googlecode.gwt.charts.client.options.Animation;
+import com.googlecode.gwt.charts.client.options.AnimationEasing;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -177,10 +181,38 @@ public class DataTableUtils {
         return histogramData;
     }
 
+    public static com.googlecode.gwt.charts.client.DataTable createPhenotypeHistogramTable2(ImmutableListMultimap<String, Double> histogram) {
+        com.googlecode.gwt.charts.client.DataTable histogramData = com.googlecode.gwt.charts.client.DataTable.create();
+        NumberFormat numberFormat = NumberFormat.getDecimalFormat().overrideFractionDigits(2);
+        histogramData.addColumn(ColumnType.STRING, "Accession");
+        histogramData.addColumn(ColumnType.NUMBER, "Phenotype");
+        histogramData.addRows(histogram.size());
+        for (Map.Entry<String, Double> entry : histogram.entries()) {
+            int i = histogramData.addRow();
+            histogramData.setValue(i, 0, entry.getKey());
+            histogramData.setValue(i, 1, entry.getValue());
+        }
+        return histogramData;
+    }
+
     public static DataTable createPhenotypeGeoChartTable(Multiset<String> data) {
         DataTable geoChartData = DataTable.create();
         geoChartData.addColumn(AbstractDataTable.ColumnType.STRING, "Country");
         geoChartData.addColumn(AbstractDataTable.ColumnType.NUMBER, "Frequency");
+        if (data != null) {
+            for (String cty : data.elementSet()) {
+                int i = geoChartData.addRow();
+                geoChartData.setValue(i, 0, cty);
+                geoChartData.setValue(i, 1, data.count(cty));
+            }
+        }
+        return geoChartData;
+    }
+
+    public static com.googlecode.gwt.charts.client.DataTable createPhenotypeGeoChartTable2(Multiset<String> data) {
+        com.googlecode.gwt.charts.client.DataTable geoChartData = com.googlecode.gwt.charts.client.DataTable.create();
+        geoChartData.addColumn(ColumnType.STRING, "Country");
+        geoChartData.addColumn(ColumnType.NUMBER, "Frequency");
         if (data != null) {
             for (String cty : data.elementSet()) {
                 int i = geoChartData.addRow();
@@ -214,6 +246,16 @@ public class DataTableUtils {
         return options;
     }
 
+    public static com.googlecode.gwt.charts.client.corechart.HistogramOptions getDefaultPhenotypeHistogramOptions2() {
+        com.googlecode.gwt.charts.client.corechart.HistogramOptions options = com.googlecode.gwt.charts.client.corechart.HistogramOptions.create();
+        options.setTitle("Phenotype Histogram");
+        Animation animationOptions = Animation.create();
+        animationOptions.setDuration(1000);
+        animationOptions.setEasing(AnimationEasing.OUT);
+        options.setAnimation(animationOptions);
+        return options;
+    }
+
     public static DataTable getDataTableForSNPAllelePhenotypeTable() {
         DataTable dataTable = getDataTableForPhenotypeExplorereTable();
         dataTable.addColumn(AbstractDataTable.ColumnType.STRING, "Allele");
@@ -236,6 +278,33 @@ public class DataTableUtils {
                         locality.getCountry());
                 dataTable.setValue(i, 7, snpAllele.getAllele());
                 i = i + 1;
+            }
+        }
+        return dataTable;
+    }
+
+    public static DataTable createSampleDataTable(Collection<SampleDataProxy> data, int index) {
+        DataTable dataTable = getDataTableForPhenotypeExplorereTable();
+        if (data != null) {
+            int i = 0;
+            for (SampleDataProxy sample : data) {
+                if (sample.isIdKnown() && !sample.isParseError() && (sample.getParseMask() & (1 << index + 1)) == 0) {
+                    dataTable.addRow();
+                    Double value = null;
+                    try {
+                        value = Double.parseDouble(sample.getValues().get(index));
+                    } catch (NumberFormatException e) {
+
+                    }
+                    addRowToPhentoypeExplorerTable(dataTable, i,
+                            sample.getAccessionName(),
+                            sample.getPassportId(),
+                            sample.getLatitude(),
+                            sample.getLongitude(),
+                            value,
+                            sample.getCountry());
+                    i = i + 1;
+                }
             }
         }
         return dataTable;

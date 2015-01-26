@@ -1,13 +1,8 @@
 package com.gmi.nordborglab.browser.server.rest;
 
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
-import com.gmi.nordborglab.jpaontology.model.Term;
-import org.springframework.util.comparator.BooleanComparator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,16 +13,15 @@ import java.util.List;
  */
 public class PhenotypeUploadData {
 
+    @NotNull
     private TraitUom traitUom;
     private String name;
     private String unitOfMeasure;
     private String protocol;
-    private Term traitOntology;
-    private Term environmentOntology;
-    private List<PhenotypeUploadValue> phenotypeUploadValues = new ArrayList<PhenotypeUploadValue>();
-    private String errorMessage;
-    private List<String> valueHeader;
-    private int errorValueCount = 0;
+    private String traitOntology;
+    private String environmentOntology;
+    private int parseMask = 0;
+    private int valueCount = 0;
 
 
     public PhenotypeUploadData() {
@@ -39,10 +33,6 @@ public class PhenotypeUploadData {
 
     public void setTraitUom(TraitUom traitUom) {
         this.traitUom = traitUom;
-    }
-
-    public List<PhenotypeUploadValue> getPhenotypeUploadValues() {
-        return phenotypeUploadValues;
     }
 
     public void setName(String name) {
@@ -57,16 +47,12 @@ public class PhenotypeUploadData {
         this.protocol = protocol;
     }
 
-    public void setTraitOntology(Term traitOntology) {
+    public void setTraitOntology(String traitOntology) {
         this.traitOntology = traitOntology;
     }
 
-    public void setEnvironmentOntology(Term environmentOntology) {
+    public void setEnvironmentOntology(String environmentOntology) {
         this.environmentOntology = environmentOntology;
-    }
-
-    public void setPhenotypeUploadValues(List<PhenotypeUploadValue> phenotypeUploadValues) {
-        this.phenotypeUploadValues = phenotypeUploadValues;
     }
 
     public String getName() {
@@ -81,51 +67,55 @@ public class PhenotypeUploadData {
         return protocol;
     }
 
-    public Term getTraitOntology() {
+    public String getTraitOntology() {
         return traitOntology;
     }
 
-    public Term getEnvironmentOntology() {
+    public String getEnvironmentOntology() {
         return environmentOntology;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public int getParseMask() {
+        return parseMask;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public int getErrorCount() {
+        return Integer.bitCount(parseMask);
     }
 
-    public void setValueHeader(List<String> valueHeader) {
-        this.valueHeader = valueHeader;
+    public int getValueCount() {
+        return valueCount;
     }
 
-    public List<String> getValueHeader() {
-        return valueHeader;
+    public void incValueCount() {
+        this.valueCount += 1;
     }
 
-    public void addPhenotypeValue(PhenotypeUploadValue phenotypeUploadValue) {
-        if (phenotypeUploadValue.isParseError() || !phenotypeUploadValue.isIdKnown())
-            errorValueCount++;
-        phenotypeUploadValues.add(phenotypeUploadValue);
+    public void addParseError(int pos) {
+        parseMask = parseMask | (1 << pos);
     }
 
-    public int getErrorValueCount() {
-        return errorValueCount;
+    public void setParseMask(int parseMask) {
+        this.parseMask = parseMask;
     }
 
-    public void setErrorValueCount(int errorValueCount) {
-        this.errorValueCount = errorValueCount;
+    // to please RequestFactory
+    public void setValueCount(int valueCount) {
     }
 
-    public void sortByErrors() {
-        Collections.sort(phenotypeUploadValues, new Comparator<PhenotypeUploadValue>() {
-            @Override
-            public int compare(PhenotypeUploadValue o1, PhenotypeUploadValue o2) {
-                return BooleanComparator.TRUE_LOW.compare(o1.hasError(), o2.hasError());
-            }
-        });
+    // to please RequestFactory
+    public void setErrorCount(int count) {
+
+    }
+
+    // to please RequestFactory
+    public void setConstraintViolation(boolean violation) {
+
+    }
+
+    // to please RequestFactory
+    public boolean getConstraintViolation() {
+        return false;
     }
 }
 

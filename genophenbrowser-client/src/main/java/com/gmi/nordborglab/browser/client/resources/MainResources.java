@@ -49,6 +49,8 @@ public interface MainResources extends ClientBundle {
 
         String plant_icon();
 
+        String map();
+
         String loader();
 
         String tablechart();
@@ -93,6 +95,9 @@ public interface MainResources extends ClientBundle {
 
     @Source("images/table.png")
     ImageResource tablechart();
+
+    @Source("images/map.png")
+    ImageResource map();
 
     @Source("images/plant1.png")
     ImageResource plant1();

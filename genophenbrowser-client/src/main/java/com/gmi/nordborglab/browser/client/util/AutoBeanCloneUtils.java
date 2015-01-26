@@ -4,8 +4,9 @@ import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadValueProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SampleDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
+import com.google.common.collect.Lists;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -24,28 +25,27 @@ public class AutoBeanCloneUtils {
         AutoBean<PhenotypeUploadDataProxy> newBean = AutoBeanUtils.getAutoBean(data);
         AutoBeanCodex.decodeInto(AutoBeanCodex.encode(bean), newBean);
         data = newBean.as();
-        List<PhenotypeUploadValueProxy> values = new ArrayList<PhenotypeUploadValueProxy>();
-        for (PhenotypeUploadValueProxy value : bean.as().getPhenotypeUploadValues()) {
-            AutoBean<PhenotypeUploadValueProxy> newValueBean = AutoBeanUtils.getAutoBean(ctx.create(PhenotypeUploadValueProxy.class));
-            AutoBeanCodex.decodeInto(AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(value)), newValueBean);
-            values.add(newValueBean.as());
-        }
         data.setTraitUom(ctx.create(PhenotypeProxy.class));
         data.getTraitUom().setLocalTraitName(data.getName());
         data.getTraitUom().setTraitProtocol(data.getProtocol());
         data.getTraitUom().setUnitOfMeasure(getUnitOfMeasureFromName(data.getUnitOfMeasure(), unitOfMeasures));
         if (data.getTraitOntology() != null) {
-            data.getTraitUom().setTraitOntologyTerm(data.getTraitOntology());
+            //data.getTraitUom().setTraitOntologyTerm(data.getTraitOntology());
         }
         if (data.getEnvironmentOntology() != null) {
-            data.getTraitUom().setEnvironOntologyTerm(data.getEnvironmentOntology());
+            //data.getTraitUom().setEnvironOntologyTerm(data.getEnvironmentOntology());
         }
-        data.setPhenotypeUploadValues(values);
         return data;
     }
 
 
-    public static ExperimentUploadDataProxy cloneExperimentUploadData(AutoBean<ExperimentUploadDataProxy> bean, RequestContext ctx, List<UnitOfMeasureProxy> unitOfMeasures) {
+    public static SampleDataProxy cloneSampleData(AutoBean<SampleDataProxy> bean, RequestContext ctx) {
+        AutoBean<SampleDataProxy> newSampleBean = AutoBeanUtils.getAutoBean(ctx.create(SampleDataProxy.class));
+        AutoBeanCodex.decodeInto(AutoBeanCodex.encode(bean), newSampleBean);
+        return newSampleBean.as();
+    }
+
+    public static ExperimentUploadDataProxy cloneExperimentUploadData(AutoBean<ExperimentUploadDataProxy> bean, ExperimentProxy experiment, RequestContext ctx, List<UnitOfMeasureProxy> unitOfMeasures) {
         ExperimentUploadDataProxy data = ctx.create(ExperimentUploadDataProxy.class);
         AutoBean<ExperimentUploadDataProxy> newBean = AutoBeanUtils.getAutoBean(data);
         AutoBeanCodex.decodeInto(AutoBeanCodex.encode(bean), newBean);
@@ -55,11 +55,23 @@ public class AutoBeanCloneUtils {
             AutoBean<PhenotypeUploadDataProxy> phen = AutoBeanUtils.getAutoBean(phenotype);
             phenotypes.add(clonePhenotypeUploadData(phen, ctx, unitOfMeasures));
         }
-        data.setExperiment(ctx.create(ExperimentProxy.class));
-        data.getExperiment().setName(data.getName());
-        data.getExperiment().setDesign(data.getDescription());
-        data.getExperiment().setOriginator(data.getOriginator());
+        List<SampleDataProxy> samples = Lists.newArrayList();
+        for (SampleDataProxy sample : bean.as().getSampleData()) {
+            AutoBean<SampleDataProxy> sampleBean = AutoBeanUtils.getAutoBean(sample);
+            samples.add(cloneSampleData(sampleBean, ctx));
+        }
+
+        if (experiment != null) {
+            data.setExperiment(experiment);
+        } else {
+            AutoBean<ExperimentProxy> expBean = AutoBeanUtils.getAutoBean(ctx.create(ExperimentProxy.class));
+            data.setExperiment(expBean.as());
+            data.getExperiment().setName(data.getName());
+            data.getExperiment().setDesign(data.getDescription());
+            data.getExperiment().setOriginator(data.getOriginator());
+        }
         data.setPhenotypes(phenotypes);
+        data.setSampleData(samples);
         return data;
     }
 

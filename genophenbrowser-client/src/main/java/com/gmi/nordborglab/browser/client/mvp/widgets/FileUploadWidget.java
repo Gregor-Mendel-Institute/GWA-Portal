@@ -68,9 +68,9 @@ public class FileUploadWidget extends Composite {
 
     public static class ParseResult {
 
-        public final String value;
-        public final String expectedValue;
-        public final boolean hasParseError;
+        private final String value;
+        private final String expectedValue;
+        private final boolean hasParseError;
 
         public ParseResult(String value, boolean hasParseError, String expectedValue) {
             this.value = value;
@@ -78,6 +78,20 @@ public class FileUploadWidget extends Composite {
             this.hasParseError = hasParseError;
         }
 
+        public String getValue() {
+            return value;
+        }
+
+        public String getExpectedValue() {
+            if (!hasParseError && (expectedValue == null || expectedValue.isEmpty())) {
+                return value;
+            }
+            return expectedValue;
+        }
+
+        public boolean hasParseError() {
+            return hasParseError;
+        }
     }
 
     public static class FileCheckerResult {
@@ -365,10 +379,10 @@ public class FileUploadWidget extends Composite {
         if (headerResult != null) {
             for (ParseResult parseResult : headerResult) {
                 GQuery cell = $("<th>");
-                if (!parseResult.hasParseError) {
-                    cell.html(parseResult.expectedValue).attr("style", "color:green");
+                if (!parseResult.hasParseError()) {
+                    cell.html(parseResult.getExpectedValue()).attr("style", "color:green");
                 } else {
-                    cell.html(parseResult.expectedValue + " [" + parseResult.value + "]").attr("style", "color:red");
+                    cell.html(parseResult.getExpectedValue() + " [" + parseResult.getValue() + "]").attr("style", "color:red");
                 }
                 cell.appendTo($(header));
             }
@@ -376,15 +390,15 @@ public class FileUploadWidget extends Composite {
         if (firstLineResult != null) {
             for (ParseResult parseResult : firstLineResult) {
                 GQuery cell = $("<td>");
-                if (!parseResult.hasParseError) {
-                    if ("(Optional)".equals(parseResult.value)) {
-                        cell.html(parseResult.expectedValue + " " + parseResult.value).attr("style", "color:grey");
+                if (!parseResult.hasParseError()) {
+                    if ("(Optional)".equals(parseResult.getValue())) {
+                        cell.html(parseResult.getExpectedValue() + " " + parseResult.getValue()).attr("style", "color:grey");
                     } else {
-                        cell.html(parseResult.value).attr("style", "color:green");
+                        cell.html(parseResult.getValue()).attr("style", "color:green");
                     }
 
                 } else {
-                    cell.html(parseResult.expectedValue + " [" + parseResult.value + "]").attr("style", "color:red");
+                    cell.html(parseResult.getExpectedValue() + " [" + parseResult.getValue() + "]").attr("style", "color:red");
                 }
                 $(body).append(cell);
             }
@@ -583,26 +597,29 @@ public class FileUploadWidget extends Composite {
     private void updateFileFormat() {
         GQuery query = $(csvTable);
         query.find("tbody > tr").remove();
-        query.find("thead > th").remove();
+        query.find("thead > tr").remove();
         supportedFileFormatsLb.setInnerText("any format");
         if (fileChecker == null)
             return;
         supportedFileFormatsLb.setInnerText(fileChecker.getSupportedFileTypes());
         List<String> headerFormat = fileChecker.getCSVHeaderFormat();
         if (headerFormat != null) {
-            GQuery tr = query.find("tbody").append($("<tr>"));
+            GQuery tr = $("<tr>");
             for (String item : headerFormat) {
                 GQuery row = $("<th>").text(item);
                 tr.append(row);
             }
+            query.find("thead").append(tr);
         }
         List<String> contentFormat = fileChecker.getCSVContentFormat();
         if (contentFormat != null) {
-            GQuery tr = query.find("tbody").append($("<tr>"));
+            GQuery tr = $("<tr>");
             for (String item : contentFormat) {
                 GQuery row = $("<td>").text(item);
                 tr.append(row);
             }
+            query.find("tbody").append(tr);
+            ;
         }
     }
 

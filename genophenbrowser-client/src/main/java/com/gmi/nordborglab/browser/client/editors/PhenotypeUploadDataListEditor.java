@@ -8,9 +8,9 @@ import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.adapters.EditorSource;
 import com.google.gwt.editor.client.adapters.ListEditor;
-import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.HasChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -35,8 +35,14 @@ public class PhenotypeUploadDataListEditor extends Composite implements IsEditor
             initHandlers(changeHandler);
         }
 
-        private void initHandlers(ChangeHandler changeHandler) {
+        private void initHandlers(final ChangeHandler changeHandler) {
             handlerRegistrations.add(this.traitUom.getLocalTraitName().addChangeHandler(changeHandler));
+            handlerRegistrations.add(this.traitUom.getUnitOfMeasure().addValueChangeHandler(new ValueChangeHandler<UnitOfMeasureProxy>() {
+                @Override
+                public void onValueChange(ValueChangeEvent<UnitOfMeasureProxy> valueChangeEvent) {
+                    changeHandler.onChange(null);
+                }
+            }));
             this.traitUom.addChangeHandlerToTypeAhead(changeHandler);
         }
 

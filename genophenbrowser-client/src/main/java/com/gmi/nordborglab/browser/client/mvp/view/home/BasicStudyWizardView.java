@@ -7,6 +7,7 @@ import com.eemi.gwt.tour.client.Placement;
 import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.ModalFooter;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.NavPills;
 import com.github.gwtbootstrap.client.ui.TextArea;
@@ -62,6 +63,7 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.query.client.GQuery;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -188,9 +190,11 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @UiField
     CheckBox enrichmentJobCb;
     @UiField
-    SimpleLayoutPanel isaTabUploadContainer;
+    ResizeLayoutPanel isaTabUploadContainer;
     @UiField
     TabLayoutPanel createExperimentTabPanel;
+    @UiField
+    ModalFooter createExperimentPanelFooter;
     private Modal phenotypeUploadPopup = new Modal();
     private ResizeLayoutPanel phenotypeUploadPanel = new ResizeLayoutPanel();
 
@@ -441,19 +445,20 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @UiHandler("createExperimentTabPanel")
     public void onBeforeSelectTab(BeforeSelectionEvent<Integer> event) {
         if (event.getItem() == 1) {
-            int height = Window.getClientHeight() - 50;
-            int width = Window.getClientWidth() - 50;
-            int maxHeight = height - 200;
-            createExperimentPanel.setMaxHeigth(maxHeight + "px");
+            int top = GQuery.$(createExperimentPanel).top();
+            int height = Window.getClientHeight() - top;
+            createExperimentPanel.setMaxHeigth(height + "px");
             createExperimentPanel.setHeight(height + "px");
-            createExperimentPanel.setWidth(width);
-            createExperimentTabPanel.setHeight(maxHeight + "px");
+            createExperimentPanel.setWidth(Window.getClientWidth() - 50);
+            createExperimentTabPanel.setHeight(GQuery.$(createExperimentPanel).innerHeight() - 50 + "px");
+            createExperimentPanelFooter.setVisible(false);
 
         } else {
             createExperimentPanel.setWidth(560);
             createExperimentPanel.getElement().getStyle().clearHeight();
             createExperimentPanel.getElement().getStyle().clearWidth();
             createExperimentTabPanel.setHeight(400 + "px");
+            createExperimentPanelFooter.setVisible(true);
         }
 
     }
@@ -554,7 +559,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         if (createExperimentTabPanel.getSelectedIndex() == 0) {
             getUiHandlers().onSaveExperiment(experimentNameTb.getText(), experimentOriginatorTb.getText(), experimentDesignTb.getText());
         } else {
-            getUiHandlers().onSaveIsaTabUpload();
+
         }
     }
 

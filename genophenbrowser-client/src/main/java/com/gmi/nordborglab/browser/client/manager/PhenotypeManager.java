@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.manager;
 
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypePageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
@@ -54,12 +53,6 @@ public class PhenotypeManager extends RequestFactoryManager<PhenotypeRequest> {
 
     public void findTraitStatsByStatisticType(Long phenotypeId, Long statisticTypeId, Receiver<List<TraitStatsProxy>> receiver) {
         rf.traitRequest().findTraitStatsByStatisticType(phenotypeId, statisticTypeId).fire(receiver);
-    }
-
-
-    public void savePhenotypeUploadData(Receiver<Long> receiver, Long experimentId, PhenotypeUploadDataProxy data) {
-        PhenotypeRequest ctx = rf.phenotypeRequest();
-        ctx.savePhenotypeUploadData(experimentId, data).fire(receiver);
     }
 
     public void findAllByOntology(Receiver<List<PhenotypeProxy>> receiver, String type, String acc, boolean checkChilds) {

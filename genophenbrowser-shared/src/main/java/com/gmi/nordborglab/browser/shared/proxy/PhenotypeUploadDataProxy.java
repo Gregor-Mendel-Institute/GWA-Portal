@@ -1,10 +1,10 @@
 package com.gmi.nordborglab.browser.shared.proxy;
 
-import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
 import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
-import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,27 +16,31 @@ import java.util.List;
 
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData")
 public interface PhenotypeUploadDataProxy extends ValueProxy {
+
     String getName();
 
     String getProtocol();
 
-    TermProxy getTraitOntology();
+    String getTraitOntology();
 
-    TermProxy getEnvironmentOntology();
+    String getEnvironmentOntology();
 
     String getUnitOfMeasure();
 
-    List<PhenotypeUploadValueProxy> getPhenotypeUploadValues();
+    int getErrorCount();
 
-    void setPhenotypeUploadValues(List<PhenotypeUploadValueProxy> phenotypeUploadeValues);
+    int getValueCount();
 
-    List<String> getValueHeader();
-
-    String getErrorMessage();
-
-    int getErrorValueCount();
+    public int getParseMask();
 
     void setTraitUom(PhenotypeProxy phenotype);
 
+    @NotNull
+    @Valid
     PhenotypeProxy getTraitUom();
+
+    void setConstraintViolation(boolean violation);
+
+    boolean getConstraintViolation();
+
 }

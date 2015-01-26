@@ -18,7 +18,6 @@ import com.gmi.nordborglab.browser.server.domain.util.GWASRuntimeInfo;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListEnrichmentRepository;
 import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeData;
-import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeValue;
 import com.gmi.nordborglab.browser.server.rest.StudyGWASData;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
@@ -184,7 +183,6 @@ public class RestProviderController {
         List<PhenotypeValue> values = Lists.newArrayList();
         for (Map.Entry<Long, Collection<Trait>> entry : groupedAndSorted.asMap().entrySet()) {
             Long passportId = entry.getKey();
-
             //sort by statisticType
             Map<String, String> phenValues = Maps.transformValues(
                     Maps.uniqueIndex(
@@ -291,7 +289,7 @@ public class RestProviderController {
         ExperimentUploadData data = null;
         try {
             byte[] isaTabData = IOUtils.toByteArray(file.getInputStream());
-            data = helperService.getExperimentUploadData(isaTabData);
+            data = helperService.getExperimentUploadDataFromIsaTab(isaTabData);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -321,15 +319,10 @@ public class RestProviderController {
     @RequestMapping(method = RequestMethod.POST, value = "/phenotype/upload")
     public
     @ResponseBody
-    PhenotypeUploadData uploadPhenotype(@RequestParam("file") CommonsMultipartFile file) {
-        PhenotypeUploadData data = null;
-        try {
-            byte[] csvData = IOUtils.toByteArray(file.getInputStream());
-            data = helperService.getPhenotypeUploadData(csvData);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-        }
+    ExperimentUploadData uploadPhenotype(@RequestParam("file") CommonsMultipartFile file) throws IOException {
+        ExperimentUploadData data = null;
+        byte[] csvData = IOUtils.toByteArray(file.getInputStream());
+        data = helperService.getExperimentUploadDataFromCsv(csvData);
         return data;
     }
 

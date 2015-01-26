@@ -54,8 +54,10 @@
         <b:FluidRow>
             <b:Column size="12">
                 <g:HTMLPanel>
-                    <h4>File-Format:</h4>
-                    <p ui:field="supportedFileFormatsLb"></p>
+                    <h4>File-Format:
+                        <p style="display:inline-block;font-weight:normal;font-size:14px;"
+                           ui:field="supportedFileFormatsLb"></p>
+                    </h4>
                     <span ui:field="additionalInfoLb"></span>
                     <table class="table table-striped" ui:field="csvTable">
                         <thead></thead>

@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -31,12 +32,15 @@ public class TraitUom extends SecureEntity {
 
     @ManyToOne()
     @JoinColumn(name = "div_unit_of_measure_id")
+    @NotNull
     private UnitOfMeasure unitOfMeasure;
 
     @OneToMany(mappedBy = "traitUom", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<Trait> traits = new HashSet<Trait>();
 
-    private String local_trait_name;
+    @NotNull
+    @Column(name = "local_trait_name")
+    private String localTraitName;
     private String trait_protocol;
     @Column(name = "to_accession")
     private String toAccession;
@@ -105,11 +109,11 @@ public class TraitUom extends SecureEntity {
     }
 
     public String getLocalTraitName() {
-        return local_trait_name;
+        return localTraitName;
     }
 
     public void setLocalTraitName(String localTraitName) {
-        this.local_trait_name = localTraitName;
+        this.localTraitName = localTraitName;
     }
 
     public String getTraitProtocol() {

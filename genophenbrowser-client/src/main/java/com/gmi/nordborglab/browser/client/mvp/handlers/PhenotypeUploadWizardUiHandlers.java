@@ -20,4 +20,8 @@ public interface PhenotypeUploadWizardUiHandlers  extends UiHandlers{
     void onCreate();
 
     void startUpload();
+
+    void updatePhenotypeData();
+
+    void deselectPhenotypeCard();
 }

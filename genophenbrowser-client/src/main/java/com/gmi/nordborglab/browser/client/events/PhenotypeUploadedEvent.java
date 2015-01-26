@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.events;
 
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.Event;
 import com.google.web.bindery.event.shared.EventBus;
@@ -21,10 +22,10 @@ public class PhenotypeUploadedEvent extends Event<PhenotypeUploadedEvent.Handler
 
     public static final Type<Handler> TYPE = new Type<Handler>();
 
-    private final Long phentoypeId;
+    private final ExperimentProxy experiment;
 
-    public PhenotypeUploadedEvent(Long phenotypeId) {
-        this.phentoypeId = phenotypeId;
+    public PhenotypeUploadedEvent(ExperimentProxy experiment) {
+        this.experiment = experiment;
     }
 
     @Override
@@ -42,12 +43,12 @@ public class PhenotypeUploadedEvent extends Event<PhenotypeUploadedEvent.Handler
     }
 
     public static void fire(final EventBus source,
-                            Long phenotypeId) {
-        source.fireEvent(new PhenotypeUploadedEvent(phenotypeId));
+                            ExperimentProxy experiment) {
+        source.fireEvent(new PhenotypeUploadedEvent(experiment));
     }
 
 
-    public Long getPhentoypeId() {
-        return phentoypeId;
+    public ExperimentProxy getExperiment() {
+        return experiment;
     }
 }

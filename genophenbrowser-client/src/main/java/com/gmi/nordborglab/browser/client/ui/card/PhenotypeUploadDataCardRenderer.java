@@ -47,6 +47,9 @@ public class PhenotypeUploadDataCardRenderer {
         String statusStyle = "alert-success";
         String statusIconStyle = "icon-ok-circle";
         String nameTxt = phenotype.getTraitUom().getLocalTraitName();
+        // required otherwise appendEscaped throws error
+        if (nameTxt == null)
+            nameTxt = "";
         if (searchTerm != null) {
             RegExp searchRegExp = searchTerm.getSearchRegExp();
             if (searchRegExp != null) {
@@ -59,14 +62,20 @@ public class PhenotypeUploadDataCardRenderer {
             builder.appendEscaped(nameTxt);
         }
         name = builder.toSafeHtml();
+        if (phenotype.getTraitUom().getUnitOfMeasure() != null) {
+            unitType = phenotype.getTraitUom().getUnitOfMeasure().getUnitType();
+        }
         if (phenotype.getTraitUom().getTraitOntologyTerm() != null)
             traitOntology = phenotype.getTraitUom().getTraitOntologyTerm().getName() + " (" + phenotype.getTraitUom().getTraitOntologyTerm().getAcc() + ")";
-        if (phenotype.getPhenotypeUploadValues() != null)
-            numberOfObsUnits = String.valueOf(phenotype.getPhenotypeUploadValues().size());
-        if (phenotype.getErrorValueCount() > 0) {
-            status = phenotype.getErrorValueCount() + " values have errors";
+        numberOfObsUnits = String.valueOf(phenotype.getValueCount());
+        if (phenotype.getErrorCount() > 0) {
+            status = phenotype.getErrorCount() + " values have errors";
             statusIconStyle = "icon-warning-sign";
             statusStyle = "alert-warning";
+        } else if (phenotype.getConstraintViolation()) {
+            status = "Some information are wrong or missing";
+            statusIconStyle = "icon-error-sign";
+            statusStyle = "alert-error";
         }
         // asString() required because of https://groups.google.com/forum/#!topic/google-web-toolkit/snEC1ZiQJT8
         uiRenderer.render(sb, name, traitOntology, unitType, numberOfObsUnits, status, statusStyle, statusIconStyle);

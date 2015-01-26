@@ -8,6 +8,8 @@ import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServiceName;
 
+import java.util.Set;
+
 /**
  * Created with IntelliJ IDEA.
  * User: uemit.seren
@@ -27,4 +29,6 @@ public interface OntologyRequest extends RequestContext {
     Request<TermProxy> findOneByAcc(String acc);
 
     Request<TermPageProxy> findByQuery(String query, ConstEnums.ONTOLOGY_TYPE type, int limit);
+
+    Request<Set<TermProxy>> findAllByAcc(Set<String> ontologies);
 }
