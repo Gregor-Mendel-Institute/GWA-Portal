@@ -35,6 +35,7 @@
 			width:auto;
 			height:24px !important;
 			padding-top: 2px !important;
+			margin-bottom: 0px;
 		}
 		.pager_page_jump {
 			margin: 0 !important;
@@ -58,9 +59,13 @@
 			<div class="{style.pager_item}">
 				<g:Label ui:field="label" />
 			</div>
-			<div class="m-btn-group {style.pager_arrow_group}">
-    			<g:Anchor addStyleNames="m-btn {style.pager_arrows} icn-only"  ui:field="previousPage"><i class="icon-chevron-left"></i></g:Anchor>
-    			<g:Anchor addStyleNames="m-btn {style.pager_arrows} icn-only" ui:field="nextPage"><i class="icon-chevron-right"></i></g:Anchor>
+			<div class="btn-group {style.pager_arrow_group}">
+				<g:Anchor addStyleNames="btn btn-mini {style.pager_arrows} " ui:field="previousPage">
+					<i class="icon-chevron-left"></i>
+				</g:Anchor>
+				<g:Anchor addStyleNames="btn btn-mini {style.pager_arrows} " ui:field="nextPage">
+					<i class="icon-chevron-right"></i>
+				</g:Anchor>
 			</div>
 		</div>
 	</g:HTMLPanel>
