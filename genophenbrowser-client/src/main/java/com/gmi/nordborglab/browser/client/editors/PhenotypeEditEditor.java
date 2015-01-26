@@ -2,10 +2,10 @@ package com.gmi.nordborglab.browser.client.editors;
 
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.ValueListBox;
 import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.client.ui.OntologyTermSuggestOracle;
 import com.gmi.nordborglab.browser.client.ui.OntologyTypeahead;
+import com.gmi.nordborglab.browser.client.ui.ValidationValueListBox;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermPageProxy;
@@ -17,6 +17,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -47,19 +48,18 @@ public class PhenotypeEditEditor extends Composite implements Editor<PhenotypePr
     @UiField
     TextArea traitProtocol;
     @UiField(provided = true)
-    ValueListBox<UnitOfMeasureProxy> unitOfMeasure;
-    //@UiField TextBox toAccession;
+    ValidationValueListBox<UnitOfMeasureProxy> unitOfMeasure;
     @UiField(provided = true)
     OntologyTypeahead traitOntologyTerm;
-    //@UiField TextBox eoAccession;
     @UiField(provided = true)
     OntologyTypeahead environOntologyTerm;
+
     private OntologySearchCallback searchCallback;
     private OntologyManager ontologyManager;
 
 
     public PhenotypeEditEditor() {
-        unitOfMeasure = new ValueListBox<UnitOfMeasureProxy>(new ProxyRenderer<UnitOfMeasureProxy>(null) {
+        unitOfMeasure = new ValidationValueListBox<UnitOfMeasureProxy>(new ProxyRenderer<UnitOfMeasureProxy>(null) {
 
             @Override
             public String render(UnitOfMeasureProxy object) {
@@ -71,7 +71,7 @@ public class PhenotypeEditEditor extends Composite implements Editor<PhenotypePr
 
             @Override
             public void requestDefaultSuggestions(SuggestOracle.Request request, Callback callback) {
-                onSearchOntology(new Request(), callback, ConstEnums.ONTOLOGY_TYPE.TRAIT);
+                onSearchOntology(new OntologyTermSuggestOracle.Request(), callback, ConstEnums.ONTOLOGY_TYPE.TRAIT);
             }
 
             @Override
@@ -83,7 +83,7 @@ public class PhenotypeEditEditor extends Composite implements Editor<PhenotypePr
 
             @Override
             public void requestDefaultSuggestions(SuggestOracle.Request request, Callback callback) {
-                onSearchOntology(new Request(), callback, ConstEnums.ONTOLOGY_TYPE.ENVIRONMENT);
+                onSearchOntology(new OntologyTermSuggestOracle.Request(), callback, ConstEnums.ONTOLOGY_TYPE.ENVIRONMENT);
             }
 
             @Override
@@ -128,6 +128,10 @@ public class PhenotypeEditEditor extends Composite implements Editor<PhenotypePr
 
     public void setAcceptableValuesForUnitOfMeasure(Collection<UnitOfMeasureProxy> values) {
         unitOfMeasure.setAcceptableValues(values);
+    }
+
+    public HasValueChangeHandlers<UnitOfMeasureProxy> getUnitOfMeasure() {
+        return unitOfMeasure;
     }
 
     public HasChangeHandlers getLocalTraitName() {
