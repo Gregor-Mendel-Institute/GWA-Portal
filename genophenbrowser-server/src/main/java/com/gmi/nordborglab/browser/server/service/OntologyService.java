@@ -5,6 +5,8 @@ import com.gmi.nordborglab.jpaontology.model.Term;
 import com.gmi.nordborglab.jpaontology.model.Term2Term;
 import com.gmi.nordborglab.jpaontology.model.TermPage;
 
+import java.util.Set;
+
 /**
  * Created with IntelliJ IDEA.
  * User: uemit.seren
@@ -25,4 +27,6 @@ public interface OntologyService {
     public Term findOneByAcc(String acc);
 
     public TermPage findByQuery(String query, ConstEnums.ONTOLOGY_TYPE type, int limit);
+
+    public Set<Term> findAllByAcc(Set<String> accs);
 }

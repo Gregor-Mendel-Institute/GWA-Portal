@@ -63,6 +63,10 @@
     gwt-image: 'tablechart';
 }
 
+@sprite .map {
+    gwt-image: 'map';
+}
+
 @sprite .plant_icon {
     gwt-image: 'plant1';
 }

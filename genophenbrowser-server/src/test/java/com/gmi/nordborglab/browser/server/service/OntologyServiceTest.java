@@ -3,13 +3,17 @@ package com.gmi.nordborglab.browser.server.service;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
 import com.gmi.nordborglab.jpaontology.model.Term;
+import com.google.common.collect.Sets;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.acls.model.MutableAclService;
 
 import javax.annotation.Resource;
+import java.util.Set;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -47,5 +51,11 @@ public class OntologyServiceTest extends BaseTest {
         assertEquals(201, term.getPathToRoot().get(0).intValue());
         assertEquals(205, term.getPathToRoot().get(1).intValue());
         assertEquals(290, term.getPathToRoot().get(2).intValue());
+    }
+
+    @Test
+    public void testFindAllbyAcc() {
+        Set<Term> terms = service.findAllByAcc(Sets.newHashSet("TO:0000344", "TO:0000537", "EO:0007256", "ASDASD"));
+        assertThat(terms.size(), is(3));
     }
 }

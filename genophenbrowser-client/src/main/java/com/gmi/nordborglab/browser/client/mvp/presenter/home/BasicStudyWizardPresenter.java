@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.home;
 
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
-import com.gmi.nordborglab.browser.client.events.IsaTabUploadSavedEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PhenotypeUploadedEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
@@ -10,7 +9,6 @@ import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
 import com.gmi.nordborglab.browser.client.manager.HelperManager;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.BasicStudyWizardUiHandlers;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments.IsaTabUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
@@ -208,7 +206,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     private List<PhenotypeProxy> phenotypeList;
     private final CurrentUser currentUser;
     private final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizard;
-    private final IsaTabUploadWizardPresenterWidget isaTabUploadWizard;
+    private final PhenotypeUploadWizardPresenterWidget isaTabUploadWizard;
     private ImmutableList<TraitProxy> phenotypeValues = null;
     private StudyProtocolProxy selectedStudyProtocol;
     private ImmutableList<TraitProxy> filteredPhenotypeValues = null;
@@ -300,7 +298,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                                      final CurrentUser currentUser,
                                      final HelperManager helperManager,
                                      final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizard,
-                                     final IsaTabUploadWizardPresenterWidget isaTabUploadWizard
+                                     final PhenotypeUploadWizardPresenterWidget isaTabUploadWizard
     ) {
         super(eventBus, view, proxy, MainPagePresenter.TYPE_SetMainContent);
         this.currentUser = currentUser;
@@ -746,20 +744,23 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     @Override
     protected void onBind() {
         super.onBind();
+        isaTabUploadWizard.setExperiment(null);
         setInSlot(TYPE_SetPhenotypeUploadContent, phenotypeUploadWizard);
         setInSlot(TYPE_SetIsaTabUploadContent, isaTabUploadWizard);
-        registerHandler(PhenotypeUploadedEvent.register(getEventBus(), new PhenotypeUploadedEvent.Handler() {
+        registerHandler(getEventBus().addHandlerToSource(PhenotypeUploadedEvent.TYPE, phenotypeUploadWizard, new PhenotypeUploadedEvent.Handler() {
             @Override
             public void onPhenotypeUploaded(PhenotypeUploadedEvent event) {
                 if (isVisible() && currentState == STATE.PHENOTYPE) {
-                    loadPhenotypesForExperiment(event.getPhentoypeId());
+                    loadPhenotypesForExperiment(null);
+                    phenotypeUploadWizard.reset();
                     getView().onShowPhenotypeUploadPanel(false);
                 }
             }
         }));
-        registerHandler(IsaTabUploadSavedEvent.register(getEventBus(), new IsaTabUploadSavedEvent.Handler() {
+
+        registerHandler(getEventBus().addHandlerToSource(PhenotypeUploadedEvent.TYPE, isaTabUploadWizard, new PhenotypeUploadedEvent.Handler() {
             @Override
-            public void onSave(IsaTabUploadSavedEvent event) {
+            public void onPhenotypeUploaded(PhenotypeUploadedEvent event) {
                 addExperimentToAvailableSetAndDisplay(event.getExperiment());
                 getView().hideCreateExperimentPopup();
             }
@@ -815,13 +816,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
         isaTabUploadWizard.reset();
     }
 
-    @Override
-    public void onSaveIsaTabUpload() {
-        try {
-            isaTabUploadWizard.save();
-        } catch (Exception e) {
-
-        }
+    public void onCloseUploadPhentoypePopup() {
+        phenotypeUploadWizard.reset();
     }
 
 

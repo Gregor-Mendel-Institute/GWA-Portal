@@ -5,39 +5,6 @@
              xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
         >
     <ui:style>
-        .container {
-            float: left;
-            max-width: 800px;
-            min-width: 191px;
-            white-space: normal;
-            width: 100%;
-            word-wrap: break-word;
-        }
-
-        .row {
-            margin: 0;
-            padding: 10px 0;
-            text-align: left;
-        }
-
-        .label {
-            font-size: 15px;
-            font-weight: normal;
-            line-height: 1.2em;
-            margin-bottom: 0;
-            text-align: right;
-            vertical-align: top;
-            width: 90px;
-            display: inline-block;
-        }
-
-        .value {
-            padding: 0 0 0 13px;
-            vertical-align: top;
-            line-height: 1.39em;
-            display: inline-block;
-            width: 280px;
-        }
 
         /* required because of bug that puts the typeadead below the modal */
         @external .typeahead;
@@ -48,10 +15,11 @@
 
     <g:FlowPanel>
         <b:ControlGroup ui:field="phentoypeNameGroup">
-            <b:ControlLabel>Name</b:ControlLabel>
-            <b:Tooltip text='Name of the phenotype' trigger="FOCUS" placement="RIGHT">
-                <b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="localTraitName"></b:TextBox>
-            </b:Tooltip>
+            <b:ControlLabel for="name">Name</b:ControlLabel>
+                <b:Tooltip text='Name of the phenotype' trigger="FOCUS" placement="RIGHT">
+                    <b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="localTraitName" controlGroup="{phentoypeNameGroup}" errorLabel="{localTraitNameErrors}"/>
+                </b:Tooltip>
+                <b:HelpInline ui:field="localTraitNameErrors"></b:HelpInline>
         </b:ControlGroup>
         <b:ControlLabel>Trait-ontology</b:ControlLabel>
         <b:Tooltip text='Ontology term of the trait' trigger="FOCUS" placement="RIGHT">
@@ -70,10 +38,11 @@
             </b:InputAddOn>
         </b:Tooltip>
         <b:ControlGroup ui:field="unitOfMeasureGroup">
-            <b:ControlLabel>Unit of measure</b:ControlLabel>
+            <b:ControlLabel for="unitOfMeasure">Unit of measure</b:ControlLabel>
             <b:Tooltip text='Unit of measure' trigger="FOCUS" placement="RIGHT">
-                <b:ValueListBox ui:field="unitOfMeasure"></b:ValueListBox>
+                <gui:ValidationValueListBox ui:field="unitOfMeasure" controlGroup="{unitOfMeasureGroup}" errorLabel="{unitOfMeasureErrors}"></gui:ValidationValueListBox>
             </b:Tooltip>
+            <b:HelpInline ui:field="unitOfMeasureErrors"></b:HelpInline>
         </b:ControlGroup>
         <b:ControlLabel>Protocol</b:ControlLabel>
         <b:Tooltip text='Protocol of the phenotype' trigger="FOCUS" placement="RIGHT">

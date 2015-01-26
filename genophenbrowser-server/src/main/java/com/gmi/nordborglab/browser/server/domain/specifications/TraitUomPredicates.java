@@ -9,6 +9,6 @@ public class TraitUomPredicates {
 		if (name == null || name.equals(""))
 			return null;
 		QTraitUom traitUom = QTraitUom.traitUom;
-		return traitUom.local_trait_name.containsIgnoreCase(name);
+		return traitUom.localTraitName.containsIgnoreCase(name);
 	}
 }

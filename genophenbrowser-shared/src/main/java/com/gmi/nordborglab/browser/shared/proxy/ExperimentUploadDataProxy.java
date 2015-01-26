@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.shared.proxy;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
 import com.google.web.bindery.requestfactory.shared.ValueProxy;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -12,10 +13,12 @@ import java.util.List;
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.rest.ExperimentUploadData")
 public interface ExperimentUploadDataProxy extends ValueProxy {
 
+    @NotNull
     public ExperimentProxy getExperiment();
 
     public void setExperiment(ExperimentProxy experiment);
 
+    @NotNull
     public List<PhenotypeUploadDataProxy> getPhenotypes();
 
     public void setPhenotypes(List<PhenotypeUploadDataProxy> phenotypes);
@@ -44,4 +47,10 @@ public interface ExperimentUploadDataProxy extends ValueProxy {
 
     public void setPublished(Date published);
 
+    @NotNull
+    public List<SampleDataProxy> getSampleData();
+
+    public String getErrorMessage();
+
+    void setSampleData(List<SampleDataProxy> samples);
 }

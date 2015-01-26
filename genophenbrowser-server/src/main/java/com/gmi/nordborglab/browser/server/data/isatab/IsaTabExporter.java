@@ -10,14 +10,18 @@ import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
-import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
+import com.gmi.nordborglab.browser.server.rest.SampleData;
 import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
 import com.google.common.io.Files;
 import org.isatools.isacreator.configuration.MappingObject;
 import org.isatools.isacreator.configuration.Ontology;
@@ -43,12 +47,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.CsvListWriter;
-import org.supercsv.io.CsvMapReader;
 import org.supercsv.io.ICsvListReader;
 import org.supercsv.io.ICsvListWriter;
-import org.supercsv.io.ICsvMapReader;
 import org.supercsv.prefs.CsvPreference;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -57,12 +60,10 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,6 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -270,10 +270,10 @@ public class IsaTabExporter {
         data = ExperimentUploadData.createFromInvestigation(importer.getInvestigation());
         if (importer.getInvestigation().getPublications() != null) {
             for (org.isatools.isacreator.model.Publication publication : importer.getInvestigation().getPublications()) {
-
+                data.setDoi(publication.getPublicationDOI());
             }
         }
-        data.setPhenotypes(getPhenotypeUploadDataFromInvestigation(importer.getInvestigation(), parentDir));
+        addPhenotypeUploadDataFromInvestigation(importer.getInvestigation(), parentDir, data);
         return data;
     }
 
@@ -288,53 +288,80 @@ public class IsaTabExporter {
         return ImmutableMap.copyOf(map);
     }
 
-
-    private List<PhenotypeUploadData> getPhenotypeUploadDataFromInvestigation(Investigation inv, String parentDir) {
+    private void addPhenotypeUploadDataFromInvestigation(Investigation inv, String parentDir, ExperimentUploadData experimentUploadData) {
         List<PhenotypeUploadData> phenotypes = Lists.newArrayList();
-        for (Study study : inv.getStudies().values()) {
-            Map<String, String> passportLookupMap = getPassportLookupMap(study.getStudySample());
-            for (Assay assay : study.getAssays().values()) {
-                Map<String, String[]> assayLookupMap = getAssayLookupMap(assay);
-                Map<String, Map<String, PhenotypeUploadData>> traitDefLookupMap = Maps.newHashMap();
-                Map<String, IsaTabDerivedData> traitDerivedLookupMap = Maps.newHashMap();
-                for (Map.Entry<String, String[]> entry : assayLookupMap.entrySet()) {
-                    String[] assayRow = entry.getValue();
-                    Map<String, PhenotypeUploadData> phenotypeUploadDataList = traitDefLookupMap.get(assayRow[1]);
-                    if (phenotypeUploadDataList == null) {
-                        //create PhenotypeUploadData
-                        phenotypeUploadDataList = parseTraitDefFile(parentDir + File.separator + assayRow[1]);
-                        traitDefLookupMap.put(assayRow[1], phenotypeUploadDataList);
-                    }
-                    IsaTabDerivedData isaTabData = traitDerivedLookupMap.get(assayRow[2]);
-                    if (isaTabData == null) {
-                        // Load deriveed data file
-                        isaTabData = parseDerivedDataFile(parentDir + File.separator + assayRow[2]);
-                        for (int i = 0; i < isaTabData.getData().size(); i++) {
-                            List<String> values = isaTabData.getData().get(i);
-                            PhenotypeUploadData phenotypeUploadData = phenotypeUploadDataList.get(isaTabData.getPhenotypes().get(i));
-                            for (int j = 0; j < values.size(); j++) {
-                                String value = values.get(j);
-                                if (value == null || value.equals(""))
-                                    continue;
-                                PhenotypeUploadValue phenotypeUploadValue = new PhenotypeUploadValue();
-                                phenotypeUploadValue.setSourceId(passportLookupMap.get(assayLookupMap.get(isaTabData.getAssays().get(j))[0]));
-                                phenotypeUploadValue = helperService.parseAndUpdateAccession(phenotypeUploadValue);
-                                phenotypeUploadValue.setValues(Lists.newArrayList(value));
-                                phenotypeUploadData.addPhenotypeValue(phenotypeUploadValue);
-                            }
-                        }
-                        traitDerivedLookupMap.put(assayRow[2], isaTabData);
-                        phenotypes.addAll(Lists.newArrayList(phenotypeUploadDataList.values()));
-                    }
-                }
+        if (inv.getStudies().size() > 1) {
+            throw new RuntimeException(String.format("Only Investigations with one Study are allowed. This investigation contains %s studies", inv.getStudies().size()));
+        }
+        Study study = Iterables.getFirst(inv.getStudies().values(), null);
+        if (study.getAssays().size() > 1) {
+            throw new RuntimeException(String.format("Only Investigations with one Assay are allowed. This investigation contains %s assays", study.getAssays().size()));
+        }
+        Map<String, String> passportLookupMap = getPassportLookupMap(study.getStudySample());
+        Assay assay = Iterables.getFirst(study.getAssays().values(), null);
+        Map<String, String[]> assayLookupMap = getAssayLookupMap(assay);
+        String traitDefFilename = null;
+        String derivedFilename = null;
+        Map<String, PhenotypeUploadData> phenotypeUploadDataMap = null;
+        IsaTabDerivedData isaTabData = null;
+        // check if there is only one trait and dervived data file
+        for (Map.Entry<String, String[]> entry : assayLookupMap.entrySet()) {
+            String[] assayRow = entry.getValue();
+            if (traitDefFilename == null) {
+                traitDefFilename = assayRow[1];
+                phenotypeUploadDataMap = parseTraitDefFile(parentDir + File.separator + traitDefFilename);
+            } else {
+                if (!traitDefFilename.equals(assayRow[1]))
+                    throw new RuntimeException("Only 1 Trait Definition File is allowed");
+            }
+            if (derivedFilename == null) {
+                derivedFilename = assayRow[2];
+                isaTabData = parseDerivedDataFile(parentDir + File.separator + derivedFilename);
+            } else {
+                if (!derivedFilename.equals(assayRow[2]))
+                    throw new RuntimeException("Only 1 Derived Data File is allowed");
             }
         }
-        return phenotypes;
+        List<SampleData> samples = Lists.newArrayList();
+        for (int i = 0; i < isaTabData.getData().size(); i++) {
+            List<String> values = isaTabData.getData().get(i);
+            SampleData sample = new SampleData(passportLookupMap.get(assayLookupMap.get(isaTabData.getAssays().get(i))[0]));
+            helperService.parseAndUpdateAccession(sample);
+            samples.add(sample);
+            for (int j = 0; j < values.size(); j++) {
+                PhenotypeUploadData phenotype = phenotypeUploadDataMap.get(isaTabData.getPhenotypes().get(j));
+                String value = values.get(j);
+                boolean parseError = checkPhentoypeParseError(value);
+                if (value != null && !value.isEmpty()) {
+                    phenotype.incValueCount();
+                }
+                if (parseError || (sample.hasIdError() && value != null && !value.isEmpty())) {
+                    phenotype.addParseError(j);
+                }
+                sample.addValue(value, parseError);
+            }
+        }
+        experimentUploadData.setPhenotypes(Lists.newArrayList(phenotypeUploadDataMap.values()));
+        experimentUploadData.setSampleData(samples);
+    }
+
+
+    private boolean checkPhentoypeParseError(String value) {
+        if (value == null)
+            return false;
+        try {
+            Double.parseDouble(value);
+            return false;
+        } catch (NumberFormatException e) {
+
+        }
+        return true;
     }
 
     private Map<String, PhenotypeUploadData> parseTraitDefFile(String filename) {
         ICsvListReader reader = null;
-        Map<String, PhenotypeUploadData> traitDefLookupMap = Maps.newHashMap();
+        //LinkedHashMap required because we rely on map.values() to be in the right order
+        Map<String, PhenotypeUploadData> traitDefLookupMap = Maps.newLinkedHashMap();
         try {
             reader = new CsvListReader(new FileReader(filename), CsvPreference.STANDARD_PREFERENCE);
             final String[] header = reader.getHeader(true);
@@ -346,11 +373,10 @@ public class IsaTabExporter {
                 phenotypeUploadData.setName(measurementName);
 
                 // get ontology
-                String traitOntology = String.format("%s:%s", traitDefList.get(1), traitDefList.get(2));
-                phenotypeUploadData.setTraitOntology(termRepository.findByAcc(traitOntology));
+                String traitOntology = String.format("%s", traitDefList.get(2));
+                phenotypeUploadData.setTraitOntology(traitOntology);
                 phenotypeUploadData.setProtocol(traitDefList.get(3));
                 phenotypeUploadData.setUnitOfMeasure(traitDefList.get(6));
-                phenotypeUploadData.setValueHeader(Lists.newArrayList("MEASURE"));
                 traitDefLookupMap.put(measurementName, phenotypeUploadData);
             }
         } catch (IOException e) {
@@ -379,16 +405,11 @@ public class IsaTabExporter {
             List<String> traitDefList;
             while ((traitDefList = reader.read()) != null) {
                 assays.add(traitDefList.get(0));
-                List<String> dataPercolumn = null;
+                List<String> dataPercRow = Lists.newArrayList();
                 for (int i = 1; i < header.length; i++) {
-                    if (data.size() < numberOfPhenotypes) {
-                        dataPercolumn = Lists.newArrayList();
-                        data.add(dataPercolumn);
-                    } else {
-                        dataPercolumn = data.get((i - 1));
-                    }
-                    dataPercolumn.add(traitDefList.get(i));
+                    dataPercRow.add(traitDefList.get(i));
                 }
+                data.add(dataPercRow);
             }
             isaTabDerivedData = new IsaTabDerivedData(phenotypes, assays, data);
         } catch (IOException e) {
@@ -512,6 +533,7 @@ public class IsaTabExporter {
     }
 
     private List<String[]> createDervivedValues(Experiment experiment, List<TraitUom> traitUoms) {
+        Map<TraitUom, Long> statisticMap = getStatisticTypeFromTrait(traitUoms);
         List<String[]> dervivedValues = Lists.newArrayList();
         String[] header = new String[traitUoms.size() + 1];
         header[0] = "Assay Name";
@@ -524,7 +546,8 @@ public class IsaTabExporter {
             String[] row = new String[header.length];
             row[0] = "phenotyping" + obsUnit.getId().toString();
             for (int i = 1; i < header.length; i++) {
-                row[i] = getTraitValue(obsUnit.getTraits(), traitUoms.get(i - 1).getId());
+                TraitUom traitUom = traitUoms.get(i - 1);
+                row[i] = getTraitValue(obsUnit.getTraits(), traitUom.getId(), statisticMap.get(traitUom));
             }
             dervivedValues.add(row);
         }
@@ -532,15 +555,32 @@ public class IsaTabExporter {
     }
 
 
-    private String getTraitValue(Set<Trait> traits, Long traitUomId) {
+    private Map<TraitUom, Long> getStatisticTypeFromTrait(List<TraitUom> traitUoms) {
+        final Function<Trait, Long> toStatisticId = new Function<Trait, Long>() {
+            @Nullable
+            @Override
+            public Long apply(@Nullable Trait input) {
+                return input.getStatisticType().getId();
+            }
+        };
+        return ImmutableMap.copyOf(FluentIterable.from(traitUoms).toMap(new Function<TraitUom, Long>() {
+            @Nullable
+            @Override
+            public Long apply(@Nullable TraitUom input) {
+                return Ordering.natural().onResultOf(toStatisticId).min(input.getTraits()).getStatisticType().getId();
+            }
+        }));
+    }
+
+
+    private String getTraitValue(Set<Trait> traits, Long traitUomId, Long statisticTypeId) {
         for (Trait trait : traits) {
             //TODO deal with different statistical types
-            if (trait.getTraitUom().getId() == traitUomId) {
+            if (trait.getTraitUom().getId() == traitUomId && trait.getStatisticType().getId() == statisticTypeId) {
                 return trait.getValue();
             }
         }
         return null;
     }
-
 
 }

@@ -5,25 +5,24 @@ import com.gmi.nordborglab.browser.server.domain.acl.Authority;
 import com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
+import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
-import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
+import com.gmi.nordborglab.browser.server.rest.SampleData;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.acls.domain.GrantedAuthoritySid;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Acl;
 import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.NotFoundException;
-import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,6 +32,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -52,6 +54,9 @@ public class TraitUomServiceTest extends BaseTest {
 
     @Resource
     private MutableAclService aclService;
+
+    @Resource
+    private ExperimentRepository experimentRepository;
 
 
     @Before
@@ -195,96 +200,99 @@ public class TraitUomServiceTest extends BaseTest {
     @Test(expected = AccessDeniedException.class)
     public void testSavePhenotypeUploadNoAnnonymousAllowed() {
         SecurityUtils.setAnonymousUser();
-        service.savePhenotypeUploadData(1L, new PhenotypeUploadData());
+        service.savePhenotypeUploadData(experimentRepository.findOne(1L), null, null);
     }
 
     @Test(expected = NotFoundException.class)
     public void testSavePhenotypeUploadNoPermissionFound() {
         createTestUser("ROLE_USER");
-        service.savePhenotypeUploadData(1L, new PhenotypeUploadData());
+        service.savePhenotypeUploadData(experimentRepository.findOne(1L), null, null);
     }
 
     @Test
-    public void testSavePhenotypeUploadInExistingExperiment() {
+    public void testSavePhenotypeUpload() {
         createTestUser("ROLE_ADMIN");
-        PhenotypeUploadData data = new PhenotypeUploadData();
-        getPhenotypeUploadData(data);
-        Long id = service.savePhenotypeUploadData(1L, data);
-        TraitUom traitUom = repository.findOne(id);
-        assertPhenotypeUploadData(data, traitUom);
-        assertEquals(1, traitUom.getExperiment().getId().longValue());
+        ExperimentUploadData data = getExperimentUploadData();
+        List<TraitUom> result = service.savePhenotypeUploadData(data.getExperiment(), data.getPhenotypes(), data.getSampleData());
+        assertPhenotypeUploadData(data, result);
     }
 
-    @Test
-    public void testSavePhenotypeUploadInEmptyExperiment() {
-        createTestUser("ROLE_ADMIN");
-        PhenotypeUploadData data = new PhenotypeUploadData();
-        getPhenotypeUploadData(data);
-        Long id = service.savePhenotypeUploadData(5451L, data);
-        TraitUom traitUom = repository.findOne(id);
-        assertPhenotypeUploadData(data, traitUom);
-        assertEquals(5451L, traitUom.getExperiment().getId().longValue());
-    }
 
-    @Test
-    public void testSavePhenotypeUploadAndPermission() {
-        createTestUser("ROLE_USER");
-        PhenotypeUploadData data = new PhenotypeUploadData();
-        getPhenotypeUploadData(data);
-        Long id = service.savePhenotypeUploadData(5600L, data);
-        TraitUom traitUom = repository.findOne(id);
-        Acl acl;
-        ObjectIdentity oid = new ObjectIdentityImpl(TraitUom.class, id);
-        List<Sid> sids = new ArrayList<Sid>();
-        sids.add(new PrincipalSid(SecurityUtils.TEST_USERNAME));
-        acl = aclService.readAclById(oid, sids);
-        assertPermission(acl, sids);
-        List<Sid> adminSids = Arrays.asList((Sid) new GrantedAuthoritySid("ROLE_ADMIN"));
-        acl = aclService.readAclById(oid, adminSids);
-        assertPermission(acl, sids);
-        traitUom.setLocalTraitName("modified234");
-        TraitUom modifiedTraitUom = service.save(traitUom);
-        assertNotNull(traitUom);
-        assertEquals("modified234", modifiedTraitUom.getLocalTraitName());
-    }
+    private ExperimentUploadData getExperimentUploadData() {
+        ExperimentUploadData data = new ExperimentUploadData();
+        data.setExperiment(experimentRepository.findOne(1L));
+        List<SampleData> sampleData = new ArrayList<SampleData>();
+        List<String> values = Lists.newArrayList();
+        List<PhenotypeUploadData> phenotypes = Lists.newArrayList();
+        PhenotypeUploadData phenotypeUploadData = new PhenotypeUploadData();
 
-    private void getPhenotypeUploadData(PhenotypeUploadData data) {
-        data.setName("Testphenotype");
-        //data.setTraitOntology("TO:TEST");
-        //data.setEnvironmentOntology("TO:TEST");
-        data.setProtocol("TEST");
-        data.setUnitOfMeasure("days");
-        data.setValueHeader(Arrays.asList("mean", "std"));
+        TraitUom traitUom = new TraitUom();
+        traitUom.setLocalTraitName("Phenotype1");
+        phenotypeUploadData.setTraitUom(traitUom);
+        phenotypes.add(phenotypeUploadData);
 
-        List<PhenotypeUploadValue> values = new ArrayList<PhenotypeUploadValue>();
-        PhenotypeUploadValue value = null;
-        value = new PhenotypeUploadValue();
+        traitUom = new TraitUom();
+        traitUom.setLocalTraitName("Phenotype2");
+        phenotypeUploadData = new PhenotypeUploadData();
+        phenotypeUploadData.setTraitUom(traitUom);
+        phenotypes.add(phenotypeUploadData);
+
+
+        phenotypeUploadData.setTraitUom(new TraitUom());
+        SampleData value = null;
+        value = new SampleData("1");
+        value.setIdKnown(true);
         value.setPassportId(1L);
-        value.setValues(Arrays.asList("1", "2"));
-        values.add(value);
-        value = new PhenotypeUploadValue();
+        value.addValue("", false);
+        value.addValue("1", false);
+        sampleData.add(value);
+
+        value = new SampleData("1");
+        value.setIdKnown(true);
+        value.setPassportId(1L);
+        value.addValue("1", false);
+        value.addValue("", false);
+        sampleData.add(value);
+
+        value = new SampleData("6959");
+        value.setIdKnown(true);
         value.setPassportId(6959L);
-        value.setValues(Arrays.asList("3", "4"));
-        values.add(value);
-        data.setPhenotypeUploadValues(values);
+        value.addValue("1", false);
+        value.addValue("1", false);
+        sampleData.add(value);
+
+        value = new SampleData("6959");
+        value.setIdKnown(true);
+        value.setPassportId(6959L);
+        value.addValue("1", false);
+        value.addValue("1", false);
+        sampleData.add(value);
+
+        data.setSampleData(sampleData);
+        data.setPhenotypes(phenotypes);
+        return data;
     }
 
-    private void assertPhenotypeUploadData(PhenotypeUploadData data, TraitUom traitUom) {
-        assertEquals(data.getName(), traitUom.getLocalTraitName());
-        assertEquals(data.getTraitOntology(), traitUom.getToAccession());
-        assertEquals(data.getEnvironmentOntology(), traitUom.getEoAccession());
-        assertEquals(data.getProtocol(), traitUom.getTraitProtocol());
-        assertNotNull(traitUom.getTraits());
-        assertEquals(4, traitUom.getTraits().size());
-        assertNotNull(traitUom.getExperiment());
-        for (PhenotypeUploadValue value : data.getPhenotypeUploadValues()) {
-            for (int i = 0; i < value.getValues().size(); i++) {
-                String val = value.getValues().get(0);
+    private void assertPhenotypeUploadData(ExperimentUploadData data, List<TraitUom> result) {
+        assertThat(data.getPhenotypes().size(), is(result.size()));
+
+        for (int i = 0; i < data.getPhenotypes().size(); i++) {
+            TraitUom traitUom = result.get(i);
+            TraitUom phenotype = data.getPhenotypes().get(i).getTraitUom();
+            assertThat(traitUom.getLocalTraitName(), is(phenotype.getLocalTraitName()));
+            assertThat(traitUom.getTraits(), notNullValue());
+            assertThat(traitUom.getExperiment(), is(traitUom.getExperiment()));
+            int j = 0;
+            for (SampleData sample : data.getSampleData()) {
+                String value = sample.getValues().get(i);
+                if (value == null || value.isEmpty())
+                    continue;
                 boolean found = false;
                 for (Trait trait : traitUom.getTraits()) {
-                    if (trait.getValue().equals(val)) {
-                        assertEquals(data.getValueHeader().get(i), trait.getStatisticType().getStatType());
-                        assertEquals(value.getPassportId(), trait.getObsUnit().getStock().getPassport().getId());
+                    if (trait.getObsUnit().getStock().getPassport().getId().equals(sample.getPassportId()) &&
+                            trait.getValue().equals(value)) {
+                        assertThat(sample.getPassportId(), is(trait.getObsUnit().getStock().getPassport().getId()));
+                        assertThat(sample.getValues().get(i), is(trait.getValue()));
                         found = true;
                         break;
                     }
@@ -298,6 +306,8 @@ public class TraitUomServiceTest extends BaseTest {
 
     private void createTestUser(String role) {
         AppUser appUser = new AppUser("test@test.at");
+        appUser.setFirstname("Test");
+        appUser.setLastname("test2");
         appUser.setOpenidUser(false);
         appUser.setPassword(SecurityUtils.TEST_PASSWORD);
         List<Authority> authorities = new ArrayList<Authority>();

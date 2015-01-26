@@ -231,7 +231,7 @@ public class DefaultFileChecker implements FileUploadWidget.FileChecker {
         }
     }
 
-    private FileUploadWidget.ParseResult getParseResultFromHeader(SupressException cell) {
+    public static FileUploadWidget.ParseResult getParseResultFromHeader(SupressException cell) {
         CellProcessor nextCell = cell;
         String expextedValue = "";
         while (true) {

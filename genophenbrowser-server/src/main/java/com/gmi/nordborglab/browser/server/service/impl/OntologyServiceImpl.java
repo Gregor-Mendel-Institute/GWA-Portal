@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -100,6 +101,11 @@ public class OntologyServiceImpl implements OntologyService {
             terms.add(termRepository.findByAcc(hit.getId()));
         }
         return new TermPage(terms, numberOfHits);
+    }
+
+    @Override
+    public Set<Term> findAllByAcc(Set<String> accs) {
+        return termRepository.findAllByAccIn(accs);
     }
 
     private List<Integer> getPathToRoot(List<Integer> path, Term term) {

@@ -8,8 +8,7 @@ import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
 import com.gmi.nordborglab.browser.server.domain.stats.DateStatHistogramFacet;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
-import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
-import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadValue;
+import com.gmi.nordborglab.browser.server.rest.SampleData;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramProxy;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -21,8 +20,6 @@ public interface HelperService {
     List<BreadcrumbItem> getBreadcrumbs(Long id, String object);
 
     AppData getAppData();
-
-    PhenotypeUploadData getPhenotypeUploadData(byte[] inputStream) throws IOException;
 
     List<String> getGenesFromCanddiateGeneListUpload(byte[] inputStream) throws IOException;
 
@@ -37,7 +34,9 @@ public interface HelperService {
 
     Study applyTransformation(Study study);
 
-    ExperimentUploadData getExperimentUploadData(byte[] isaTabData);
+    ExperimentUploadData getExperimentUploadDataFromIsaTab(byte[] isaTabData);
 
-    PhenotypeUploadValue parseAndUpdateAccession(PhenotypeUploadValue value);
+    ExperimentUploadData getExperimentUploadDataFromCsv(byte[] csvData) throws IOException;
+
+    SampleData parseAndUpdateAccession(SampleData value);
 }

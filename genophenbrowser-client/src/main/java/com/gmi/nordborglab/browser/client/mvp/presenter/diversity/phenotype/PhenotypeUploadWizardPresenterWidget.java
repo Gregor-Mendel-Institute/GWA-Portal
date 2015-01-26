@@ -5,23 +5,39 @@ import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PhenotypeUploadedEvent;
-import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
+import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeUploadWizardUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeUploadWizardView;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.client.util.AutoBeanCloneUtils;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
-import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadValueProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SampleDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
-import com.gmi.nordborglab.browser.shared.service.PhenotypeRequest;
+import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
+import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableMultiset;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.Multiset;
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.SelectionChangeEvent;
+import com.google.gwt.view.client.SingleSelectionModel;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
@@ -29,12 +45,14 @@ import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.PresenterWidget;
 import com.gwtplatform.mvp.client.View;
 
+import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.groups.Default;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -50,100 +68,327 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
 
     public interface MyView extends View, HasUiHandlers<PhenotypeUploadWizardUiHandlers> {
 
-        void showPhenotypeValuePanel(PhenotypeUploadDataProxy data);
+        void updateTableWidth(int numberOfPhenotypes);
 
-        void setUnitOfMeasureList(List<UnitOfMeasureProxy> unitOfMeasureList);
+        void setErrorCount(int totalCount, int count);
 
-        HasData<PhenotypeUploadValueProxy> getPhenotypeValueDisplay();
+        void showOverViewPanel();
 
-        void addColumns(List<String> valueColumns);
+        HasData<SampleDataProxy> getSampleDataDisplay();
 
-        void showPhenotypeUploadPanel();
+        void addColumns(List<PhenotypeUploadDataProxy> valueColumns);
 
-        PhenotypeUploadWizardView.PhenotypeDriver getDriver();
+        HasData<SampleDataProxy> getSummaryDisplay();
+
+        void showExperimentEditor(boolean show);
+
+        PhenotypeUploadWizardView.ExperimentUploadDataEditDriver getDriver();
+
+        void showPhenotypeDetailPanel(int index);
+
+        HasData<PhenotypeUploadDataProxy> getPhenotypeUploadList();
+
+        void showFileUploadPanel();
+
+        void resetFileUploadPanel();
+
+        void setGeoChartData(Multiset<String> geochartData);
+
+        void setPhenotypExplorerData(ImmutableSet<SampleDataProxy> data, int index);
+
+        void setHistogramChartData(ImmutableListMultimap<String, Double> data);
+
+        void scheduledLayout();
+
+        void setMapData(FluentIterable<SampleDataProxy> dataFiltered);
     }
 
-    protected PhenotypeUploadDataProxy data = null;
+    protected ExperimentUploadDataProxy data = null;
 
     protected final CurrentUser currentUser;
-    private final PhenotypeManager phenotypeManager;
-    protected final ListDataProvider<PhenotypeUploadValueProxy> phentoypeValueDataProvider = new ListDataProvider<PhenotypeUploadValueProxy>();
-
+    protected final ListDataProvider<PhenotypeUploadDataProxy> phenotypeUploadDataProvider = new ListDataProvider<PhenotypeUploadDataProxy>();
+    protected final ListDataProvider<SampleDataProxy> sampleDataProvider = new ListDataProvider<SampleDataProxy>();
+    protected final ListDataProvider<SampleDataProxy> summaryDataProvider = new ListDataProvider<>();
+    private final SingleSelectionModel<PhenotypeUploadDataProxy> phenotypeSelectionModel = new SingleSelectionModel<PhenotypeUploadDataProxy>();
     protected final MyFactory appDataFactory;
-    protected PhenotypeRequest ctx;
+    protected ExperimentManager experimentManager;
+    protected ExperimentRequest ctx;
     private final Validator validator;
+    private AutoBean<ExperimentUploadDataProxy> receivedBean;
+
 
     @Inject
     public PhenotypeUploadWizardPresenterWidget(EventBus eventBus, MyView view,
                                                 final CurrentUser currentUser,
                                                 final MyFactory appDataFactory,
-                                                final PhenotypeManager phenotypeManager) {
+                                                final ExperimentManager experimentManager) {
         super(eventBus, view);
         validator = Validation.buildDefaultValidatorFactory().getValidator();
         getView().setUiHandlers(this);
         this.currentUser = currentUser;
-        this.phenotypeManager = phenotypeManager;
         this.appDataFactory = appDataFactory;
-        phentoypeValueDataProvider.addDataDisplay(getView().getPhenotypeValueDisplay());
+        this.experimentManager = experimentManager;
 
+        getView().getPhenotypeUploadList().setSelectionModel(phenotypeSelectionModel);
+        phenotypeUploadDataProvider.addDataDisplay(getView().getPhenotypeUploadList());
+        summaryDataProvider.addDataDisplay(getView().getSummaryDisplay());
+        sampleDataProvider.addDataDisplay(getView().getSampleDataDisplay());
+        phenotypeSelectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
+            public void onSelectionChange(SelectionChangeEvent selectionChangeEvent) {
+                // get the changes and update the phenotype list
+                //getView().getDriver().flush();
+                PhenotypeUploadDataProxy selectedObj = phenotypeSelectionModel.getSelectedObject();
+                if (selectedObj == null) {
+                    // only showOverviewPanel when there is data otherwise it was deselected by reset() function
+                    if (data != null) {
+                        getView().showOverViewPanel();
+                    }
+                    return;
+                }
+                int index = data.getPhenotypes().indexOf(selectedObj);
+                getView().showPhenotypeDetailPanel(index);
+                List<SampleDataProxy> phenotypeData = getSamplesForPhenotype(index);
+                sampleDataProvider.setList(phenotypeData);
+                setChartData(phenotypeData, index);
+            }
+        });
+
+    }
+
+    private void setChartData(List<SampleDataProxy> data, final int index) {
+        final Function<SampleDataProxy, String> getNameFunction = new Function<SampleDataProxy, String>() {
+
+            @Nullable
+            @Override
+            public String apply(@Nullable SampleDataProxy input) {
+                return input.getPassportId().toString();
+            }
+        };
+
+        final Function<SampleDataProxy, Double> getValueFunction = new Function<SampleDataProxy, Double>() {
+
+            @Nullable
+            @Override
+            public Double apply(@Nullable SampleDataProxy input) {
+                return Double.parseDouble(input.getValues().get(index));
+            }
+        };
+
+        final FluentIterable<SampleDataProxy> dataFiltered = FluentIterable.from(data).filter(
+                new Predicate<SampleDataProxy>() {
+                    @Override
+                    public boolean apply(@Nullable SampleDataProxy input) {
+                        return input.isIdKnown() && !input.isParseError() && (input.getParseMask() & (1 << index + 1)) == 0;
+                    }
+                }
+        );
+
+        // filter samples with error then create a MultiMap and then transform the values from SampleData to Phenotype Value (Double)
+        ImmutableListMultimap<String, Double> histogramData = ImmutableListMultimap.copyOf(Multimaps.transformValues(
+                Multimaps.index(dataFiltered, getNameFunction),
+                getValueFunction));
+        getView().setHistogramChartData(histogramData);
+
+
+        // GeoChart Data
+        ImmutableMultiset.Builder<String> builder = ImmutableMultiset.builder();
+        for (SampleDataProxy sample : data) {
+            try {
+                builder.add(sample.getCountry());
+            } catch (NullPointerException e) {
+
+            }
+        }
+        ImmutableMultiset<String> geochartData = builder.build();
+        getView().setGeoChartData(geochartData);
+
+        // MotionChart & Histogram Data
+        getView().setPhenotypExplorerData(ImmutableSet.copyOf(data), index);
+        getView().setMapData(dataFiltered);
+        getView().scheduledLayout();
+    }
+
+
+    private List<SampleDataProxy> getSamplesForPhenotype(final int index) {
+        return ImmutableList.copyOf(Iterables.filter(data.getSampleData(), new Predicate<SampleDataProxy>() {
+            @Override
+            public boolean apply(@Nullable SampleDataProxy object) {
+                String value = object.getValues().get(index);
+                return value != null && !value.isEmpty();
+            }
+        }));
     }
 
     @Override
     public void onUploadFinished(String responseText) {
-        ctx = phenotypeManager.getContext();
-        AutoBean<PhenotypeUploadDataProxy> receivedBean = AutoBeanCodex.decode(appDataFactory, PhenotypeUploadDataProxy.class, responseText);
-        clonePhenotypeUploadData(receivedBean);
-        /*AutoBean<PhenotypeUploadDataProxy> newBean = AutoBeanUtils.getAutoBean(data);
-        AutoBeanCodex.decodeInto(AutoBeanCodex.encode(receivedBean), newBean);*/
+        receivedBean = AutoBeanCodex.decode(appDataFactory, ExperimentUploadDataProxy.class, responseText);
+        onEdit();
         fireEvent(new LoadingIndicatorEvent(false));
-        showPhenotypeUploadData();
     }
 
-    private void clonePhenotypeUploadData(AutoBean<PhenotypeUploadDataProxy> receivedBean) {
-        PhenotypeUploadDataProxy newData = ctx.create(PhenotypeUploadDataProxy.class);
-        AutoBean<PhenotypeUploadDataProxy> newBean = AutoBeanUtils.getAutoBean(newData);
-        AutoBeanCodex.decodeInto(AutoBeanCodex.encode(receivedBean), newBean);
-        data = newBean.as();
-        List<PhenotypeUploadValueProxy> values = new ArrayList<PhenotypeUploadValueProxy>();
-        for (PhenotypeUploadValueProxy value : receivedBean.as().getPhenotypeUploadValues()) {
-            AutoBean<PhenotypeUploadValueProxy> newValueBean = AutoBeanUtils.getAutoBean(ctx.create(PhenotypeUploadValueProxy.class));
-            AutoBeanCodex.decodeInto(AutoBeanCodex.encode(AutoBeanUtils.getAutoBean(value)), newValueBean);
-            values.add(newValueBean.as());
+    private void onEdit() {
+        ctx = experimentManager.getContext();
+        cloneUploadData();
+        getView().updateTableWidth(data.getPhenotypes().size());
+        showUploadData();
+        getView().getDriver().edit(data, ctx);
+        ///TODO Fix this better.
+        List<String> paths = ImmutableList.<String>builder().addAll(Arrays.asList(getView().getDriver().getPaths())).build();
+        final Duration duration = new Duration();
+        ctx.saveExperimentUploadData(data).with(paths.toArray(new String[0])).to(new Receiver<ExperimentProxy>() {
+            @Override
+            public void onSuccess(ExperimentProxy response) {
+                fireEvent(new LoadingIndicatorEvent(false));
+                // fire from source so we can distinguish in BasicStudyWizardPresenter
+                getEventBus().fireEventFromSource(new PhenotypeUploadedEvent(response), PhenotypeUploadWizardPresenterWidget.this);
+                // isatab upload
+                if (isIsaTabUpload()) {
+                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Upload - ISATAB", "Experiment:" + response.getName(), (int) duration.elapsedMillis()));
+                } else {
+                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Upload", "Experiment:" + response.getName(), (int) duration.elapsedMillis()));
+                }
+
+            }
+
+            @Override
+            public void onFailure(ServerFailure message) {
+                fireEvent(new LoadingIndicatorEvent(false));
+                DisplayNotificationEvent.fireError(PhenotypeUploadWizardPresenterWidget.this, "Error", "Failed to save data");
+                onEdit();
+                if (isIsaTabUpload()) {
+                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Error - Upload - ISATAB", "Error:" + message.getMessage(), (int) duration.elapsedMillis()));
+                } else {
+                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Error - Upload - ISATAB", "Error:" + message.getMessage(), (int) duration.elapsedMillis()));
+                }
+            }
+
+            @Override
+            public void onConstraintViolation(Set<ConstraintViolation<?>> violations) {
+                fireEvent(new LoadingIndicatorEvent(false));
+                // filter redudant constraint violations and update flag
+                displayConstraintViolations(violations);
+            }
+        });
+        checkValidation();
+    }
+
+    private void displayConstraintViolations(Set<ConstraintViolation<?>> violations) {
+        getView().getDriver().setConstraintViolations(violations);
+        // reset cards
+        for (PhenotypeUploadDataProxy phenotype : data.getPhenotypes()) {
+            phenotype.setConstraintViolation(false);
         }
-        data.setTraitUom(ctx.create(PhenotypeProxy.class));
-        data.getTraitUom().setLocalTraitName(data.getName());
-        data.getTraitUom().setTraitProtocol(data.getProtocol());
-        data.getTraitUom().setUnitOfMeasure(getUnitOfMeasureFromName(data.getUnitOfMeasure()));
-        data.getTraitUom().setTraitOntologyTerm(data.getTraitOntology());
-        data.getTraitUom().setEnvironOntologyTerm(data.getEnvironmentOntology());
-        data.setPhenotypeUploadValues(values);
+        if (violations != null && !violations.isEmpty()) {
+
+            Iterable<Integer> phenotypesWithViolations = ImmutableSet.copyOf(Iterables.transform(Iterables.filter(violations, new Predicate<ConstraintViolation<?>>() {
+                @Override
+                public boolean apply(@Nullable ConstraintViolation<?> input) {
+                    return (input.getLeafBean() instanceof PhenotypeProxy);
+                }
+            }), new Function<ConstraintViolation<?>, Integer>() {
+                @Nullable
+                @Override
+                public Integer apply(@Nullable final ConstraintViolation<?> constraint) {
+                    return Iterables.indexOf(data.getPhenotypes(), new Predicate<PhenotypeUploadDataProxy>() {
+                        @Override
+                        public boolean apply(@Nullable PhenotypeUploadDataProxy input) {
+                            return input.getTraitUom() == constraint.getLeafBean();
+                        }
+                    });
+                }
+            }));
+            // update the cards
+            for (Integer ix : phenotypesWithViolations) {
+                data.getPhenotypes().get(ix).setConstraintViolation(true);
+            }
+            phenotypeUploadDataProvider.refresh();
+            // show the first Detail page that contains an error
+            if (Iterables.size(phenotypesWithViolations) > 0) {
+                phenotypeSelectionModel.setSelected(data.getPhenotypes().get(Iterables.getFirst(phenotypesWithViolations, -1)), true);
+            } else {
+                phenotypeSelectionModel.setSelected(phenotypeSelectionModel.getSelectedObject(), false);
+            }
+        }
     }
 
-    private void showPhenotypeUploadData() {
-        getView().showPhenotypeValuePanel(data);
-        getView().getDriver().edit(data.getTraitUom(), ctx);
-        getView().addColumns(data.getValueHeader());
-        phentoypeValueDataProvider.setList(data.getPhenotypeUploadValues());
+    private void cloneUploadData() {
+        data = AutoBeanCloneUtils.cloneExperimentUploadData(receivedBean, experiment, ctx, currentUser.getAppData().getUnitOfMeasureList());
+
+
+        Function<PhenotypeUploadDataProxy, List<String>> getOntologies = new Function<PhenotypeUploadDataProxy, List<String>>() {
+            @Nullable
+            @Override
+            public List<String> apply(@Nullable PhenotypeUploadDataProxy input) {
+                return Lists.newArrayList(input.getTraitOntology(), input.getEnvironmentOntology());
+            }
+        };
+
+        Set<String> ontologies = ImmutableSet.copyOf(FluentIterable
+                .from(data.getPhenotypes())
+                .transformAndConcat(getOntologies)
+                .filter(Predicates.notNull()));
+
+        experimentManager.getRequestFactory().ontologyRequest().findAllByAcc(ontologies).fire(new Receiver<Set<TermProxy>>() {
+            @Override
+            public void onSuccess(Set<TermProxy> response) {
+                Map<String, TermProxy> ontologyMap = FluentIterable.from(response).uniqueIndex(new Function<TermProxy, String>() {
+                    @Nullable
+                    @Override
+                    public String apply(@Nullable TermProxy input) {
+                        return input.getAcc();
+                    }
+                });
+                for (PhenotypeUploadDataProxy phenotype : data.getPhenotypes()) {
+                    if (phenotype.getTraitOntology() != null && ontologyMap.containsKey(phenotype.getTraitOntology())) {
+                        phenotype.getTraitUom().setTraitOntologyTerm(ontologyMap.get(phenotype.getTraitOntology()));
+                    }
+                    if (phenotype.getEnvironmentOntology() != null && ontologyMap.containsKey(phenotype.getTraitOntology())) {
+                        phenotype.getTraitUom().setEnvironOntologyTerm(ontologyMap.get(phenotype.getTraitOntology()));
+                    }
+                }
+                getView().getDriver().edit(data, ctx);
+                phenotypeUploadDataProvider.setList(data.getPhenotypes());
+
+            }
+        });
+
+    }
+
+
+    private void showUploadData() {
+        // show result panel
+        getView().showOverViewPanel();
+        getView().addColumns(data.getPhenotypes());
+        getView().setErrorCount(data.getPhenotypes().size(), countPhenotypesWithErrors());
+        phenotypeUploadDataProvider.setList(data.getPhenotypes());
+        summaryDataProvider.setList(data.getSampleData());
+    }
+
+    private int countPhenotypesWithErrors() {
+        return Iterables.size(Iterables.filter(data.getPhenotypes(), new Predicate<PhenotypeUploadDataProxy>() {
+            @Override
+            public boolean apply(@Nullable PhenotypeUploadDataProxy input) {
+                return input.getErrorCount() > 0;
+            }
+        }));
     }
 
 
     @Override
     public void onUploadError(String responseText) {
         fireEvent(new LoadingIndicatorEvent(false));
-        DisplayNotificationEvent.fireError(this, "Error uploading phentoype file", responseText);
+        //DisplayNotificationEvent.fireError(this, "Error uploading phentoype file", responseText);
     }
 
     @Override
     public void onCancel() {
-        data = null;
-        ctx = null;
-        phentoypeValueDataProvider.getList().clear();
-        getView().showPhenotypeUploadPanel();
+        reset();
     }
 
     @Override
     public void onCreate() {
-        savePhenotype();
+        save();
     }
 
     @Override
@@ -152,35 +397,23 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
     }
 
 
-    private void savePhenotype() {
-        //TODO switch to editor
+    @Override
+    public void updatePhenotypeData() {
+        checkValidation();
+        phenotypeUploadDataProvider.refresh();
+    }
 
-        if (checkValidation()) {
-            fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
-            final Duration duration = new Duration();
-            ctx.savePhenotypeUploadData(experiment.getId(), data).fire(new Receiver<Long>() {
-                @Override
-                public void onFailure(ServerFailure error) {
-                    fireEvent(new LoadingIndicatorEvent(false));
-                    fireEvent(new DisplayNotificationEvent("Phenotype upload", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, DisplayNotificationEvent.DURATION_NORMAL));
-                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Error - Upload - CSV", "Experiment:" + experiment.getId().toString() + ",Error:" + error.getMessage(), (int) duration.elapsedMillis()));
-                }
-
-                @Override
-                public void onSuccess(Long phenotypeId) {
-                    fireEvent(new LoadingIndicatorEvent(false));
-                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Upload - CSV", "Experiment:" + experiment.getId().toString() + ",Phenotype: " + phenotypeId, (int) duration.elapsedMillis()));
-                    onCancel();
-                    PhenotypeUploadedEvent.fire(getEventBus(), phenotypeId);
-                }
-            });
+    @Override
+    public void deselectPhenotypeCard() {
+        if (phenotypeSelectionModel.getSelectedObject() != null) {
+            phenotypeSelectionModel.setSelected(phenotypeSelectionModel.getSelectedObject(), false);
         }
     }
 
     @Override
     protected void onBind() {
         super.onBind();    //To change body of overridden methods use File | Settings | File Templates.
-        getView().setUnitOfMeasureList(currentUser.getAppData().getUnitOfMeasureList());
+        //getView().setUnitOfMeasureList(currentUser.getAppData().getUnitOfMeasureList());
     }
 
     //TODO return directly from server
@@ -196,32 +429,58 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
         return null;
     }
 
-
     public void save() {
-        onCreate();
+        getView().getDriver().flush();
+        if (checkValidation()) {
+            fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
+            // fire event
+            ctx.fire();
+        }
+    }
+
+    public void reset() {
+        data = null;
+        ctx = null;
+        receivedBean = null;
+        deselectPhenotypeCard();
+        phenotypeUploadDataProvider.setList(Lists.<PhenotypeUploadDataProxy>newArrayList());
+        sampleDataProvider.setList(Lists.<SampleDataProxy>newArrayList());
+        summaryDataProvider.setList(Lists.<SampleDataProxy>newArrayList());
+        getView().resetFileUploadPanel();
+        getView().showFileUploadPanel();
     }
 
     public void setExperiment(ExperimentProxy experiment) {
         this.experiment = experiment;
+        getView().showExperimentEditor(experiment == null);
     }
-
     public boolean checkUploadOk() {
         return checkValidation();
     }
 
     private boolean checkValidation() {
-        boolean isOk = false;
+        boolean isOk;
         getView().getDriver().flush();
+
+        //FIXME necessary because @Valid not yet supported
+        // http://code.google.com/p/google-web-toolkit/issues/detail?id=8856
+        // http://code.google.com/p/google-web-toolkit/issues/detail?id=7266
         Set<ConstraintViolation<?>> violations = (Set<ConstraintViolation<?>>) (Set) validator
-                .validate(data.getTraitUom(), Default.class);
+                .validate(data, Default.class);
+        for (PhenotypeUploadDataProxy phenotype : data.getPhenotypes()) {
+            violations.addAll((Set<ConstraintViolation<?>>) (Set) validator.validate(phenotype.getTraitUom(), Default.class));
+        }
+        violations.addAll((Set<ConstraintViolation<?>>) (Set) validator.validate(data.getExperiment(), Default.class));
         if (!violations.isEmpty()) {
-            getView().getDriver().setConstraintViolations(
-                    violations);
             isOk = false;
         } else {
             isOk = true;
         }
+        displayConstraintViolations(violations);
         return isOk;
     }
 
+    public boolean isIsaTabUpload() {
+        return experiment == null;
+    }
 }

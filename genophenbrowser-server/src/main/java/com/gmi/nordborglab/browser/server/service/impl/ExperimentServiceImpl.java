@@ -11,7 +11,6 @@ import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
 import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
-import com.gmi.nordborglab.browser.server.rest.PhenotypeUploadData;
 import com.gmi.nordborglab.browser.server.search.PublicationSearchProcessor;
 import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
@@ -49,7 +48,6 @@ import org.springframework.security.acls.domain.PermissionFactory;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 
 import javax.annotation.Nullable;
@@ -60,11 +58,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
 @Service
-@Validated
 @Transactional(readOnly = true)
 public class ExperimentServiceImpl extends WebApplicationObjectSupport
         implements ExperimentService {
@@ -102,7 +100,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
     @Transactional(readOnly = false)
     @Override
-    public Experiment save(@Valid Experiment experiment) {
+    public Experiment save(Experiment experiment) {
         boolean isNewRecord = experiment.getId() == null;
         experiment = experimentRepository.save(experiment);
         if (isNewRecord) {
@@ -196,14 +194,18 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
     @Transactional(readOnly = false)
     @Override
-    public Experiment saveExperimentUploadData(ExperimentUploadData data) {
+    public Experiment saveExperimentUploadData(@Valid ExperimentUploadData data) {
+
+        checkNotNull(data.getSampleData());
+        checkNotNull(data.getExperiment());
+        checkNotNull(data.getPhenotypes());
         Experiment experiment = data.getExperiment();
-        experiment = save(experiment);
+        if (experiment.getId() == null) {
+            experiment = save(experiment);
+        }
         // acd DOI
         //add phenotypes
-        for (PhenotypeUploadData phenotype : data.getPhenotypes()) {
-            traitUomService.savePhenotypeUploadData(experiment.getId(), phenotype);
-        }
+        traitUomService.savePhenotypeUploadData(experiment, data.getPhenotypes(), data.getSampleData());
         return experiment;
     }
 
