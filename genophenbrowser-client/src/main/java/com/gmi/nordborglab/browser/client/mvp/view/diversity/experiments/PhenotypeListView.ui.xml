@@ -22,6 +22,11 @@
             margin-left: 0.5em;
         }
 
+        .uploadBtn {
+            margin-top: 10px;
+            margin-right: 5px;
+        }
+
     </ui:style>
 
     <g:LayoutPanel>
@@ -31,6 +36,8 @@
                     <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
                         <b:TextBox ui:field="searchBox" placeholder="Search..."></b:TextBox>
                     </b:InputAddOn>
+                    <b:Button ui:field="uploadPhenotypeBtn" icon="PLUS_SIGN" text="Upload"
+                              addStyleNames="{style.uploadBtn}" type="DANGER" enabled="true"/>
                 </div>
                 <div style="float:left;">
                     <b:NavPills addStyleNames="{style.navPills}">

@@ -15,4 +15,6 @@ public interface PhenotypeListViewUiHandlers extends UiHandlers {
     void selectFilter(ConstEnums.TABLE_FILTER filter);
 
     void updateSearchString(String searchString);
+
+    void onClosePhenotypeUploadPopup();
 }
