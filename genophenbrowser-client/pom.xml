@@ -32,7 +32,7 @@
         <gwtchosen.version>1.2.0</gwtchosen.version>
         <gwtbootstrap.version>2.3.2.0</gwtbootstrap.version>
         <gwasgeneviewer.version>0.4.13-SNAPSHOT</gwasgeneviewer.version>
-        <gwtmaps.version>3.8.0-beta2</gwtmaps.version>
+        <gwtmaps.version>3.10.0-alpha-7</gwtmaps.version>
         <geochart.version>0.1.4-SNAPSHOT</geochart.version>
         <gwt-charts.version>0.9.10</gwt-charts.version>
         <gwt-tour.version>1.0-SNAPSHOT</gwt-tour.version>
@@ -169,8 +169,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.gwt.maps</groupId>
-            <artifactId>gwt-maps-api-v3</artifactId>
+            <groupId>com.github.branflake2267</groupId>
+            <artifactId>gwt-maps-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -289,8 +289,8 @@
                 <version>${gwasgeneviewer.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.gwt.maps</groupId>
-                <artifactId>gwt-maps-api-v3</artifactId>
+                <groupId>com.github.branflake2267</groupId>
+                <artifactId>gwt-maps-api</artifactId>
                 <version>${gwtmaps.version}</version>
             </dependency>
             <dependency>

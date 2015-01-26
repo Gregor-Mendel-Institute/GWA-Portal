@@ -11,7 +11,7 @@
     <inherits name='com.google.gwt.user.theme.clean.Clean'/>
     <inherits name="com.google.web.bindery.autobean.AutoBean"/>
     <inherits name="com.google.gwt.editor.Editor"/>
-    <inherits name='com.google.gwt.maps.Apis_Google_Maps'/>
+    <inherits name='com.google.gwt.maps.Maps'/>
     <inherits name='com.google.web.bindery.requestfactory.RequestFactory'/>
     <inherits name="at.gmi.nordborglab.widgets.gwasgeneviewer.GWASGeneViewer"/>
     <inherits name="at.gmi.nordborglab.widgets.geochart.GeoChart"/>
