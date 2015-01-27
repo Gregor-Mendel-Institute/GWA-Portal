@@ -43,7 +43,7 @@
         <maven.compiler.plugin>3.1</maven.compiler.plugin>
         <maven.source.plugin>2.4</maven.source.plugin>
         <maven.war.plugin>2.3</maven.war.plugin>
-        <jetty.version>9.2.6.v20141205</jetty.version>
+        <jetty.version>9.2.7.v20150116</jetty.version>
         <maven.jar.plugin>2.4</maven.jar.plugin>
         <maven.resources.plugin>2.6</maven.resources.plugin>
         <maven.versions.plugin>2.1</maven.versions.plugin>
@@ -280,6 +280,12 @@
                         <dependency>
                             <groupId>org.eclipse.jetty</groupId>
                             <artifactId>jetty-servlets</artifactId>
+                            <version>${jetty.version}</version>
+                            <scope>runtime</scope>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.jetty</groupId>
+                            <artifactId>jetty-proxy</artifactId>
                             <version>${jetty.version}</version>
                             <scope>runtime</scope>
                         </dependency>
