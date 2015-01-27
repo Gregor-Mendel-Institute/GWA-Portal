@@ -72,6 +72,10 @@
             <artifactId>querydsl-jpa</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.mysema.querydsl</groupId>
+            <artifactId>querydsl-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
         </dependency>
@@ -300,16 +304,6 @@
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.mysema.querydsl</groupId>
-            <artifactId>querydsl-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.mysema.querydsl</groupId>
-            <artifactId>querydsl-jpa</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
@@ -583,19 +577,13 @@
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-servlets</artifactId>
                 <version>${jetty.version}</version>
-                <scope>runtime</scope>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-proxy</artifactId>
                 <version>${jetty.version}</version>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-util</artifactId>
-                <version>${jetty.version}</version>
-                <scope>runtime</scope>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>

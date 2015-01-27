@@ -21,7 +21,12 @@
                       entity-manager-factory-ref="entityManagerFactoryOntology"/>
     <tx:annotation-driven/>
 
-    <bean class="org.springframework.orm.jpa.JpaTransactionManager"
+    <!-- primary= true required until spring-framework 4.1.5 is relased.
+     see buggreports:
+    https://jira.spring.io/browse/SPR-12541
+    https://jira.spring.io/browse/SPR-12577
+    -->
+    <bean class="org.springframework.orm.jpa.JpaTransactionManager" primary="true"
           id="transactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
         <property name="dataSource" ref="dataSource"/>
