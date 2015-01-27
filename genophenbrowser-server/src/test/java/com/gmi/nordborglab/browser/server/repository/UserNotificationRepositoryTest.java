@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.server.repository;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import org.junit.Test;
+import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -52,7 +53,7 @@ public class UserNotificationRepositoryTest extends BaseTest {
     @Test
     public void findByAppUserInOrderByIdDesc() {
         Long id = 16L;
-        List<UserNotification> notifications = repository.findByAppUserIdOrAppUserIsNullOrderByIdDesc(id);
+        List<UserNotification> notifications = repository.findByAppUserIdOrAppUserIsNullOrderByIdDesc(id, new PageRequest(0, 10));
         assertNotNull(notifications);
         assertEquals(14, notifications.size());
     }

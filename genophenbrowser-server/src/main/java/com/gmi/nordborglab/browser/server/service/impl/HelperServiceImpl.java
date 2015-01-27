@@ -60,8 +60,11 @@ import com.gmi.nordborglab.browser.shared.service.HelperFactory;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 import com.google.web.bindery.autobean.vm.AutoBeanFactorySource;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
@@ -351,29 +354,54 @@ public class HelperServiceImpl implements HelperService {
 
     @Override
     public List<UserNotification> getUserNotifications(Integer limit) {
+
         AppUser appUser = null;
         try {
             appUser = userRepository.findOne(Long.parseLong(SecurityUtil.getUsername()));
         } catch (Exception e) {
 
         }
-
         if (appUser == null)
             return null;
-        List<UserNotification> notifications = userNotificationRepository.findByAppUserIdOrAppUserIsNullOrderByIdDesc(Long.parseLong(SecurityUtil.getUsername()));
-        return filterUserNotifications(notifications, appUser.getNotificationCheckDate(), limit);
+        List<UserNotification> notifications = userNotificationRepository.findByAppUserIdOrAppUserIsNullOrderByIdDesc(Long.parseLong(SecurityUtil.getUsername()), new PageRequest(0, limit));
+        Iterable<UserNotification> newsNotifications = getNewsAsNotificatons(limit);
+        final Date lastcheckDate = appUser.getNotificationCheckDate();
+
+        List<UserNotification> all = FluentIterable.from(Iterables.mergeSorted(ImmutableList.of(notifications, newsNotifications), Ordering.natural().reverse().onResultOf(new Function<UserNotification, Date>() {
+            @Nullable
+            @Override
+            public Date apply(@Nullable UserNotification input) {
+                return input.getCreateDate();
+            }
+        }))).limit(limit).transform(new Function<UserNotification, UserNotification>() {
+            @Nullable
+            @Override
+            public UserNotification apply(@Nullable UserNotification input) {
+                if (input != null) {
+                    input.isRead(lastcheckDate);
+                }
+                return input;
+            }
+        }).toList();
+        return all;
     }
 
-    private static List<UserNotification> filterUserNotifications(List<UserNotification> notifications, Date modificationCheckDate, Integer limit) {
-        List<UserNotification> recentNotifications = Lists.newArrayList();
-        for (int i = 0; i < notifications.size(); i++) {
-            UserNotification notification = notifications.get(i);
-            if (!notification.isRead(modificationCheckDate) || limit == null || (limit != null && limit > recentNotifications.size())) {
-                recentNotifications.add(notification);
+    private Iterable<UserNotification> getNewsAsNotificatons(Integer limit) {
+        Page<NewsItem> news = newsRepository.findAll(new PageRequest(0, limit, Sort.Direction.DESC, "createDate"));
+        return Iterables.transform(news.getContent(), new Function<NewsItem, UserNotification>() {
+            @Nullable
+            @Override
+            public UserNotification apply(@Nullable NewsItem input) {
+                UserNotification notification = new UserNotification();
+                String profileUrl = "<img class=\"img-circle\" src=\"" + PermissionServiceImpl.GRAVATAR_URL + input.getAuthor().getAvatarHash() + "&s=29\" />";
+                notification.setText(profileUrl + "&nbsp;<span class=\"notificationNews\">News:</span> <a href=\"/#/home\">" + input.getTitle() + "</a>");
+                notification.setType("site");
+                notification.setCreateDate(input.getCreateDate());
+                return notification;
             }
-        }
-        return recentNotifications;
+        });
     }
+
 
     public SampleData parseAndUpdateAccession(SampleData value) {
         boolean isIdKnown = false;

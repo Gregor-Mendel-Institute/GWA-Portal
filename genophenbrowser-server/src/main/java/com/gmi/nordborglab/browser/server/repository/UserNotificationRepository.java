@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.repository;
 
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,5 +16,5 @@ import java.util.List;
 public interface UserNotificationRepository extends JpaRepository<UserNotification, Long> {
 
 
-    List<UserNotification> findByAppUserIdOrAppUserIsNullOrderByIdDesc(Long id);
+    List<UserNotification> findByAppUserIdOrAppUserIsNullOrderByIdDesc(Long id, Pageable page);
 }

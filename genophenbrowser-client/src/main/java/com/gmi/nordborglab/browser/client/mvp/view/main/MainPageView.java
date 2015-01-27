@@ -313,6 +313,10 @@ public class MainPageView extends ViewWithUiHandlers<MainUiHandlers> implements 
             icon = "e_icon-database";
         } else if (type.equalsIgnoreCase("permission")) {
             icon = "e_icon-share";
+        } else if (type.equals("site")) {
+            icon = "e_icon-home";
+        } else if (type.equals("function")) {
+            icon = "e_icon_rocket";
         }
         return icon;
     }

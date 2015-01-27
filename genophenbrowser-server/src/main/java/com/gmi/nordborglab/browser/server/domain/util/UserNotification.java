@@ -77,11 +77,9 @@ public class UserNotification extends BaseEntity {
     }
 
     public boolean isRead(Date lastCheckDate) {
-        if (lastCheckDate != null && lastCheckDate.getTime() > createDate.getTime()) {
+        isRead = false;
+        if (lastCheckDate != null && createDate != null && lastCheckDate.getTime() > createDate.getTime())
             isRead = true;
-        } else {
-            isRead = false;
-        }
         return isRead;
     }
 

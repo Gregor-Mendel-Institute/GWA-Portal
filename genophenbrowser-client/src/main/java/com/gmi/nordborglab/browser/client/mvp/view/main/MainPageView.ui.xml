@@ -275,6 +275,13 @@
             color: #888;
         }
 
+        @external notificationNews;
+        .notificationTable td .notificationNews {
+            font-size: 110%;
+            color: #444;
+            font-weight: bold;
+        }
+
     </ui:style>
 
     <g:DockLayoutPanel unit="EM" ui:field="mainContainer">
