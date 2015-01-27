@@ -288,7 +288,7 @@ public class PermissionServiceImpl implements PermissionService {
                         objType = "study";
                         objName = ((Experiment) entity).getName();
                     } else if (entity instanceof GWASResult) {
-                        link = "/#/gwasViewer;id=" + entity.getId();
+                        link = "/#/gwasViewer?id=" + entity.getId();
                         objType = "GWAS-result";
                         objName = ((GWASResult) entity).getName();
                     } else if (entity instanceof CandidateGeneList) {
