@@ -55,6 +55,8 @@ import org.jboss.errai.bus.client.api.messaging.MessageBus;
 import org.jboss.errai.bus.client.api.messaging.RequestDispatcher;
 
 import javax.inject.Provider;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.util.List;
 
 public class ClientModule extends AbstractPresenterModule {
@@ -235,6 +237,13 @@ public class ClientModule extends AbstractPresenterModule {
         CustomRequestFactory factory = GWT.create(CustomRequestFactory.class);
         factory.initialize(eventBus);
         return factory;
+    }
+
+
+    @Provides
+    @Singleton
+    public Validator createValidator() {
+        return Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @Provides

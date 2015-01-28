@@ -28,6 +28,7 @@ public interface ExperimentProxy extends SecureEntityProxy {
 
     void setOriginator(String originator);
 
+    @NotNull
     String getOriginator();
 
     void setComments(String comments);

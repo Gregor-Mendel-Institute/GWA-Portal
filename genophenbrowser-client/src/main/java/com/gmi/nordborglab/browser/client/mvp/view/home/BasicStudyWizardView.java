@@ -10,12 +10,12 @@ import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.ModalFooter;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.NavPills;
-import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.github.gwtbootstrap.client.ui.event.HideEvent;
+import com.gmi.nordborglab.browser.client.editors.ExperimentEditEditor;
 import com.gmi.nordborglab.browser.client.events.SelectMethodEvent;
 import com.gmi.nordborglab.browser.client.events.SelectTransformationEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.BasicStudyWizardUiHandlers;
@@ -89,6 +89,7 @@ import com.google.gwt.visualization.client.visualizations.MotionChart;
 import com.google.gwt.visualization.client.visualizations.corechart.Options;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 
@@ -107,6 +108,9 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
 
 
     public interface Binder extends UiBinder<Widget, BasicStudyWizardView> {
+    }
+
+    public interface ExperimentEditDriver extends RequestFactoryEditorDriver<ExperimentProxy, ExperimentEditEditor> {
     }
 
     private final Widget widget;
@@ -139,12 +143,6 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @UiField
     LayoutPanel phenotypeContainterPanel;
 
-    @UiField
-    TextBox experimentNameTb;
-    @UiField
-    TextBox experimentOriginatorTb;
-    @UiField
-    TextArea experimentDesignTb;
 
     @UiField
     com.github.gwtbootstrap.client.ui.TextBox phenotypeSearchBox;
@@ -195,6 +193,8 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     TabLayoutPanel createExperimentTabPanel;
     @UiField
     ModalFooter createExperimentPanelFooter;
+    @UiField
+    ExperimentEditEditor experimentEditEditor;
     private Modal phenotypeUploadPopup = new Modal();
     private ResizeLayoutPanel phenotypeUploadPanel = new ResizeLayoutPanel();
 
@@ -217,6 +217,8 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
 
     private PHENTOYPE_CHART_TYPE activePhenotypeChartType = PHENTOYPE_CHART_TYPE.HISTOGRAM;
     private Map<String, CallOut> calloutMap = new HashMap<String, CallOut>();
+
+    private final ExperimentEditDriver experimentEditDriver;
 
 
     ClickHandler createExperimentClickHandler = new ClickHandler() {
@@ -273,18 +275,21 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
                                 final MainResources mainRes,
                                 final CustomDataGridResources dataGridResources,
                                 final PhenotypeCard phenotypeCard,
-                                final FlagMap flagMap
+                                final FlagMap flagMap,
+                                final ExperimentEditDriver experimentEditDriver
     ) {
         this.phenotypeCardCell = phenotypeCardCell;
         this.mainRes = mainRes;
         this.flagMap = flagMap;
         this.summaryGenotypCard = genotypeCard;
         this.summaryPhenotypeCard = phenotypeCard;
+        this.experimentEditDriver = experimentEditDriver;
         phenotypeList = new CellList<PhenotypeProxy>(phenotypeCardCell, cardCellListResources, new EntityProxyKeyProvider<PhenotypeProxy>());
         genotypeList = new CellList<AlleleAssayProxy>(genotypeCardCell, cardCellListResources, new EntityProxyKeyProvider<AlleleAssayProxy>());
         missingGenotypesDataGrid = new DataGrid<TraitProxy>(50, dataGridResources, new EntityProxyKeyProvider<TraitProxy>(), new HTMLPanel(
                 "There are no plants with missing genotypes"));
         widget = binder.createAndBindUi(this);
+        experimentEditDriver.initialize(experimentEditEditor);
         missingGenotypesPager.setDisplay(missingGenotypesDataGrid);
         wizard.addCancelButtonClickHandler(new ClickHandler() {
 
@@ -428,6 +433,11 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     }
 
     @Override
+    public ExperimentEditDriver getExperimentDriver() {
+        return experimentEditDriver;
+    }
+
+    @Override
     public void setMethods(List<StudyProtocolProxy> methods) {
         selectedMethod = null;
         if (methodContainer.getWidgetCount() > 0)
@@ -557,7 +567,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @UiHandler("saveExperimentBtn")
     public void onClickSaveExperimentBtn(ClickEvent e) {
         if (createExperimentTabPanel.getSelectedIndex() == 0) {
-            getUiHandlers().onSaveExperiment(experimentNameTb.getText(), experimentOriginatorTb.getText(), experimentDesignTb.getText());
+            getUiHandlers().onSaveExperiment();
         } else {
 
         }

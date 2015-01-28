@@ -11,6 +11,7 @@ import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.BasicStudyWizardUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
+import com.gmi.nordborglab.browser.client.mvp.view.home.BasicStudyWizardView;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.security.IsLoggedInGatekeeper;
@@ -65,6 +66,9 @@ import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import javax.annotation.Nullable;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import javax.validation.groups.Default;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -122,6 +126,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
         void setAvailableTransformations(List<TransformationProxy> transformationList);
 
         TransformationProxy getSelectedTransformation();
+
+        BasicStudyWizardView.ExperimentEditDriver getExperimentDriver();
 
         void setMethods(List<StudyProtocolProxy> methods);
 
@@ -217,6 +223,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     protected HashMap<StatisticTypeProxy, List<TraitProxy>> statisticPhenotypeValueCache = new HashMap<StatisticTypeProxy, List<TraitProxy>>();
     private Long experimentId = null;
     private Long phenotypeId = null;
+    private ExperimentProxy newExperiment;
+    private final Validator validator;
 
 
     private static class WizardStateIterator implements ListIterator<STATE> {
@@ -298,10 +306,11 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                                      final CurrentUser currentUser,
                                      final HelperManager helperManager,
                                      final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizard,
-                                     final PhenotypeUploadWizardPresenterWidget isaTabUploadWizard
-    ) {
+                                     final PhenotypeUploadWizardPresenterWidget isaTabUploadWizard,
+                                     Validator validator) {
         super(eventBus, view, proxy, MainPagePresenter.TYPE_SetMainContent);
         this.currentUser = currentUser;
+        this.validator = validator;
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
         this.cdvManager = cdvManager;
@@ -728,6 +737,25 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     @Override
     public void onShowCreateExperimentPanel() {
         getView().showCreateExperimentPanel(true);
+        ExperimentRequest ctx = experimentManager.getContext();
+        newExperiment = ctx.create(ExperimentProxy.class);
+        ctx.save(newExperiment).to(new Receiver<ExperimentProxy>() {
+            @Override
+            public void onSuccess(ExperimentProxy response) {
+                addExperimentToAvailableSetAndDisplay(response);
+            }
+
+            @Override
+            public void onFailure(ServerFailure error) {
+                DisplayNotificationEvent.fireError(BasicStudyWizardPresenter.this, "Error", "Failed to save experiment");
+            }
+
+            @Override
+            public void onConstraintViolation(Set<ConstraintViolation<?>> violations) {
+                getView().getExperimentDriver().setConstraintViolations(violations);
+            }
+        });
+        getView().getExperimentDriver().edit(newExperiment, ctx);
     }
 
     @Override
@@ -767,25 +795,27 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
         }));
     }
 
-    @Override
-    public void onSaveExperiment(String name, String originator, String design) {
-        ExperimentRequest ctx = experimentManager.getContext();
-        ExperimentProxy experiment = ctx.create(ExperimentProxy.class);
-        experiment.setName(name);
-        experiment.setOriginator(originator);
-        experiment.setDesign(design);
-        ctx.save(experiment).to(new Receiver<ExperimentProxy>() {
-            @Override
-            public void onSuccess(ExperimentProxy response) {
-                addExperimentToAvailableSetAndDisplay(response);
-            }
+    private boolean checkExperimentConstraint() {
+        getView().getExperimentDriver().flush();
+        if (newExperiment == null)
+            return false;
+        boolean isOk;
+        Set<ConstraintViolation<?>> violations = (Set<ConstraintViolation<?>>) (Set) validator
+                .validate(newExperiment, Default.class);
+        if (!violations.isEmpty() || getView().getExperimentDriver().hasErrors()) {
+            isOk = false;
+        } else {
+            isOk = true;
+        }
+        getView().getExperimentDriver().setConstraintViolations(violations);
+        return isOk;
+    }
 
-            @Override
-            public void onFailure(ServerFailure error) {
-                DisplayNotificationEvent.fireError(BasicStudyWizardPresenter.this, "Error", "Failed to save experiment");
-            }
-        });
-        ctx.fire();
+    @Override
+    public void onSaveExperiment() {
+        if (!checkExperimentConstraint())
+            return;
+        getView().getExperimentDriver().flush().fire();
     }
 
     @Override
@@ -814,6 +844,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     @Override
     public void onCloseCreateExperimentPopup() {
         isaTabUploadWizard.reset();
+        newExperiment = null;
     }
 
     public void onCloseUploadPhentoypePopup() {

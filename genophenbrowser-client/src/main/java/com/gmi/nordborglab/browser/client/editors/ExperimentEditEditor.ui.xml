@@ -4,7 +4,6 @@
 			 xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
 		>
 	<ui:style>
-
 	</ui:style>
 	<g:FlowPanel>
 		<b:ControlGroup ui:field="nameGroup">
@@ -16,7 +15,7 @@
 			<b:HelpInline ui:field="nameErrors"></b:HelpInline>
 		</b:ControlGroup>
 		<b:ControlGroup ui:field="originatorGroup">
-			<b:ControlLabel for="originator">Name</b:ControlLabel>
+			<b:ControlLabel for="originator">Originator</b:ControlLabel>
 			<b:Tooltip text='Originator of the Study' trigger="FOCUS" placement="RIGHT">
 				<b:TextBox placeholder="Originator" alternateSize="XLARGE" ui:field="originator"
 						   controlGroup="{originatorGroup}" errorLabel="{originatorErrors}"/>
@@ -25,7 +24,7 @@
 		</b:ControlGroup>
 
 		<b:ControlGroup ui:field="designGroup">
-			<b:ControlLabel for="design">Name</b:ControlLabel>
+			<b:ControlLabel for="design">Design</b:ControlLabel>
 			<b:Tooltip text='Design of the Study' trigger="FOCUS" placement="RIGHT">
 				<b:TextArea characterWidth="80" visibleLines="10" placeholder="Design" alternateSize="XLARGE"
 							ui:field="design" controlGroup="{designGroup}" errorLabel="{designErrors}"/>
@@ -33,7 +32,7 @@
 			<b:HelpInline ui:field="designErrors"></b:HelpInline>
 		</b:ControlGroup>
 		<b:ControlGroup ui:field="commentsGroup">
-			<b:ControlLabel for="originator">Name</b:ControlLabel>
+			<b:ControlLabel for="originator">Comments</b:ControlLabel>
 			<b:Tooltip text='Originator of the Study' trigger="FOCUS" placement="RIGHT">
 				<b:TextArea characterWidth="80" visibleLines="10" placeholder="Comments" alternateSize="XLARGE"
 							ui:field="comments" controlGroup="{commentsGroup}" errorLabel="{commentsErrors}"/>
