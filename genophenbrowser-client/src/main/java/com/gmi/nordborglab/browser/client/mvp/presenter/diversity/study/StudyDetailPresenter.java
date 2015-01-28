@@ -42,6 +42,8 @@ import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import javax.validation.groups.Default;
 import java.util.List;
 import java.util.Set;
 
@@ -76,6 +78,7 @@ public class StudyDetailPresenter extends
     }
 
     protected StudyProxy study;
+    protected StudyProxy editedStudy;
     protected boolean fireLoadEvent;
     protected final PlaceManager placeManager;
     protected final CdvManager cdvManager;
@@ -85,6 +88,7 @@ public class StudyDetailPresenter extends
     private static int BIN_COUNT = 20;
     protected final Receiver<StudyProxy> receiver;
     protected final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget;
+    private final Validator validator;
 
     public static final Object TYPE_SetGWASUploadContent = new Object();
 
@@ -106,8 +110,9 @@ public class StudyDetailPresenter extends
     public StudyDetailPresenter(final EventBus eventBus, final MyView view,
                                 final MyProxy proxy, final PlaceManager placeManager,
                                 final CdvManager cdvManager, final CurrentUser currentUser,
-                                final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget) {
+                                final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget, Validator validator) {
         super(eventBus, view, proxy, StudyTabPresenter.TYPE_SetTabContent);
+        this.validator = validator;
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
         this.gwasUploadWizardPresenterWidget = gwasUploadWizardPresenterWidget;
@@ -266,17 +271,33 @@ public class StudyDetailPresenter extends
     @Override
     public void onEdit() {
         CdvRequest ctx = cdvManager.getContext();
-        getView().getEditDriver().edit(study, ctx);
-        ctx.saveStudy(study).with(CdvManager.FULL_PATH).to(receiver);
+        editedStudy = ctx.edit(study);
+        getView().getEditDriver().edit(editedStudy, ctx);
+        ctx.saveStudy(editedStudy).with(CdvManager.FULL_PATH).to(receiver);
         getView().showEditPopup(true);
     }
 
     @Override
     public void onSave() {
         RequestContext req = getView().getEditDriver().flush();
+        if (!checkValidation())
+            return;
         fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
         req.fire();
 
+    }
+
+    private boolean checkValidation() {
+        boolean isOk;
+        Set<ConstraintViolation<?>> violations = (Set<ConstraintViolation<?>>) (Set) validator
+                .validate(editedStudy, Default.class);
+        if (!violations.isEmpty() || getView().getEditDriver().hasErrors()) {
+            isOk = false;
+        } else {
+            isOk = true;
+        }
+        getView().getEditDriver().setConstraintViolations(violations);
+        return isOk;
     }
 
     @Override

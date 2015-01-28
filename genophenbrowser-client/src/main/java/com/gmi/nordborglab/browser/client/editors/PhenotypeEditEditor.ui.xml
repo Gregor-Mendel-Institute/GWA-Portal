@@ -15,28 +15,32 @@
 
     <g:FlowPanel>
         <b:ControlGroup ui:field="phentoypeNameGroup">
-            <b:ControlLabel for="name">Name</b:ControlLabel>
+            <b:ControlLabel for="localTraitName">Name</b:ControlLabel>
                 <b:Tooltip text='Name of the phenotype' trigger="FOCUS" placement="RIGHT">
                     <b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="localTraitName" controlGroup="{phentoypeNameGroup}" errorLabel="{localTraitNameErrors}"/>
                 </b:Tooltip>
                 <b:HelpInline ui:field="localTraitNameErrors"></b:HelpInline>
         </b:ControlGroup>
-        <b:ControlLabel>Trait-ontology</b:ControlLabel>
-        <b:Tooltip text='Ontology term of the trait' trigger="FOCUS" placement="RIGHT">
-            <b:InputAddOn prependIcon="SEARCH">
-                <gui:OntologyTypeahead ui:field="traitOntologyTerm">
-                    <b:TextBox placeholder="Type to search.." alternateSize="XLARGE"/>
-                </gui:OntologyTypeahead>
-            </b:InputAddOn>
-        </b:Tooltip>
-        <b:ControlLabel>Environment-ontology</b:ControlLabel>
-        <b:Tooltip text='Ontology term of the environment' trigger="FOCUS" placement="RIGHT">
-            <b:InputAddOn prependIcon="SEARCH">
-                <gui:OntologyTypeahead ui:field="environOntologyTerm">
-                    <b:TextBox placeholder="Type to search.." alternateSize="XLARGE"/>
-                </gui:OntologyTypeahead>
-            </b:InputAddOn>
-        </b:Tooltip>
+        <b:ControlGroup ui:field="traitOntologyGroup">
+            <b:ControlLabel for="traitOntologyTerm">Trait-ontology</b:ControlLabel>
+            <b:Tooltip text='Ontology term of the trait' trigger="FOCUS" placement="RIGHT">
+                <b:InputAddOn prependIcon="SEARCH">
+                    <gui:OntologyTypeahead ui:field="traitOntologyTerm">
+                        <b:TextBox placeholder="Type to search.." alternateSize="XLARGE"/>
+                    </gui:OntologyTypeahead>
+                </b:InputAddOn>
+            </b:Tooltip>
+        </b:ControlGroup>
+        <b:ControlGroup ui:field="environOntologyGroup">
+            <b:ControlLabel for="environOntologyTerm">Environment-ontology</b:ControlLabel>
+            <b:Tooltip text='Ontology term of the environment' trigger="FOCUS" placement="RIGHT">
+                <b:InputAddOn prependIcon="SEARCH">
+                    <gui:OntologyTypeahead ui:field="environOntologyTerm">
+                        <b:TextBox placeholder="Type to search.." alternateSize="XLARGE"/>
+                    </gui:OntologyTypeahead>
+                </b:InputAddOn>
+            </b:Tooltip>
+        </b:ControlGroup>
         <b:ControlGroup ui:field="unitOfMeasureGroup">
             <b:ControlLabel for="unitOfMeasure">Unit of measure</b:ControlLabel>
             <b:Tooltip text='Unit of measure' trigger="FOCUS" placement="RIGHT">
@@ -44,10 +48,12 @@
             </b:Tooltip>
             <b:HelpInline ui:field="unitOfMeasureErrors"></b:HelpInline>
         </b:ControlGroup>
-        <b:ControlLabel>Protocol</b:ControlLabel>
-        <b:Tooltip text='Protocol of the phenotype' trigger="FOCUS" placement="RIGHT">
-            <b:TextArea placeholder="Protocol" visibleLines="6" alternateSize="XLARGE"
-                        ui:field="traitProtocol"></b:TextArea>
-        </b:Tooltip>
+        <b:ControlGroup ui:field="traitProtocolGroup">
+            <b:ControlLabel for="traitProtocol">Protocol</b:ControlLabel>
+            <b:Tooltip text='Protocol of the phenotype' trigger="FOCUS" placement="RIGHT">
+                <b:TextArea placeholder="Protocol" visibleLines="6" alternateSize="XLARGE"
+                            ui:field="traitProtocol"></b:TextArea>
+            </b:Tooltip>
+        </b:ControlGroup>
     </g:FlowPanel>
 </ui:UiBinder>

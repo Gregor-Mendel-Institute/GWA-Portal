@@ -1,21 +1,29 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.gmi.nordborglab.browser.client.TabDataDynamic;
+import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.LoadExperimentEvent;
+import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PermissionDoneEvent;
+import com.gmi.nordborglab.browser.client.events.PlaceRequestEvent.PlaceRequestHandler;
+import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
+import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentDetailView.ExperimentDisplayDriver;
+import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentDetailView.ExperimentEditDriver;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PublicationProxy;
+import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -27,41 +35,31 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
-import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.HasUiHandlers;
-
-import javax.annotation.Nullable;
-import javax.validation.ConstraintViolation;
-
-import com.gmi.nordborglab.browser.client.TabDataDynamic;
-import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
-import com.gmi.nordborglab.browser.client.events.LoadExperimentEvent;
-import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
-import com.gmi.nordborglab.browser.client.events.PlaceRequestEvent.PlaceRequestHandler;
-import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
-import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentDetailUiHandlers;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentDetailView.ExperimentDisplayDriver;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.experiments.ExperimentDetailView.ExperimentEditDriver;
-import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
-import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
-import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
-
+import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.TabData;
-
+import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.annotations.TitleFunction;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+
+import javax.annotation.Nullable;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import javax.validation.groups.Default;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 public class ExperimentDetailPresenter
         extends
@@ -122,7 +120,8 @@ public class ExperimentDetailPresenter
     public static final Object TYPE_SetPermissionContent = new Object();
     private final PlaceManager placeManager;
     private final ExperimentManager experimentManager;
-    ExperimentProxy experiment;
+    private ExperimentProxy experiment;
+    private ExperimentProxy editedExperiment;
     final CurrentUser currentUser;
     private ExperimentEditDriver editDriver = null;
     private Receiver<ExperimentProxy> receiver = null;
@@ -130,6 +129,7 @@ public class ExperimentDetailPresenter
     private final PermissionDetailPresenter permissionDetailPresenter;
     public static Type<PlaceRequestHandler> type = new Type<PlaceRequestHandler>();
     private final ListDataProvider<PublicationProxy> publicationDataProvider = new ListDataProvider<PublicationProxy>();
+    private final Validator validator;
 
     @Inject
     public ExperimentDetailPresenter(final EventBus eventBus,
@@ -137,8 +137,9 @@ public class ExperimentDetailPresenter
                                      final PlaceManager placeManager,
                                      final ExperimentManager experimentManager,
                                      final CurrentUser currentUser,
-                                     final PermissionDetailPresenter permissionDetailPresenter) {
+                                     final PermissionDetailPresenter permissionDetailPresenter, final Validator validator) {
         super(eventBus, view, proxy, ExperimentDetailTabPresenter.TYPE_SetTabContent);
+        this.validator = validator;
         getView().setUiHandlers(this);
         this.permissionDetailPresenter = permissionDetailPresenter;
         this.placeManager = placeManager;
@@ -162,7 +163,7 @@ public class ExperimentDetailPresenter
             public void onConstraintViolation(
                     Set<ConstraintViolation<?>> violations) {
                 fireEvent(new LoadingIndicatorEvent(false));
-                super.onConstraintViolation(violations);
+                getView().getExperimentEditDriver().setConstraintViolations(violations);
             }
         };
 
@@ -250,14 +251,17 @@ public class ExperimentDetailPresenter
     public void onEdit() {
         ExperimentRequest ctx = experimentManager.getRequestFactory()
                 .experimentRequest();
-        editDriver.edit(experiment, ctx);
-        ctx.save(experiment).with("userPermission", "publications").to(receiver);
+        editedExperiment = ctx.edit(experiment);
+        editDriver.edit(editedExperiment, ctx);
+        ctx.save(editedExperiment).with("userPermission", "publications").to(receiver);
         getView().showEditPopup(true);
     }
 
     @Override
     public void onSave() {
         RequestContext req = editDriver.flush();
+        if (!checkValidation())
+            return;
         fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
         req.fire();
     }
@@ -416,6 +420,19 @@ public class ExperimentDetailPresenter
                 super.onFailure(error);    //To change body of overridden methods use File | Settings | File Templates.
             }
         }, experiment);
+    }
+
+    private boolean checkValidation() {
+        boolean isOk;
+        Set<ConstraintViolation<?>> violations = (Set<ConstraintViolation<?>>) (Set) validator
+                .validate(editedExperiment, Default.class);
+        if (!violations.isEmpty() || editDriver.hasErrors()) {
+            isOk = false;
+        } else {
+            isOk = true;
+        }
+        getView().getExperimentEditDriver().setConstraintViolations(violations);
+        return isOk;
     }
 
     @ProxyEvent

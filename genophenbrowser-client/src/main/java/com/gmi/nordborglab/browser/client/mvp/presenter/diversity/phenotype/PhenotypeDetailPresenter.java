@@ -38,6 +38,8 @@ import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import javax.validation.groups.Default;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -85,6 +87,7 @@ public class PhenotypeDetailPresenter
 
 
     protected PhenotypeProxy phenotype;
+    protected PhenotypeProxy editedPhenotype;
     protected boolean fireLoadEvent;
     protected final PlaceManager placeManager;
     protected final OntologyManager ontologyManager;
@@ -95,6 +98,7 @@ public class PhenotypeDetailPresenter
     private ImmutableSortedMap<Double, Integer> histogramData;
     private List<StatisticTypeProxy> statisticTypes;
     protected HashMap<StatisticTypeProxy, List<TraitStatsProxy>> cache = new HashMap<>();
+    private final Validator validator;
 
     private Multiset<String> geochartData;
     private static int BIN_COUNT = 20;
@@ -109,8 +113,9 @@ public class PhenotypeDetailPresenter
     public PhenotypeDetailPresenter(final EventBus eventBus, final MyView view,
                                     final MyProxy proxy, final PlaceManager placeManager,
                                     final PhenotypeManager phenotypeManager,
-                                    final CurrentUser currentUser, final OntologyManager ontologyManager) {
+                                    final CurrentUser currentUser, final OntologyManager ontologyManager, Validator validator) {
         super(eventBus, view, proxy, PhenotypeDetailTabPresenter.TYPE_SetTabContent);
+        this.validator = validator;
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
         this.ontologyManager = ontologyManager;
@@ -219,18 +224,34 @@ public class PhenotypeDetailPresenter
     @Override
     public void onEdit() {
         PhenotypeRequest ctx = phenotypeManager.getContext();
-        getView().getEditDriver().edit(phenotype, ctx);
+        editedPhenotype = ctx.edit(phenotype);
+        getView().getEditDriver().edit(editedPhenotype, ctx);
         ///TODO Fix this better.
         List<String> paths = ImmutableList.<String>builder().addAll(Arrays.asList(getView().getEditDriver().getPaths())).add("userPermission").add("statisticTypes").build();
-        ctx.save(phenotype).with(paths.toArray(new String[0])).to(receiver);
+        ctx.save(editedPhenotype).with(paths.toArray(new String[0])).to(receiver);
         getView().showEditPopup(true);
     }
 
     @Override
     public void onSave() {
         RequestContext req = getView().getEditDriver().flush();
+        if (!checkValidation())
+            return;
         fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
         req.fire();
+    }
+
+    private boolean checkValidation() {
+        boolean isOk;
+        Set<ConstraintViolation<?>> violations = (Set<ConstraintViolation<?>>) (Set) validator
+                .validate(editedPhenotype, Default.class);
+        if (!violations.isEmpty() || getView().getEditDriver().hasErrors()) {
+            isOk = false;
+        } else {
+            isOk = true;
+        }
+        getView().getEditDriver().setConstraintViolations(violations);
+        return isOk;
     }
 
     @Override

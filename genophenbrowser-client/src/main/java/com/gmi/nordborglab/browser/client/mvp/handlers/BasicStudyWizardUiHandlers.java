@@ -25,7 +25,7 @@ public interface BasicStudyWizardUiHandlers extends UiHandlers {
 
     void onSelectedExperimentChanged();
 
-    void onSaveExperiment(String name, String originator, String design);
+    void onSaveExperiment();
 
     void onSelectStatisticType(StatisticTypeProxy statisticType);
 

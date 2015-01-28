@@ -3,7 +3,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:c='urn:import:com.google.gwt.user.cellview.client'
-             xmlns:card="urn:import:com.gmi.nordborglab.browser.client.ui.card">
+             xmlns:card="urn:import:com.gmi.nordborglab.browser.client.ui.card"
+             xmlns:ed="urn:import:com.gmi.nordborglab.browser.client.editors">
 
 
 <ui:with field="mainRes"
@@ -67,23 +68,7 @@
                     <g:TabLayoutPanel barHeight="2.5" barUnit="EM" height="400px" ui:field="createExperimentTabPanel">
                         <g:tab>
                             <g:header>Create</g:header>
-                            <b:WellForm>
-                                <b:ControlLabel>Name</b:ControlLabel>
-                                <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT">
-                                    <b:TextBox placeholder="Name" alternateSize="XLARGE"
-                                               ui:field="experimentNameTb"></b:TextBox>
-                                </b:Tooltip>
-                                <b:ControlLabel>Originator</b:ControlLabel>
-                                <b:Tooltip text='Originator of the study' trigger="FOCUS" placement="RIGHT">
-                                    <b:TextBox placeholder="Originator" alternateSize="XLARGE"
-                                               ui:field="experimentOriginatorTb"></b:TextBox>
-                                </b:Tooltip>
-                                <b:ControlLabel>Design</b:ControlLabel>
-                                <b:Tooltip text='Design of the study' trigger="FOCUS" placement="RIGHT">
-                                    <b:TextArea placeholder="Design" visibleLines="8" alternateSize="XLARGE"
-                                                ui:field="experimentDesignTb"></b:TextArea>
-                                </b:Tooltip>
-                            </b:WellForm>
+                            <ed:ExperimentEditEditor ui:field="experimentEditEditor"/>
                         </g:tab>
                         <g:tab>
                             <g:header>Upload ISA-TAB</g:header>
@@ -275,8 +260,10 @@
                             <b:ControlGroup ui:field="studyNameGroup">
                                 <b:ControlLabel>Analysis name</b:ControlLabel>
                                 <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT">
-                                    <b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="studyNameTb"/>
+                                    <b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="studyNameTb"
+                                               controlGroup="{studyNameGroup}" errorLabel="{studyNameErrors}"/>
                                 </b:Tooltip>
+                                <b:HelpInline ui:field="studyNameErrors"></b:HelpInline>
                             </b:ControlGroup>
                             <b:Tooltip
                                     text='If checked a job for the selected analysis will be run on the GMI HPC cluster '
