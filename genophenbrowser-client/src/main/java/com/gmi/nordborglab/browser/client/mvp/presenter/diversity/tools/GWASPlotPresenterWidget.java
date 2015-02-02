@@ -63,7 +63,8 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
             @Override
             public void onFailure(Throwable caught) {
                 GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Error - Display", "Type:" + type + ",ID:" + id + ",Error:" + caught.getMessage(), (int) (duration.elapsedMillis())));
-                super.onFailure(caught);
+                //FIXME fix backend to not show HTML error page
+                //super.onFailure(caught);
             }
         });
     }
