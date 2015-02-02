@@ -222,10 +222,6 @@ public class AclManager {
         return filtered;
     }
 
-    public <T extends SecureEntity> void deleteAcl(T entity) {
-        ObjectIdentity oid = new ObjectIdentityImpl(entity.getClass(), entity.getId());
-        aclService.deleteAcl(oid, true);
-    }
 
     public static <T extends SecureEntity> ImmutableBiMap<ObjectIdentity, T> retrieveObjectIdentites(List<T> entities) {
         Map<ObjectIdentity, T> identities = new HashMap<ObjectIdentity, T>();
