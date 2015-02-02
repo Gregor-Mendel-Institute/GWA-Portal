@@ -3,7 +3,9 @@ package com.gmi.nordborglab.browser.server.service;
 import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.data.SNPGWASInfo;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.pages.GWASResultPage;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -29,7 +31,7 @@ public interface GWASDataService {
     public GWASResult uploadGWASResult(CommonsMultipartFile file) throws IOException;
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    public List<GWASResult> findAllGWASResults();
+    public GWASResultPage findAllGWASResults(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
 
     @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.GWASResult','READ')")
     public GWASResult findOneGWASResult(Long id);

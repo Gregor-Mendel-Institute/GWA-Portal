@@ -9,7 +9,7 @@ package com.gmi.nordborglab.browser.shared.util;
  */
 public interface ConstEnums {
 
-    public static enum TABLE_FILTER {ALL, PRIVATE, PUBLISHED, RECENT}
+    public static enum TABLE_FILTER {ALL, PRIVATE, PUBLISHED, RECENT, SHARED}
 
     public static enum USER_FILTER {ALL, ADMIN, USER}
 

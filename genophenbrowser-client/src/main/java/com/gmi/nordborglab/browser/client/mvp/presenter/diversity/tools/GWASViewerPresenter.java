@@ -4,6 +4,7 @@ import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.GWASResultLoadedEvent;
 import com.gmi.nordborglab.browser.client.events.GWASUploadedEvent;
+import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PermissionDoneEvent;
 import com.gmi.nordborglab.browser.client.manager.GWASDataManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASViewerUiHandlers;
@@ -12,12 +13,16 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPrese
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASViewerView;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
+import com.gmi.nordborglab.browser.shared.proxy.GWASResultPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
 import com.gmi.nordborglab.browser.shared.service.GWASDataRequest;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.Range;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -29,8 +34,8 @@ import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import javax.validation.ConstraintViolation;
 import java.util.List;
@@ -48,8 +53,6 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
 
     public interface MyView extends View, HasUiHandlers<GWASViewerUiHandlers> {
 
-        void hideListPanel(boolean hide);
-
         void showPanel(GWASViewerView.PANELS panel);
 
         HasData<GWASResultProxy> getDisplay();
@@ -61,6 +64,10 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
         void showEditPanel(boolean show);
 
         void showPermissionPanel(boolean show);
+
+        void setActiveNavLink(ConstEnums.TABLE_FILTER currentFilter);
+
+        void displayFacets(List<FacetProxy> facets, String searchString);
     }
 
     @ProxyCodeSplit
@@ -74,17 +81,25 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
     public static final Object TYPE_SetPermissionContent = new Object();
 
     private final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget;
-    private final ListDataProvider<GWASResultProxy> dataProvider = new ListDataProvider<GWASResultProxy>();
+    private final AsyncDataProvider<GWASResultProxy> dataProvider = new AsyncDataProvider<GWASResultProxy>() {
+        @Override
+        protected void onRangeChanged(HasData<GWASResultProxy> display) {
+            requestGWASResults(display.getVisibleRange());
+        }
+    };
     private final CurrentUser currentUser;
     private final PlaceManager placeManager;
     private final GWASDataManager gwasDataManager;
     private GWASResultProxy gwasResult = null;
-    private List<GWASResultProxy> gwasResults;
     private final GWASPlotPresenterWidget gwasPlotPresenterWidget;
     private boolean isFireEvent = false;
     private Receiver<GWASResultProxy> receiverOfSave = null;
     private GWASDataRequest ctx;
     private final PermissionDetailPresenter permissionDetailPresenter;
+    private ConstEnums.TABLE_FILTER currentFilter = null;
+    private String searchString = null;
+    private List<FacetProxy> facets;
+    public static final String placeToken = NameTokens.gwasViewer;
 
     @Inject
     public GWASViewerPresenter(EventBus eventBus, MyView view, GWASViewerPresenter.MyProxy proxy,
@@ -105,8 +120,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
         dataProvider.addDataDisplay(getView().getDisplay());
         receiverOfSave = new Receiver<GWASResultProxy>() {
             public void onSuccess(GWASResultProxy response) {
-                replaceItem(response);
-                updateDataGrid();
+                getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
                 getView().showEditPanel(false);
             }
 
@@ -123,14 +137,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
         };
     }
 
-    private void replaceItem(GWASResultProxy result) {
-        for (int i = 0; i < gwasResults.size(); i++) {
-            if (gwasResults.get(i).getId().equals(result.getId())) {
-                gwasResults.set(i, result);
-                return;
-            }
-        }
-    }
+
 
 
     @Override
@@ -142,14 +149,9 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
         registerHandler(GWASUploadedEvent.register(getEventBus(), new GWASUploadedEvent.Handler() {
             @Override
             public void onGWASUploaded(GWASUploadedEvent event) {
-                gwasDataManager.findAllGWASResults(new Receiver<List<GWASResultProxy>>() {
-                    @Override
-                    public void onSuccess(List<GWASResultProxy> response) {
-                        gwasResults = response;
-                        getView().hideListPanel(false);
-                        updateDataGrid();
-                    }
-                });
+                getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+                ;
+                getView().showPanel(GWASViewerView.PANELS.LIST);
             }
         }));
         registerHandler(getEventBus().addHandlerToSource(PermissionDoneEvent.TYPE, permissionDetailPresenter, new PermissionDoneEvent.Handler() {
@@ -158,12 +160,6 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
                 getView().showPermissionPanel(false);
             }
         }));
-    }
-
-    private void updateDataGrid() {
-        if (gwasResults == null)
-            return;
-        dataProvider.setList(gwasResults);
     }
 
     @Override
@@ -175,11 +171,29 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
             GWASResultLoadedEvent.fire(getEventBus(), gwasResult);
         isFireEvent = false;
         getView().hideUploadPanel(!currentUser.isLoggedIn());
-        getView().hideListPanel(((gwasResults == null || gwasResults.size() == 0) && gwasResult == null));
-        updateDataGrid();
+        PlaceRequest request = placeManager.getCurrentPlaceRequest();
+        ConstEnums.TABLE_FILTER newFilter = ConstEnums.TABLE_FILTER.ALL;
+        String newCategoryString = request.getParameter("filter", null);
+        String newSearchString = request.getParameter("query", null);
+        if (newCategoryString != null) {
+            try {
+                newFilter = ConstEnums.TABLE_FILTER.valueOf(newCategoryString);
+            } catch (Exception e) {
+
+            }
+        }
+        if ((newFilter != currentFilter || newSearchString != searchString) && gwasResult == null) {
+            currentFilter = newFilter;
+            searchString = newSearchString;
+            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+        }
+        getView().setActiveNavLink(currentFilter);
+
         if (gwasResult != null) {
             getView().showPanel(GWASViewerView.PANELS.PLOTS);
             gwasPlotPresenterWidget.loadPlots(gwasResult.getId(), GetGWASDataAction.TYPE.GWASVIEWER);
+        } else {
+            getView().showPanel(GWASViewerView.PANELS.LIST);
         }
     }
 
@@ -224,32 +238,17 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
 
                 }
             }, gwasResultId);
-        } else if (gwasResults != null) {
-            gwasResult = null;
-            getView().showPanel(GWASViewerView.PANELS.LIST);
-            getProxy().manualReveal(GWASViewerPresenter.this);
         } else {
             gwasResult = null;
-            gwasDataManager.findAllGWASResults(new Receiver<List<GWASResultProxy>>() {
-                @Override
-                public void onSuccess(List<GWASResultProxy> response) {
-                    gwasResults = response;
-                    getView().showPanel(GWASViewerView.PANELS.LIST);
-                    getProxy().manualReveal(GWASViewerPresenter.this);
-                }
-
-                @Override
-                public void onFailure(ServerFailure error) {
-                    getProxy().manualReveal(GWASViewerPresenter.this);
-                }
-            });
+            //getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(),true);
+            getProxy().manualReveal(GWASViewerPresenter.this);
         }
     }
 
     @Override
     public void onShowPermissions(GWASResultProxy object) {
         getView().showPermissionPanel(true);
-        permissionDetailPresenter.setDomainObject(object, placeManager.buildHistoryToken(new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest()).with("id", object.getId().toString()).build()));
+        permissionDetailPresenter.setDomainObject(object, placeManager.buildHistoryToken(new PlaceRequest.Builder().nameToken(placeManager.getCurrentPlaceRequest().getNameToken()).with("id", object.getId().toString()).build()));
     }
 
     @Override
@@ -266,9 +265,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
             gwasDataManager.delete(new Receiver<List<GWASResultProxy>>() {
                 @Override
                 public void onSuccess(List<GWASResultProxy> response) {
-                    gwasResults = response;
-                    getView().hideListPanel((gwasResults == null || gwasResults.size() == 0));
-                    updateDataGrid();
+                    getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
                 }
             }, object);
         }
@@ -284,5 +281,34 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
     public void saveEdits() {
         RequestContext req = getView().getEditDriver().flush();
         req.fire();
+    }
+
+    @Override
+    public void updateSearchString(String searchString) {
+        PlaceRequest.Builder builder = new PlaceRequest.Builder().nameToken(placeToken);
+        if (currentFilter != null) {
+            builder = builder.with("filter", currentFilter.name());
+        }
+        if (searchString != null && !searchString.equals("")) {
+            builder = builder.with("query", searchString);
+        }
+        placeManager.revealPlace(builder.build());
+    }
+
+    protected void requestGWASResults(final Range range) {
+        if (!currentUser.isLoggedIn() || !isVisible())
+            return;
+        fireEvent(new LoadingIndicatorEvent(true));
+        Receiver<GWASResultPageProxy> receiver = new Receiver<GWASResultPageProxy>() {
+            @Override
+            public void onSuccess(GWASResultPageProxy studies) {
+                fireEvent(new LoadingIndicatorEvent(false));
+                dataProvider.updateRowCount((int) studies.getTotalElements(), true);
+                dataProvider.updateRowData(range.getStart(), studies.getContents());
+                facets = studies.getFacets();
+                getView().displayFacets(facets, searchString);
+            }
+        };
+        gwasDataManager.findAllGWASResults(receiver, currentFilter, searchString, range.getStart(), range.getLength());
     }
 }

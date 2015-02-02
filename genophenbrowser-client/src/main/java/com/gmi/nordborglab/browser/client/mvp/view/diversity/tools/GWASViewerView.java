@@ -1,8 +1,10 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.tools;
 
 import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TabLink;
 import com.github.gwtbootstrap.client.ui.TabPanel;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.gmi.nordborglab.browser.client.editors.GWASResultEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASViewerUiHandlers;
@@ -16,7 +18,11 @@ import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
+import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
@@ -28,14 +34,17 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
+import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
@@ -97,7 +106,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     private final AvatarNameCell avatarNameCell;
     private final PlaceManager placeManager;
     @UiField
-    LayoutPanel tabPaneContainer;
+    DeckLayoutPanel tabPaneContainer;
     @UiField
     TabPanel tabPanel;
     @UiField
@@ -114,8 +123,20 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     SimpleLayoutPanel gwasPlotContainer;
     @UiField
     TabLink gwasUploadTab;
+    @UiField
+    TextBox searchBox;
+    @UiField
+    NavLink navAll;
+    @UiField
+    NavLink navPrivate;
+    @UiField
+    NavLink navShared;
+    @UiField
+    NavLink navRecent;
 
     public enum PANELS {PLOTS, LIST, UPLOAD}
+
+    private final BiMap<ConstEnums.TABLE_FILTER, NavLink> navLinkMap;
 
     private PANELS activePanel;
     private boolean isPlotsDisplayed = false;
@@ -136,6 +157,12 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         this.avatarNameCell = avatarNameCell;
         gwasResultDataGrid = new DataGrid<GWASResultProxy>(50, dataGridResources, new EntityProxyKeyProvider<GWASResultProxy>());
         widget = binder.createAndBindUi(this);
+        tabPaneContainer.showWidget(0);
+        navLinkMap = ImmutableBiMap.<ConstEnums.TABLE_FILTER, NavLink>builder()
+                .put(ConstEnums.TABLE_FILTER.ALL, navAll)
+                .put(ConstEnums.TABLE_FILTER.PRIVATE, navPrivate)
+                .put(ConstEnums.TABLE_FILTER.SHARED, navShared)
+                .put(ConstEnums.TABLE_FILTER.RECENT, navRecent).build();
         gwasResultPager.setDisplay(gwasResultDataGrid);
         tabPanel.addShowHandler(new TabPanel.ShowEvent.Handler() {
             @Override
@@ -200,7 +227,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         gwasResultDataGrid.addColumn(new Column<GWASResultProxy, AppUserProxy>(avatarNameCell) {
             @Override
             public AppUserProxy getValue(GWASResultProxy object) {
-                return object.getAppUser();
+                return object.getOwnerUser();
             }
         }, "Owner");
 
@@ -271,15 +298,6 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         }
     }
 
-    @Override
-    public void hideListPanel(boolean hide) {
-        if (hide) {
-            tabPanel.selectTab(1);
-        } else {
-            tabPanel.selectTab(0);
-        }
-        gwasListTab.setVisible(!hide);
-    }
 
     @Override
     public void showPanel(PANELS panel) {
@@ -299,20 +317,17 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     }
 
     private void updatePanelVisibility() {
-        tabPaneContainer.setWidgetVisible(gwasListPanel, false);
-        tabPaneContainer.setWidgetVisible(gwasUploadPanel, false);
-        tabPaneContainer.setWidgetVisible(gwasPlotContainer, false);
         switch (activePanel) {
             case PLOTS:
-                tabPaneContainer.setWidgetVisible(gwasPlotContainer, true);
+                tabPaneContainer.showWidget(gwasPlotContainer);
                 isPlotsDisplayed = true;
                 break;
             case LIST:
-                tabPaneContainer.setWidgetVisible(gwasListPanel, true);
+                tabPaneContainer.showWidget(gwasListPanel);
                 isPlotsDisplayed = false;
                 break;
             case UPLOAD:
-                tabPaneContainer.setWidgetVisible(gwasUploadPanel, true);
+                tabPaneContainer.showWidget(gwasUploadPanel);
                 break;
         }
     }
@@ -350,6 +365,62 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         else
             permissionPopUp.hide();
 
+    }
+
+    @Override
+    public void setActiveNavLink(ConstEnums.TABLE_FILTER filter) {
+        for (NavLink link : navLinkMap.values()) {
+            link.setActive(false);
+        }
+        if (navLinkMap.containsKey(filter))
+            navLinkMap.get(filter).setActive(true);
+    }
+
+    @Override
+    public void displayFacets(List<FacetProxy> facets, String searchString) {
+        if (facets == null)
+            return;
+        for (FacetProxy facet : facets) {
+            ConstEnums.TABLE_FILTER type = ConstEnums.TABLE_FILTER.valueOf(facet.getName());
+            String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
+            PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(GWASViewerPresenter.placeToken);
+            if (type != ConstEnums.TABLE_FILTER.ALL) {
+                request = request.with("filter", type.name());
+            }
+            if (searchString != null) {
+                request = request.with("query", searchString);
+            }
+            NavLink link = navLinkMap.get(type);
+            if (link != null) {
+                link.setText(newTitle);
+                link.setTargetHistoryToken(placeManager.buildHistoryToken(request.build()));
+            }
+            searchBox.setText(searchString);
+
+        }
+    }
+
+    private String getFilterTitleFromType(ConstEnums.TABLE_FILTER filter) {
+        switch (filter) {
+            case ALL:
+                return "All";
+            case PRIVATE:
+                return "My GWAS";
+            case PUBLISHED:
+                return "Published";
+            case RECENT:
+                return "Recent";
+            case SHARED:
+                return "Shared";
+        }
+        return "";
+    }
+
+    @UiHandler("searchBox")
+    public void onKeyUpSearchBox(KeyUpEvent e) {
+        if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER || searchBox.getValue().equalsIgnoreCase("")) {
+            getUiHandlers().updateSearchString(searchBox.getValue());
+        }
     }
 
 

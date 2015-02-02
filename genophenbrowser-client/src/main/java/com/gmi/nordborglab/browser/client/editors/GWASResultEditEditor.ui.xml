@@ -43,7 +43,7 @@
                             </b:Tooltip>
                             <b:ButtonToolbar>
                                 <b:ButtonGroup addStyleNames="{style.actionButtons}">
-                                    <b:Button type="PRIMARY" icon="UPLOAD" ui:field="createGWASBtn">Create</b:Button>
+                                    <b:Button type="PRIMARY" icon="UPLOAD" ui:field="createGWASBtn">Save</b:Button>
                                     <b:Button ui:field="cancelGWASBtn" icon="BAN_CIRCLE"
                                               addStyleNames="{style.cancelButton}">Cancel
                                     </b:Button>
