@@ -32,7 +32,6 @@ public class TraitUom extends SecureEntity {
 
     @ManyToOne()
     @JoinColumn(name = "div_unit_of_measure_id")
-    @NotNull
     private UnitOfMeasure unitOfMeasure;
 
     @OneToMany(mappedBy = "traitUom", cascade = {CascadeType.ALL}, orphanRemoval = true)
