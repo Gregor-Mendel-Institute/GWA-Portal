@@ -86,7 +86,7 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
 
         dataGrid.addColumn(new PhenotypeListDataGridColumns.TitleColumn(placeManager, new PlaceRequest.Builder().nameToken(NameTokens.phenotype)), "Name");
 
-        dataGrid.addColumn(new PhenotypeListDataGridColumns.ExperimentColumn(), "Experiment");
+        dataGrid.addColumn(new PhenotypeListDataGridColumns.ExperimentColumn(), "Study");
         dataGrid.addColumn(
                 new PhenotypeListDataGridColumns.TraitOntologyColumn(),
                 "Trait-Ontology");
