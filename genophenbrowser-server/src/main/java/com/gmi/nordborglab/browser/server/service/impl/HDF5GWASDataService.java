@@ -5,33 +5,38 @@ import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.data.GWASReader;
 import com.gmi.nordborglab.browser.server.data.SNPGWASInfo;
 import com.gmi.nordborglab.browser.server.data.csv.CSVGWASReader;
+import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.data.hdf5.HDF5GWASReader;
-import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.pages.GWASResultPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
+import com.gmi.nordborglab.browser.server.es.EsIndexer;
+import com.gmi.nordborglab.browser.server.es.EsSearcher;
 import com.gmi.nordborglab.browser.server.repository.GWASResultRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
+import com.gmi.nordborglab.browser.server.security.EsAclManager;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.tasks.SubmitAnalysisTask;
-import com.google.common.collect.FluentIterable;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.CumulativePermission;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -77,10 +82,22 @@ public class HDF5GWASDataService implements GWASDataService {
     protected AclManager aclManager;
 
     @Resource
+    protected EsAclManager esAclManager;
+
+    @Resource
     protected RoleHierarchy roleHierarchy;
 
     @Resource(name = "ES")
     protected AnnotationDataService annotationDataService;
+
+    @Resource
+    private Client client;
+
+    @Resource
+    protected EsSearcher esSearcher;
+
+    @Resource
+    protected EsIndexer esIndexer;
 
     protected GWASReader gwasReader;
 
@@ -124,11 +141,8 @@ public class HDF5GWASDataService implements GWASDataService {
     @Override
     @Transactional(readOnly = false)
     public GWASResult uploadGWASResult(CommonsMultipartFile file) throws IOException {
-
-        AppUser appUser = userRepository.findOne(Long.parseLong(SecurityUtil.getUsername()));
         GWASResult gwasResult = new GWASResult();
         gwasResult.setName(file.getOriginalFilename());
-        gwasResult.setAppUser(appUser);
         HDF5GWASReader gwasWriter = new HDF5GWASReader("");
         try {
             Map<String, ChrGWAData> data = getGWASDataFromUploadFile(file);
@@ -141,6 +155,7 @@ public class HDF5GWASDataService implements GWASDataService {
             aclManager.addPermission(gwasResult, new GrantedAuthoritySid("ROLE_ADMIN"), fullPermission, null);
             File targetFile = new File(GWAS_VIEWER_FOLDER + gwasResult.getId() + ".hdf5");
             gwasWriter.saveGWASDataToFile(data, targetFile);
+            indexGWASResult(gwasResult);
 
         } catch (Exception e) {
             throw new IOException(e);
@@ -151,14 +166,28 @@ public class HDF5GWASDataService implements GWASDataService {
     }
 
     @Override
-    public List<GWASResult> findAllGWASResults() {
-        //List<GWASResult> gwasResults = gwasResultRepository.findAllByAppUserUsername(SecurityUtil.getUsername());
-        List<GWASResult> gwasResultsToFilter = gwasResultRepository.findAll();
-        final ImmutableList<Permission> permissions = ImmutableList.of(CustomPermission.READ, CustomPermission.EDIT, CustomPermission.ADMINISTRATION);
-        Sid sid = new PrincipalSid(SecurityUtil.getAuthentication());
-        final List<Sid> authorities = ImmutableList.of(sid);
-        FluentIterable<GWASResult> gwasResults = aclManager.filterByAcl(gwasResultsToFilter, permissions, authorities);
-        return gwasResults.toList();
+    public GWASResultPage findAllGWASResults(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
+        SearchResponse response = esSearcher.search(filter, true, new String[]{"name", "name.partial", "comments", "type", "owner.name"}, searchString, "gwasviewer", start, size);
+        Iterable<Long> idsToFetch = EsSearcher.getIdsFromResponse(response);
+        List<GWASResult> results = gwasResultRepository.findAll(idsToFetch);
+        Iterable<GWASResult> gwasResultsFiltered = aclManager.filterByAcl(results, Lists.newArrayList(CustomPermission.READ));
+        //extract facets
+        List<ESFacet> facets = EsSearcher.getAggregations(response);
+        List<GWASResult> gwasResults = ImmutableList.copyOf(gwasResultsFiltered);
+        aclManager.setPermissionAndOwners(gwasResults);
+        return new GWASResultPage(gwasResults, new PageRequest(start, size), response.getHits().getTotalHits(), facets);
+    }
+
+    private void deleteFromIndex(GWASResult gwasResult) {
+        esIndexer.delete(gwasResult);
+    }
+
+    private void indexGWASResult(GWASResult gwasResult) {
+        try {
+            esIndexer.index(gwasResult);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -170,14 +199,14 @@ public class HDF5GWASDataService implements GWASDataService {
     @Override
     @Transactional(readOnly = false)
     public List<GWASResult> delete(GWASResult gwasResult) {
-
-        aclManager.deleteAcl(gwasResult);
         File file = new File(GWAS_VIEWER_FOLDER + gwasResult.getId() + ".hdf5");
         if (file.exists()) {
             file.delete();
         }
         gwasResultRepository.delete(gwasResult);
-        List<GWASResult> gwasResults = findAllGWASResults();
+        aclManager.deletePermissions(gwasResult, true);
+        deleteFromIndex(gwasResult);
+        List<GWASResult> gwasResults = Lists.newArrayList();
         return gwasResults;
     }
 
@@ -185,6 +214,7 @@ public class HDF5GWASDataService implements GWASDataService {
     @Transactional(readOnly = false)
     public GWASResult save(GWASResult gwasResult) {
         gwasResultRepository.save(gwasResult);
+        indexGWASResult(gwasResult);
         return gwasResult;
     }
 

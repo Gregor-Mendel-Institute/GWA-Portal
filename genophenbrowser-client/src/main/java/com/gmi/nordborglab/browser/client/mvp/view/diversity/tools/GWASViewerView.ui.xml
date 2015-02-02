@@ -4,39 +4,60 @@
              xmlns:c='urn:import:com.google.gwt.user.cellview.client'
              xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
         >
+
+    <ui:style>
+        .navPills {
+            margin-top: 20px;
+            margin-left: 0.5em;
+        }
+
+        .searchBox {
+            display: inline-block;
+            margin-top: 20px;
+            margin-right: 20px;
+        }
+    </ui:style>
     <g:LayoutPanel>
         <g:layer top="5px" height="40px">
             <b:TabPanel ui:field="tabPanel">
                 <b:TabLink createTabPane="false" text="Existing GWAS plots" ui:field="gwasListTab"
-                           dataTarget="gwasListTab"/>
+                           dataTarget="gwasListTab" active="true"/>
                 <b:TabLink createTabPane="false" text="Upload GWAS plots" ui:field="gwasUploadTab"
                            dataTarget="gwassUploadTab"/>
             </b:TabPanel>
         </g:layer>
         <g:layer top="45px" bottom="0">
-            <g:LayoutPanel ui:field="tabPaneContainer">
-                <g:layer top="0" bottom="0">
-                    <g:SimpleLayoutPanel ui:field="gwasListPanel">
-                        <g:LayoutPanel>
-                            <g:layer top="0" height="100px">
-                                <g:HTMLPanel>Filter</g:HTMLPanel>
-                            </g:layer>
-                            <g:layer top="55px" bottom="70px">
-                                <c:DataGrid ui:field="gwasResultDataGrid"/>
-                            </g:layer>
-                            <g:layer height="50px" bottom="0">
-                                <gui:CustomPager ui:field="gwasResultPager"/>
-                            </g:layer>
-                        </g:LayoutPanel>
-                    </g:SimpleLayoutPanel>
-                </g:layer>
-                <g:layer top="0" bottom="0">
-                    <g:SimpleLayoutPanel ui:field="gwasPlotContainer"/>
-                </g:layer>
-                <g:layer top="0" bottom="0">
-                    <g:SimpleLayoutPanel ui:field="gwasUploadPanel"/>
-                </g:layer>
-            </g:LayoutPanel>
+            <g:DeckLayoutPanel ui:field="tabPaneContainer">
+                <g:SimpleLayoutPanel ui:field="gwasListPanel">
+                    <g:LayoutPanel>
+                        <g:layer top="0" height="5em">
+                            <g:HTMLPanel>
+                                <div style="float:right;">
+                                    <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
+                                        <b:TextBox ui:field="searchBox" placeholder="Search..."/>
+                                    </b:InputAddOn>
+                                </div>
+                                <div style="float:left;">
+                                    <b:NavPills addStyleNames="{style.navPills}">
+                                        <b:NavLink ui:field="navAll" active="true">All</b:NavLink>
+                                        <b:NavLink ui:field="navPrivate">My GWAS</b:NavLink>
+                                        <b:NavLink ui:field="navShared">Shared</b:NavLink>
+                                        <b:NavLink ui:field="navRecent">Recent</b:NavLink>
+                                    </b:NavPills>
+                                </div>
+                            </g:HTMLPanel>
+                        </g:layer>
+                        <g:layer top="5em" bottom="70px">
+                            <c:DataGrid ui:field="gwasResultDataGrid"/>
+                        </g:layer>
+                        <g:layer height="50px" bottom="0">
+                            <gui:CustomPager ui:field="gwasResultPager"/>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:SimpleLayoutPanel>
+                <g:SimpleLayoutPanel ui:field="gwasPlotContainer"/>
+                <g:SimpleLayoutPanel ui:field="gwasUploadPanel"/>
+            </g:DeckLayoutPanel>
         </g:layer>
     </g:LayoutPanel>
 </ui:UiBinder>

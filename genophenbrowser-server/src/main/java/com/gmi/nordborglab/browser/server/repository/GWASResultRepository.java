@@ -3,8 +3,6 @@ package com.gmi.nordborglab.browser.server.repository;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  * User: uemit.seren
@@ -14,5 +12,5 @@ import java.util.List;
  */
 public interface GWASResultRepository extends JpaRepository<GWASResult, Long> {
 
-    List<GWASResult> findAllByAppUserUsername(String username);
+
 }

@@ -30,6 +30,4 @@ public interface GWASResultProxy extends SecureEntityProxy {
     public int getNumberOfSNPs();
 
     public float getMaxScore();
-
-    AppUserProxy getAppUser();
 }

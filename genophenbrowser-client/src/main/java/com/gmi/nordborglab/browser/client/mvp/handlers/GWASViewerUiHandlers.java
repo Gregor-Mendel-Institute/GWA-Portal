@@ -20,4 +20,6 @@ public interface GWASViewerUiHandlers extends UiHandlers{
     void cancelEdits();
 
     void saveEdits();
+
+    void updateSearchString(String searchString);
 }

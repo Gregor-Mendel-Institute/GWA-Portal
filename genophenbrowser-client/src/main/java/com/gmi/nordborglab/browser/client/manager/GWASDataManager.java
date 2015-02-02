@@ -1,8 +1,10 @@
 package com.gmi.nordborglab.browser.client.manager;
 
+import com.gmi.nordborglab.browser.shared.proxy.GWASResultPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.GWASDataRequest;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 
@@ -27,8 +29,8 @@ public class GWASDataManager extends RequestFactoryManager<GWASDataRequest> {
         return rf.gwasDataRequest();
     }
 
-    public void findAllGWASResults(Receiver<List<GWASResultProxy>> receiver) {
-        getContext().findAllGWASResults().with("appUser").fire(receiver);
+    public void findAllGWASResults(Receiver<GWASResultPageProxy> receiver,ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
+        getContext().findAllGWASResults(filter,searchString,start,size).with("contents.ownerUser").fire(receiver);
     }
 
     public void delete(Receiver<List<GWASResultProxy>> receiver, GWASResultProxy object) {

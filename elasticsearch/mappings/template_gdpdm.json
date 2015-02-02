@@ -1065,6 +1065,75 @@
                     }
                 }
             }
+        },
+      "gwasviewer": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "boost": 2,
+            "fields": {
+              "partial": {
+                "type": "string",
+                "boost": 1.5,
+                "index_analyzer": "my_ngram"
+              }
+            }
+          },
+          "type": {
+            "type": "string"
+          },
+          "comments": {
+            "type": "string"
+          },
+          "maxscore": {
+            "type": "double"
+          },
+          "numberofsnps": {
+            "type": "long"
+          },
+          "published": {
+            "type": "date"
+          },
+          "created": {
+            "type": "date"
+          },
+          "modified": {
+            "type": "date"
+          },
+          "acl": {
+            "type": "nested",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "permissions": {
+                "type": "string",
+                "index": "not_analyzed"
+              }
+            }
+          },
+          "owner": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "sid": {
+                "type": "string",
+                "index": "not_analyzed"
+              },
+              "name": {
+                "type": "string",
+                "fields": {
+                  "partial": {
+                    "type": "string",
+                    "index_analyzer": "my_ngram"
+                  }
+                }
+              }
+            }
+          }
+        }
         }
     }
 }
