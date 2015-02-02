@@ -6,7 +6,6 @@ import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import org.junit.Test;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -48,25 +47,15 @@ public class GWASResultRepositoryTest extends BaseTest {
         created.setName("TEST");
         created.setType("TEST");
         created.setComments("TEST");
-        created.setAppUser(user);
         GWASResult actual = repository.save(created);
         assertNotNull("create did not work", actual);
         assertNotNull("couldn't generate id", actual.getId());
         assertEquals("Common name is correct", "TEST", actual.getName());
         assertEquals("TEST", actual.getType());
         assertEquals("TEST", actual.getComments());
-        assertNotNull(actual.getAppUser());
-        assertEquals("john", actual.getAppUser().getUsername());
+        assertNotNull(actual.getOwnerUser());
+        assertEquals("john", actual.getOwnerUser().getUsername());
 
     }
-
-    @Test
-    public void testFindAllByUsername() {
-        List<GWASResult> gwasResults = repository.findAllByAppUserUsername("john");
-        assertNotNull(gwasResults);
-        assertEquals(1, gwasResults.size());
-        assertEquals("john", gwasResults.get(0).getAppUser().getUsername());
-    }
-
 
 }
