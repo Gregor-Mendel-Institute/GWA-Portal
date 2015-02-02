@@ -40,10 +40,8 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
-import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.TabData;
-import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
@@ -66,8 +64,8 @@ public class ExperimentDetailPresenter
         Presenter<ExperimentDetailPresenter.MyView, ExperimentDetailPresenter.MyProxy>
         implements ExperimentDetailUiHandlers {
 
-    public interface MyView extends View,
-            HasUiHandlers<ExperimentDetailUiHandlers> {
+    public interface MyView extends com.gwtplatform.mvp.client.View,
+            com.gwtplatform.mvp.client.HasUiHandlers<ExperimentDetailUiHandlers> {
         ExperimentEditDriver getExperimentEditDriver();
 
         ExperimentDisplayDriver getExperimentDisplayDriver();
