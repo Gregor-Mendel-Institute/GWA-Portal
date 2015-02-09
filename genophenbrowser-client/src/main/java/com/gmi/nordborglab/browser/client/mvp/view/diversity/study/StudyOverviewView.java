@@ -115,7 +115,8 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
         for (NavLink link : navLinkMap.values()) {
             link.setActive(false);
         }
-        navLinkMap.get(filter).setActive(true);
+        if (navLinkMap.containsKey(filter))
+            navLinkMap.get(filter).setActive(true);
     }
 
     @Override
@@ -125,17 +126,19 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
         for (FacetProxy facet : facets) {
             ConstEnums.TABLE_FILTER type = ConstEnums.TABLE_FILTER.valueOf(facet.getName());
             String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
-            NavLink link = navLinkMap.get(type);
-            link.setText(newTitle);
-            PlaceRequest.Builder builder = new PlaceRequest.Builder().nameToken(StudyOverviewPresenter.placeToken);
+            PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(StudyOverviewPresenter.placeToken);
             if (type != ConstEnums.TABLE_FILTER.ALL) {
-                builder = builder.with("filter", type.name());
+                request = request.with("filter", type.name());
             }
             if (searchString != null) {
-                builder = builder.with("query", searchString);
+                request = request.with("query", searchString);
+            }
+            NavLink link = navLinkMap.get(type);
+            if (link != null) {
+                link.setText(newTitle);
+                link.setTargetHistoryToken(placeManager.buildHistoryToken(request.build()));
             }
             searchBox.setText(searchString);
-            link.setTargetHistoryToken(placeManager.buildHistoryToken(builder.build()));
         }
     }
 

@@ -115,7 +115,8 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
         for (NavLink link : navLinkMap.values()) {
             link.setActive(false);
         }
-        navLinkMap.get(filter).setActive(true);
+        if (navLinkMap.containsKey(filter))
+            navLinkMap.get(filter).setActive(true);
     }
 
     @Override
@@ -125,8 +126,6 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
         for (FacetProxy facet : facets) {
             ConstEnums.TABLE_FILTER type = ConstEnums.TABLE_FILTER.valueOf(facet.getName());
             String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
-            NavLink link = navLinkMap.get(type);
-            link.setText(newTitle);
             PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(PhenotypeOverviewPresenter.placeToken);
             if (type != ConstEnums.TABLE_FILTER.ALL) {
                 request = request.with("filter", type.name());
@@ -134,8 +133,13 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
             if (searchString != null) {
                 request = request.with("query", searchString);
             }
+            NavLink link = navLinkMap.get(type);
+            if (link != null) {
+                link.setText(newTitle);
+                link.setTargetHistoryToken(placeManager.buildHistoryToken(request.build()));
+            }
             searchBox.setText(searchString);
-            link.setTargetHistoryToken(placeManager.buildHistoryToken(request.build()));
+
         }
     }
 
