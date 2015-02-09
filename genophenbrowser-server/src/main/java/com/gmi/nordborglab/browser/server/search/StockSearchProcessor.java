@@ -7,6 +7,7 @@ import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;
@@ -22,6 +23,11 @@ public class StockSearchProcessor extends TermSearchProcessor {
     }
 
     @Override
+    protected QueryBuilder getQuery() {
+        return idsQuery("stock").ids(term);
+    }
+
+    @Override
     public SearchRequestBuilder getSearchBuilder(
             SearchRequestBuilder searchRequest) {
         searchRequest.addFields("_id", "generation.comments")
@@ -30,7 +36,7 @@ public class StockSearchProcessor extends TermSearchProcessor {
                 .setSearchType(SearchType.QUERY_THEN_FETCH)
                 .setFrom(0)
                 .setSize(5)
-                .setQuery(idsQuery("stock").ids(term));
+                .setQuery(getFilteredQueryBuilder());
         return searchRequest;
     }
 

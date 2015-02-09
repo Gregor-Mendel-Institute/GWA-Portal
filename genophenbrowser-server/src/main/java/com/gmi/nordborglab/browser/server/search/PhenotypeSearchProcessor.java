@@ -7,6 +7,8 @@ import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;
@@ -17,8 +19,13 @@ import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 public class PhenotypeSearchProcessor extends TermSearchProcessor {
 
 
-    public PhenotypeSearchProcessor(String term) {
-        super(term);
+    public PhenotypeSearchProcessor(String term, FilterBuilder aclFilter) {
+        super(term, aclFilter);
+    }
+
+    @Override
+    protected QueryBuilder getQuery() {
+        return multiMatchQuery(term, "local_trait_name^3.5", "local_trait_name.partial^1.5", "trait_protocol", "to_accession", "eo_accession");
     }
 
     @Override
@@ -29,7 +36,7 @@ public class PhenotypeSearchProcessor extends TermSearchProcessor {
                 .addField("local_trait_name")
                 .setSearchType(SearchType.QUERY_THEN_FETCH)
                 .setTypes("phenotype")
-                .setQuery(multiMatchQuery(term, "local_trait_name^3.5", "local_trait_name.partial^1.5", "trait_protocol", "to_accession", "eo_accession"))
+                .setQuery(getFilteredQueryBuilder())
                 .addHighlightedField("local_trait_name", 100, 0)
                 .addHighlightedField("local_trait_name.partial", 100, 0)
                 .addHighlightedField("to_accession", 100, 0)
@@ -38,6 +45,7 @@ public class PhenotypeSearchProcessor extends TermSearchProcessor {
                 .setSize(10);
         return searchRequest;
     }
+
 
     @Override
     public SearchFacetPage extractSearchFacetPage(SearchResponse response) {

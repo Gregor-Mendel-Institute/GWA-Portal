@@ -7,6 +7,7 @@ import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;
@@ -22,6 +23,11 @@ public class PassportSearchProcessor extends TermSearchProcessor {
     }
 
     @Override
+    protected QueryBuilder getQuery() {
+        return multiMatchQuery(term, "_id^50.0", "accename", "accename.partial", "accenumb", "comments");
+    }
+
+    @Override
     public SearchRequestBuilder getSearchBuilder(
             SearchRequestBuilder searchRequest) {
         searchRequest.addFields("accename")
@@ -30,7 +36,7 @@ public class PassportSearchProcessor extends TermSearchProcessor {
                 .setSearchType(SearchType.QUERY_THEN_FETCH)
                 .setFrom(0)
                 .setSize(10)
-                .setQuery(multiMatchQuery(term, "_id^50.0", "accename", "accename.partial", "accenumb", "comments"))
+                .setQuery(getFilteredQueryBuilder())
                 .addHighlightedField("accename", 100, 0)
                 .addHighlightedField("accename.partial", 100, 0)
                 .addHighlightedField("accenumb", 100, 3)

@@ -7,6 +7,8 @@ import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;
@@ -17,8 +19,13 @@ import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 public class StudySearchProcessor extends TermSearchProcessor {
 
 
-    public StudySearchProcessor(String term) {
-        super(term);
+    public StudySearchProcessor(String term, FilterBuilder aclFilter) {
+        super(term, aclFilter);
+    }
+
+    @Override
+    protected QueryBuilder getQuery() {
+        return multiMatchQuery(term, "name^3.5", "name.partial^1.5");
     }
 
     @Override
@@ -32,7 +39,7 @@ public class StudySearchProcessor extends TermSearchProcessor {
                 .addFields("name", "protocol.analysis_method",
                         "alelele_assay.name")
                 .setSearchType(SearchType.QUERY_THEN_FETCH).setTypes("study")
-                .setQuery(multiMatchQuery(term, "name^3.5", "name.partial^1.5"))
+                .setQuery(getFilteredQueryBuilder())
                 .addHighlightedField("name", 100, 0)
                 .addHighlightedField("name.partial", 100, 0);
         return searchRequest;

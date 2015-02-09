@@ -7,6 +7,7 @@ import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;
@@ -22,6 +23,11 @@ public class TaxonomySearchProcessor extends TermSearchProcessor {
     }
 
     @Override
+    protected QueryBuilder getQuery() {
+        return multiMatchQuery(term, "genus", "genus.partial", "species", "species.partial", "subspecies", "subspecies.partial", "subtaxa", "subtaxa.partial", "common_name", "common_name.partial", "race", "population");
+    }
+
+    @Override
     public SearchRequestBuilder getSearchBuilder(
             SearchRequestBuilder searchRequest) {
         searchRequest.addFields("genus", "species")
@@ -30,7 +36,7 @@ public class TaxonomySearchProcessor extends TermSearchProcessor {
                 .setSearchType(SearchType.QUERY_THEN_FETCH)
                 .setFrom(0)
                 .setSize(5)
-                .setQuery(multiMatchQuery(term, "genus", "genus.partial", "species", "species.partial", "subspecies", "subspecies.partial", "subtaxa", "subtaxa.partial", "common_name", "common_name.partial", "race", "population"))
+                .setQuery(getFilteredQueryBuilder())
                 .addHighlightedField("genus", 100, 0)
                 .addHighlightedField("genus.partial", 100, 0)
                 .addHighlightedField("species", 100, 0)
