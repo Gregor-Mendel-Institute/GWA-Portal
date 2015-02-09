@@ -3,6 +3,8 @@ package com.gmi.nordborglab.browser.server.domain.observation;
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -20,6 +22,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -58,6 +61,7 @@ public class Experiment extends SecureEntity {
             joinColumns = @JoinColumn(name = "div_experiment_id", referencedColumnName = "div_experiment_id"))
     private Set<Publication> publications = new HashSet<Publication>();
 
+    public static final String ES_TYPE = "experiment";
 
     @Transient
     int numberOfPhenotypes = 0;
@@ -168,12 +172,37 @@ public class Experiment extends SecureEntity {
     }
 
     @Override
-    public String getIndexType() {
-        return "experiment";
-    }
-
-    @Override
     public String getRouting() {
         return getId().toString();
     }
+
+
+    @Override
+    public XContentBuilder getXContent(XContentBuilder builder) throws IOException {
+        if (builder == null)
+            builder = XContentFactory.jsonBuilder();
+        builder.startObject()
+                .field("id", this.getId().toString())
+                .field("name", this.getName())
+                .field("published", this.getPublished())
+                .field("originator", this.getOriginator())
+                .field("comments", this.getComments())
+                .field("modified", this.getModified())
+                .field("created", this.getCreated());
+        if (this.getPublications() != null && this.getPublications().size() > 0) {
+            builder.startArray("publication");
+            for (Publication publication : this.getPublications()) {
+                publication.getXContent(builder);
+            }
+            builder.endArray();
+        }
+        return builder;
+    }
+
+    @Override
+    public String getEsType() {
+        return ES_TYPE;
+    }
+
+
 }

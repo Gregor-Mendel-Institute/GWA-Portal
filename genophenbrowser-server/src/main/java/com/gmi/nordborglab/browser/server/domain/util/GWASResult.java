@@ -36,6 +36,8 @@ public class GWASResult extends SecureEntity implements ESDocument {
     private float maxScore;
     private int numberOfSNPs;
 
+    public static final String ES_TYPE = "gwasviewer";
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date created = new Date();
     @Temporal(TemporalType.TIMESTAMP)
@@ -83,15 +85,7 @@ public class GWASResult extends SecureEntity implements ESDocument {
         return numberOfSNPs;
     }
 
-    @Override
-    public String getIndexType() {
-        return "gwasviewer";
-    }
 
-    @Override
-    public String getRouting() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 
     public Date getCreated() {
         return created;
@@ -107,8 +101,9 @@ public class GWASResult extends SecureEntity implements ESDocument {
 
 
     @Override
-    public XContentBuilder getXContent() throws IOException {
-        XContentBuilder builder = XContentFactory.jsonBuilder();
+    public XContentBuilder getXContent(XContentBuilder builder) throws IOException {
+        if (builder == null)
+            builder = XContentFactory.jsonBuilder();
         builder.startObject()
                 .field("name", this.getName())
                 .field("type", this.getType())
@@ -123,13 +118,8 @@ public class GWASResult extends SecureEntity implements ESDocument {
 
     @Override
     public String getEsType() {
-        return "gwasviewer";
+        return ES_TYPE;
     }
 
-    @Override
-    public String getEsId() {
-        if (getId() != null)
-            return getId().toString();
-        return null;
-    }
+
 }

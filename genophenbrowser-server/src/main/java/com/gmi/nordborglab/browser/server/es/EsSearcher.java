@@ -10,6 +10,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -43,12 +44,18 @@ public class EsSearcher {
     };
 
 
-    public SearchResponse search(ConstEnums.TABLE_FILTER filter, boolean noPublic, String[] fields, String searchString, String type, int start, int size) {
+    public SearchResponse search(ConstEnums.TABLE_FILTER filter, Long parentId, boolean noPublic, String[] fields, String searchString, String type, int start, int size) {
         SearchRequestBuilder request = esClient.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(start).setTypes(type).setNoFields();
 
         // filter only the ones We have access to.
+
         FilterBuilder preFilter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"), noPublic);
+
+        // filter by parentid
+        if (parentId != null) {
+            preFilter = FilterBuilders.boolFilter().must(FilterBuilders.termFilter("_parent", parentId)).must(preFilter);
+        }
         FilterBuilder searchFilter = null;
         org.elasticsearch.index.query.QueryBuilder query = QueryBuilders.matchAllQuery();
         if (searchString != null && !searchString.equalsIgnoreCase("")) {

@@ -2,6 +2,9 @@ package com.gmi.nordborglab.browser.server.domain.util;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import com.gmi.nordborglab.browser.server.es.ESDocument;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -13,6 +16,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -30,7 +34,7 @@ import java.util.Set;
 @Table(name = "publications", schema = "util")
 @AttributeOverride(name = "id", column = @Column(name = "id"))
 @SequenceGenerator(name = "idSequence", sequenceName = "util.publications_id_seq")
-public class Publication extends BaseEntity {
+public class Publication extends BaseEntity implements ESDocument {
 
     private String doi;
     private String volume;
@@ -40,6 +44,8 @@ public class Publication extends BaseEntity {
     private String issue;
     private String author;
     private String page;
+
+    public static final String ES_TYPE = "publication";
 
     private Date pubdate;
     @Temporal(TemporalType.TIMESTAMP)
@@ -131,4 +137,45 @@ public class Publication extends BaseEntity {
     public Date getCreated() {
         return created;
     }
+
+    @Override
+    public XContentBuilder getXContent(XContentBuilder builder) throws IOException {
+        if (builder == null)
+            builder = XContentFactory.jsonBuilder();
+        builder.startObject()
+                .field("journal", this.getJournal())
+                .field("author", this.getFirstAuthor())
+                .field("title", this.getTitle())
+                .field("page", this.getPage())
+                .field("pubdate", this.getPubDate())
+                .field("issue", this.getIssue())
+                .field("volune", this.getVolume())
+                .field("url", this.getURL())
+                .field("doi", this.getURL())
+                .endObject();
+        return builder;
+    }
+
+    @Override
+    public String getEsType() {
+        return ES_TYPE;
+    }
+
+    @Override
+    public String getEsId() {
+        if (getId() != null)
+            return getId().toString();
+        return null;
+    }
+
+    @Override
+    public String getRouting() {
+        return null;
+    }
+
+    @Override
+    public String getParentId() {
+        return null;
+    }
+
 }

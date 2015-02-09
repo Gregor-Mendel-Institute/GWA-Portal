@@ -3,6 +3,8 @@ package com.gmi.nordborglab.browser.server.domain.genotype;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.util.GWASRuntimeInfo;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -14,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -136,8 +139,24 @@ public class AlleleAssay extends SecureEntity {
         return Collections.unmodifiableList(studies);
     }
 
+
     @Override
-    public String getIndexType() {
+    public XContentBuilder getXContent(XContentBuilder builder) throws IOException {
+        if (builder == null)
+            builder = XContentFactory.jsonBuilder();
+        builder.field("assay_date", this.getAssayDate())
+                .field("name", this.getName())
+                .field("producer", this.getProducer())
+                .field("comments", this.getComments())
+                .startObject("scoring_tech_type")
+                .field("scoring_tech_group", this.getScoringTechType().getScoringTechGroup())
+                .field("scoring_tech_type", this.getScoringTechType().getScoringTechType())
+                .endObject();
+        return builder;
+    }
+
+    @Override
+    public String getEsType() {
         return null;
     }
 
