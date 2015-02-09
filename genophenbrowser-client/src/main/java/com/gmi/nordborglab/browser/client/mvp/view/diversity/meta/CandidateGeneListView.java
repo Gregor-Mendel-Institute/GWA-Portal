@@ -219,7 +219,8 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
         for (NavLink link : navLinkMap.values()) {
             link.setActive(false);
         }
-        navLinkMap.get(filter).setActive(true);
+        if (navLinkMap.containsKey(filter))
+            navLinkMap.get(filter).setActive(true);
     }
 
     @Override
@@ -229,8 +230,6 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
         for (FacetProxy facet : facets) {
             ConstEnums.TABLE_FILTER type = ConstEnums.TABLE_FILTER.valueOf(facet.getName());
             String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
-            NavLink link = navLinkMap.get(type);
-            link.setText(newTitle);
             PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(CandidateGeneListPresenter.placeToken);
             if (type != ConstEnums.TABLE_FILTER.ALL) {
                 request = request.with("filter", type.name());
@@ -238,8 +237,13 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
             if (searchString != null) {
                 request = request.with("query", searchString);
             }
+            NavLink link = navLinkMap.get(type);
+            if (link != null) {
+                link.setText(newTitle);
+                link.setTargetHistoryToken(placeManager.buildHistoryToken(request.build()));
+            }
             searchBox.setText(searchString);
-            link.setTargetHistoryToken(placeManager.buildHistoryToken(request.build()));
+
         }
     }
 
