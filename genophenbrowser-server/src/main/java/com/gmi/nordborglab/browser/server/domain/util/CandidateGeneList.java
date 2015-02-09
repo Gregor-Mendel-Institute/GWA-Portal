@@ -1,7 +1,10 @@
 package com.gmi.nordborglab.browser.server.domain.util;
 
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
+import com.gmi.nordborglab.browser.server.data.annotation.GoTerm;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -16,6 +19,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -56,6 +60,8 @@ public class CandidateGeneList extends SecureEntity {
     @CollectionTable(name = "candidate_gene_list_genes", schema = "util", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "gene")
     private Set<String> genes = new HashSet<String>();
+
+    public static final String ES_TYPE = "candidate_gene_list";
 
 
     public String getName() {
@@ -123,17 +129,74 @@ public class CandidateGeneList extends SecureEntity {
         return candidateGeneListEnrichments != null ? candidateGeneListEnrichments.size() : 0;
     }
 
-    @Override
-    public String getIndexType() {
-        return "candidate_gene_list";
-    }
 
     public List<CandidateGeneListEnrichment> getCandidateGeneListEnrichments() {
         return candidateGeneListEnrichments;
     }
 
     @Override
+    public XContentBuilder getXContent(XContentBuilder builder) throws IOException {
+        if (builder == null)
+            builder = XContentFactory.jsonBuilder();
+        builder.startObject()
+                .field("name", this.getName())
+                .field("published", this.getPublished())
+                .field("description", this.getDescription())
+                .field("modified", this.getModified())
+                .field("created", this.getCreated());
+        if (this.getGenesWithInfo() != null && this.getGenesWithInfo().size() > 0) {
+            builder.startArray("genes");
+            for (Gene gene : this.getGenesWithInfo()) {
+                addGeneToBuilder(builder, gene);
+            }
+            builder.endArray();
+        }
+        return builder;
+    }
+
+    private static void addGeneToBuilder(XContentBuilder builder, Gene gene) throws IOException {
+        builder.startObject()
+                .field("name", gene.getName())
+                .field("symbol", gene.getSymbol())
+                .field("synonyms", gene.getSynonyms())
+                .field("chr", gene.getChr())
+                .field("start_pos", gene.getStart())
+                .field("end_pos", gene.getEnd())
+                .field("strand", gene.getStrand())
+                .field("description", gene.getDescription())
+                .field("short_description", gene.getShortDescription())
+                .field("curator_summary", gene.getCuratorSummary())
+                .field("annotation", gene.getAnnotation());
+        if (gene.getGoTerms() != null && gene.getGoTerms().size() > 0) {
+            builder.startArray("GO");
+            for (GoTerm term : gene.getGoTerms()) {
+                addGoTermToBuilder(builder, term);
+            }
+            builder.endArray();
+        }
+        builder.endObject();
+    }
+
+    private static void addGoTermToBuilder(XContentBuilder builder, GoTerm term) throws IOException {
+        builder.startObject()
+                .field("relation", term.getRelation())
+                .field("exact", term.getExact())
+                .field("narrow", term.getNarrow())
+                .endObject();
+    }
+
+    @Override
+    public String getEsType() {
+        return ES_TYPE;
+    }
+
+    @Override
     public String getRouting() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String getParentId() {
+        return null;
     }
 }

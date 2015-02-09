@@ -9,9 +9,14 @@ import java.io.IOException;
  */
 public interface ESDocument {
 
-    XContentBuilder getXContent() throws IOException;
+    XContentBuilder getXContent(XContentBuilder builder) throws IOException;
 
     String getEsType();
 
     String getEsId();
+
+    String getRouting();
+
+    String getParentId();
+
 }

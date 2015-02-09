@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain;
 
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
+import com.gmi.nordborglab.browser.server.es.ESDocument;
 import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
 
 import javax.persistence.MappedSuperclass;
@@ -15,7 +16,7 @@ import javax.persistence.Transient;
  */
 
 @MappedSuperclass
-public abstract class SecureEntity extends BaseEntity {
+public abstract class SecureEntity extends BaseEntity implements ESDocument {
 
     @Transient
     private boolean isPublic = false;
@@ -65,8 +66,22 @@ public abstract class SecureEntity extends BaseEntity {
         return owner;
     }
 
+    @Override
+    public String getEsId() {
+        if (getId() != null)
+            return getId().toString();
+        return null;
+    }
 
-    public abstract String getIndexType();
 
-    public abstract String getRouting();
+    @Override
+    public String getRouting() {
+        return null;
+    }
+
+    @Override
+    public String getParentId() {
+        return null;
+    }
+
 }

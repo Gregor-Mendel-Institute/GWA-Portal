@@ -2,11 +2,14 @@ package com.gmi.nordborglab.browser.server.service.impl;
 
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.data.es.ESTermsFacet;
+import com.gmi.nordborglab.browser.server.domain.DomainFunctions;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.pages.ExperimentPage;
 import com.gmi.nordborglab.browser.server.domain.pages.PublicationPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
+import com.gmi.nordborglab.browser.server.es.EsIndexer;
+import com.gmi.nordborglab.browser.server.es.EsSearcher;
 import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
 import com.gmi.nordborglab.browser.server.repository.PublicationRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
@@ -23,23 +26,18 @@ import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
-import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.facet.FacetBuilders;
-import org.elasticsearch.search.facet.Facets;
-import org.elasticsearch.search.facet.filter.FilterFacet;
-import org.elasticsearch.search.facet.terms.TermsFacet;
-import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.CumulativePermission;
@@ -60,7 +58,6 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
 @Service
 @Transactional(readOnly = true)
@@ -87,6 +84,13 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
     @Resource
     private Client client;
+
+    @Resource
+    private EsIndexer esIndexer;
+
+    @Resource
+    private EsSearcher esSearcher;
+
 
     @Resource
     private EsAclManager esAclManager;
@@ -120,7 +124,6 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
     @Override
     @Transactional(readOnly = false)
     public void delete(Experiment experiment) {
-        Long experimentId = experiment.getId();
         aclManager.setPermissionAndOwner(experiment);
         //check not public
         if (experiment.isPublic()) {
@@ -132,63 +135,19 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
         }
         experimentRepository.delete(experiment);
         aclManager.deletePermissions(experiment, true);
-        deleteFromIndex(experimentId);
+        deleteFromIndex(experiment);
     }
 
-    private void deleteFromIndex(Long experimentId) {
-        client.prepareDelete(esAclManager.getIndex(), "experiment", experimentId.toString()).setRouting(experimentId.toString()).execute();
+    private void deleteFromIndex(Experiment experiment) {
+        esIndexer.delete(experiment);
     }
 
     private void indexExperiment(Experiment experiment) {
         try {
-            XContentBuilder builder = XContentFactory.jsonBuilder();
-
-            builder.startObject()
-                    .field("id", experiment.getId().toString())
-                    .field("name", experiment.getName())
-                    .field("published", experiment.getPublished())
-                    .field("originator", experiment.getOriginator())
-                    .field("comments", experiment.getComments())
-                    .field("modified", experiment.getModified())
-                    .field("created", experiment.getCreated());
-            if (experiment.getPublications() != null && experiment.getPublications().size() > 0) {
-                builder.startArray("publication");
-                for (Publication publication : experiment.getPublications()) {
-                    getPublicationIndexBuilder(builder, publication);
-                }
-                builder.endArray();
-            }
-            esAclManager.addACLAndOwnerContent(builder, aclManager.getAcl(experiment));
-            builder.endObject();
-            String test = builder.string();
-
-            IndexRequestBuilder request = client.prepareIndex(esAclManager.getIndex(), "experiment", experiment.getId().toString()).setRouting(experiment.getId().toString())
-                    .setSource(builder);
-
-            request.execute();
+            esIndexer.index(experiment);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-
-    private XContentBuilder getPublicationIndexBuilder(XContentBuilder builder, Publication publication) {
-        try {
-            builder.startObject()
-                    .field("journal", publication.getJournal())
-                    .field("author", publication.getFirstAuthor())
-                    .field("title", publication.getTitle())
-                    .field("page", publication.getPage())
-                    .field("pubdate", publication.getPubDate())
-                    .field("issue", publication.getIssue())
-                    .field("volune", publication.getVolume())
-                    .field("url", publication.getURL())
-                    .field("doi", publication.getURL())
-                    .endObject();
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return builder;
     }
 
 
@@ -211,75 +170,15 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
     @Override
     public ExperimentPage findByAclAndFilter(ConstEnums.TABLE_FILTER filter, String searchString, int page, int size) {
-        SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
-        request.setSize(size).setFrom(page).setTypes("experiment").setNoFields();
-
-        if (searchString != null && !searchString.equalsIgnoreCase("")) {
-            request.setQuery(multiMatchQuery(searchString, "name^3.5", "name.partial^1.5", "originator", "design", "comments^0.5"));
-        }
-        FilterBuilder searchFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, false);
-        FilterBuilder privateFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), true, false);
-        FilterBuilder publicFilter = esAclManager.getAclFilter(Lists.newArrayList("read"), false, true);
-
-        // set facets
-        request.addFacet(FacetBuilders.filterFacet(ConstEnums.TABLE_FILTER.ALL.name()).filter(searchFilter));
-        request.addFacet(FacetBuilders.filterFacet(ConstEnums.TABLE_FILTER.PRIVATE.name()).filter(privateFilter));
-        request.addFacet(FacetBuilders.filterFacet(ConstEnums.TABLE_FILTER.PUBLISHED.name()).filter(publicFilter));
-
-        switch (filter) {
-            case PRIVATE:
-                searchFilter = privateFilter;
-                break;
-            case PUBLISHED:
-                searchFilter = publicFilter;
-                break;
-            case RECENT:
-                request.addSort("modified", SortOrder.DESC);
-                break;
-            default:
-                if (searchString == null || searchString.isEmpty())
-                    request.addSort("name", SortOrder.ASC);
-        }
-        // set filter
-        request.setPostFilter(searchFilter);
-
-        SearchResponse response = request.execute().actionGet();
-        List<Long> idsToFetch = Lists.newArrayList();
-        for (SearchHit hit : response.getHits()) {
-            idsToFetch.add(Long.parseLong(hit.getId()));
-        }
-        List<Experiment> experiments = Lists.newArrayList();
-        //Neded because ids are not sorted
-        Map<Long, Experiment> id2Map = Maps.uniqueIndex(experimentRepository.findAll(idsToFetch), new Function<Experiment, Long>() {
-            @Nullable
-            @Override
-            public Long apply(@Nullable Experiment experiment) {
-                return experiment.getId();
-            }
-        });
-        for (Long id : idsToFetch) {
-            if (id2Map.containsKey(id)) {
-                experiments.add(id2Map.get(id));
-            }
-        }
-
+        SearchResponse response = esSearcher.search(filter, null, false, new String[]{"name^3.5", "name.partial^1.5", "originator", "design", "comments^0.5", "owner.name"}, searchString, Experiment.ES_TYPE, page, size);
+        List<Long> idsToFetch = EsSearcher.getIdsFromResponse(response);
+        List<Experiment> resultsFromDb = experimentRepository.findAll(idsToFetch);
         //extract facets
-        Facets searchFacets = response.getFacets();
-        List<ESFacet> facets = Lists.newArrayList();
-
-        FilterFacet filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.TABLE_FILTER.ALL.name());
-        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.ALL.name(), 0, filterFacet.getCount(), 0, null));
-        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.RECENT.name(), 0, filterFacet.getCount(), 0, null));
-
-        filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.TABLE_FILTER.PRIVATE.name());
-        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.PRIVATE.name(), 0, filterFacet.getCount(), 0, null));
-
-        // get annotation
-        filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.TABLE_FILTER.PUBLISHED.name());
-        facets.add(new ESFacet(ConstEnums.TABLE_FILTER.PUBLISHED.name(), 0, filterFacet.getCount(), 0, null));
-
-        aclManager.setPermissionAndOwners(experiments);
-        return new ExperimentPage(experiments, new PageRequest(page, size), response.getHits().getTotalHits(), facets);
+        List<ESFacet> facets = EsSearcher.getAggregations(response);
+        Ordering<Experiment> orderByEs = Ordering.explicit(idsToFetch).onResultOf(DomainFunctions.getExperimentId());
+        List<Experiment> results = orderByEs.immutableSortedCopy(resultsFromDb);
+        aclManager.setPermissionAndOwners(results);
+        return new ExperimentPage(results, new PageRequest(page, size), response.getHits().getTotalHits(), facets);
     }
 
 
@@ -367,7 +266,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
     private long countAnalysesByExperiment(Long experimentId) {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
-        FilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.hasParentFilter("phenotype", FilterBuilders.termFilter("_parent", experimentId.toString())), esAclManager.getAclFilter(Lists.newArrayList("read")));
+        FilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.hasParentFilter("phenotype", FilterBuilders.termFilter("_parent", experimentId.toString())), esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")));
         ConstantScoreQueryBuilder query = QueryBuilders.constantScoreQuery(filter);
         SearchResponse response = request.setTypes("study").setSize(0).setQuery(query).execute().actionGet();
         return response.getHits().getTotalHits();
@@ -375,26 +274,26 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
     private List<ESFacet> getPhenotypeStats(Long experimentId) {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex()).setTypes("phenotype").setSize(0);
-        FilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.termFilter("_parent", experimentId.toString()), esAclManager.getAclFilter(Lists.newArrayList("read")));
+        FilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.termFilter("_parent", experimentId.toString()), esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")));
         //TODO change mapping so that term_name is not analyzed
         request.setQuery(QueryBuilders.constantScoreQuery(filter))
-                .addFacet(FacetBuilders.termsFacet("TO").field("to_accession.term_name.raw"))
-                .addFacet(FacetBuilders.termsFacet("EO").field("eo_accession.term_name.raw"));
+                .addAggregation(AggregationBuilders.terms("TO").field("to_accession.term_name.raw"))
+                .addAggregation(AggregationBuilders.terms("EO").field("eo_accession.term_name.raw"));
         SearchResponse response = request.execute().actionGet();
         List<ESFacet> facets = Lists.newArrayList();
-        TermsFacet searchFacet = (TermsFacet) response.getFacets().facetsAsMap().get("TO");
+        Terms searchFacet = response.getAggregations().get("TO");
         List<ESTermsFacet> terms = Lists.newArrayList();
-        for (TermsFacet.Entry termEntry : searchFacet) {
-            terms.add(new ESTermsFacet(termEntry.getTerm().string(), termEntry.getCount()));
+        for (Terms.Bucket bucket : searchFacet.getBuckets()) {
+            terms.add(new ESTermsFacet(bucket.getKey(), bucket.getDocCount()));
         }
-        facets.add(new ESFacet("TO", searchFacet.getMissingCount(), searchFacet.getTotalCount(), searchFacet.getOtherCount(), terms));
+        facets.add(new ESFacet("TO", 0, terms.size(), 0, terms));
         // TO
-        searchFacet = (TermsFacet) response.getFacets().facetsAsMap().get("EO");
+        searchFacet = response.getAggregations().get("EO");
         terms = Lists.newArrayList();
-        for (TermsFacet.Entry termEntry : searchFacet) {
-            terms.add(new ESTermsFacet(termEntry.getTerm().string(), termEntry.getCount()));
+        for (Terms.Bucket bucket : searchFacet.getBuckets()) {
+            terms.add(new ESTermsFacet(bucket.getKey(), bucket.getDocCount()));
         }
-        facets.add(new ESFacet("EO", searchFacet.getMissingCount(), searchFacet.getTotalCount(), searchFacet.getOtherCount(), terms));
+        facets.add(new ESFacet("EO", 0, terms.size(), 0, terms));
         return facets;
     }
 }

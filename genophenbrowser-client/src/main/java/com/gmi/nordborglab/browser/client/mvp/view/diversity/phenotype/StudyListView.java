@@ -128,7 +128,8 @@ public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> imple
         for (NavLink link : navLinkMap.values()) {
             link.setActive(false);
         }
-        navLinkMap.get(filter).setActive(true);
+        if (navLinkMap.containsKey(filter))
+            navLinkMap.get(filter).setActive(true);
     }
 
     @Override
@@ -138,7 +139,8 @@ public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> imple
         for (FacetProxy facet : facets) {
             ConstEnums.TABLE_FILTER type = ConstEnums.TABLE_FILTER.valueOf(facet.getName());
             String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
-            navLinkMap.get(type).setText(newTitle);
+            if (navLinkMap.containsKey(type))
+                navLinkMap.get(type).setText(newTitle);
         }
     }
 

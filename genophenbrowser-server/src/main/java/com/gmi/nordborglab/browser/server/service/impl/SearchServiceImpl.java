@@ -55,29 +55,30 @@ public class SearchServiceImpl implements SearchService {
         MultiSearchRequestBuilder requestBuilder = client.prepareMultiSearch();
 
         if (category == CATEGORY.DIVERSITY) {
-            FilterBuilder filter = esAclManager.getAclFilter(Lists.newArrayList("read"));
+            FilterBuilder filter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
+
             ExperimentSearchProcessor experimentProcessor = new ExperimentSearchProcessor(
-                    term);
+                    term, filter);
             PhenotypeSearchProcessor phenotypeProcessor = new PhenotypeSearchProcessor(
-                    term);
-            StudySearchProcessor studyProcessor = new StudySearchProcessor(term);
+                    term, filter);
+            StudySearchProcessor studyProcessor = new StudySearchProcessor(term, filter);
 
             OntologySearchProcessor ontologySearchProcessor = new OntologySearchProcessor(term);
 
             PublicationSearchProcessor publicationSearchProcessor = new PublicationSearchProcessor(term);
 
-            CandidategenelistSearchProcessor candidategenelistSearchProcessor = new CandidategenelistSearchProcessor(term);
+            CandidategenelistSearchProcessor candidategenelistSearchProcessor = new CandidategenelistSearchProcessor(term, filter);
 
             GeneSearchProcessor geneSearchprocessor = new GeneSearchProcessor(term);
 
             requestBuilder.add(experimentProcessor.getSearchBuilder(client
-                    .prepareSearch(esAclManager.getIndex())).setPostFilter(filter));
+                    .prepareSearch(esAclManager.getIndex())));
 
             requestBuilder.add(phenotypeProcessor.getSearchBuilder(client
-                    .prepareSearch(esAclManager.getIndex())).setPostFilter(filter));
+                    .prepareSearch(esAclManager.getIndex())));
 
             requestBuilder.add(studyProcessor.getSearchBuilder(client
-                    .prepareSearch(esAclManager.getIndex())).setPostFilter(filter));
+                    .prepareSearch(esAclManager.getIndex())));
 
             requestBuilder.add(ontologySearchProcessor.getSearchBuilder(client
                     .prepareSearch(ONTOLOGY_INDEX_NAME)));
@@ -183,26 +184,26 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public SearchFacetPage searchByFilter(String query, ConstEnums.FILTERS filter) {
         SearchFacetPage searchFacetPage = null;
-        FilterBuilder aclFilter = esAclManager.getAclFilter(Lists.newArrayList("read"));
-        SearchProcessor searchProcessor = getSearchProcessorFromFilter(query, filter);
+        FilterBuilder aclFilter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
+        SearchProcessor searchProcessor = getSearchProcessorFromFilter(query, filter, aclFilter);
         if (searchProcessor != null) {
-            SearchRequestBuilder request = searchProcessor.getSearchBuilder(client.prepareSearch(esAclManager.getIndex()).setPostFilter(aclFilter));
+            SearchRequestBuilder request = searchProcessor.getSearchBuilder(client.prepareSearch(esAclManager.getIndex()));
             SearchResponse response = request.execute().actionGet();
             searchFacetPage = searchProcessor.extractSearchFacetPage(response);
         }
         return searchFacetPage;
     }
 
-    private SearchProcessor getSearchProcessorFromFilter(String query, ConstEnums.FILTERS filter) {
+    private SearchProcessor getSearchProcessorFromFilter(String query, ConstEnums.FILTERS filter, FilterBuilder aclFilter) {
         switch (filter) {
             case STUDY:
-                return new ExperimentSearchProcessor(query);
+                return new ExperimentSearchProcessor(query, aclFilter);
             case PHENOTYPE:
-                return new PhenotypeSearchProcessor(query);
+                return new PhenotypeSearchProcessor(query, aclFilter);
             case ANALYSIS:
-                return new StudySearchProcessor(query);
+                return new StudySearchProcessor(query, aclFilter);
             case CANDIDATE_GENE_LIST:
-                return new CandidategenelistSearchProcessor(query);
+                return new CandidategenelistSearchProcessor(query, aclFilter);
         }
         return null;
     }

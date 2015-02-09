@@ -5,6 +5,8 @@ import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;
@@ -21,8 +23,13 @@ import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
  */
 public class CandidategenelistSearchProcessor extends TermSearchProcessor {
 
-    public CandidategenelistSearchProcessor(String term) {
-        super(term);
+    public CandidategenelistSearchProcessor(String term, FilterBuilder aclFilter) {
+        super(term, aclFilter);
+    }
+
+    @Override
+    protected QueryBuilder getQuery() {
+        return multiMatchQuery(term, "name^3.5", "name.partial^1.5", "description^0.5");
     }
 
     @Override
@@ -31,7 +38,7 @@ public class CandidategenelistSearchProcessor extends TermSearchProcessor {
                 .setHighlighterTagsSchema("styled")
                 .setFrom(0)
                 .setSize(5)
-                .setQuery(multiMatchQuery(term, "name^3.5", "name.partial^1.5", "description^0.5"))
+                .setQuery(getFilteredQueryBuilder())
                 .addHighlightedField("name", 100, 0)
                 .addHighlightedField("name.partial", 100, 0);
         return searchRequest;

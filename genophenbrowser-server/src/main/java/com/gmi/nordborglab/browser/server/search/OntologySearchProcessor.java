@@ -6,6 +6,7 @@ import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;
@@ -28,13 +29,18 @@ public class OntologySearchProcessor extends TermSearchProcessor {
     }
 
     @Override
+    protected QueryBuilder getQuery() {
+        return multiMatchQuery(term, "name^3.5", "name.partial^1.5", "definition", "synonyms", "term_id");
+    }
+
+    @Override
     public SearchRequestBuilder getSearchBuilder(SearchRequestBuilder searchRequest) {
         searchRequest = searchRequest.addField("name").setTypes("term")
                 .setHighlighterTagsSchema("styled")
                 .setSearchType(SearchType.QUERY_THEN_FETCH)
                 .setFrom(0)
                 .setSize(5)
-                .setQuery(multiMatchQuery(term,"name^3.5","name.partial^1.5","definition","synonyms","term_id"))
+                .setQuery(getFilteredQueryBuilder())
                 .addHighlightedField("name", 100, 0)
                 .addHighlightedField("name.partial",100,0)
                 .addHighlightedField("definition", 100, 5)

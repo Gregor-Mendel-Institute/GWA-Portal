@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
+import com.gmi.nordborglab.browser.server.domain.DomainFunctions;
 import com.gmi.nordborglab.browser.server.domain.acl.AclSid;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.acl.Authority;
@@ -11,6 +12,7 @@ import com.gmi.nordborglab.browser.server.domain.pages.ExperimentPage;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
 import com.gmi.nordborglab.browser.server.domain.pages.TraitUomPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.es.EsSearcher;
 import com.gmi.nordborglab.browser.server.form.Registration;
 import com.gmi.nordborglab.browser.server.repository.AclSidRepository;
 import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
@@ -28,6 +30,7 @@ import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
@@ -43,9 +46,9 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.facet.FacetBuilders;
-import org.elasticsearch.search.facet.Facets;
-import org.elasticsearch.search.facet.filter.FilterFacet;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -155,7 +158,7 @@ public class UserServiceImpl implements UserService {
 
     private int[] getStats(Long id) {
 
-        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilter(Lists.newArrayList("read")))
+        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
                 .must(esAclManager.getOwnerFilter(Lists.newArrayList(id)));
         QueryBuilder query = QueryBuilders.constantScoreQuery(searchFilter);
         int[] stats = new int[3];
@@ -226,7 +229,7 @@ public class UserServiceImpl implements UserService {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(start).setTypes("experiment").setNoFields();
 
-        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilter(Lists.newArrayList("read")))
+        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
                 .must(esAclManager.getOwnerFilter(Lists.newArrayList(userId)));
         request.setQuery(QueryBuilders.constantScoreQuery(searchFilter));
         SearchResponse response = request.execute().actionGet();
@@ -257,7 +260,7 @@ public class UserServiceImpl implements UserService {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(start).setTypes("phenotype").setNoFields();
 
-        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilter(Lists.newArrayList("read")))
+        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
                 .must(esAclManager.getOwnerFilter(Lists.newArrayList(userId)));
         request.setQuery(QueryBuilders.constantScoreQuery(searchFilter));
 
@@ -304,7 +307,7 @@ public class UserServiceImpl implements UserService {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(start).setTypes("study").setNoFields();
 
-        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilter(Lists.newArrayList("read")))
+        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
                 .must(esAclManager.getOwnerFilter(Lists.newArrayList(userId)));
         request.setQuery(QueryBuilders.constantScoreQuery(searchFilter));
 
@@ -344,10 +347,9 @@ public class UserServiceImpl implements UserService {
         if (searchString != null && !searchString.equalsIgnoreCase("")) {
             request.setQuery(multiMatchQuery(searchString, "firstname^3.5", "firstname.partial^1.5", "lastname^3.5", "lastname.partial^1.5", "email"));
         }
-        // set facets
-        request.addFacet(FacetBuilders.filterFacet(ConstEnums.USER_FILTER.ALL.name()).filter(FilterBuilders.matchAllFilter()));
-        request.addFacet(FacetBuilders.filterFacet(ConstEnums.USER_FILTER.ADMIN.name()).filter(adminFilter));
-        request.addFacet(FacetBuilders.filterFacet(ConstEnums.USER_FILTER.USER.name()).filter(userFilter));
+        request.addAggregation(AggregationBuilders.filter(ConstEnums.USER_FILTER.ALL.name()).filter(FilterBuilders.matchAllFilter()));
+        request.addAggregation(AggregationBuilders.filter(ConstEnums.USER_FILTER.ADMIN.name()).filter(adminFilter));
+        request.addAggregation(AggregationBuilders.filter(ConstEnums.USER_FILTER.USER.name()).filter(userFilter));
 
         switch (filter) {
             case ADMIN:
@@ -365,40 +367,26 @@ public class UserServiceImpl implements UserService {
 
         SearchResponse response = request.execute().actionGet();
         long totalCount = response.getHits().getTotalHits();
-        List<Long> idsToFetch = Lists.newArrayList();
-        for (SearchHit hit : response.getHits()) {
-            idsToFetch.add(Long.parseLong(hit.getId()));
-        }
-        List<AppUser> users = Lists.newArrayList();
-        //Neded because ids are not sorted
-        Map<Long, AppUser> id2Map = Maps.uniqueIndex(userRepository.findAll(idsToFetch), new Function<AppUser, Long>() {
-            @Nullable
-            @Override
-            public Long apply(@Nullable AppUser experiment) {
-                return experiment.getId();
-            }
-        });
-        for (Long id : idsToFetch) {
-            if (id2Map.containsKey(id)) {
-                users.add(id2Map.get(id));
-            }
-        }
+        List<Long> idsToFetch = EsSearcher.getIdsFromResponse(response);
+        List<AppUser> resultsFromDb = userRepository.findAll(idsToFetch);
+        //extract facets
+        Ordering<AppUser> orderByEs = Ordering.explicit(idsToFetch).onResultOf(DomainFunctions.getUserId());
+        List<AppUser> results = orderByEs.immutableSortedCopy(resultsFromDb);
 
         //extract facets
-        Facets searchFacets = response.getFacets();
+        Aggregations aggregations = response.getAggregations();
         List<ESFacet> facets = Lists.newArrayList();
+        Filter filterAgg = aggregations.get(ConstEnums.TABLE_FILTER.ALL.name());
+        facets.add(new ESFacet(ConstEnums.USER_FILTER.ALL.name(), 0, filterAgg.getDocCount(), 0, null));
 
-        FilterFacet filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.TABLE_FILTER.ALL.name());
-        facets.add(new ESFacet(ConstEnums.USER_FILTER.ALL.name(), 0, filterFacet.getCount(), 0, null));
+        filterAgg = aggregations.get(ConstEnums.USER_FILTER.ADMIN.name());
+        facets.add(new ESFacet(ConstEnums.USER_FILTER.ADMIN.name(), 0, filterAgg.getDocCount(), 0, null));
 
-        filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.USER_FILTER.ADMIN.name());
-        facets.add(new ESFacet(ConstEnums.USER_FILTER.ADMIN.name(), 0, filterFacet.getCount(), 0, null));
+        filterAgg = aggregations.get(ConstEnums.USER_FILTER.USER.name());
+        facets.add(new ESFacet(ConstEnums.USER_FILTER.USER.name(), 0, filterAgg.getDocCount(), 0, null));
 
-        filterFacet = (FilterFacet) searchFacets.facetsAsMap().get(ConstEnums.USER_FILTER.USER.name());
-        facets.add(new ESFacet(ConstEnums.USER_FILTER.USER.name(), 0, filterFacet.getCount(), 0, null));
-
-        addStatsAndGravatarHash(users);
-        return new AppUserPage(users, new PageRequest(start, size), totalCount, facets);
+        addStatsAndGravatarHash(results);
+        return new AppUserPage(results, new PageRequest(start, size), totalCount, facets);
     }
 
     private void addStatsAndGravatarHash(List<AppUser> users) {
@@ -412,10 +400,6 @@ public class UserServiceImpl implements UserService {
         user.setNumberOfStudies(stats[0]);
         user.setNumberOfPhenotypes(stats[1]);
         user.setNumberOfAnalysis(stats[2]);
-    }
-
-    private void deleteFromIndex(Long userId) {
-        client.prepareDelete(esAclManager.getIndex(), "user", userId.toString()).execute();
     }
 
     private void indexUser(AppUser user) {

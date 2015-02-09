@@ -4,6 +4,8 @@ import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.jpaontology.model.Term;
 import com.google.common.collect.Iterables;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -19,6 +21,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +32,8 @@ import java.util.Set;
 @AttributeOverride(name = "id", column = @Column(name = "div_trait_uom_id"))
 @SequenceGenerator(name = "idSequence", sequenceName = "phenotype.div_trait_uom_div_trait_uom_id_seq", allocationSize = 1)
 public class TraitUom extends SecureEntity {
+
+    public static final String ES_TYPE = "phenotype";
 
     @ManyToOne()
     @JoinColumn(name = "div_unit_of_measure_id")
@@ -215,12 +220,51 @@ public class TraitUom extends SecureEntity {
     }
 
     @Override
-    public String getIndexType() {
-        return "phenotype";
+    public XContentBuilder getXContent(XContentBuilder builder) throws IOException {
+        if (builder == null)
+            builder = XContentFactory.jsonBuilder();
+        builder.startObject()
+                .field("local_trait_name", this.getLocalTraitName())
+                .field("published", this.getPublished())
+                .field("modified", this.getModified())
+                .field("created", this.getCreated())
+                .field("trait_protocol", this.getTraitProtocol())
+                .startObject("experiment")
+                .field("name", this.getExperiment().getName())
+                .field("id", this.getExperiment().getId())
+                .endObject();
+        if (this.getTraitOntologyTerm() != null) {
+            builder.startObject("to_accession");
+            addOntologyToBuilder(builder, this.getTraitOntologyTerm());
+            builder.endObject();
+        }
+        if (this.getEnvironOntologyTerm() != null) {
+            builder.startObject("eo_accession");
+            addOntologyToBuilder(builder, this.getEnvironOntologyTerm());
+            builder.endObject();
+        }
+        return builder;
+    }
+
+    private static void addOntologyToBuilder(XContentBuilder builder, Term term) throws IOException {
+        builder.field("term_id", term.getAcc())
+                .field("term_definition", term.getTermDefinition().getTermDefinition())
+                .field("term_comment", term.getTermDefinition().getTermComment())
+                .field("term_name", term.getName());
+    }
+
+    @Override
+    public String getEsType() {
+        return ES_TYPE;
     }
 
     @Override
     public String getRouting() {
         return getExperiment().getId().toString();
+    }
+
+    @Override
+    public String getParentId() {
+        return experiment.getId().toString();
     }
 }

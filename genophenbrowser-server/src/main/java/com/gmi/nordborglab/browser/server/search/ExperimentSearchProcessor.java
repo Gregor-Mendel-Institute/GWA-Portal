@@ -7,6 +7,8 @@ import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;
@@ -17,8 +19,8 @@ import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 public class ExperimentSearchProcessor extends TermSearchProcessor {
 
 
-    public ExperimentSearchProcessor(String term) {
-        super(term);
+    public ExperimentSearchProcessor(String term, FilterBuilder aclFilter) {
+        super(term, aclFilter);
     }
 
     @Override
@@ -28,7 +30,7 @@ public class ExperimentSearchProcessor extends TermSearchProcessor {
                 .setSearchType(SearchType.QUERY_THEN_FETCH)
                 .setFrom(0)
                 .setSize(5)
-                .setQuery(multiMatchQuery(term, "name^3.5", "name.partial^1.5", "originator", "design", "comments^0.5"))
+                .setQuery(getFilteredQueryBuilder())
                 .addHighlightedField("name", 100, 0)
                 .addHighlightedField("name.partial", 100, 0)
                 .addHighlightedField("originator", 100, 5)
@@ -63,4 +65,8 @@ public class ExperimentSearchProcessor extends TermSearchProcessor {
         return searchFacetPage;
     }
 
+    @Override
+    protected QueryBuilder getQuery() {
+        return multiMatchQuery(term, "name^3.5", "name.partial^1.5", "originator", "design", "comments^0.5");
+    }
 }

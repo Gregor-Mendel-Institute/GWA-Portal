@@ -5,6 +5,7 @@ import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.update.UpdateRequestBuilder;
 import org.elasticsearch.client.Client;
@@ -34,7 +35,7 @@ public class EsIndexer {
 
 
     public <T extends ESDocument> XContentBuilder getContent(T document) throws IOException {
-        XContentBuilder builder = document.getXContent();
+        XContentBuilder builder = document.getXContent(null);
         if (document instanceof SecureEntity) {
             esAclManager.addACLAndOwnerContent(builder, aclManager.getAcl((SecureEntity) document));
         }
@@ -48,13 +49,23 @@ public class EsIndexer {
     }
 
     public <T extends ESDocument> void delete(T document) {
-        esClient.prepareDelete(esAclManager.getIndex(), document.getEsType(), document.getEsId()).execute();
+        DeleteRequestBuilder request = esClient.prepareDelete(esAclManager.getIndex(), document.getEsType(), document.getEsId());
+        if (document.getRouting() != null) {
+            request.setRouting(document.getRouting());
+        }
+        request.execute();
     }
 
     private <T extends ESDocument> IndexRequestBuilder getIndexRequest(T document) throws IOException {
         XContentBuilder builder = getContent(document);
         IndexRequestBuilder request = esClient.prepareIndex(esAclManager.getIndex(), document.getEsType(), document.getEsId())
                 .setSource(builder);
+        if (document.getRouting() != null) {
+            request.setRouting(document.getRouting());
+        }
+        if (document.getParentId() != null) {
+            request.setParent(document.getParentId());
+        }
         return request;
     }
 
@@ -75,13 +86,13 @@ public class EsIndexer {
     }
 
     public void updateSecureEntityPermission(SecureEntity entity) throws IOException {
-        if (entity.getIndexType() == null)
+        if (entity.getEsType() == null)
             return;
         XContentBuilder builder = XContentFactory.jsonBuilder();
         builder.startObject();
         esAclManager.addACLAndOwnerContent(builder, aclManager.getAcl(entity));
         builder.endObject();
-        UpdateRequestBuilder request = esClient.prepareUpdate(esAclManager.getIndex(), entity.getIndexType(), entity.getId().toString())
+        UpdateRequestBuilder request = esClient.prepareUpdate(esAclManager.getIndex(), entity.getEsType(), entity.getId().toString())
                 .setDoc(builder);
         if (entity.getRouting() != null) {
             request.setRouting(entity.getRouting());

@@ -7,6 +7,8 @@ import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichment;
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.google.common.collect.Iterables;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -23,6 +25,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -76,6 +79,8 @@ public class Study extends SecureEntity {
 
     @OneToMany(mappedBy = "study", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<CandidateGeneListEnrichment> candidateGeneListEnrichments = new ArrayList<CandidateGeneListEnrichment>();
+
+    public static final String ES_TYPE = "study";
 
 
     public Set<Trait> getTraits() {
@@ -186,14 +191,53 @@ public class Study extends SecureEntity {
         return modified;
     }
 
+
     @Override
-    public String getIndexType() {
-        return "study";
+    public XContentBuilder getXContent(XContentBuilder builder) throws IOException {
+        if (builder == null)
+            builder = XContentFactory.jsonBuilder();
+        builder.startObject()
+                .field("name", this.getName())
+                .field("published", this.getPublished())
+                .field("modified", this.getModified())
+                .field("created", this.getCreated())
+                .field("producer", this.getProducer())
+                .field("study_date", this.getStudyDate())
+                .startObject("phenotype")
+                .field("name", this.getPhenotype().getLocalTraitName())
+                .field("id", this.getPhenotype().getId())
+                .endObject()
+                .startObject("experiment")
+                .field("name", this.getPhenotype().getExperiment().getName())
+                .field("id", this.getPhenotype().getExperiment().getId())
+                .endObject();
+
+        if (this.getProtocol() != null) {
+            builder.startObject("protocol")
+                    .field("analysis_method", this.getProtocol().getAnalysisMethod()).endObject();
+        }
+
+        if (this.getAlleleAssay() != null) {
+            builder.startObject("allele_assay");
+            this.getAlleleAssay().getXContent(builder);
+            builder.endObject();
+        }
+        return builder;
+    }
+
+    @Override
+    public String getEsType() {
+        return ES_TYPE;
     }
 
     @Override
     public String getRouting() {
         return getPhenotype().getExperiment().getId().toString();
+    }
+
+    @Override
+    public String getParentId() {
+        return getPhenotype().getId().toString();
     }
 
     public List<CandidateGeneListEnrichment> getCandidateGeneListEnrichments() {
