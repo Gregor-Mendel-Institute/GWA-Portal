@@ -85,7 +85,20 @@ public class EsAclManager {
         }
     };
 
-    public FilterBuilder getAclFilterForPermissions(List<String> permissions, boolean noPublic) {
+
+    public FilterBuilder getAclFilterForPermissions(List<String> permissions,String aclField) {
+         return getAclFilterForPermissions(permissions,aclField,false);
+    }
+
+    public FilterBuilder getAclFilterForPermissions(List<String> permissions,boolean noPublic) {
+        return getAclFilterForPermissions(permissions,"acl",false);
+    }
+
+
+    public FilterBuilder getAclFilterForPermissions(List<String> permissions) {
+        return getAclFilterForPermissions(permissions,"acl",false);
+    }
+    public FilterBuilder getAclFilterForPermissions(List<String> permissions, String aclField,boolean noPublic) {
         FluentIterable<Sid> sids = FluentIterable.from(SecurityUtil.getSids(roleHierarchy));
         // don't include public ones
         if (noPublic)
@@ -94,9 +107,9 @@ public class EsAclManager {
         List<AclSid> aclSids = aclSidRepository.findAllBySidIn(stringSids);
         List<String> aclSidsToCheck = Lists.transform(aclSids, aclSid2String);
         BoolFilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.nestedFilter(
-                "acl", FilterBuilders.boolFilter().must(
-                        FilterBuilders.boolFilter().must(FilterBuilders.termsFilter("acl.id", aclSidsToCheck),
-                                FilterBuilders.termsFilter("acl.permissions", permissions)))));
+                aclField, FilterBuilders.boolFilter().must(
+                        FilterBuilders.boolFilter().must(FilterBuilders.termsFilter(aclField+".id", aclSidsToCheck),
+                                FilterBuilders.termsFilter(aclField+".permissions", permissions)))));
         return filter;
     }
 
@@ -128,39 +141,6 @@ public class EsAclManager {
         return filterBuilder;
     }
 
-
-
-
-    public FilterBuilder getAclFilter(List<String> permission) {
-        return getAclFilter(permission, false, false);
-    }
-
-    public FilterBuilder getAclFilter(List<String> permissions, boolean isPersonal, boolean isPublic) {
-        return getAclFilter(permissions, "acl", isPersonal, isPublic);
-    }
-
-    public FilterBuilder getAclFilter(List<String> permissions, String aclField, boolean isPersonal, boolean isPublic) {
-
-        List<Sid> sids = SecurityUtil.getSids(roleHierarchy);
-        List<AclSid> aclSids = aclSidRepository.findAllBySidIn(Lists.transform(sids, SecurityUtil.sid2String));
-        List<String> aclSidsToCheck = Lists.transform(aclSids, aclSid2String);
-        BoolFilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.nestedFilter(
-                aclField, FilterBuilders.boolFilter().must(
-                FilterBuilders.boolFilter().must(FilterBuilders.termsFilter(aclField + ".id", aclSidsToCheck),
-                        FilterBuilders.termsFilter(aclField + ".permissions", permissions)))));
-
-        if (isPersonal) {
-            filter.must(FilterBuilders.termsFilter("owner.id", aclSidsToCheck));
-        }
-        if (isPublic) {
-
-            filter.must(FilterBuilders.nestedFilter(
-                    "acl", FilterBuilders.boolFilter().must(
-                            FilterBuilders.boolFilter().must(FilterBuilders.termsFilter("acl.id", publicAclSidId.toString()),
-                            FilterBuilders.termsFilter(aclField + ".permissions", permissions)))));
-        }
-        return filter;
-    }
 
     public FilterBuilder getOwnerFilter(List<Long> ids) {
         return FilterBuilders.termsFilter("owner.sid", ids);

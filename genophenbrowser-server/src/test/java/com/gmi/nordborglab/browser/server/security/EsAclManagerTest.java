@@ -31,7 +31,7 @@ public class EsAclManagerTest extends BaseTest {
     @Test
     public void testGetAclFilter() {
         SecurityUtils.setAnonymousUser();
-        FilterBuilder filter = esAclManager.getAclFilter(Lists.newArrayList("read"));
+        FilterBuilder filter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
         assertNotNull(filter);
         String filterJson = "";
         XContentBuilder builder = null;

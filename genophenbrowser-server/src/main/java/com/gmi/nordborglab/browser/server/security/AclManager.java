@@ -117,8 +117,11 @@ public class AclManager {
         Long sidId = null;
         if (sid instanceof GrantedAuthoritySid) {
             AppUser user = new AppUser();
+            /* Required because otherwise @NotNull in AppUser will throw Constraintviolation */
             user.setFirstname("Admin");
-            user.setLastname("");
+            user.setLastname("User");
+            user.setUsername("admin@gwas.gmi.oeaw.ac.at");
+            user.setEmail("admin@gwas.gmi.oeaw.ac.at");
             return user;
         } else if (sid instanceof PrincipalSid) {
             try {

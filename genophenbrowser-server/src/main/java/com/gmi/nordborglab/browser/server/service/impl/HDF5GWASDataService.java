@@ -30,7 +30,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -89,9 +88,6 @@ public class HDF5GWASDataService implements GWASDataService {
 
     @Resource(name = "ES")
     protected AnnotationDataService annotationDataService;
-
-    @Resource
-    private Client client;
 
     @Resource
     protected EsSearcher esSearcher;
@@ -167,7 +163,7 @@ public class HDF5GWASDataService implements GWASDataService {
 
     @Override
     public GWASResultPage findAllGWASResults(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        SearchResponse response = esSearcher.search(filter, true, new String[]{"name", "name.partial", "comments", "type", "owner.name"}, searchString, "gwasviewer", start, size);
+        SearchResponse response = esSearcher.search(filter, null, true, new String[]{"name", "name.partial", "comments", "type", "owner.name"}, searchString, "gwasviewer", start, size);
         Iterable<Long> idsToFetch = EsSearcher.getIdsFromResponse(response);
         List<GWASResult> results = gwasResultRepository.findAll(idsToFetch);
         Iterable<GWASResult> gwasResultsFiltered = aclManager.filterByAcl(results, Lists.newArrayList(CustomPermission.READ));

@@ -11,6 +11,7 @@ import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.errai.ClientComService;
+import com.gmi.nordborglab.browser.server.es.EsIndexer;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
@@ -28,10 +29,8 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.elasticsearch.action.update.UpdateRequestBuilder;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.AccessControlEntryImpl;
 import org.springframework.security.acls.domain.AclImpl;
@@ -61,6 +60,8 @@ public class PermissionServiceImpl implements PermissionService {
 
     public static final String GRAVATAR_URL = "http://www.gravatar.com/avatar/";
 
+    private static final Logger logger = LoggerFactory.getLogger(PermissionServiceImpl.class);
+
     @Resource
     protected MutableAclService aclService;
 
@@ -71,7 +72,7 @@ public class PermissionServiceImpl implements PermissionService {
     protected UserNotificationRepository userNotificationRepository;
 
     @Resource
-    protected Client client;
+    protected EsIndexer esIndexer;
 
     @Resource
     protected TraitUomRepository traitUomRepository;
@@ -188,24 +189,10 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     private void indexEntityPermissions(SecureEntity entity) {
-        if (entity.getIndexType() == null)
-            return;
         try {
-            XContentBuilder builder = XContentFactory.jsonBuilder();
-
-            builder.startObject();
-            esAclManager.addACLAndOwnerContent(builder, aclManager.getAcl(entity));
-            builder.endObject();
-            UpdateRequestBuilder request = client.prepareUpdate(esAclManager.getIndex(), entity.getIndexType(), entity.getId().toString())
-                    .setDoc(builder);
-            if (entity.getRouting() != null) {
-                request.setRouting(entity.getRouting());
-            }
-            request.execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            esIndexer.updateSecureEntityPermission(entity);
+        } catch (IOException ex) {
+            logger.error("Error updating the permission of entity", ex);
         }
     }
 
