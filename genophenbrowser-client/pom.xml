@@ -59,6 +59,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.arcbees.analytics</groupId>
+            <artifactId>universal-analytics</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
             <scope>provided</scope>
