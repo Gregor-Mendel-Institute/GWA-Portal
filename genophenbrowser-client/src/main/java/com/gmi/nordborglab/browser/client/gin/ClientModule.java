@@ -4,6 +4,7 @@ import at.gmi.nordborglab.widgets.geneviewer.client.datasource.DataSource;
 import at.gmi.nordborglab.widgets.geneviewer.client.datasource.LocalStorageImpl;
 import at.gmi.nordborglab.widgets.geneviewer.client.datasource.LocalStorageImpl.TYPE;
 import at.gmi.nordborglab.widgets.geneviewer.client.datasource.impl.JBrowseCacheDataSourceImpl;
+import com.arcbees.analytics.client.AnalyticsModule;
 import com.eemi.gwt.tour.client.Placement;
 import com.eemi.gwt.tour.client.Tour;
 import com.eemi.gwt.tour.client.TourStep;
@@ -19,6 +20,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.Candidate
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FilterItemPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.TextBoxFilterItemPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListEnrichmentPresenterWidgetView;
+import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsNavigationTracker;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
@@ -41,11 +43,9 @@ import com.gwtplatform.dispatch.client.actionhandler.caching.Cache;
 import com.gwtplatform.dispatch.client.actionhandler.caching.DefaultCacheImpl;
 import com.gwtplatform.mvp.client.annotations.DefaultPlace;
 import com.gwtplatform.mvp.client.annotations.ErrorPlace;
-import com.gwtplatform.mvp.client.annotations.GaAccount;
 import com.gwtplatform.mvp.client.annotations.UnauthorizedPlace;
 import com.gwtplatform.mvp.client.gin.AbstractPresenterModule;
 import com.gwtplatform.mvp.client.gin.DefaultModule;
-import com.gwtplatform.mvp.client.googleanalytics.GoogleAnalyticsNavigationTracker;
 import com.gwtplatform.mvp.client.proxy.DefaultPlaceManager;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
@@ -63,20 +63,19 @@ public class ClientModule extends AbstractPresenterModule {
 
     @Override
     protected void configure() {
-        install(new DefaultModule(DefaultPlaceManager.class, RouteTokenFormatter.class));
+        install(new DefaultModule.Builder().placeManager(DefaultPlaceManager.class).tokenFormatter(RouteTokenFormatter.class).build());
         install(new ClientDispatchModule());
         install(new GinFactoryModuleBuilder().build(AssistedInjectionFactory.class));
         install(new ApplicationModule());
+        install(new AnalyticsModule.Builder("UA-26150757-2").build());
 
         bind(ResourceLoader.class).asEagerSingleton();
+        bind(GoogleAnalyticsNavigationTracker.class).asEagerSingleton();
         bind(IsLoggedInGatekeeper.class).in(Singleton.class);
 
         bindConstant().annotatedWith(DefaultPlace.class).to(NameTokens.home);
         bindConstant().annotatedWith(ErrorPlace.class).to(NameTokens.home);
         bindConstant().annotatedWith(UnauthorizedPlace.class).to(NameTokens.home);
-        bindConstant().annotatedWith(GaAccount.class).to("UA-26150757-2");
-
-        bind(GoogleAnalyticsNavigationTracker.class).asEagerSingleton();
 
         bind(CurrentUser.class).asEagerSingleton();
         bind(ClientValidation.class).in(Singleton.class);

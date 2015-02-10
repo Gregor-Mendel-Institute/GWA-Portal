@@ -28,6 +28,7 @@
     <inherits name='com.eemi.gwt.tour.GwtTourScriptLoader'/>
     <inherits name='com.gwtplatform.mvp.MvpWithEntryPoint'/>
     <inherits name='org.gwtsupercsv.GWTSuperCSV'/>
+    <inherits name="com.arcbees.analytics.Analytics"/>
     <!-- Other module inherits                                      -->
 
     <!-- Specify the paths for translatable code                    -->
