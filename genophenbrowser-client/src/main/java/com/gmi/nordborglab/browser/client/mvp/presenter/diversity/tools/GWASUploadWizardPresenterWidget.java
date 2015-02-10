@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools;
 
+import com.arcbees.analytics.shared.Analytics;
 import com.gmi.nordborglab.browser.client.events.GWASUploadedEvent;
 import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
@@ -23,6 +24,7 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
 
     private boolean multipleUpload = true;
     private String restURL = "provider/gwas/upload";
+    private final Analytics analytics;
 
     public boolean isMultipleUpload() {
         return multipleUpload;
@@ -36,8 +38,9 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
     }
 
     @Inject
-    public GWASUploadWizardPresenterWidget(EventBus eventBus, MyView view) {
+    public GWASUploadWizardPresenterWidget(EventBus eventBus, MyView view, final Analytics analytics) {
         super(eventBus, view);
+        this.analytics = analytics;
         getView().setUiHandlers(this);
     }
 
@@ -48,20 +51,22 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
 
     @Override
     public void onUploadStart() {
+        analytics.startTimingEvent("GWAS", "Upload");
         fireEvent(new LoadingIndicatorEvent(true, "Uploading..."));
     }
 
     @Override
-    public void onUploadEnd(double duration) {
+    public void onUploadEnd() {
         fireEvent(new LoadingIndicatorEvent(false));
-
-        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Upload", "URL:" + this.restURL, (int) (duration)));
+        analytics.endTimingEvent("GWAS", "Upload").userTimingLabel("SUCESS").go();
+        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Upload", "URL:" + this.restURL));
     }
 
     @Override
-    public void onUploadError(String errorMessage, double duration) {
+    public void onUploadError(String errorMessage) {
         fireEvent(new LoadingIndicatorEvent(false));
-        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Error - Upload", "URL:" + this.restURL + ",Error:" + errorMessage, (int) (duration)));
+        analytics.endTimingEvent("GWAS", "Upload").userTimingLabel("ERROR").go();
+        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Error - Upload", "URL:" + this.restURL + ",Error:" + errorMessage));
     }
 
     public void setMultipleUpload(boolean multipleUpload) {

@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools;
 
+import com.arcbees.analytics.shared.Analytics;
 import com.gmi.nordborglab.browser.client.dispatch.CustomCallback;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataActionResult;
@@ -8,7 +9,6 @@ import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.SelectSNPEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASPlotUiHandlers;
-import com.google.gwt.core.client.Duration;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.dispatch.rpc.shared.DispatchAsync;
@@ -34,12 +34,15 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
     private Long id;
     private GetGWASDataAction.TYPE type;
     private final DispatchAsync dispatch;
+    private final Analytics analytics;
 
     @Inject
-    public GWASPlotPresenterWidget(EventBus eventBus, MyView view, final DispatchAsync dispatch) {
+    public GWASPlotPresenterWidget(EventBus eventBus, MyView view, final DispatchAsync dispatch, final Analytics analytics) {
         super(eventBus, view);
         this.dispatch = dispatch;
+        this.analytics = analytics;
         getView().setUiHandlers(this);
+
     }
 
 
@@ -50,19 +53,21 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
     }
 
     private void loadDataFromServer() {
-        final Duration duration = new Duration();
+        analytics.startTimingEvent("GWAS", "View");
         dispatch.execute(new GetGWASDataAction(id, type), new CustomCallback<GetGWASDataActionResult>(getEventBus()) {
 
             @Override
             public void onSuccess(GetGWASDataActionResult result) {
                 getView().drawGWASPlots(result.getResultData());
                 LoadingIndicatorEvent.fire(this, false);
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Display", "Type:" + type + ",ID:" + id, (int) (duration.elapsedMillis())));
+                analytics.endTimingEvent("GWAS", "View").userTimingLabel("SUCCESS").go();
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Display", "Type:" + type + ",ID:" + id));
             }
 
             @Override
             public void onFailure(Throwable caught) {
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Error - Display", "Type:" + type + ",ID:" + id + ",Error:" + caught.getMessage(), (int) (duration.elapsedMillis())));
+                analytics.endTimingEvent("GWAS", "View").userTimingLabel("ERROR").go();
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Error - Display", "Type:" + type + ",ID:" + id + ",Error:" + caught.getMessage()));
                 //FIXME fix backend to not show HTML error page
                 //super.onFailure(caught);
             }

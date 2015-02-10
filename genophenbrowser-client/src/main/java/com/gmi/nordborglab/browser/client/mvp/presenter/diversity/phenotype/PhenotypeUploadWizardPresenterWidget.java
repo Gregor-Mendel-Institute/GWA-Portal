@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype;
 
+import com.arcbees.analytics.shared.Analytics;
 import com.gmi.nordborglab.browser.client.dto.MyFactory;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
@@ -30,7 +31,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Multiset;
-import com.google.gwt.core.client.Duration;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -114,6 +114,7 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
     protected ExperimentManager experimentManager;
     protected ExperimentRequest ctx;
     private final Validator validator;
+    private final Analytics analytics;
     private AutoBean<ExperimentUploadDataProxy> receivedBean;
 
 
@@ -121,11 +122,13 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
     public PhenotypeUploadWizardPresenterWidget(EventBus eventBus, MyView view,
                                                 final CurrentUser currentUser,
                                                 final MyFactory appDataFactory,
-                                                final ExperimentManager experimentManager) {
+                                                final ExperimentManager experimentManager,
+                                                final Analytics analytics) {
         super(eventBus, view);
         validator = Validation.buildDefaultValidatorFactory().getValidator();
         getView().setUiHandlers(this);
         this.currentUser = currentUser;
+        this.analytics = analytics;
         this.appDataFactory = appDataFactory;
         this.experimentManager = experimentManager;
 
@@ -235,7 +238,12 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
         getView().getDriver().edit(data, ctx);
         ///TODO Fix this better.
         List<String> paths = ImmutableList.<String>builder().addAll(Arrays.asList(getView().getDriver().getPaths())).build();
-        final Duration duration = new Duration();
+        if (isIsaTabUpload()) {
+            analytics.startTimingEvent("Phenotype", "ISATAB-Upload");
+        }
+        else {
+            analytics.startTimingEvent("Phenotype", "Upload");
+        }
         ctx.saveExperimentUploadData(data).with(paths.toArray(new String[0])).to(new Receiver<ExperimentProxy>() {
             @Override
             public void onSuccess(ExperimentProxy response) {
@@ -243,10 +251,13 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
                 // fire from source so we can distinguish in BasicStudyWizardPresenter
                 getEventBus().fireEventFromSource(new PhenotypeUploadedEvent(response), PhenotypeUploadWizardPresenterWidget.this);
                 // isatab upload
+
                 if (isIsaTabUpload()) {
-                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Upload - ISATAB", "Experiment:" + response.getName(), (int) duration.elapsedMillis()));
+                    analytics.endTimingEvent("Phenotype","ISATAB-Upload").userTimingLabel("OK").go();
+                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Upload - ISATAB", "Experiment:" + response.getName()));
                 } else {
-                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Upload", "Experiment:" + response.getName(), (int) duration.elapsedMillis()));
+                    analytics.endTimingEvent("Phenotype","Upload").userTimingLabel("OK").go();
+                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Upload", "Experiment:" + response.getName()));
                 }
 
             }
@@ -257,9 +268,11 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
                 DisplayNotificationEvent.fireError(PhenotypeUploadWizardPresenterWidget.this, "Error", "Failed to save data");
                 onEdit();
                 if (isIsaTabUpload()) {
-                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Error - Upload - ISATAB", "Error:" + message.getMessage(), (int) duration.elapsedMillis()));
+                    analytics.endTimingEvent("Phenotype","ISATAB-Upload").userTimingLabel("ERROR").go();
+                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Error - Upload - ISATAB", "Error:" + message.getMessage()));
                 } else {
-                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Error - Upload - ISATAB", "Error:" + message.getMessage(), (int) duration.elapsedMillis()));
+                    analytics.endTimingEvent("Phenotype","Upload").userTimingLabel("ERROR").go();
+                    GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Error - Upload - ISATAB", "Error:" + message.getMessage()));
                 }
             }
 

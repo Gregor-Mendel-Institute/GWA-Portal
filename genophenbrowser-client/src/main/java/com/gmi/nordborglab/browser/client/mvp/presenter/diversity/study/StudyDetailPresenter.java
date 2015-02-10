@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study;
 
+import com.arcbees.analytics.shared.Analytics;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.GWASUploadedEvent;
@@ -25,7 +26,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
-import com.google.gwt.core.client.Duration;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -89,6 +89,7 @@ public class StudyDetailPresenter extends
     protected final Receiver<StudyProxy> receiver;
     protected final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget;
     private final Validator validator;
+    private final Analytics analytics;
 
     public static final Object TYPE_SetGWASUploadContent = new Object();
 
@@ -110,9 +111,11 @@ public class StudyDetailPresenter extends
     public StudyDetailPresenter(final EventBus eventBus, final MyView view,
                                 final MyProxy proxy, final PlaceManager placeManager,
                                 final CdvManager cdvManager, final CurrentUser currentUser,
-                                final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget, Validator validator) {
+                                final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget, Validator validator,
+                                final Analytics analytics) {
         super(eventBus, view, proxy, StudyTabPresenter.TYPE_SetTabContent);
         this.validator = validator;
+        this.analytics = analytics;
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
         this.gwasUploadWizardPresenterWidget = gwasUploadWizardPresenterWidget;
@@ -315,7 +318,7 @@ public class StudyDetailPresenter extends
     public void onStartAnalysis() {
         if (study.getJob() != null)
             return;
-        final Duration duration = new Duration();
+        analytics.startTimingEvent("StudyJob", "Start");
         cdvManager.createStudyJob(new Receiver<StudyProxy>() {
 
             @Override
@@ -323,12 +326,14 @@ public class StudyDetailPresenter extends
                 study = response;
                 getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
                 StudyModifiedEvent.fire(getEventBus(), response);
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Start", "Study:" + study.getId().toString(), (int) duration.elapsedMillis()));
+                analytics.endTimingEvent("StudyJob", "Start").userTimingLabel("OK").go();
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Start", "Study:" + study.getId().toString()));
             }
 
             @Override
             public void onFailure(ServerFailure error) {
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Start", "Study:" + study.getId().toString() + ", Error" + error.getMessage(), (int) duration.elapsedMillis()));
+                analytics.endTimingEvent("StudyJob", "Start").userTimingLabel("ERROR").go();
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Start", "Study:" + study.getId().toString() + ", Error" + error.getMessage()));
             }
         }, study.getId());
     }
@@ -368,7 +373,7 @@ public class StudyDetailPresenter extends
     public void onDeleteJob() {
         if (study.getJob() == null)
             return;
-        final Duration duration = new Duration();
+        analytics.startTimingEvent("StudyJob", "Delete");
         cdvManager.deleteStudyJob(new Receiver<StudyProxy>() {
 
             @Override
@@ -376,12 +381,14 @@ public class StudyDetailPresenter extends
                 study = response;
                 getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
                 StudyModifiedEvent.fire(getEventBus(), response);
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Delete", "Study:" + study.getId().toString(), (int) duration.elapsedMillis()));
+                analytics.endTimingEvent("StudyJob", "Delete").userTimingLabel("OK").go();
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Delete", "Study:" + study.getId().toString()));
             }
 
             @Override
             public void onFailure(ServerFailure error) {
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Delete", "Study:" + study.getId().toString() + ", Error" + error.getMessage(), (int) duration.elapsedMillis()));
+                analytics.endTimingEvent("StudyJob", "Delete").userTimingLabel("ERROR").go();
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Delete", "Study:" + study.getId().toString() + ", Error" + error.getMessage()));
             }
         }, study.getId());
     }
@@ -391,7 +398,7 @@ public class StudyDetailPresenter extends
         if (study.getJob() == null || !study.getJob().getStatus().equalsIgnoreCase("Error")) {
             return;
         }
-        final Duration duration = new Duration();
+        analytics.startTimingEvent("StudyJob", "Rerun");
         cdvManager.rerunAnalysis(new Receiver<StudyProxy>() {
 
             @Override
@@ -399,12 +406,14 @@ public class StudyDetailPresenter extends
                 study = response;
                 getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
                 StudyModifiedEvent.fire(getEventBus(), response);
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Rerun", "Study:" + study.getId().toString(), (int) duration.elapsedMillis()));
+                analytics.endTimingEvent("StudyJob", "Rerun").userTimingLabel("OK").go();
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Rerun", "Study:" + study.getId().toString()));
             }
 
             @Override
             public void onFailure(ServerFailure error) {
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Rerun", "Study:" + study.getId().toString() + ", Error" + error.getMessage(), (int) duration.elapsedMillis()));
+                analytics.endTimingEvent("StudyJob", "Rerun").userTimingLabel("ERROR").go();
+                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Rerun", "Study:" + study.getId().toString() + ", Error" + error.getMessage()));
             }
         }, study.getId());
     }

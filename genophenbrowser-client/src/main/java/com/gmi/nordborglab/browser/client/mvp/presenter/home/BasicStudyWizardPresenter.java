@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.home;
 
+import com.arcbees.analytics.shared.Analytics;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
@@ -41,7 +42,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.gwt.core.client.Duration;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
@@ -225,6 +225,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     private Long phenotypeId = null;
     private ExperimentProxy newExperiment;
     private final Validator validator;
+    private final Analytics analytics;
 
 
     private static class WizardStateIterator implements ListIterator<STATE> {
@@ -307,9 +308,11 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                                      final HelperManager helperManager,
                                      final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizard,
                                      final PhenotypeUploadWizardPresenterWidget isaTabUploadWizard,
-                                     Validator validator) {
+                                     Validator validator,
+                                     final Analytics analytics) {
         super(eventBus, view, proxy, MainPagePresenter.TYPE_SetMainContent);
         this.currentUser = currentUser;
+        this.analytics = analytics;
         this.validator = validator;
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
@@ -619,12 +622,13 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     study.setJob(studyJob);
                 }
                 fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
-                final Duration duration = new Duration();
+                analytics.startTimingEvent("Study", "Create");
                 ctx.saveStudy(study).fire(new Receiver<StudyProxy>() {
                     @Override
                     public void onSuccess(StudyProxy response) {
                         fireEvent(new LoadingIndicatorEvent(false));
-                        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Study", "Create", "Study:" + response.getId().toString(), (int) duration.elapsedMillis()));
+                        analytics.endTimingEvent("StudyJob", "Create").userTimingLabel("OK").go();
+                        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Study", "Create", "Study:" + response.getId().toString()));
                         PlaceRequest placeRequest = new PlaceRequest.Builder()
                                 .nameToken(NameTokens.study)
                                 .with("id", response.getId().toString()).build();
@@ -637,8 +641,9 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     @Override
                     public void onFailure(ServerFailure error) {
                         fireEvent(new LoadingIndicatorEvent(false));
+                        analytics.endTimingEvent("StudyJob", "Create").userTimingLabel("ERROR").go();
                         fireEvent(new DisplayNotificationEvent("Error", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, DisplayNotificationEvent.DURATION_NORMAL));
-                        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Study", "Error - Create", "Error:" + error.getMessage(), (int) duration.elapsedMillis()));
+                        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Study", "Error - Create", "Error:" + error.getMessage()));
                     }
                 });
                 break;
