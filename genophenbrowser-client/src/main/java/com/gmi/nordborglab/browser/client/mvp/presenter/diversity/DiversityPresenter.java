@@ -132,7 +132,6 @@ public class DiversityPresenter extends
             subItem = null;
             getView().setActiveMenuItem(MENU_ITEM.EXPERIMENT, request);
         } else if (request.matchesNameToken(NameTokens.phenotype)
-                || request.matchesNameToken(NameTokens.obsunit)
                 || request.matchesNameToken(NameTokens.studylist)
                 || request.matchesNameToken(NameTokens.phenotypeEnrichments)
                 ) {

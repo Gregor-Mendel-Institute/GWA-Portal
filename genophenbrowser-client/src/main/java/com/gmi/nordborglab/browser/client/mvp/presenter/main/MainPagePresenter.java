@@ -134,7 +134,6 @@ public class MainPagePresenter extends
                 request.matchesNameToken(NameTokens.experiments) ||
                 request.matchesNameToken(NameTokens.phenotypes) ||
                 request.matchesNameToken(NameTokens.phenotype) ||
-                request.matchesNameToken(NameTokens.obsunit) ||
                 request.matchesNameToken(NameTokens.studylist) ||
                 request.matchesNameToken(NameTokens.study) ||
                 request.matchesNameToken(NameTokens.studygwas) ||
