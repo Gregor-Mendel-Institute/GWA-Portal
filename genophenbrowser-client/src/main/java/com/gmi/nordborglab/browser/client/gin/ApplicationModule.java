@@ -13,7 +13,6 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.Candidate
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisGenePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.MetaAnalysisTopResultsPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.ontology.TraitOntologyPresenter;
-import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.ObsUnitPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeCandidateGeneListEnrichmentPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeDetailTabPresenter;
@@ -65,7 +64,6 @@ import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneL
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.MetaAnalysisGeneView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.MetaAnalysisTopResultsView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.ontology.TraitOntologyView;
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.ObsUnitView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeDetailTabView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.phenotype.PhenotypeOverviewView;
@@ -163,9 +161,6 @@ public class ApplicationModule extends AbstractPresenterModule {
                 PhenotypeDetailPresenter.MyView.class,
                 PhenotypeDetailView.class,
                 PhenotypeDetailPresenter.MyProxy.class);
-
-        bindPresenter(ObsUnitPresenter.class, ObsUnitPresenter.MyView.class,
-                ObsUnitView.class, ObsUnitPresenter.MyProxy.class);
 
         bindPresenter(StudyListPresenter.class,
                 StudyListPresenter.MyView.class, StudyListView.class,
