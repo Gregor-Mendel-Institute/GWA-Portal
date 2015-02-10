@@ -70,8 +70,11 @@ public class EsAclManager {
                 .maximumSize(10000)
                 .build(new CacheLoader<Sid, Long>() {
                     @Override
-                    public Long load(Sid sid) throws Exception {
-                        return aclSidRepository.findBySid(SecurityUtil.sid2String.apply(sid)).getId();
+                    public Long load(Sid sid) {
+                        AclSid aclSid = aclSidRepository.findBySid(SecurityUtil.sid2String.apply(sid));
+                        if (aclSid == null)
+                            return 0L;
+                        return aclSid.getId();
                     }
                 });
     }
@@ -96,7 +99,7 @@ public class EsAclManager {
 
 
     public FilterBuilder getAclFilterForPermissions(List<String> permissions) {
-        return getAclFilterForPermissions(permissions,"acl",false);
+        return getAclFilterForPermissions(permissions, "acl", false);
     }
     public FilterBuilder getAclFilterForPermissions(List<String> permissions, String aclField,boolean noPublic) {
         FluentIterable<Sid> sids = FluentIterable.from(SecurityUtil.getSids(roleHierarchy));
