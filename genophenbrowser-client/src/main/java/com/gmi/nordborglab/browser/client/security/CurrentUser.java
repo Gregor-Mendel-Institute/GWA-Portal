@@ -50,7 +50,11 @@ public class CurrentUser {
 
     public void setAppUser(AppUserProxy appuser) {
         this.appUser = appuser;
-        initComChanel();
+        if (appUser != null) {
+            initComChanel();
+        } else {
+            closeComChanel();
+        }
     }
 
     public int getUserId() {
