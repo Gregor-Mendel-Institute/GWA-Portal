@@ -1,32 +1,24 @@
 package com.gmi.nordborglab.browser.client.mvp.view.main;
 
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.UserListUiHandler;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.UserListPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.NumberedPager;
 import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
-import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
-import com.gmi.nordborglab.browser.shared.util.ConstEnums;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
@@ -34,7 +26,6 @@ import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,22 +43,13 @@ public class UserListView extends ViewWithUiHandlers<UserListUiHandler> implemen
     DataGrid<AppUserProxy> table;
 
 
-    @UiField
-    NavLink navAll;
-    @UiField
-    NavLink navAdmins;
-    @UiField
-    NavLink navUsers;
-    @UiField
-    TextBox searchBox;
-
-
     private final Widget widget;
     private final PlaceManager placeManager;
-    private final BiMap<ConstEnums.USER_FILTER, NavLink> navLinkMap;
     private final AvatarNameCell avatarNameCell;
     @UiField
     NumberedPager pager;
+    @UiField
+    SimplePanel facetContainer;
 
 
     @Inject
@@ -76,10 +58,6 @@ public class UserListView extends ViewWithUiHandlers<UserListUiHandler> implemen
         this.avatarNameCell = avatarNameCell;
         table = new DataGrid<AppUserProxy>(15, dataGridResources);
         widget = binder.createAndBindUi(this);
-        navLinkMap = ImmutableBiMap.<ConstEnums.USER_FILTER, NavLink>builder()
-                .put(ConstEnums.USER_FILTER.ALL, navAll)
-                .put(ConstEnums.USER_FILTER.ADMIN, navAdmins)
-                .put(ConstEnums.USER_FILTER.USER, navUsers).build();
         initDataGrid();
         pager.setDisplay(table);
         this.placeManager = placeManager;
@@ -132,51 +110,16 @@ public class UserListView extends ViewWithUiHandlers<UserListUiHandler> implemen
     }
 
     @Override
+    public void setInSlot(Object slot, IsWidget content) {
+        if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
+            facetContainer.setWidget(content);
+        } else {
+            super.setInSlot(slot, content);
+        }
+    }
+
+    @Override
     public HasData<AppUserProxy> getDisplay() {
         return table;
-    }
-
-    @Override
-    public void setActiveNavLink(ConstEnums.USER_FILTER filter) {
-        for (NavLink link : navLinkMap.values()) {
-            link.setActive(false);
-        }
-        navLinkMap.get(filter).setActive(true);
-    }
-
-    @Override
-    public void displayFacets(List<FacetProxy> facets) {
-        if (facets == null)
-            return;
-        for (FacetProxy facet : facets) {
-            ConstEnums.USER_FILTER type = ConstEnums.USER_FILTER.valueOf(facet.getName());
-            String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
-            navLinkMap.get(type).setText(newTitle);
-        }
-    }
-
-    private String getFilterTitleFromType(ConstEnums.USER_FILTER filter) {
-        switch (filter) {
-            case ALL:
-                return "All";
-            case ADMIN:
-                return "Admins";
-            case USER:
-                return "Users";
-        }
-        return "";
-    }
-
-    @UiHandler({"navAll", "navAdmins", "navUsers"})
-    public void onNavClick(ClickEvent e) {
-        IconAnchor iconAnchor = (IconAnchor) e.getSource();
-        getUiHandlers().selectFilter(navLinkMap.inverse().get(iconAnchor.getParent()));
-    }
-
-    @UiHandler("searchBox")
-    public void onKeyUpSearchBox(KeyUpEvent e) {
-        if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER || searchBox.getValue().equalsIgnoreCase("")) {
-            getUiHandlers().updateSearchString(searchBox.getValue());
-        }
     }
 }

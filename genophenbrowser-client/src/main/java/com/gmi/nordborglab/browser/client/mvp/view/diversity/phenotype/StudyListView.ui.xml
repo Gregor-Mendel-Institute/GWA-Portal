@@ -11,48 +11,22 @@
 
     <ui:with field="mainRes" type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
     <ui:style>
-        .actionRow {
-            float: right;
-            padding: 19px 19px;
-        }
-
-        .searchBox {
-            display: inline-block;
-            margin-top: 20px;
-            margin-right: 20px;
-        }
-
-        .navPills {
-            margin-top: 20px;
-            margin-left: 0.5em;
-        }
 
         .newAnalysisBtn {
             margin-top: 20px;
             margin-right: 10px;
+            float: right;
         }
 
     </ui:style>
 
     <g:LayoutPanel>
         <g:layer top="5px" left="0" right="0" height="5em">
-            <g:HTMLPanel>
-                <div style="float:right;">
-                    <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
-                        <b:TextBox ui:field="searchBox" placeholder="Search..."></b:TextBox>
-                    </b:InputAddOn>
-                    <b:Button ui:field="newAnalysisBtn" icon="PLUS_SIGN" text="New analysis"
-                              addStyleNames="{style.newAnalysisBtn}" type="DANGER"/>
-                </div>
-                <div style="float:left;">
-                    <b:NavPills addStyleNames="{style.navPills}">
-                        <b:NavLink ui:field="navAll" active="true">All</b:NavLink>
-                        <b:NavLink ui:field="navPrivate">My studies</b:NavLink>
-                        <b:NavLink ui:field="navPublished">Published</b:NavLink>
-                        <b:NavLink ui:field="navRecent">Recent</b:NavLink>
-                    </b:NavPills>
-                </div>
-            </g:HTMLPanel>
+            <g:FlowPanel>
+                <b:Button ui:field="newAnalysisBtn" icon="PLUS_SIGN" text="New analysis"
+                          addStyleNames="{style.newAnalysisBtn}" type="DANGER"/>
+                <g:SimplePanel ui:field="facetContainer"/>
+            </g:FlowPanel>
         </g:layer>
         <g:layer top="5em" left="0" right="0" bottom="30px">
             <c:DataGrid ui:field="dataGrid"/>

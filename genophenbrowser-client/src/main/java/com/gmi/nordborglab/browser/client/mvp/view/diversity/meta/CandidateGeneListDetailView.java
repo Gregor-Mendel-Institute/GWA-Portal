@@ -4,11 +4,9 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.FileUpload;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.ModalFooter;
-import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.Tooltip;
 import com.github.gwtbootstrap.client.ui.Typeahead;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
@@ -16,14 +14,13 @@ import com.gmi.nordborglab.browser.client.editors.CandidateGeneListDisplayEditor
 import com.gmi.nordborglab.browser.client.editors.CandidateGeneListEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CandidateGeneListDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListDetailPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.PhaseAnimation;
 import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
-import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
-import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
@@ -52,8 +49,8 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SuggestOracle;
-import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ProvidesKey;
@@ -129,14 +126,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     TextBox searchGeneTb;
     @UiField
     Button addGeneBtn;
-    @UiField
-    NavLink navProtein;
-    @UiField
-    NavLink navPseudo;
-    @UiField
-    NavLink navTransposon;
-    @UiField
-    NavLink navAll;
+
     @UiField
     Button shareBtn;
     @UiField
@@ -161,8 +151,9 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     SimpleLayoutPanel enrichmentContainer;
     @UiField
     HTMLPanel actionBarPanel;
+    @UiField
+    SimplePanel facetContainer;
     private int minCharSize = 3;
-    private final BiMap<ConstEnums.GENE_FILTER, NavLink> navLinkMap;
     private final CandidateGeneListDisplayDriver candidateGeneListDisplayDriver;
     private final CandidateGeneListView.CandidateGeneListEditDriver candidateGeneListEditDriver;
     private final BiMap<CandidateGeneListDetailPresenter.STATS, PieChart> stats2Chart;
@@ -233,11 +224,6 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
                 .put(CandidateGeneListDetailPresenter.STATS.CHR, chrPieChart)
                 .put(CandidateGeneListDetailPresenter.STATS.STRAND, strandPieChart)
                 .put(CandidateGeneListDetailPresenter.STATS.ANNOTATION, annotationPieChart).build();
-        navLinkMap = ImmutableBiMap.<ConstEnums.GENE_FILTER, NavLink>builder()
-                .put(ConstEnums.GENE_FILTER.ALL, navAll)
-                .put(ConstEnums.GENE_FILTER.PROTEIN, navProtein)
-                .put(ConstEnums.GENE_FILTER.PSEUDO, navPseudo)
-                .put(ConstEnums.GENE_FILTER.TRANSPOSON, navTransposon).build();
         this.candidateGeneListDisplayDriver.initialize(candidateGeneListDisplayEditor);
         this.candidateGeneListEditDriver.initialize(candidateGeneListEditEditor);
         initGeneDataGrid();
@@ -453,37 +439,6 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         }
     }
 
-    @Override
-    public void displayFacets(List<FacetProxy> facets) {
-        if (facets == null)
-            return;
-        for (FacetProxy facet : facets) {
-            ConstEnums.GENE_FILTER type = ConstEnums.GENE_FILTER.valueOf(facet.getName());
-            String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
-            navLinkMap.get(type).setText(newTitle);
-        }
-    }
-
-    private String getFilterTitleFromType(ConstEnums.GENE_FILTER filter) {
-        switch (filter) {
-            case ALL:
-                return "All";
-            case PROTEIN:
-                return "Protein";
-            case PSEUDO:
-                return "Pseudo";
-            case TRANSPOSON:
-                return "Transposon";
-        }
-        return "";
-    }
-
-    @UiHandler({"navAll", "navProtein", "navPseudo", "navTransposon"})
-    public void onNavClick(ClickEvent e) {
-        IconAnchor iconAnchor = (IconAnchor) e.getSource();
-        getUiHandlers().selectFilter(navLinkMap.inverse().get(iconAnchor.getParent()));
-    }
-
     @UiHandler("editBtn")
     public void onEdit(ClickEvent e) {
         getUiHandlers().onEdit();
@@ -513,6 +468,8 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
             permissionPopUp.add(content);
         } else if (slot == CandidateGeneListDetailPresenter.TYPE_SetEnrichmentCntent) {
             enrichmentContainer.add(content);
+        } else if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
+            facetContainer.setWidget(content);
         } else {
             super.setInSlot(slot, content);
         }
@@ -544,14 +501,6 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         deleteBtn.setVisible(show);
         addGeneBtn.setVisible(show);
         uploadBtn.setVisible(show);
-    }
-
-    @Override
-    public void setActiveNavLink(ConstEnums.GENE_FILTER filter) {
-        for (NavLink link : navLinkMap.values()) {
-            link.setActive(false);
-        }
-        navLinkMap.get(filter).setActive(true);
     }
 
     @Override

@@ -2,16 +2,17 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype;
 
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.FacetSearchChangeEvent;
 import com.gmi.nordborglab.browser.client.events.LoadPhenotypeEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.StudyModifiedEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.StudyListUiHandlers;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
-import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
@@ -33,11 +34,10 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class StudyListPresenter extends
         Presenter<StudyListPresenter.MyView, StudyListPresenter.MyProxy> implements StudyListUiHandlers {
@@ -48,24 +48,18 @@ public class StudyListPresenter extends
 
         void showAddBtn(boolean showAdd);
 
-        void setActiveNavLink(ConstEnums.TABLE_FILTER filter);
-
-        void displayFacets(List<FacetProxy> facets);
     }
-
     protected PhenotypeProxy phenotype;
+
     protected Long phenotypeId;
     protected boolean studiesLoaded = false;
     protected final PlaceManager placeManager;
     protected final PhenotypeManager phenotypeManager;
+    private final FacetSearchPresenterWidget facetSearchPresenterWidget;
     protected final CdvManager cdvManager;
     protected boolean fireLoadEvent = false;
     protected final AsyncDataProvider<StudyProxy> dataProvider;
     protected final CurrentUser currentUser;
-    private ConstEnums.TABLE_FILTER currentFilter = ConstEnums.TABLE_FILTER.ALL;
-    private String searchString = null;
-    private List<FacetProxy> facets;
-
 
     @ProxyCodeSplit
     @NameToken(NameTokens.studylist)
@@ -77,8 +71,11 @@ public class StudyListPresenter extends
     public StudyListPresenter(final EventBus eventBus, final MyView view,
                               final MyProxy proxy, final PlaceManager placeManager,
                               final PhenotypeManager phenotypeManager, final CdvManager cdvManager,
-                              final CurrentUser currentUser) {
+                              final CurrentUser currentUser, final
+                              FacetSearchPresenterWidget facetSearchPresenterWidget) {
         super(eventBus, view, proxy, PhenotypeDetailTabPresenter.TYPE_SetTabContent);
+        this.facetSearchPresenterWidget = facetSearchPresenterWidget;
+        facetSearchPresenterWidget.setDefaultFilter(ConstEnums.TABLE_FILTER.ALL.name());
         getView().setUiHandlers(this);
         this.currentUser = currentUser;
         this.placeManager = placeManager;
@@ -109,6 +106,7 @@ public class StudyListPresenter extends
     protected void onBind() {
         super.onBind();
         dataProvider.addDataDisplay(getView().getDisplay());
+        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
         registerHandler(StudyModifiedEvent.register(getEventBus(), new StudyModifiedEvent.Handler() {
             @Override
             public void onStudyModified(StudyModifiedEvent event) {
@@ -118,6 +116,13 @@ public class StudyListPresenter extends
                         break;
                     }
                 }
+            }
+        }));
+        registerHandler(getEventBus().addHandlerToSource(FacetSearchChangeEvent.TYPE, facetSearchPresenterWidget, new FacetSearchChangeEvent.Handler() {
+
+            @Override
+            public void onChanged(FacetSearchChangeEvent event) {
+                getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
             }
         }));
     }
@@ -131,22 +136,20 @@ public class StudyListPresenter extends
             if (!phenotypeIdToLoad.equals(phenotypeId)) {
                 phenotypeId = phenotypeIdToLoad;
                 studiesLoaded = false;
-                facets = null;
-                searchString = null;
             }
             if (studiesLoaded) {
                 getProxy().manualReveal(StudyListPresenter.this);
                 return;
             }
             if (phenotype == null || !phenotype.getId().equals(phenotypeIdToLoad)) {
-                phenotypeManager.getContext().findPhenotype(phenotypeIdToLoad).with("userPermission").fire(new Receiver<PhenotypeProxy>() {
+                phenotypeManager.findOne(new Receiver<PhenotypeProxy>() {
 
                     @Override
                     public void onSuccess(PhenotypeProxy response) {
                         phenotype = response;
                         fireLoadEvent = true;
                     }
-                });
+                }, phenotypeIdToLoad);
             }
             requestStudies(new Callback<Void, Void>() {
 
@@ -198,8 +201,7 @@ public class StudyListPresenter extends
                         (int) studyPage.getTotalElements(), true);
                 dataProvider.updateRowData(range.getStart(), studyPage.getContents());
                 studiesLoaded = true;
-                facets = studyPage.getFacets();
-                getView().displayFacets(facets);
+                facetSearchPresenterWidget.displayFacets(studyPage.getFacets());
                 if (callback != null)
                     callback.onSuccess(null);
             }
@@ -212,7 +214,7 @@ public class StudyListPresenter extends
             }
 
         };
-        cdvManager.findStudiesByPhenotypeId(receiver, currentFilter, searchString, phenotypeId, range.getStart(), range.getLength());
+        cdvManager.findStudiesByPhenotypeId(receiver, ConstEnums.TABLE_FILTER.valueOf(facetSearchPresenterWidget.getFilter()), facetSearchPresenterWidget.getSearchString(), phenotypeId, range.getStart(), range.getLength());
     }
 
     @Override
@@ -228,23 +230,5 @@ public class StudyListPresenter extends
         boolean showAdd = (((permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT) ||
                 ((permission & AccessControlEntryProxy.ADMINISTRATION) == AccessControlEntryProxy.ADMINISTRATION));
         getView().showAddBtn(showAdd);
-    }
-
-    @Override
-    public void selectFilter(ConstEnums.TABLE_FILTER filter) {
-        if (filter != currentFilter) {
-            currentFilter = filter;
-            PlaceRequest.Builder request = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest());
-            request.with("filter", filter.toString());
-            placeManager.updateHistory(request.build(), true);
-            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
-            getView().setActiveNavLink(currentFilter);
-        }
-    }
-
-    @Override
-    public void updateSearchString(String searchString) {
-        this.searchString = searchString;
-        getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
     }
 }

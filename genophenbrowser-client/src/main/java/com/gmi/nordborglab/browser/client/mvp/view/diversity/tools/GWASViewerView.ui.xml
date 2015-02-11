@@ -31,21 +31,7 @@
                 <g:SimpleLayoutPanel ui:field="gwasListPanel">
                     <g:LayoutPanel>
                         <g:layer top="0" height="5em">
-                            <g:HTMLPanel>
-                                <div style="float:right;">
-                                    <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
-                                        <b:TextBox ui:field="searchBox" placeholder="Search..."/>
-                                    </b:InputAddOn>
-                                </div>
-                                <div style="float:left;">
-                                    <b:NavPills addStyleNames="{style.navPills}">
-                                        <b:NavLink ui:field="navAll" active="true">All</b:NavLink>
-                                        <b:NavLink ui:field="navPrivate">My GWAS</b:NavLink>
-                                        <b:NavLink ui:field="navShared">Shared</b:NavLink>
-                                        <b:NavLink ui:field="navRecent">Recent</b:NavLink>
-                                    </b:NavPills>
-                                </div>
-                            </g:HTMLPanel>
+                            <g:SimplePanel ui:field="facetContainer"/>
                         </g:layer>
                         <g:layer top="5em" bottom="70px">
                             <c:DataGrid ui:field="gwasResultDataGrid"/>

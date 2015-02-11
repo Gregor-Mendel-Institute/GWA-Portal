@@ -3,13 +3,12 @@ package com.gmi.nordborglab.browser.client.mvp.view.diversity.meta;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.ModalFooter;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.gmi.nordborglab.browser.client.editors.CandidateGeneListEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CanidateGeneListUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
@@ -17,10 +16,6 @@ import com.gmi.nordborglab.browser.client.ui.cells.AccessColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
-import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
-import com.gmi.nordborglab.browser.shared.util.ConstEnums;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
@@ -28,8 +23,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -43,6 +36,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
@@ -51,8 +46,6 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -79,19 +72,11 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
     @UiField(provided = true)
     DataGrid<CandidateGeneListProxy> dataGrid;
     @UiField
-    NavLink navRecent;
-    @UiField
-    NavLink navPublished;
-    @UiField
-    NavLink navPrivate;
-    @UiField
-    NavLink navAll;
-    @UiField
     Button newCandidateGeneListBtn;
     @UiField
-    TextBox searchBox;
+    SimplePanel facetContainer;
 
-    private final BiMap<ConstEnums.TABLE_FILTER, NavLink> navLinkMap;
+
     private final PlaceManager placeManager;
     private final CandidateGeneListEditDriver candidateGeneListEditDriver;
     private final AvatarNameCell avatarNameCell;
@@ -146,11 +131,6 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
         widget = binder.createAndBindUi(this);
         this.candidateGeneListEditDriver = candidateGeneListEditDriver;
         this.candidateGeneListEditDriver.initialize(candidateGeneListEditor);
-        navLinkMap = ImmutableBiMap.<ConstEnums.TABLE_FILTER, NavLink>builder()
-                .put(ConstEnums.TABLE_FILTER.ALL, navAll)
-                .put(ConstEnums.TABLE_FILTER.PRIVATE, navPrivate)
-                .put(ConstEnums.TABLE_FILTER.PUBLISHED, navPublished)
-                .put(ConstEnums.TABLE_FILTER.RECENT, navRecent).build();
         pager.setDisplay(dataGrid);
         editPopup.setBackdrop(BackdropType.STATIC);
         editPopup.setCloseVisible(true);
@@ -204,6 +184,16 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
         dataGrid.setColumnWidth(4, 150, Style.Unit.PX);
     }
 
+
+    @Override
+    public void setInSlot(Object slot, IsWidget content) {
+        if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
+            facetContainer.setWidget(content);
+        } else {
+            super.setInSlot(slot, content);
+        }
+    }
+
     @Override
     public Widget asWidget() {
         return widget;
@@ -212,61 +202,6 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
     @Override
     public HasData<CandidateGeneListProxy> getDisplay() {
         return dataGrid;
-    }
-
-    @Override
-    public void setActiveNavLink(ConstEnums.TABLE_FILTER filter) {
-        for (NavLink link : navLinkMap.values()) {
-            link.setActive(false);
-        }
-        if (navLinkMap.containsKey(filter))
-            navLinkMap.get(filter).setActive(true);
-    }
-
-    @Override
-    public void displayFacets(List<FacetProxy> facets, String searchString) {
-        if (facets == null)
-            return;
-        for (FacetProxy facet : facets) {
-            ConstEnums.TABLE_FILTER type = ConstEnums.TABLE_FILTER.valueOf(facet.getName());
-            String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
-            PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(CandidateGeneListPresenter.placeToken);
-            if (type != ConstEnums.TABLE_FILTER.ALL) {
-                request = request.with("filter", type.name());
-            }
-            if (searchString != null) {
-                request = request.with("query", searchString);
-            }
-            NavLink link = navLinkMap.get(type);
-            if (link != null) {
-                link.setText(newTitle);
-                link.setTargetHistoryToken(placeManager.buildHistoryToken(request.build()));
-            }
-            searchBox.setText(searchString);
-
-        }
-    }
-
-    private String getFilterTitleFromType(ConstEnums.TABLE_FILTER filter) {
-        switch (filter) {
-            case ALL:
-                return "All";
-            case PRIVATE:
-                return "My lists";
-            case PUBLISHED:
-                return "Published";
-            case RECENT:
-                return "Recent";
-        }
-        return "";
-    }
-
-
-    @UiHandler("searchBox")
-    public void onKeyUpSearchBox(KeyUpEvent e) {
-        if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER || searchBox.getValue().equalsIgnoreCase("")) {
-            getUiHandlers().updateSearchString(searchBox.getValue());
-        }
     }
 
     @Override

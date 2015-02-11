@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.handlers;
 
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
-import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.gwt.user.client.ui.SuggestOracle;
 import com.gwtplatform.mvp.client.UiHandlers;
 
@@ -19,8 +18,6 @@ public interface CandidateGeneListDetailUiHandlers extends UiHandlers {
     void onSelectGene(SuggestOracle.Suggestion suggestion);
 
     void onAddGene();
-
-    void selectFilter(ConstEnums.GENE_FILTER gene_filter);
 
     void onEdit();
 

@@ -59,6 +59,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.arcbees.analytics</groupId>
             <artifactId>universal-analytics</artifactId>
         </dependency>

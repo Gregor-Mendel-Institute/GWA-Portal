@@ -1,16 +1,17 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta;
 
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.FacetSearchChangeEvent;
 import com.gmi.nordborglab.browser.client.events.LoadCandidateGeneListEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CanidateGeneListUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListView;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
-import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.MetaAnalysisRequest;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
@@ -28,11 +29,9 @@ import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 
 import javax.validation.ConstraintViolation;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -46,10 +45,6 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
 
     public interface MyView extends View, HasUiHandlers<CanidateGeneListUiHandlers> {
         HasData<CandidateGeneListProxy> getDisplay();
-
-        void setActiveNavLink(ConstEnums.TABLE_FILTER filter);
-
-        void displayFacets(List<FacetProxy> facets, String searchString);
 
         CandidateGeneListView.CandidateGeneListEditDriver getCandidateGeneListEditDriver();
 
@@ -67,20 +62,20 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
     private final CustomRequestFactory rf;
     private final PlaceManager placeManager;
     protected final AsyncDataProvider<CandidateGeneListProxy> dataProvider;
-    private ConstEnums.TABLE_FILTER currentFilter = ConstEnums.TABLE_FILTER.ALL;
-    private String searchString = null;
-    private List<FacetProxy> facets;
     private Receiver<CandidateGeneListProxy> receiver = null;
     private final CurrentUser currentUser;
-    public static final String placeToken = NameTokens.candidateGeneList;
+    private final FacetSearchPresenterWidget facetSearchPresenterWidget;
 
     @Inject
     public CandidateGeneListPresenter(EventBus eventBus, CandidateGeneListPresenter.MyView view,
                                       CandidateGeneListPresenter.MyProxy proxy, final CustomRequestFactory rf,
-                                      final PlaceManager placeManager, final CurrentUser currentUser) {
+                                      final PlaceManager placeManager, final CurrentUser currentUser,
+                                      final FacetSearchPresenterWidget facetSearchPresenterWidget) {
         super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         this.currentUser = currentUser;
         this.rf = rf;
+        this.facetSearchPresenterWidget = facetSearchPresenterWidget;
+        this.facetSearchPresenterWidget.setDefaultFilter(ConstEnums.TABLE_FILTER.ALL.name());
         this.placeManager = placeManager;
         getView().setUiHandlers(this);
         dataProvider = new AsyncDataProvider<CandidateGeneListProxy>() {
@@ -125,41 +120,31 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
                 fireEvent(new LoadingIndicatorEvent(false));
                 dataProvider.updateRowCount((int) candidateGeneLists.getTotalElements(), true);
                 dataProvider.updateRowData(getView().getDisplay().getVisibleRange().getStart(), candidateGeneLists.getContents());
-                facets = candidateGeneLists.getFacets();
-                getView().displayFacets(facets, searchString);
+                facetSearchPresenterWidget.displayFacets(candidateGeneLists.getFacets());
             }
         };
         Range range = getView().getDisplay().getVisibleRange();
-        rf.metaAnalysisRequest().findCandidateGeneLists(currentFilter, searchString, range.getStart(), range.getLength()).with("contents.acl", "contents.ownerUser").fire(receiver);
+        rf.metaAnalysisRequest().findCandidateGeneLists(ConstEnums.TABLE_FILTER.valueOf(facetSearchPresenterWidget.getFilter()), facetSearchPresenterWidget.getSearchString(), range.getStart(), range.getLength()).with("contents.acl", "contents.ownerUser").fire(receiver);
     }
 
 
     @Override
     protected void onBind() {
         super.onBind();
+        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        registerHandler(getEventBus().addHandlerToSource(FacetSearchChangeEvent.TYPE, facetSearchPresenterWidget, new FacetSearchChangeEvent.Handler() {
+
+            @Override
+            public void onChanged(FacetSearchChangeEvent event) {
+                getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+            }
+        }));
         dataProvider.addDataDisplay(getView().getDisplay());
     }
 
     @Override
     protected void onReset() {
         super.onReset();
-        PlaceRequest request = placeManager.getCurrentPlaceRequest();
-        ConstEnums.TABLE_FILTER newFilter = ConstEnums.TABLE_FILTER.ALL;
-        String newCategoryString = request.getParameter("filter", null);
-        String newSearchString = request.getParameter("query", null);
-        if (newCategoryString != null) {
-            try {
-                newFilter = ConstEnums.TABLE_FILTER.valueOf(newCategoryString);
-            } catch (Exception e) {
-
-            }
-        }
-        if (newFilter != currentFilter || newSearchString != searchString) {
-            currentFilter = newFilter;
-            searchString = newSearchString;
-            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
-        }
-        getView().setActiveNavLink(currentFilter);
         getView().showCreateBtn(currentUser.isLoggedIn());
     }
 
@@ -183,17 +168,5 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
         getView().getCandidateGeneListEditDriver().edit(candidateGeneListProxy, ctx);
         ctx.saveCandidateGeneList(candidateGeneListProxy).with("userPermission", "ownerUser").to(receiver);
         getView().showEditPopup(true);
-    }
-
-    @Override
-    public void updateSearchString(String value) {
-        PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(placeToken);
-        if (currentFilter != null) {
-            request = request.with("filter", currentFilter.name());
-        }
-        if (value != null && !value.equals("")) {
-            request = request.with("query", value);
-        }
-        placeManager.revealPlace(request.build());
     }
 }

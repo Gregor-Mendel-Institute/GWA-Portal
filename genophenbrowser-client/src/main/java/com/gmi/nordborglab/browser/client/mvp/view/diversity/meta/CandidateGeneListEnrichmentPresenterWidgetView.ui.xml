@@ -4,41 +4,21 @@
         >
 
     <ui:style>
-        .searchBox {
-            display: inline-block;
-            margin-top: 20px;
-            margin-right: 20px;
-        }
-
-        .navPills {
-            margin-top: 20px;
-            margin-left: 0.5em;
-        }
 
         .addBtn {
             margin-top: 20px;
             margin-right: 5px;
+            float: right;
         }
 
     </ui:style>
     <g:LayoutPanel>
         <g:layer top="5px" left="0" right="0" height="5em">
-            <g:HTMLPanel>
-                <div style="float:right;">
-                    <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
-                        <b:TextBox placeholder="search for enrichment" ui:field="searchBoxTb"/>
-                    </b:InputAddOn>
-                    <b:Button ui:field="runBtn" icon="PLUS_SIGN" text="Run"
-                              addStyleNames="{style.addBtn}" type="DANGER" enabled="false"/>
-                </div>
-                <div style="float:left;">
-                    <b:NavPills addStyleNames="{style.navPills}">
-                        <b:NavLink ui:field="navFinished" active="true">Finished</b:NavLink>
-                        <b:NavLink ui:field="navRunning">Running</b:NavLink>
-                        <b:NavLink ui:field="navAvailable">Available</b:NavLink>
-                    </b:NavPills>
-                </div>
-            </g:HTMLPanel>
+            <g:FlowPanel>
+                <b:Button ui:field="runBtn" icon="PLUS_SIGN" text="Run"
+                          addStyleNames="{style.addBtn}" type="DANGER" enabled="false"/>
+                <g:SimplePanel ui:field="facetContainer"/>
+            </g:FlowPanel>
         </g:layer>
         <g:layer top="5em" left="0" right="0" bottom="30px">
             <g:SimpleLayoutPanel ui:field="dataGridContainer"/>

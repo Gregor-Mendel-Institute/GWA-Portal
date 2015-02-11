@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.tools;
 
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.FacetSearchChangeEvent;
 import com.gmi.nordborglab.browser.client.events.GWASResultLoadedEvent;
 import com.gmi.nordborglab.browser.client.events.GWASUploadedEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
@@ -10,10 +11,10 @@ import com.gmi.nordborglab.browser.client.manager.GWASDataManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.GWASViewerUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASViewerView;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
-import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
 import com.gmi.nordborglab.browser.shared.service.GWASDataRequest;
@@ -64,10 +65,6 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
         void showEditPanel(boolean show);
 
         void showPermissionPanel(boolean show);
-
-        void setActiveNavLink(ConstEnums.TABLE_FILTER currentFilter);
-
-        void displayFacets(List<FacetProxy> facets, String searchString);
     }
 
     @ProxyCodeSplit
@@ -96,10 +93,8 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
     private Receiver<GWASResultProxy> receiverOfSave = null;
     private GWASDataRequest ctx;
     private final PermissionDetailPresenter permissionDetailPresenter;
-    private ConstEnums.TABLE_FILTER currentFilter = null;
-    private String searchString = null;
-    private List<FacetProxy> facets;
-    public static final String placeToken = NameTokens.gwasViewer;
+    private final FacetSearchPresenterWidget facetSearchPresenterWidget;
+
 
     @Inject
     public GWASViewerPresenter(EventBus eventBus, MyView view, GWASViewerPresenter.MyProxy proxy,
@@ -108,13 +103,17 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
                                final PlaceManager placeManager,
                                final GWASDataManager gwasDataManager,
                                final GWASPlotPresenterWidget gwasPlotPresenterWidget,
-                               final PermissionDetailPresenter permissionDetailPresenter) {
+                               final PermissionDetailPresenter permissionDetailPresenter,
+                               final FacetSearchPresenterWidget facetSearchPresenterWidget) {
         super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         this.gwasUploadWizardPresenterWidget = gwasUploadWizardPresenterWidget;
         this.gwasPlotPresenterWidget = gwasPlotPresenterWidget;
         this.permissionDetailPresenter = permissionDetailPresenter;
         this.placeManager = placeManager;
         this.gwasDataManager = gwasDataManager;
+        this.facetSearchPresenterWidget = facetSearchPresenterWidget;
+        facetSearchPresenterWidget.setDefaultFilter(ConstEnums.TABLE_FILTER.ALL.name());
+        facetSearchPresenterWidget.initFixedFacets(FacetSearchPresenterWidget.SHARED_MAP);
         this.currentUser = currentUser;
         getView().setUiHandlers(this);
         dataProvider.addDataDisplay(getView().getDisplay());
@@ -146,6 +145,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
         setInSlot(TYPE_SetGWASUploadContent, gwasUploadWizardPresenterWidget);
         setInSlot(TYPE_SetGWASPLOTContent, gwasPlotPresenterWidget);
         setInSlot(TYPE_SetPermissionContent, permissionDetailPresenter);
+        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
         registerHandler(GWASUploadedEvent.register(getEventBus(), new GWASUploadedEvent.Handler() {
             @Override
             public void onGWASUploaded(GWASUploadedEvent event) {
@@ -160,6 +160,14 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
                 getView().showPermissionPanel(false);
             }
         }));
+        registerHandler(getEventBus().addHandlerToSource(FacetSearchChangeEvent.TYPE, facetSearchPresenterWidget, new FacetSearchChangeEvent.Handler() {
+
+            @Override
+            public void onChanged(FacetSearchChangeEvent event) {
+                getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+            }
+        }));
+
     }
 
     @Override
@@ -171,23 +179,6 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
             GWASResultLoadedEvent.fire(getEventBus(), gwasResult);
         isFireEvent = false;
         getView().hideUploadPanel(!currentUser.isLoggedIn());
-        PlaceRequest request = placeManager.getCurrentPlaceRequest();
-        ConstEnums.TABLE_FILTER newFilter = ConstEnums.TABLE_FILTER.ALL;
-        String newCategoryString = request.getParameter("filter", null);
-        String newSearchString = request.getParameter("query", null);
-        if (newCategoryString != null) {
-            try {
-                newFilter = ConstEnums.TABLE_FILTER.valueOf(newCategoryString);
-            } catch (Exception e) {
-
-            }
-        }
-        if ((newFilter != currentFilter || newSearchString != searchString) && gwasResult == null) {
-            currentFilter = newFilter;
-            searchString = newSearchString;
-            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
-        }
-        getView().setActiveNavLink(currentFilter);
 
         if (gwasResult != null) {
             getView().showPanel(GWASViewerView.PANELS.PLOTS);
@@ -283,20 +274,8 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
         req.fire();
     }
 
-    @Override
-    public void updateSearchString(String searchString) {
-        PlaceRequest.Builder builder = new PlaceRequest.Builder().nameToken(placeToken);
-        if (currentFilter != null) {
-            builder = builder.with("filter", currentFilter.name());
-        }
-        if (searchString != null && !searchString.equals("")) {
-            builder = builder.with("query", searchString);
-        }
-        placeManager.revealPlace(builder.build());
-    }
-
     protected void requestGWASResults(final Range range) {
-        if (!currentUser.isLoggedIn() || !isVisible())
+        if (!currentUser.isLoggedIn())
             return;
         fireEvent(new LoadingIndicatorEvent(true));
         Receiver<GWASResultPageProxy> receiver = new Receiver<GWASResultPageProxy>() {
@@ -305,10 +284,9 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
                 fireEvent(new LoadingIndicatorEvent(false));
                 dataProvider.updateRowCount((int) studies.getTotalElements(), true);
                 dataProvider.updateRowData(range.getStart(), studies.getContents());
-                facets = studies.getFacets();
-                getView().displayFacets(facets, searchString);
+                facetSearchPresenterWidget.displayFacets(studies.getFacets());
             }
         };
-        gwasDataManager.findAllGWASResults(receiver, currentFilter, searchString, range.getStart(), range.getLength());
+        gwasDataManager.findAllGWASResults(receiver, ConstEnums.TABLE_FILTER.valueOf(facetSearchPresenterWidget.getFilter()), facetSearchPresenterWidget.getSearchString(), range.getStart(), range.getLength());
     }
 }

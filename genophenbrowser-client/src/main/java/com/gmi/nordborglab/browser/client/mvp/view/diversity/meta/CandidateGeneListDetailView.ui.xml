@@ -137,11 +137,6 @@
             margin-right: 5px;
         }
 
-        .navPills {
-            margin-top: 20px;
-            margin-left: 0.5em;
-        }
-
         .fileinput {
             visibility: hidden;
         }
@@ -190,32 +185,27 @@
                     <g:header>Genes</g:header>
                     <g:LayoutPanel>
                         <g:layer top="5px" left="0" right="0" height="5em">
-                            <g:HTMLPanel>
-                                <div style="float:right;">
-                                    <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
-                                        <b:Typeahead ui:field="searchGeneTa">
-                                            <b:TextBox placeholder="search for a gene" ui:field="searchGeneTb"/>
-                                        </b:Typeahead>
-                                    </b:InputAddOn>
-                                    <b:Button ui:field="addGeneBtn" icon="PLUS_SIGN" text="Add"
-                                              addStyleNames="{style.addBtn}" type="DANGER" enabled="false"/>
+                            <g:FlowPanel>
+                                <g:HTMLPanel>
+                                    <div style="float:right;">
+                                        <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
+                                            <b:Typeahead ui:field="searchGeneTa">
+                                                <b:TextBox placeholder="search for a gene" ui:field="searchGeneTb"/>
+                                            </b:Typeahead>
+                                        </b:InputAddOn>
+                                        <b:Button ui:field="addGeneBtn" icon="PLUS_SIGN" text="Add"
+                                                  addStyleNames="{style.addBtn}" type="DANGER" enabled="false"/>
 
-                                    <b:Button ui:field="uploadBtn" icon="UPLOAD_ALT"
-                                              addStyleNames="{style.addBtn}" type="DANGER"/>
-                                    <g:FormPanel ui:field="formPanel">
-                                        <b:FileUpload ui:field="fileUpload"
-                                                      addStyleNames="{style.fileinput}"></b:FileUpload>
-                                    </g:FormPanel>
-                                </div>
-                                <div style="float:left;">
-                                    <b:NavPills addStyleNames="{style.navPills}">
-                                        <b:NavLink ui:field="navAll" active="true">All</b:NavLink>
-                                        <b:NavLink ui:field="navProtein">Protein</b:NavLink>
-                                        <b:NavLink ui:field="navPseudo">Pseudo</b:NavLink>
-                                        <b:NavLink ui:field="navTransposon">Transposon</b:NavLink>
-                                    </b:NavPills>
-                                </div>
-                            </g:HTMLPanel>
+                                        <b:Button ui:field="uploadBtn" icon="UPLOAD_ALT"
+                                                  addStyleNames="{style.addBtn}" type="DANGER"/>
+                                        <g:FormPanel ui:field="formPanel">
+                                            <b:FileUpload ui:field="fileUpload"
+                                                          addStyleNames="{style.fileinput}"></b:FileUpload>
+                                        </g:FormPanel>
+                                    </div>
+                                </g:HTMLPanel>
+                                <g:SimplePanel ui:field="facetContainer"/>
+                            </g:FlowPanel>
                         </g:layer>
                         <g:layer top="5em" left="0" right="0" bottom="30px">
                             <c:DataGrid ui:field="genesDataGrid"/>

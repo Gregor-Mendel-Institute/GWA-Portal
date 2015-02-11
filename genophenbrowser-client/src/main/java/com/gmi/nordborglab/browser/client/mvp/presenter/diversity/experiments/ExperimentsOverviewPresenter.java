@@ -1,12 +1,13 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments;
 
+import com.gmi.nordborglab.browser.client.events.FacetSearchChangeEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.ExperimentsOverviewUiHandlers;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
-import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -22,10 +23,7 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.annotations.Title;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
-
-import java.util.List;
 
 
 public class ExperimentsOverviewPresenter
@@ -34,10 +32,6 @@ public class ExperimentsOverviewPresenter
 
     public interface MyView extends View, HasUiHandlers<ExperimentsOverviewUiHandlers> {
         HasData<ExperimentProxy> getDisplay();
-
-        void setActiveNavLink(ConstEnums.TABLE_FILTER filter);
-
-        void displayFacets(List<FacetProxy> facets, String searchString);
     }
 
     @ProxyCodeSplit
@@ -49,22 +43,20 @@ public class ExperimentsOverviewPresenter
     public interface MyProxy extends TabContentProxyPlace<ExperimentsOverviewPresenter> {
     }
 
-
     private final ExperimentManager experimentManager;
     private final PlaceManager placeManager;
     protected final AsyncDataProvider<ExperimentProxy> dataProvider;
-    private ConstEnums.TABLE_FILTER currentFilter = ConstEnums.TABLE_FILTER.ALL;
-    private String searchString = null;
-    private List<FacetProxy> facets;
-    public static final String placeToken = NameTokens.experiments;
+    private final FacetSearchPresenterWidget facetSearchPresenterWidget;
 
     @Inject
     public ExperimentsOverviewPresenter(final EventBus eventBus,
                                         final MyView view, final MyProxy proxy,
                                         final ExperimentManager experimentManager,
-                                        final PlaceManager placeManager) {
+                                        final PlaceManager placeManager,
+                                        final FacetSearchPresenterWidget facetSearchPresenterWidget) {
         super(eventBus, view, proxy, ExperimentsOverviewTabPresenter.TYPE_SetTabContent);
         getView().setUiHandlers(this);
+        this.facetSearchPresenterWidget = facetSearchPresenterWidget;
         this.experimentManager = experimentManager;
         this.placeManager = placeManager;
         dataProvider = new AsyncDataProvider<ExperimentProxy>() {
@@ -84,53 +76,31 @@ public class ExperimentsOverviewPresenter
                 fireEvent(new LoadingIndicatorEvent(false));
                 dataProvider.updateRowCount((int) experiments.getTotalElements(), true);
                 dataProvider.updateRowData(getView().getDisplay().getVisibleRange().getStart(), experiments.getContents());
-                facets = experiments.getFacets();
-                getView().displayFacets(facets, searchString);
+                facetSearchPresenterWidget.displayFacets(experiments.getFacets());
             }
         };
         Range range = getView().getDisplay().getVisibleRange();
-        experimentManager.findAll(receiver, currentFilter, searchString, range.getStart(), range.getLength());
+        experimentManager.findAll(receiver, ConstEnums.TABLE_FILTER.valueOf(facetSearchPresenterWidget.getFilter()), facetSearchPresenterWidget.getSearchString(), range.getStart(), range.getLength());
     }
+
 
 
     @Override
     protected void onBind() {
         super.onBind();
         dataProvider.addDataDisplay(getView().getDisplay());
+        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        registerHandler(getEventBus().addHandlerToSource(FacetSearchChangeEvent.TYPE, facetSearchPresenterWidget, new FacetSearchChangeEvent.Handler() {
+
+            @Override
+            public void onChanged(FacetSearchChangeEvent event) {
+                getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+            }
+        }));
     }
 
     @Override
     protected void onReset() {
         super.onReset();
-        PlaceRequest request = placeManager.getCurrentPlaceRequest();
-        ConstEnums.TABLE_FILTER newFilter = ConstEnums.TABLE_FILTER.ALL;
-        String newCategoryString = request.getParameter("filter", null);
-        String newSearchString = request.getParameter("query", null);
-        if (newCategoryString != null) {
-            try {
-                newFilter = ConstEnums.TABLE_FILTER.valueOf(newCategoryString);
-            } catch (Exception e) {
-
-            }
-        }
-        if (newFilter != currentFilter || newSearchString != searchString) {
-            currentFilter = newFilter;
-            searchString = newSearchString;
-            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
-        }
-        getView().setActiveNavLink(currentFilter);
-    }
-
-
-    @Override
-    public void updateSearchString(String value) {
-        PlaceRequest.Builder builder = new PlaceRequest.Builder().nameToken(placeToken);
-        if (currentFilter != null) {
-            builder.with("filter", currentFilter.name());
-        }
-        if (value != null && !value.equals("")) {
-            builder.with("query", value);
-        }
-        placeManager.revealPlace(builder.build());
     }
 }

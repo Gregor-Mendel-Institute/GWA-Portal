@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta;
 
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.FacetSearchChangeEvent;
 import com.gmi.nordborglab.browser.client.events.LoadCandidateGeneListEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PermissionDoneEvent;
@@ -10,6 +11,7 @@ import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CandidateGeneListDetailUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.PermissionDetailPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.DiversityPresenter;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListDetailView;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListView;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
@@ -29,6 +31,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.ui.HasText;
@@ -49,14 +52,15 @@ import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -76,8 +80,6 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
 
         CandidateGeneListDetailView.CandidateGeneListDisplayDriver getDisplayDriver();
 
-        void displayFacets(List<FacetProxy> facets);
-
         void showEditPopup(boolean show);
 
         void showDeletePopup(boolean show);
@@ -91,8 +93,6 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         CandidateGeneListView.CandidateGeneListEditDriver getEditDriver();
 
         void showPermissionPanel(boolean show);
-
-        void setActiveNavLink(ConstEnums.GENE_FILTER filter);
 
         void phaseInPublication(GeneProxy gene);
 
@@ -141,15 +141,20 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     private final CustomRequestFactory rf;
     private final PlaceManager placeManager;
     private final CurrentUser currentUser;
-    private List<FacetProxy> facets;
     private List<FacetProxy> statsFacets;
-    private ConstEnums.GENE_FILTER currentFilter = ConstEnums.GENE_FILTER.ALL;
+
     public static final Object TYPE_SetPermissionContent = new Object();
     private GenePageProxy genesPage;
     private final BiMap<ConstEnums.GENE_FILTER, List<String>> filter2Annotation;
     private final CandidateGeneListEnrichmentPresenterWidget candidateGeneListEnrichmentPresenter;
     private int enrichmentCount = 0;
     private boolean refreshEnrichmentWidget = false;
+    private static final Map<String, String> FACET_MAP = ImmutableMap.<String, String>builder()
+            .put(ConstEnums.GENE_FILTER.ALL.name(), "All")
+            .put(ConstEnums.GENE_FILTER.PROTEIN.name(), "Protein")
+            .put(ConstEnums.GENE_FILTER.PSEUDO.name(), "Pseudo")
+            .put(ConstEnums.GENE_FILTER.TRANSPOSON.name(), "Transposon").build();
+    private final FacetSearchPresenterWidget facetSearchPresenterWidget;
 
 
     private final AsyncDataProvider<GeneProxy> genesDataProvider = new AsyncDataProvider<GeneProxy>() {
@@ -167,13 +172,21 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                                             final PermissionDetailPresenter permissionDetailPresenter,
                                             final CustomRequestFactory rf, final PlaceManager placeManager,
                                             final CurrentUser currentUser,
-                                            final ClientModule.AssistedInjectionFactory factory) {
+                                            final ClientModule.AssistedInjectionFactory factory,
+                                            final FacetSearchPresenterWidget facetSearchPresenterWidget) {
         super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         filter2Annotation = new ImmutableBiMap.Builder<ConstEnums.GENE_FILTER, List<String>>()
                 .put(ConstEnums.GENE_FILTER.PROTEIN, Lists.newArrayList("gene"))
                 .put(ConstEnums.GENE_FILTER.TRANSPOSON, Lists.newArrayList("transposable_element", "transposable_element_gene"))
                 .put(ConstEnums.GENE_FILTER.PSEUDO, Lists.newArrayList("pseudogene")).build();
         this.permissionDetailPresenter = permissionDetailPresenter;
+        this.facetSearchPresenterWidget = facetSearchPresenterWidget;
+        // Required because otherwise conflicts with the url parameter of the facet widget inside of the enrichment tab
+        facetSearchPresenterWidget.setDefaultFilterParam("gene_filter");
+        facetSearchPresenterWidget.setDefaultQueryParam("gene_query");
+        facetSearchPresenterWidget.setSearchBoxVisible(false);
+        facetSearchPresenterWidget.setDefaultFilter(ConstEnums.GENE_FILTER.ALL.name());
+        facetSearchPresenterWidget.initFixedFacets(FACET_MAP);
         dataProvider = factory.createEnrichmentProvider(EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST);
         this.candidateGeneListEnrichmentPresenter = factory.createCandidateGeneListEnrichmentPresenter(dataProvider);
         this.currentUser = currentUser;
@@ -192,6 +205,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         super.onBind();    //To change body of overridden methods use File | Settings | File Templates.
         setInSlot(TYPE_SetPermissionContent, permissionDetailPresenter);
         setInSlot(TYPE_SetEnrichmentCntent, candidateGeneListEnrichmentPresenter);
+        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
         registerHandler(getEventBus().addHandlerToSource(PermissionDoneEvent.TYPE, permissionDetailPresenter, new PermissionDoneEvent.Handler() {
             @Override
             public void onPermissionDone(PermissionDoneEvent event) {
@@ -207,6 +221,14 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                 }).fire();
             }
         }));
+        registerHandler(getEventBus().addHandlerToSource(FacetSearchChangeEvent.TYPE, facetSearchPresenterWidget, new FacetSearchChangeEvent.Handler() {
+
+            @Override
+            public void onChanged(FacetSearchChangeEvent event) {
+                getView().getGenesDisplay().setVisibleRangeAndClearData(getView().getGenesDisplay().getVisibleRange(), true);
+            }
+        }));
+
     }
 
     @Override
@@ -224,15 +246,14 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                 public void onSuccess(GenePageProxy response) {
                     fireEvent(new LoadingIndicatorEvent(false));
                     genesPage = response;
-                    facets = genesPage.getFacets();
                     statsFacets = genesPage.getStatsFacets();
-                    getView().displayFacets(facets);
+                    facetSearchPresenterWidget.displayFacets(genesPage.getFacets());
                     displayStats();
                     filterAndDisplayGenes(newGeneProxy);
                 }
             };
             Range range = display.getVisibleRange();
-            rf.metaAnalysisRequest().getGenesInCandidateGeneList(candidateGeneList.getId(), currentFilter, geneId, range.getStart(), range.getLength()).fire(receiver);
+            rf.metaAnalysisRequest().getGenesInCandidateGeneList(candidateGeneList.getId(), ConstEnums.GENE_FILTER.valueOf(facetSearchPresenterWidget.getFilter()), geneId, range.getStart(), range.getLength()).fire(receiver);
         } else {
             filterAndDisplayGenes(newGeneProxy);
         }
@@ -271,6 +292,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                         candidateGeneList = response;
                         enrichmentCount = candidateGeneList.getEnrichmentCount();
                         dataProvider.setEntity(candidateGeneList);
+                        candidateGeneListEnrichmentPresenter.refresh();
                     }
                 });
                 ctx.fire(new Receiver<Void>() {
@@ -300,7 +322,6 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         fireEvent(new LoadingIndicatorEvent(false));
         refreshView();
         requestGenes(getView().getGenesDisplay(), null);
-        candidateGeneListEnrichmentPresenter.refresh();
     }
 
     @Override
@@ -339,13 +360,6 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                 getView().enableAddBtn(false);
             }
         });
-    }
-
-    @Override
-    public void selectFilter(ConstEnums.GENE_FILTER geneFilter) {
-        this.currentFilter = geneFilter;
-        requestGenes(getView().getGenesDisplay(), null);
-        getView().setActiveNavLink(currentFilter);
     }
 
     @Override
@@ -465,13 +479,14 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                 genesPage.getContents().add(0, newGeneProxy);
             }
         }
+        final ConstEnums.GENE_FILTER filter = ConstEnums.GENE_FILTER.valueOf(facetSearchPresenterWidget.getFilter());
         List<GeneProxy> filteredList = ImmutableList.copyOf(Iterables.filter(genesPage.getContents(), new Predicate<GeneProxy>() {
             @Override
             public boolean apply(@Nullable GeneProxy geneProxy) {
-                if (!filter2Annotation.containsKey(currentFilter))
+                if (!filter2Annotation.containsKey(filter))
                     return true;
                 boolean found = false;
-                for (String key : filter2Annotation.get(currentFilter)) {
+                for (String key : filter2Annotation.get(filter)) {
                     if (key.equalsIgnoreCase(geneProxy.getAnnotation())) {
                         found = true;
                         break;

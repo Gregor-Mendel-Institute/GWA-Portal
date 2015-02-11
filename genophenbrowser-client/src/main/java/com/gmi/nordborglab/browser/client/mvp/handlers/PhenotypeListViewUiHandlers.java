@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.handlers;
 
-import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.gwtplatform.mvp.client.UiHandlers;
 
 /**
@@ -11,10 +10,5 @@ import com.gwtplatform.mvp.client.UiHandlers;
  * To change this template use File | Settings | File Templates.
  */
 public interface PhenotypeListViewUiHandlers extends UiHandlers {
-
-    void selectFilter(ConstEnums.TABLE_FILTER filter);
-
-    void updateSearchString(String searchString);
-
     void onClosePhenotypeUploadPopup();
 }

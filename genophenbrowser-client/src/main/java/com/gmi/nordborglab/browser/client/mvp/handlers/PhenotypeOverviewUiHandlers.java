@@ -10,5 +10,5 @@ import com.gwtplatform.mvp.client.UiHandlers;
  * To change this template use File | Settings | File Templates.
  */
 public interface PhenotypeOverviewUiHandlers extends UiHandlers {
-    void updateSearchString(String searchString);
+
 }
