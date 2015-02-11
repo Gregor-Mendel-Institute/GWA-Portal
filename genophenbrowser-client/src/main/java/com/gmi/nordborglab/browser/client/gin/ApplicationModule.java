@@ -48,6 +48,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.main.ProfilePresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.SearchPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.UserListPresenter;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.DropDownFilterItemPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FilterPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.TextBoxFilterItemPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.TypeaheadFilterItemPresenterWidget;
@@ -97,6 +98,7 @@ import com.gmi.nordborglab.browser.client.mvp.view.main.ProfileView;
 import com.gmi.nordborglab.browser.client.mvp.view.main.SearchView;
 import com.gmi.nordborglab.browser.client.mvp.view.main.UserListView;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.DropDownFilterItemPresenterWidgetView;
+import com.gmi.nordborglab.browser.client.mvp.view.widgets.FacetSearchPresenterWidgetView;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.FilterPresenterWidgetView;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.TextBoxFilterItemPresenterWidgetView;
 import com.gmi.nordborglab.browser.client.mvp.view.widgets.TypeaheadFilterItemPresenterWidgetView;
@@ -281,7 +283,7 @@ public class ApplicationModule extends AbstractPresenterModule {
         bindPresenterWidget(TextBoxFilterItemPresenterWidget.class, TextBoxFilterItemPresenterWidget.MyView.class, TextBoxFilterItemPresenterWidgetView.class);
         bindPresenterWidget(DropDownFilterItemPresenterWidget.class, DropDownFilterItemPresenterWidget.MyView.class, DropDownFilterItemPresenterWidgetView.class);
         bindPresenterWidget(TypeaheadFilterItemPresenterWidget.class, TypeaheadFilterItemPresenterWidget.MyView.class, TypeaheadFilterItemPresenterWidgetView.class);
-
+        bindPresenterWidget(FacetSearchPresenterWidget.class, FacetSearchPresenterWidget.MyView.class, FacetSearchPresenterWidgetView.class);
         bindPresenterWidget(PhenotypeUploadWizardPresenterWidget.class, PhenotypeUploadWizardPresenterWidget.MyView.class, PhenotypeUploadWizardView.class);
         bindSingletonPresenterWidget(GWASUploadWizardPresenterWidget.class, GWASUploadWizardPresenterWidget.MyView.class, GWASUploadWizardView.class);
         //bindPresenterWidget(CandidateGeneListEnrichmentPresenterWidget.class,CandidateGeneListEnrichmentPresenterWidget.MyView.class,CandidateGeneListEnrichmentPresenterWidgetView.class);

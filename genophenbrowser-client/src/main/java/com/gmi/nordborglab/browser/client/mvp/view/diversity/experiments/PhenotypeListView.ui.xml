@@ -11,43 +11,21 @@
 
     <ui:style>
 
-        .searchBox {
-            display: inline-block;
-            margin-top: 20px;
-            margin-right: 20px;
-        }
-
-        .navPills {
-            margin-top: 20px;
-            margin-left: 0.5em;
-        }
-
         .uploadBtn {
             margin-top: 10px;
             margin-right: 5px;
+            float: right;
         }
 
     </ui:style>
 
     <g:LayoutPanel>
         <g:layer top="0" height="5em">
-            <g:HTMLPanel>
-                <div style="float:right;">
-                    <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
-                        <b:TextBox ui:field="searchBox" placeholder="Search..."></b:TextBox>
-                    </b:InputAddOn>
-                    <b:Button ui:field="uploadPhenotypeBtn" icon="PLUS_SIGN" text="Upload"
-                              addStyleNames="{style.uploadBtn}" type="DANGER" enabled="true"/>
-                </div>
-                <div style="float:left;">
-                    <b:NavPills addStyleNames="{style.navPills}">
-                        <b:NavLink ui:field="navAll" active="true">All</b:NavLink>
-                        <b:NavLink ui:field="navPrivate">My studies</b:NavLink>
-                        <b:NavLink ui:field="navPublished">Published</b:NavLink>
-                        <b:NavLink ui:field="navRecent">Recent</b:NavLink>
-                    </b:NavPills>
-                </div>
-            </g:HTMLPanel>
+            <g:FlowPanel>
+                <b:Button ui:field="uploadPhenotypeBtn" icon="PLUS_SIGN" text="Upload"
+                          addStyleNames="{style.uploadBtn}" type="DANGER" enabled="true"/>
+                <g:SimplePanel ui:field="facetContainer"/>
+            </g:FlowPanel>
         </g:layer>
         <g:layer top="5em" left="0.5em" right="0" bottom="30px">
             <c:DataGrid ui:field="dataGrid"/>

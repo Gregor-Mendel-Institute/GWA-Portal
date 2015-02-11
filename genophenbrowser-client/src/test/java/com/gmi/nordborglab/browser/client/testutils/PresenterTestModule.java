@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.testutils;
 
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
-import com.google.gwt.event.shared.testing.CountingEventBus;
 import com.google.gwt.junit.GWTMockUtilities;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -21,7 +20,7 @@ public abstract class PresenterTestModule extends JukitoModule {
     @Override
     protected void configureTest() {
         GWTMockUtilities.disarm();
-        bind(EventBus.class).to(CountingEventBus.class).in(TestSingleton.class);
+        bind(EventBus.class).to(RecordingAndCountingEventBus.class).in(TestSingleton.class);
         configurePresenterTest();
         bind(AutobindDisable.class).toInstance(new AutobindDisable(true));
     }

@@ -327,7 +327,9 @@ public class PhenotypeDetailPresenter
     public void onLoadPhenotype(LoadPhenotypeEvent event) {
         if (phenotype != event.getPhenotype()) {
             cache.clear();
-            statisticTypes = phenotype.getStatisticTypes();
+            resetCharts();
+            statisticTypes = event.getPhenotype().getStatisticTypes();
+            getView().setStatisticTypes(statisticTypes);
             isRefresh = true;
         }
         phenotype = event.getPhenotype();

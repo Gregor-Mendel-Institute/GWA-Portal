@@ -11,8 +11,6 @@ import com.gwtplatform.mvp.client.UiHandlers;
  */
 public interface CanidateGeneListUiHandlers extends UiHandlers {
 
-    void updateSearchString(String value);
-
     void onSave();
 
     void onCancel();

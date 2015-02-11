@@ -2,17 +2,19 @@ package com.gmi.nordborglab.browser.client.mvp.presenter.diversity.experiments;
 
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.FacetSearchChangeEvent;
 import com.gmi.nordborglab.browser.client.events.LoadExperimentEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PhenotypeUploadedEvent;
+import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.handlers.PhenotypeListViewUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeUploadWizardPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
-import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypePageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
@@ -36,8 +38,6 @@ import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
-import java.util.List;
-
 public class PhenotypeListPresenter
         extends
         Presenter<PhenotypeListPresenter.MyView, PhenotypeListPresenter.MyProxy> implements PhenotypeListViewUiHandlers {
@@ -46,17 +46,11 @@ public class PhenotypeListPresenter
 
         HasData<PhenotypeProxy> getDisplay();
 
-        void setActiveNavLink(ConstEnums.TABLE_FILTER filter);
-
-        void displayFacets(List<FacetProxy> facets);
-
-        void setSearchString(String searchString);
-
         void onShowPhenotypeUploadPanel(boolean isShow);
 
         void showUploadBtn(boolean showAdd);
-    }
 
+    }
     @ProxyCodeSplit
     @TabInfo(container = ExperimentDetailTabPresenter.class, label = "Phenotypes", priority = 1)
     @NameToken(NameTokens.phenotypes)
@@ -66,30 +60,34 @@ public class PhenotypeListPresenter
     }
 
     protected final AsyncDataProvider<PhenotypeProxy> dataProvider;
-    public static final Object TYPE_SetPhenotypeUploadContent = new Object();
 
+    public static final Object TYPE_SetPhenotypeUploadContent = new Object();
     private final PhenotypeManager phenotypeManager;
+
     private ExperimentProxy experiment;
     private final PlaceManager placeManager;
     boolean phenotypesLoaded = false;
     protected Long experimentId = null;
     boolean fireLoadExperimentEvent = false;
-    private String searchString = null;
-    private ConstEnums.TABLE_FILTER currentFilter = ConstEnums.TABLE_FILTER.ALL;
-    private List<FacetProxy> facets;
     private final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizardPresenterWidget;
+    private final ExperimentManager experimentManager;
     private final CurrentUser currentUser;
+    private final FacetSearchPresenterWidget facetSearchPresenterWidget;
 
     @Inject
     public PhenotypeListPresenter(final EventBus eventBus, final MyView view,
                                   final MyProxy proxy, final PhenotypeManager phenotypeManager,
                                   final PlaceManager placeManager,
                                   final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizardPresenterWidget,
-                                  final CurrentUser currentUser) {
+                                  final CurrentUser currentUser,
+                                  final FacetSearchPresenterWidget facetSearchPresenterWidget, final ExperimentManager experimentManager) {
         super(eventBus, view, proxy, ExperimentDetailTabPresenter.TYPE_SetTabContent);
         getView().setUiHandlers(this);
         this.phenotypeUploadWizardPresenterWidget = phenotypeUploadWizardPresenterWidget;
+        this.facetSearchPresenterWidget = facetSearchPresenterWidget;
+        facetSearchPresenterWidget.setDefaultFilter(ConstEnums.TABLE_FILTER.ALL.name());
         this.currentUser = currentUser;
+        this.experimentManager = experimentManager;
         this.phenotypeManager = phenotypeManager;
         this.placeManager = placeManager;
         dataProvider = new AsyncDataProvider<PhenotypeProxy>() {
@@ -115,8 +113,7 @@ public class PhenotypeListPresenter
                         (int) phenotypes.getTotalElements(), true);
                 dataProvider.updateRowData(range.getStart(), phenotypes.getContents());
                 phenotypesLoaded = true;
-                facets = phenotypes.getFacets();
-                getView().displayFacets(facets);
+                facetSearchPresenterWidget.displayFacets(phenotypes.getFacets());
                 if (callback != null)
                     callback.onSuccess(null);
             }
@@ -129,17 +126,25 @@ public class PhenotypeListPresenter
             }
 
         };
-        phenotypeManager.findAll(receiver, experimentId, currentFilter, searchString, range.getStart(), range.getLength());
+        phenotypeManager.findAll(receiver, experimentId, ConstEnums.TABLE_FILTER.valueOf(facetSearchPresenterWidget.getFilter()), facetSearchPresenterWidget.getSearchString(), range.getStart(), range.getLength());
     }
 
     @Override
     protected void onBind() {
         super.onBind();
         setInSlot(TYPE_SetPhenotypeUploadContent, phenotypeUploadWizardPresenterWidget);
+        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
         registerHandler(PhenotypeUploadedEvent.register(getEventBus(), new PhenotypeUploadedEvent.Handler() {
             @Override
             public void onPhenotypeUploaded(PhenotypeUploadedEvent event) {
                 getView().onShowPhenotypeUploadPanel(false);
+                getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+            }
+        }));
+        registerHandler(getEventBus().addHandlerToSource(FacetSearchChangeEvent.TYPE, facetSearchPresenterWidget, new FacetSearchChangeEvent.Handler() {
+
+            @Override
+            public void onChanged(FacetSearchChangeEvent event) {
                 getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
             }
         }));
@@ -168,22 +173,20 @@ public class PhenotypeListPresenter
             if (!experimentIdToLoad.equals(experimentId)) {
                 experimentId = experimentIdToLoad;
                 phenotypesLoaded = false;
-                searchString = null;
-                getView().setSearchString(searchString);
             }
             if (phenotypesLoaded) {
                 getProxy().manualReveal(PhenotypeListPresenter.this);
                 return;
             }
             if (experiment == null || !experiment.getId().equals(experimentIdToLoad)) {
-                phenotypeManager.requestFactory().experimentRequest().findExperiment(experimentIdToLoad).with("userPermission").fire(new Receiver<ExperimentProxy>() {
+                experimentManager.findOne(new Receiver<ExperimentProxy>() {
 
                     @Override
                     public void onSuccess(ExperimentProxy response) {
                         experiment = response;
                         fireLoadExperimentEvent = true;
                     }
-                });
+                }, experimentId);
             }
             requestPhenotypes(new Callback<Void, Void>() {
 
@@ -222,25 +225,6 @@ public class PhenotypeListPresenter
     @Override
     public boolean useManualReveal() {
         return true;
-    }
-
-
-    @Override
-    public void selectFilter(ConstEnums.TABLE_FILTER filter) {
-        if (filter != currentFilter) {
-            currentFilter = filter;
-            PlaceRequest.Builder request = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest());
-            request.with("filter", filter.toString());
-            placeManager.updateHistory(request.build(), true);
-            getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
-            getView().setActiveNavLink(currentFilter);
-        }
-    }
-
-    @Override
-    public void updateSearchString(String searchString) {
-        this.searchString = searchString;
-        getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
     }
 
     @Override

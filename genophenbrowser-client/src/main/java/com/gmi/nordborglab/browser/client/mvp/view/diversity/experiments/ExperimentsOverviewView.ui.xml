@@ -2,7 +2,6 @@
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
              xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
@@ -12,74 +11,15 @@
     <ui:style>
 
 
-        @external .tabs-left;
-        @external .nav-tabs;
-        @external .active;
-
-        .tabs-left>.nav-tabs {
-            border-right: 1px solid grey !important;
-        }
-
-        .tabs-left>.nav-tabs .active>a, .tabs-left>.nav-tabs .active>a:hover {
-            border-color: grey transparent grey grey !important;
-        }
-
-        .nav-tabs {
-            height: 100%;
-        }
-
-        .searchBox {
-            display: inline-block;
-            margin-top: 20px;
-            margin-right: 20px;
-        }
-
-        .tabPanel {
-
-        }
-
-        .navPills {
-            margin-top: 20px;
-            margin-left: 0.5em;
-        }
-
 
     </ui:style>
 
     <g:LayoutPanel>
         <g:layer top="0" height="5em">
-            <g:HTMLPanel>
-                <div style="float:right;">
-                    <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}">
-                        <b:TextBox ui:field="searchBox" placeholder="Search..."></b:TextBox>
-                    </b:InputAddOn>
-                </div>
-                <div style="float:left;">
-                    <b:NavPills addStyleNames="{style.navPills}">
-                        <b:NavLink ui:field="navAll" active="true">All</b:NavLink>
-                        <b:NavLink ui:field="navPrivate">My studies</b:NavLink>
-                        <b:NavLink ui:field="navPublished">Published</b:NavLink>
-                        <b:NavLink ui:field="navRecent">Recent</b:NavLink>
-                    </b:NavPills>
-                </div>
-            </g:HTMLPanel>
+            <g:SimplePanel ui:field="facetContainer">
+                <!-- PLACE HOLDER FOR FacetSearchWidget -->
+            </g:SimplePanel>
         </g:layer>
-        <!--<g:layer top="6.8em" left="0.5em" width="11em" bottom="0">
-            <b:TabPanel tabPosition="left" ui:field="tabPanel" addStyleNames="{style.tabPanel}">
-                <b:TabLink ui:field="tabAll" createTabPane="false">
-                    <g:InlineLabel text="All [100]"></g:InlineLabel>
-                </b:TabLink>
-                <b:TabLink ui:field="tabPrivate" createTabPane="false">
-                    <g:InlineLabel text="My studies (100)"></g:InlineLabel>
-                </b:TabLink>
-                <b:TabLink ui:field="tabRecent" createTabPane="false">
-                    <g:InlineLabel text="Recent"></g:InlineLabel>
-                </b:TabLink>
-                <b:TabLink ui:field="tabPublished" createTabPane="false">
-                    <g:InlineLabel text="Published"></g:InlineLabel>
-                </b:TabLink>
-            </b:TabPanel>
-        </g:layer>-->
         <g:layer top="5em" left="0.5em" right="0" bottom="30px">
             <c:DataGrid ui:field="table"/>
         </g:layer>

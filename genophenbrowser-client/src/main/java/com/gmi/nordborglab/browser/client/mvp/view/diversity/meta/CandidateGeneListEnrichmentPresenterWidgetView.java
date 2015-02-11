@@ -1,20 +1,15 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.meta;
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
 import com.gmi.nordborglab.browser.client.mvp.handlers.CandidateGeneListEnrichmentUiHandlers;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.CandidateGeneListEnrichmentPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentProxy;
-import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.HasCell;
@@ -22,8 +17,6 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -31,8 +24,10 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.cellview.client.TextHeader;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.HasData;
@@ -63,7 +58,6 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
     private final Widget widget;
     private int minCharSize = 3;
     private final EnrichmentProvider.TYPE type;
-    private final BiMap<ConstEnums.ENRICHMENT_FILTER, NavLink> navLinkMap;
 
     private final DataGrid<CandidateGeneListEnrichmentProxy> finishedDataGrid;
     private final CustomPager finishedPager = new CustomPager();
@@ -79,19 +73,13 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
     private final CandidateGeneListEnrichmentDataGridColumns.CheckBoxFooter checkBoxFooter = new CandidateGeneListEnrichmentDataGridColumns.CheckBoxFooter(checkBoxState);
 
     @UiField
-    NavLink navFinished;
-    @UiField
-    NavLink navRunning;
-    @UiField
-    NavLink navAvailable;
-    @UiField
     SimpleLayoutPanel pagerContainer;
     @UiField
     SimpleLayoutPanel dataGridContainer;
     @UiField
     Button runBtn;
     @UiField
-    TextBox searchBoxTb;
+    SimplePanel facetContainer;
 
     private final PlaceManager placeManager;
 
@@ -104,11 +92,6 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
         runningDataGrid = new DataGrid<CandidateGeneListEnrichmentProxy>(50, dataGridResources, keyProvider);
         availableDataGrid = new DataGrid<CandidateGeneListEnrichmentProxy>(50, dataGridResources, keyProvider);
         widget = binder.createAndBindUi(this);
-        navLinkMap = ImmutableBiMap.<ConstEnums.ENRICHMENT_FILTER, NavLink>builder()
-                .put(ConstEnums.ENRICHMENT_FILTER.FINISHED, navFinished)
-                .put(ConstEnums.ENRICHMENT_FILTER.RUNNING, navRunning)
-                .put(ConstEnums.ENRICHMENT_FILTER.AVAILABLE, navAvailable)
-                .build();
         initDataGrids();
         finishedPager.setDisplay(finishedDataGrid);
         runningPager.setDisplay(runningDataGrid);
@@ -117,7 +100,7 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
 
     private void initDataGrids() {
         //TODO workaround. Later fix so that it also works for experiment/phenotype
-        navAvailable.setVisible((type == EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST || type == EnrichmentProvider.TYPE.STUDY));
+        //navAvailable.setVisible((type == EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST || type == EnrichmentProvider.TYPE.STUDY));
         initFinishedGrid();
         initRunningGrid();
         initAvailableGrid();
@@ -229,42 +212,6 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
 
 
     @Override
-    public void displayFacets(List<FacetProxy> facets) {
-        if (facets == null)
-            return;
-        for (FacetProxy facet : facets) {
-            ConstEnums.ENRICHMENT_FILTER type = ConstEnums.ENRICHMENT_FILTER.valueOf(facet.getName());
-            String newTitle = getFilterTitleFromType(type) + " (" + facet.getTotal() + ")";
-            navLinkMap.get(type).setText(newTitle);
-        }
-    }
-
-    private String getFilterTitleFromType(ConstEnums.ENRICHMENT_FILTER filter) {
-        switch (filter) {
-            case FINISHED:
-                return "Finished";
-            case RUNNING:
-                return "Running";
-            case AVAILABLE:
-                return "Available";
-        }
-        return "";
-    }
-
-    @UiHandler({"navFinished", "navRunning", "navAvailable"})
-    public void onNavClick(ClickEvent e) {
-        IconAnchor iconAnchor = (IconAnchor) e.getSource();
-        getUiHandlers().selectFilter(navLinkMap.inverse().get(iconAnchor.getParent()));
-    }
-
-    private void setActiveNavLink(ConstEnums.ENRICHMENT_FILTER filter) {
-        for (NavLink link : navLinkMap.values()) {
-            link.setActive(false);
-        }
-        navLinkMap.get(filter).setActive(true);
-    }
-
-    @Override
     public void displayType(ConstEnums.ENRICHMENT_FILTER type) {
         DataGrid grid = null;
         CustomPager pager = null;
@@ -286,8 +233,15 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
             dataGridContainer.setWidget(grid);
             pagerContainer.setWidget(pager);
         }
-        setActiveNavLink(type);
+    }
 
+    @Override
+    public void setInSlot(Object slot, IsWidget content) {
+        if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
+            facetContainer.setWidget(content);
+        } else {
+            super.setInSlot(slot, content);
+        }
     }
 
     @Override
@@ -330,12 +284,4 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
         getUiHandlers().onRunEnrichment();
 
     }
-
-    @UiHandler("searchBoxTb")
-    public void onKeyUpSearchBox(KeyUpEvent e) {
-        if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER || searchBoxTb.getValue().equalsIgnoreCase("")) {
-            getUiHandlers().updateSearchString(searchBoxTb.getValue());
-        }
-    }
-
 }

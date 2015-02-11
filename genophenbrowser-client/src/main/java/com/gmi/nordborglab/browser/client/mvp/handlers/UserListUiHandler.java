@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.handlers;
 
-import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.gwtplatform.mvp.client.UiHandlers;
 
 /**
@@ -11,7 +10,5 @@ import com.gwtplatform.mvp.client.UiHandlers;
  * To change this template use File | Settings | File Templates.
  */
 public interface UserListUiHandler extends UiHandlers {
-    void updateSearchString(String value);
 
-    void selectFilter(ConstEnums.USER_FILTER filter);
 }
