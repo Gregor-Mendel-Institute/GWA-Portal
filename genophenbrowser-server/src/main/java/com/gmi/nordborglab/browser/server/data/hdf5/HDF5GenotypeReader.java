@@ -6,11 +6,11 @@ import ch.systemsx.cisd.hdf5.IHDF5Reader;
 import com.gmi.nordborglab.browser.server.data.GenotypeReader;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Bytes;
-import com.google.common.primitives.Ints;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -22,11 +22,15 @@ import java.util.List;
 @Component
 public class HDF5GenotypeReader implements GenotypeReader {
 
-    private
+
     @Value("${GENOTYPE.data_folder}")
-    String GENOTYPE_DATA_FOLDER;
+    private String GENOTYPE_DATA_FOLDER;
 
     public HDF5GenotypeReader() {
+    }
+
+    public HDF5GenotypeReader(String GENOTYPE_DATA_FOLDER) {
+        this.GENOTYPE_DATA_FOLDER = GENOTYPE_DATA_FOLDER;
     }
 
 
@@ -58,8 +62,8 @@ public class HDF5GenotypeReader implements GenotypeReader {
         // get the position index;
         final int[] chr_region = reader.int32().getMatrixAttr("positions", "chr_regions")[chr_ix];
         final int block_size = chr_region[1] - chr_region[0];
-        final List<Integer> positions = Ints.asList(reader.int32().readArrayBlockWithOffset("positions", block_size, chr_region[0]));
-        final int pos_ix = positions.indexOf(position);
+        final int[] positions = reader.uint32().readArrayBlockWithOffset("positions", block_size, chr_region[0]);
+        final int pos_ix = chr_region[0] + Arrays.binarySearch(positions, position);
         if (pos_ix == -1)
             throw new RuntimeException(String.format("no SNP at position %s found", position));
         // get entire snps
