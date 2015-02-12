@@ -1,16 +1,10 @@
 package com.gmi.nordborglab.browser.client.testutils;
 
-import com.google.gwt.junit.GWTMockUtilities;
-import org.jukito.JukitoRunner;
-import org.junit.AfterClass;
+import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.junit.runner.RunWith;
 
-@RunWith(JukitoRunner.class)
+@RunWith(GwtMockitoTestRunner.class)
 public class ViewTestBase {
 
-    @AfterClass
-    public static void tearDown() {
-        GWTMockUtilities.restore();
-    }
 
 }

@@ -32,7 +32,7 @@ public class FacetSearchPresenterWidgetView extends ViewWithUiHandlers<FacetSear
 
     }
 
-    private Map<String, AnchorListItem> navLinkMap;
+    Map<String, AnchorListItem> navLinkMap;
 
     @Inject
     public FacetSearchPresenterWidgetView(Binder binder) {

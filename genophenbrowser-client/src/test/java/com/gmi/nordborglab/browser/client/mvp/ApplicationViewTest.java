@@ -1,59 +1,48 @@
 package com.gmi.nordborglab.browser.client.mvp;
 
-import com.gmi.nordborglab.browser.client.mvp.ApplicationPresenter.MENU;
-import com.gmi.nordborglab.browser.client.mvp.ApplicationView.Binder;
-import com.gmi.nordborglab.browser.client.place.NameTokens;
+import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.testutils.ViewTestBase;
-import com.gmi.nordborglab.browser.client.testutils.ViewTestModule;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.tester.MockFactory;
-import com.gwtplatform.tester.MockingBinder;
-import org.jukito.All;
+import com.gmi.nordborglab.browser.client.ui.favicon.FavicoOptions;
+import com.google.gwt.core.shared.GWT;
+import com.google.gwt.dom.client.Style;
+import com.google.gwtmockito.GwtMock;
+import com.google.gwtmockito.WithClassesToStub;
+import com.gwtplatform.mvp.client.proxy.PlaceManager;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
-import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+@WithClassesToStub({FavicoOptions.class})
 public class ApplicationViewTest extends ViewTestBase {
 
-    public static class Module extends ViewTestModule {
-
-        static class MyTestBinder extends MockingBinder<Widget, ApplicationView> implements Binder {
-            @Inject
-            public MyTestBinder(final MockFactory mockitoMockFactory) {
-                super(Widget.class, mockitoMockFactory);
-            }
-        }
-
-        @Override
-        protected void configureViewTest() {
-            bind(Binder.class).to(MyTestBinder.class);
-            bindManyInstances(MENU.class, MENU.HOME, MENU.DIVERSITY, MENU.GERMPLASM, MENU.GENOTYPE);
-        }
-    }
-
-    @Inject
     ApplicationView view;
 
+    @Mock
+    PlaceManager placeManager;
+    @GwtMock
+    Style style;
+
+    @Before
+    public void setUp() {
+        view = new ApplicationView(GWT.create(ApplicationView.Binder.class), GWT.create(MainResources.class), placeManager);
+        given(view.footerContentPanel.getStyle()).willReturn(style);
+    }
 
     @Test
-    public void testSetActiveNavigationItem(@All MENU activeItem) {
-        String active_style_name = "ACTIVE_STYLE_NAME";
-        given(view.style.current_page_item()).willReturn(active_style_name);
-        given(view.homeLink.getTargetHistoryToken()).willReturn(NameTokens.home);
-        given(view.diversityLink.getTargetHistoryToken()).willReturn(NameTokens.experiments);
-        view.setActiveNavigationItem(activeItem);
-        verify(view.homeLink).removeStyleName(active_style_name);
-        verify(view.diversityLink).removeStyleName(active_style_name);
+    public void testHideFooterWhenNotHome() {
+        view.setActiveNavigationItem(ApplicationPresenter.MENU.DIVERSITY);
+        verify(view.mainContainer).setWidgetSize(view.footerPanel, 0.5);
+        verify(style).setDisplay(Style.Display.NONE);
+    }
 
-        if (activeItem.equals(NameTokens.home))
-            verify(view.homeLink).addStyleName(active_style_name);
-        else if (activeItem.equals(NameTokens.experiments))
-            verify(view.diversityLink).addStyleName(active_style_name);
-        else
-            fail(activeItem + " unknown");
+    @Test
+    public void testShowFooterWhenHome() {
+        view.setActiveNavigationItem(ApplicationPresenter.MENU.HOME);
+        verify(view.mainContainer).setWidgetSize(view.footerPanel, 4.423);
+        verify(style).setDisplay(Style.Display.BLOCK);
     }
 
 
