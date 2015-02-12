@@ -12,8 +12,8 @@ public class SNPAnnot {
     protected long position;
     protected String chr;
     protected Boolean inGene;
-    protected String alt;
-    protected String ref;
+    protected String alt = "1";
+    protected String ref = "0";
     protected String lyr;
     protected String annotation;
     protected String gene;
