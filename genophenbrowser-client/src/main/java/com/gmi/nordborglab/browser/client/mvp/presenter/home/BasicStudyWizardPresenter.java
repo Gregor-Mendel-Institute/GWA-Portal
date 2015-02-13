@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.presenter.home;
 
-import com.arcbees.analytics.shared.Analytics;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
@@ -13,6 +12,7 @@ import com.gmi.nordborglab.browser.client.mvp.handlers.BasicStudyWizardUiHandler
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.phenotype.PhenotypeUploadWizardPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.main.MainPagePresenter;
 import com.gmi.nordborglab.browser.client.mvp.view.home.BasicStudyWizardView;
+import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsManager;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.security.IsLoggedInGatekeeper;
@@ -225,7 +225,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     private Long phenotypeId = null;
     private ExperimentProxy newExperiment;
     private final Validator validator;
-    private final Analytics analytics;
+    private final GoogleAnalyticsManager analyticsManager;
 
 
     private static class WizardStateIterator implements ListIterator<STATE> {
@@ -309,10 +309,10 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                                      final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizard,
                                      final PhenotypeUploadWizardPresenterWidget isaTabUploadWizard,
                                      Validator validator,
-                                     final Analytics analytics) {
+                                     final GoogleAnalyticsManager analyticsManager) {
         super(eventBus, view, proxy, MainPagePresenter.TYPE_SetMainContent);
         this.currentUser = currentUser;
-        this.analytics = analytics;
+        this.analyticsManager = analyticsManager;
         this.validator = validator;
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
@@ -622,12 +622,12 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     study.setJob(studyJob);
                 }
                 fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
-                analytics.startTimingEvent("Study", "Create");
+                analyticsManager.startTimingEvent("Study", "Create");
                 ctx.saveStudy(study).fire(new Receiver<StudyProxy>() {
                     @Override
                     public void onSuccess(StudyProxy response) {
                         fireEvent(new LoadingIndicatorEvent(false));
-                        analytics.endTimingEvent("StudyJob", "Create").userTimingLabel("OK").go();
+                        analyticsManager.endTimingEvent("StudyJob", "Create", "OK");
                         GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Study", "Create", "Study:" + response.getId().toString()));
                         PlaceRequest placeRequest = new PlaceRequest.Builder()
                                 .nameToken(NameTokens.study)
@@ -641,7 +641,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     @Override
                     public void onFailure(ServerFailure error) {
                         fireEvent(new LoadingIndicatorEvent(false));
-                        analytics.endTimingEvent("StudyJob", "Create").userTimingLabel("ERROR").go();
+                        analyticsManager.endTimingEvent("StudyJob", "Create", "ERROR");
                         fireEvent(new DisplayNotificationEvent("Error", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, DisplayNotificationEvent.DURATION_NORMAL));
                         GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Study", "Error - Create", "Error:" + error.getMessage()));
                     }

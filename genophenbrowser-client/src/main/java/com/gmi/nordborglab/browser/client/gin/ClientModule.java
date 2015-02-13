@@ -20,6 +20,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.meta.Candidate
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.FilterItemPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.presenter.widgets.TextBoxFilterItemPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.view.diversity.meta.CandidateGeneListEnrichmentPresenterWidgetView;
+import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsManager;
 import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsNavigationTracker;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
@@ -76,6 +77,7 @@ public class ClientModule extends AbstractPresenterModule {
         bindConstant().annotatedWith(DefaultPlace.class).to(NameTokens.home);
         bindConstant().annotatedWith(ErrorPlace.class).to(NameTokens.home);
         bindConstant().annotatedWith(UnauthorizedPlace.class).to(NameTokens.home);
+        bind(GoogleAnalyticsManager.class).asEagerSingleton();
 
         bind(CurrentUser.class).asEagerSingleton();
         bind(ClientValidation.class).in(Singleton.class);

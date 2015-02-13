@@ -1,9 +1,9 @@
 package com.gmi.nordborglab.browser.client.bootstrap;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
-import com.arcbees.analytics.shared.Analytics;
 import com.eemi.gwt.tour.client.GwtTour;
 import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
+import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsManager;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.ParallelRunnable;
 import com.gmi.nordborglab.browser.client.util.ParentCallback;
@@ -38,13 +38,13 @@ public class BootstrapperImpl implements Bootstrapper {
     private final CurrentUser currentUser;
     private final CustomRequestFactory rf;
     private final AppUserFactory appUserFactory;
-    private final Analytics googleAnalytics;
+    private final GoogleAnalyticsManager analyticsManager;
     private final EventBus eventBus;
 
     @Inject
     public BootstrapperImpl(PlaceManager placeManager, CurrentUser currentUser,
                             CustomRequestFactory rf, AppUserFactory appUserFactory,
-                            Analytics googleAnalytics, EventBus eventBus
+                            GoogleAnalyticsManager analyticsManager, EventBus eventBus
 
     ) {
         this.placeManager = placeManager;
@@ -52,7 +52,7 @@ public class BootstrapperImpl implements Bootstrapper {
         this.rf = rf;
         this.eventBus = eventBus;
         this.appUserFactory = appUserFactory;
-        this.googleAnalytics = googleAnalytics;
+        this.analyticsManager = analyticsManager;
     }
 
     @Override
@@ -68,8 +68,8 @@ public class BootstrapperImpl implements Bootstrapper {
                 if (placeManager != null) {
                     place = placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest());
                 }
-                googleAnalytics.sendEvent("Errors", "Uncaught").eventLabel("Place: " + place + ", User:" + userId + ", Exception:" + e.getMessage()).hitOptions().nonInteractionHit(true).go();
-                googleAnalytics.sendException("Place: " + place + ", User:" + userId + "Exception:" + e.getMessage()).isExceptionFatal(true).go();
+                analyticsManager.sendEvent("Errors", "Uncaught", "Place: " + place + ", User:" + userId + ", Exception:" + e.getMessage(), true);
+                analyticsManager.sendException("Place: " + place + ", User:" + userId + "Exception:" + e.getMessage(), true);
             }
         });
 
@@ -80,11 +80,8 @@ public class BootstrapperImpl implements Bootstrapper {
                 GoogleAnalyticsEvent.GAEventData data = event.getEventData();
                 // required because otehrwiase intValue will cause nullpointer
                 String label = data.getLabel() + ", UserId:" + userId;
-                if (data.getValue() == null) {
-                    googleAnalytics.sendEvent(data.getCategory(), data.getAction()).eventLabel(label).go();
-                } else {
-                    googleAnalytics.sendEvent(data.getCategory(), data.getAction()).eventLabel(label).eventValue(data.getValue()).hitOptions().nonInteractionHit(true).go();
-                }
+                String place = "";
+                analyticsManager.sendEvent(data.getCategory(), data.getAction(), label, true);
             }
         });
 
@@ -147,7 +144,7 @@ public class BootstrapperImpl implements Bootstrapper {
         } else {
             currentUser.setAppUser(null);
         }
-        googleAnalytics.setGlobalSettings().customsOptions().customDimension(1, currentUser.isLoggedIn() ? "YES" : "NO").go();
+        analyticsManager.setLoggedIn(currentUser.isLoggedIn());
     }
 
     private String getAppData() {
