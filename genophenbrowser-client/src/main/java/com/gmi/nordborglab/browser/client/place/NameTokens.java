@@ -3,7 +3,7 @@ package com.gmi.nordborglab.browser.client.place;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.common.collect.ImmutableMap;
 
-public class NameTokens {
+public final class NameTokens {
 
     public static final String home = "/home";
     public static final String experiments = "/studies";
