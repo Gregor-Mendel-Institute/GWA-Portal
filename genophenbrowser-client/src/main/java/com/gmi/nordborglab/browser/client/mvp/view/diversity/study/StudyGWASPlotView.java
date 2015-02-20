@@ -1,10 +1,14 @@
 package com.gmi.nordborglab.browser.client.mvp.view.diversity.study;
 
+import com.github.gwtbootstrap.client.ui.Modal;
 import com.gmi.nordborglab.browser.client.events.SelectSNPEvent;
 import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyGWASPlotPresenter;
+import com.gmi.nordborglab.browser.client.ui.PlotDownloadPopup;
 import com.gmi.nordborglab.browser.client.ui.SNPDetailPopup;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -22,11 +26,15 @@ public class StudyGWASPlotView extends ViewImpl implements
     @UiField
     SimpleLayoutPanel gwasPlotContainer;
     private final SNPDetailPopup snpPopOver;
+    private final Modal popUpPanel = new Modal();
+    private final PlotDownloadPopup plotPanel = new PlotDownloadPopup(PlotDownloadPopup.PLOT_TYPE.STUDY);
 
     @Inject
     public StudyGWASPlotView(final Binder binder, SNPDetailPopup snpPopOver) {
         this.snpPopOver = snpPopOver;
         widget = binder.createAndBindUi(this);
+        popUpPanel.add(plotPanel);
+        popUpPanel.setTitle("Download GWAS Plots");
         snpPopOver.setAnimationEnabled(true);
     }
 
@@ -49,5 +57,16 @@ public class StudyGWASPlotView extends ViewImpl implements
         snpPopOver.setDataPoint(analysisId, event.getChromosome(), event.getxVal());
         snpPopOver.setPopupPosition(event.getClientX(), event.getClientY() - 84 / 2);
         snpPopOver.show();
+    }
+
+    @Override
+    public void setAnalysisId(Long id) {
+        plotPanel.setId(id);
+    }
+
+    @UiHandler("downloadBtn")
+    public void onClickDownloadBtn(ClickEvent e) {
+        popUpPanel.show();
+
     }
 }

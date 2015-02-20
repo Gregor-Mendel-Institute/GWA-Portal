@@ -12,6 +12,7 @@ import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
+import com.gmi.nordborglab.browser.client.ui.PlotDownloadPopup;
 import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
 import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
@@ -32,11 +33,13 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -98,6 +101,8 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     private final Widget widget;
     private final AvatarNameCell avatarNameCell;
     private final PlaceManager placeManager;
+    private final Modal plotPoupup = new Modal();
+    private final PlotDownloadPopup plotDownload = new PlotDownloadPopup(PlotDownloadPopup.PLOT_TYPE.GWASVIEWER);
     @UiField
     DeckLayoutPanel tabPaneContainer;
     @UiField
@@ -113,11 +118,13 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     @UiField(provided = true)
     DataGrid<GWASResultProxy> gwasResultDataGrid;
     @UiField
-    SimpleLayoutPanel gwasPlotContainer;
+    LayoutPanel gwasPlotContainer;
     @UiField
     TabLink gwasUploadTab;
     @UiField
     SimplePanel facetContainer;
+    @UiField
+    SimpleLayoutPanel gwasPlots;
 
 
     public enum PANELS {PLOTS, LIST, UPLOAD}
@@ -178,6 +185,10 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         permissionPopUp.setMaxHeigth("700px");
         permissionPopUp.setCloseVisible(false);
         permissionPopUp.setKeyboard(false);
+        plotPoupup.setTitle("Download plots");
+        plotPoupup.add(plotDownload);
+        // FIXME change once we have information about availabilty of macs
+        plotDownload.setMacFilterEnabled(false);
     }
 
     private void initDataGridColumns() {
@@ -246,6 +257,14 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
             }
         }, true)));
 
+        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("e_icon-picture", new ActionCell.Delegate<GWASResultProxy>() {
+            @Override
+            public void execute(GWASResultProxy object) {
+                plotDownload.setId(object.getId());
+                showPlotDownloadPopup();
+            }
+        }, true)));
+
         gwasResultDataGrid.addColumn(new IdentityColumn<GWASResultProxy>(new CompositeCell<GWASResultProxy>(hasCells)) {
             @Override
             public GWASResultProxy getValue(GWASResultProxy object) {
@@ -256,7 +275,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         gwasResultDataGrid.setColumnWidth(0, 70, Style.Unit.PX);
         gwasResultDataGrid.setColumnWidth(4, 100, Style.Unit.PX);
         gwasResultDataGrid.setColumnWidth(5, 100, Style.Unit.PX);
-        gwasResultDataGrid.setColumnWidth(6, 120, Style.Unit.PX);
+        gwasResultDataGrid.setColumnWidth(6, 160, Style.Unit.PX);
     }
 
     @Override
@@ -269,7 +288,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         if (slot == GWASViewerPresenter.TYPE_SetGWASUploadContent) {
             gwasUploadPanel.setWidget(content);
         } else if (slot == GWASViewerPresenter.TYPE_SetGWASPLOTContent) {
-            gwasPlotContainer.setWidget(content);
+            gwasPlots.setWidget(content);
         } else if (slot == GWASViewerPresenter.TYPE_SetPermissionContent) {
             permissionPopUp.add(content);
         } else if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
@@ -346,5 +365,19 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         else
             permissionPopUp.hide();
 
+    }
+
+    @Override
+    public void setGWAResultId(Long id) {
+        plotDownload.setId(id);
+    }
+
+    private void showPlotDownloadPopup() {
+        plotPoupup.show();
+    }
+
+    @UiHandler("downloadBtn")
+    public void onClickDownloadBtn(ClickEvent e) {
+        showPlotDownloadPopup();
     }
 }

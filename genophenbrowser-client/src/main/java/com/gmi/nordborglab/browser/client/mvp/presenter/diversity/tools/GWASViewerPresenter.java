@@ -65,6 +65,8 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
         void showEditPanel(boolean show);
 
         void showPermissionPanel(boolean show);
+
+        void setGWAResultId(Long id);
     }
 
     @ProxyCodeSplit
@@ -182,6 +184,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
 
         if (gwasResult != null) {
             getView().showPanel(GWASViewerView.PANELS.PLOTS);
+            getView().setGWAResultId(gwasResult.getId());
             gwasPlotPresenterWidget.loadPlots(gwasResult.getId(), GetGWASDataAction.TYPE.GWASVIEWER);
         } else {
             getView().showPanel(GWASViewerView.PANELS.LIST);

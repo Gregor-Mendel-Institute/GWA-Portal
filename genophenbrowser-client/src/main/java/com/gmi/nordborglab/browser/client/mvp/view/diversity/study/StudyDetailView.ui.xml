@@ -148,6 +148,7 @@
                                                                ui:field="navLinkPvalHDF5"></b:NavLink>
                                                     <b:NavLink text="GWAS-Pvalues (JSON)" target="_BLANK"
                                                                ui:field="navLinkPvalJSON"></b:NavLink>
+                                                    <b:NavLink text="Download Plots" ui:field="plotsLink"/>
                                                 </b:DropdownButton>
                                             </b:ButtonGroup>
                                         </b:ButtonToolbar>

@@ -27,8 +27,12 @@ import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.tasks.SubmitAnalysisTask;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
 import org.elasticsearch.action.search.SearchResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -96,6 +100,9 @@ public class HDF5GWASDataService implements GWASDataService {
     protected EsIndexer esIndexer;
 
     protected GWASReader gwasReader;
+
+    private static final ImmutableSet<String> SUPPORTED_PLOT_FORMATS = ImmutableSet.of("png", "pdf");
+    private static final ImmutableSet<String> SUPPORTED_CHROMOSOMES = ImmutableSet.of("chr1", "chr2", "chr3", "chr4", "chr5");
 
     private static List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
 
@@ -337,6 +344,48 @@ public class HDF5GWASDataService implements GWASDataService {
                 tempFile.delete();
         }
         return data;
+    }
+
+    private String generateGWASPlots(String gwasFile, String gwasFolder, String name, String chr, Integer minMac, String format) {
+        if (!SUPPORTED_PLOT_FORMATS.contains(format)) {
+            throw new RuntimeException(String.format("Format %s not supported", format));
+        }
+        String chrFlag = "";
+        String chrNamePart = "";
+        String plotterPrgm = String.format("docker run --rm -v %s:/GWAS_DATA:ro -v %s/PLOT_OUTPUT:/PLOT_OUTPUT pygwas_plotter", gwasFolder, TEMP_FOLDER);
+        if (chr != null && !chr.isEmpty()) {
+            if (!SUPPORTED_CHROMOSOMES.contains(chr)) {
+                throw new RuntimeException(String.format("Chromosome %s invalid", chr));
+            }
+            chrFlag = String.format("-c %s", chr);
+            chrNamePart = String.format("_%s", chr);
+        }
+        String outputFile = String.format("%s%s_mac%s.%s", name, chrNamePart, minMac, format);
+        String plotterCmd = String.format("%s /GWAS_DATA/%s -m %d -o /PLOT_OUTPUT/%s %s", plotterPrgm, gwasFile, minMac, outputFile, chrFlag);
+        CommandLine cmdLine = CommandLine.parse(plotterCmd);
+        DefaultExecutor executor = new DefaultExecutor();
+        ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
+        executor.setWatchdog(watchdog);
+        try {
+            int exitValue = executor.execute(cmdLine);
+            if (exitValue != 0)
+                throw new RuntimeException("Error creating plots");
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return String.format("%s/PLOT_OUTPUT/%s", TEMP_FOLDER, outputFile);
+    }
+
+    @Override
+    public String getStudyPlotFile(Long id, String chr, Integer minMac, String format) {
+        String hdf5file = String.format("%s.hdf5", id);
+        return generateGWASPlots(hdf5file, GWAS_STUDY_FOLDER, id.toString(), chr, minMac, format);
+    }
+
+    @Override
+    public String getGWASViewerPlotFile(Long id, String chr, Integer minMac, String format) {
+        String hdf5file = String.format("%s.hdf5", id);
+        return generateGWASPlots(hdf5file, GWAS_VIEWER_FOLDER, id.toString(), chr, minMac, format);
     }
 
 }

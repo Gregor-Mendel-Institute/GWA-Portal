@@ -52,4 +52,11 @@ public interface GWASDataService {
 
     @PreAuthorize("hasRole('ROLE_USER') AND hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','EDIT') ")
     Study storeGWASResult(Long id, CommonsMultipartFile file) throws IOException;
+
+    @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
+    String getStudyPlotFile(Long id, String chr, Integer minMac, String format);
+
+    @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.GWASResult','READ')")
+    String getGWASViewerPlotFile(Long id, String chr, Integer minMac, String format);
+
 }

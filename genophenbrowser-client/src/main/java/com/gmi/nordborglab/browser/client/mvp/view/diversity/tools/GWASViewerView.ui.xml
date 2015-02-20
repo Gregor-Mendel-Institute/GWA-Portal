@@ -16,7 +16,10 @@
             margin-top: 20px;
             margin-right: 20px;
         }
-    </ui:style>
+
+        .button {
+            margin-top: 5px;
+        }</ui:style>
     <g:LayoutPanel>
         <g:layer top="5px" height="40px">
             <b:TabPanel ui:field="tabPanel">
@@ -41,7 +44,17 @@
                         </g:layer>
                     </g:LayoutPanel>
                 </g:SimpleLayoutPanel>
-                <g:SimpleLayoutPanel ui:field="gwasPlotContainer"/>
+                <g:LayoutPanel ui:field="gwasPlotContainer">
+                    <g:layer top="0" height="40px">
+                        <g:FlowPanel>
+                            <b:Button ui:field="downloadBtn" size="SMALL" type="PRIMARY" icon="CIRCLE_ARROW_DOWN"
+                                      text="Download plots" addStyleNames="pull-right {style.button}"></b:Button>
+                        </g:FlowPanel>
+                    </g:layer>
+                    <g:layer top="45px" bottom="0">
+                        <g:SimpleLayoutPanel ui:field="gwasPlots"/>
+                    </g:layer>
+                </g:LayoutPanel>
                 <g:SimpleLayoutPanel ui:field="gwasUploadPanel"/>
             </g:DeckLayoutPanel>
         </g:layer>
