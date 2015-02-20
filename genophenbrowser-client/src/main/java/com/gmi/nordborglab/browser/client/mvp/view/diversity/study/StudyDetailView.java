@@ -15,6 +15,7 @@ import com.gmi.nordborglab.browser.client.mvp.presenter.diversity.study.StudyDet
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.CircularProgressBar;
 import com.gmi.nordborglab.browser.client.ui.EnableDropdownButton;
+import com.gmi.nordborglab.browser.client.ui.PlotDownloadPopup;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
@@ -99,8 +100,10 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     private GeoChart geoChart = new GeoChart();
     private PieChart pieChart;
     private Modal gwasUploadPopup = new Modal(true);
+    private Modal plotsPopup = new Modal();
     private Modal editPopup = new Modal(true);
     private Modal deletePopup = new Modal(true);
+    private PlotDownloadPopup plotsPanel = new PlotDownloadPopup(PlotDownloadPopup.PLOT_TYPE.STUDY);
 
     @UiField(provided = true)
     StudyDisplayEditor studyDisplayEditor;
@@ -195,6 +198,8 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
             }
         });
         saveEditBtn.setType(ButtonType.PRIMARY);
+        plotsPopup.add(plotsPanel);
+        plotsPopup.setTitle("Download GWAS plots");
         ModalFooter footer = new ModalFooter(cancelEditBtn, saveEditBtn);
         editPopup.add(studyEditEditor);
         editPopup.add(footer);
@@ -398,6 +403,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     @Override
     public void setPhenotypExplorerData(ImmutableSet<TraitProxy> traits) {
         this.phenotypeExplorerData = DataTableUtils.createPhentoypeExplorerTable(traits.asList());
+        this.plotsPanel.setMaxMac(traits.size());
     }
 
     @Override
@@ -492,6 +498,11 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         gwasUploadPopup.show();
     }
 
+    @UiHandler("plotsLink")
+    public void onClickPlotsLink(ClickEvent e) {
+        plotsPopup.show();
+    }
+
 
     @UiHandler({"deleteJobBtn", "deleteFinishedJobBtn"})
     public void onClickDeleteJobBtn(ClickEvent e) {
@@ -550,5 +561,6 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         navLinkPvalJSON.setHref("/provider/study/" + id + "/pvalues.json");
         navLinkPhenCSV.setHref("/provider/study/" + id + "/phenotypedata.csv");
         navLinkPhenJSON.setHref("/provider/study/" + id + "/phenotypedata.json");
+        plotsPanel.setId(id);
     }
 }

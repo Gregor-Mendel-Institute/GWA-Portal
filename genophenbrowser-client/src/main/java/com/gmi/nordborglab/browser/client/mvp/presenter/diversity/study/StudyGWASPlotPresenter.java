@@ -33,6 +33,8 @@ public class StudyGWASPlotPresenter
     public interface MyView extends View {
 
         void showSNPPopUp(Long analysisId, SelectSNPEvent event);
+
+        void setAnalysisId(Long id);
     }
 
     @ProxyCodeSplit
@@ -84,6 +86,7 @@ public class StudyGWASPlotPresenter
             fireLoadEvent = false;
         }
         gwasPlotPresenterWidget.loadPlots(studyId, GetGWASDataAction.TYPE.STUDY);
+        getView().setAnalysisId(studyId);
     }
 
     @Override

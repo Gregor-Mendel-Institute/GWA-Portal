@@ -10,7 +10,6 @@
 
         }
     </ui:style>
-
     <g:ScrollPanel>
         <gui:ResizeableFlowPanel ui:field="container" addStyleNames="{style.gwas_container}" />
     </g:ScrollPanel>

@@ -15,17 +15,16 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 import com.gwtplatform.mvp.client.Presenter;
-import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
+import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 public class StockDetailPresenter extends
         Presenter<StockDetailPresenter.MyView, StockDetailPresenter.MyProxy> {
 
-    public interface MyView extends View {
+    public interface MyView extends com.gwtplatform.mvp.client.View {
 
         void setPedigreeData(CustomDataTable pedigreeData);
 

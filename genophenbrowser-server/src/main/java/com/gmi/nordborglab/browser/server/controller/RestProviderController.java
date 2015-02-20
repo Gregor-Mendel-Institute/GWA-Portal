@@ -49,6 +49,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,8 +61,12 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -99,9 +104,6 @@ public class RestProviderController {
     @Resource
     private CandidateGeneListEnrichmentRepository candidateGeneListEnrichmentRepository;
 
-
-    @Resource
-    private GWASDataService gwasService;
 
     @Resource(name = "jbrowse")
     private AnnotationDataService annotationDataService;
@@ -267,7 +269,7 @@ public class RestProviderController {
     @ResponseBody
     Long uploadStudyGWASResult(@PathVariable("id") Long id, @RequestParam("file") CommonsMultipartFile file) throws IOException {
         Long studyId = null;
-        Study study = gwasService.uploadStudyGWASResult(id, file);
+        Study study = gwasDataService.uploadStudyGWASResult(id, file);
         studyId = study.getId();
         return studyId;
     }
@@ -277,7 +279,7 @@ public class RestProviderController {
     @ResponseBody
     Long storeStudyGWASResult(@PathVariable("id") Long id, @RequestParam("file") CommonsMultipartFile file) throws IOException {
         Long studyId = null;
-        Study study = gwasService.storeGWASResult(id, file);
+        Study study = gwasDataService.storeGWASResult(id, file);
         studyId = study.getId();
         return studyId;
     }
@@ -331,7 +333,7 @@ public class RestProviderController {
     @ResponseBody
     Long uploadGWASResult(@RequestParam("file") CommonsMultipartFile file) throws IOException {
         Long gwasResultId = null;
-        GWASResult gwasResult = gwasService.uploadGWASResult(file);
+        GWASResult gwasResult = gwasDataService.uploadGWASResult(file);
         gwasResultId = gwasResult.getId();
         return gwasResultId;
     }
@@ -393,6 +395,52 @@ public class RestProviderController {
     List<Gene> getCandidateGeneListGenes(@PathVariable("id") Long id) {
         List<Gene> genes = metaAnalysisService.getGenesInCandidateGeneListEnrichment(id);
         return genes;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/gwasviewer/{id}/plots")
+    public void getGWASViewerPlot(HttpServletResponse response, HttpServletRequest request,
+                                  @PathVariable("id") Long id,
+                                  @RequestParam(value = "chr", required = false) String chr,
+                                  @RequestParam(value = "mac", required = false, defaultValue = "15") Integer minMac,
+                                  @RequestParam(value = "format", required = false, defaultValue = "png") String format) {
+
+        String filename = gwasDataService.getGWASViewerPlotFile(id, chr, minMac, format);
+        processPlotFileRequest(response, request, filename);
+    }
+
+
+    @RequestMapping(method = RequestMethod.GET, value = "/gwas/{id}/plots")
+    public void getStudyPlot(HttpServletResponse response, HttpServletRequest request,
+                             @PathVariable("id") Long id,
+                             @RequestParam(value = "chr", required = false) String chr,
+                             @RequestParam(value = "mac", required = false, defaultValue = "15") Integer minMac,
+                             @RequestParam(value = "format", required = false, defaultValue = "png") String format) {
+        String filename = gwasDataService.getStudyPlotFile(id, chr, minMac, format);
+        processPlotFileRequest(response, request, filename);
+    }
+
+    private void processPlotFileRequest(HttpServletResponse response, HttpServletRequest request, String filename) {
+        File file = new File(filename);
+        try {
+            String mimeType = request.getServletContext().getMimeType(filename);
+            if (mimeType == null) {
+                mimeType = "application/octet-stream";
+            }
+            response.setContentType(mimeType);
+            response.setContentLength((int) file.length());
+            response.setHeader("Content-disposition", "attachment; filename=" + file.getName());
+            OutputStream out = response.getOutputStream();
+            FileInputStream in = new FileInputStream(file);
+            FileCopyUtils.copy(in, out);
+            in.close();
+        } catch (IOException ex) {
+            logger.error("Error downloading plots", ex);
+            throw new RuntimeException(ex.getMessage());
+        } finally {
+            if (file.isFile()) {
+                file.delete();
+            }
+        }
     }
 
 
