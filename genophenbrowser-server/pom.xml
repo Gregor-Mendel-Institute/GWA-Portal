@@ -56,6 +56,25 @@
 
     <dependencies>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>genophenbrowser-shared</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.web.bindery</groupId>
+            <artifactId>requestfactory-apt</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.web.bindery</groupId>
+            <artifactId>requestfactory-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-exec</artifactId>
         </dependency>
@@ -107,23 +126,6 @@
         </dependency>
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>genophenbrowser-shared</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>genophenbrowser-client</artifactId>
-            <version>${project.version}</version>
-            <type>war</type>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.web.bindery</groupId>
-            <artifactId>requestfactory-apt</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-smile</artifactId>
         </dependency>
@@ -138,14 +140,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.web.bindery</groupId>
-            <artifactId>requestfactory-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -791,10 +785,27 @@
             </build>
         </profile>
         <profile>
-            <id>dev</id>
+            <!-- XXX: We want to exclude test-client from 'env-dev' profile, Maven forces us to make a 'env-prod' profile -->
+            <id>env-prod</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>genophenbrowser-client</artifactId>
+                    <version>${project.version}</version>
+                    <type>war</type>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>env-dev</id>
             <activation>
                 <property>
-                    <name>dev</name>
+                    <name>env</name>
+                    <value>dev</value>
                 </property>
             </activation>
             <build>
@@ -803,31 +814,20 @@
                         <plugin>
                             <groupId>org.eclipse.jetty</groupId>
                             <artifactId>jetty-maven-plugin</artifactId>
-                            <version>${jetty.version}</version>
                             <configuration>
                                 <scanIntervalSeconds>1</scanIntervalSeconds>
                                 <webApp>
-                                    <baseResource
-                                            implementation="org.eclipse.jetty.util.resource.ResourceCollection">
-                                        <resourcesAsCSV>
-                                            src/main/webapp,${basedir}/../genophenbrowser-client/target/genophenbrowser-client-${project.version}/
+                                    <baseResource implementation="org.eclipse.jetty.util.resource.ResourceCollection">
+                                        <resourcesAsCSV>src/main/webapp,${basedir}/../target/gwt/launcherDir/
                                         </resourcesAsCSV>
                                     </baseResource>
-                                    <extraClasspath>${basedir}/../genophenbrowser-shared/target/classes/
-                                    </extraClasspath>
+                                    <extraClasspath>${basedir}/../test-shared/target/classes/</extraClasspath>
                                 </webApp>
-                                <systemProperties>
-                                    <systemProperty>
-                                        <name>logback.configurationFile</name>
-                                        <value>./src/main/resources/logback.xml</value>
-                                    </systemProperty>
-                                </systemProperties>
                             </configuration>
                         </plugin>
                         <plugin>
                             <groupId>org.apache.tomcat.maven</groupId>
                             <artifactId>tomcat6-maven-plugin</artifactId>
-                            <version>${maven.tomcat6.plugin}</version>
                             <configuration>
                                 <addWarDependenciesInClassloader>false</addWarDependenciesInClassloader>
                                 <contextFile>${basedir}/src/main/tomcatconf/context.xml</contextFile>
@@ -838,7 +838,6 @@
                         <plugin>
                             <groupId>org.apache.tomcat.maven</groupId>
                             <artifactId>tomcat7-maven-plugin</artifactId>
-                            <version>${maven.tomcat7.plugin}</version>
                             <configuration>
                                 <addWarDependenciesInClassloader>false</addWarDependenciesInClassloader>
                                 <contextFile>${basedir}/src/main/tomcatconf/context.xml</contextFile>
