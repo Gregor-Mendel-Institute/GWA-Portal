@@ -54,7 +54,4 @@
     <replace-with class="com.gmi.nordborglab.browser.client.validation.ClientValidatorFactory">
         <when-type-is class="javax.validation.ValidatorFactory"/>
     </replace-with>
-
-    <add-linker name="xsiframe"/>
-
 </module>
