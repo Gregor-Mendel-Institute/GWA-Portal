@@ -9,8 +9,8 @@ import com.google.gwt.event.shared.HasHandlers;
 public class LoadStudyEvent extends GwtEvent<LoadStudyHandler> {
 
 	public interface LoadStudyHandler extends EventHandler {
-		void onLoad(LoadStudyEvent event);
-	}
+        void onLoadStudy(LoadStudyEvent event);
+    }
 	
 	public static final Type<LoadStudyHandler> TYPE = new Type<LoadStudyHandler>();
 	
@@ -31,8 +31,8 @@ public class LoadStudyEvent extends GwtEvent<LoadStudyHandler> {
 
 	@Override
 	protected void dispatch(LoadStudyHandler handler) {
-		handler.onLoad(this);
-	}
+        handler.onLoadStudy(this);
+    }
 	
 	public static void fire(final HasHandlers source,
 			StudyProxy study) {

@@ -1,7 +1,7 @@
 package com.gmi.nordborglab.browser.client.manager;
 
 
-import com.gmi.nordborglab.browser.client.mvp.presenter.germplasm.passport.PassportListPresenter.PassportProxyFilter;
+import com.gmi.nordborglab.browser.client.mvp.germplasm.passport.list.PassportListPresenter.PassportProxyFilter;
 import com.gmi.nordborglab.browser.shared.proxy.PassportPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportSearchCriteriaProxy;
