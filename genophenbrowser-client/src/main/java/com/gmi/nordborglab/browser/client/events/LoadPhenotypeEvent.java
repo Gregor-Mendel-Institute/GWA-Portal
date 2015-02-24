@@ -9,8 +9,8 @@ import com.google.gwt.event.shared.HasHandlers;
 public class LoadPhenotypeEvent extends GwtEvent<LoadPhenotypeHandler> {
 
 	public interface LoadPhenotypeHandler extends EventHandler {
-		void onLoad(LoadPhenotypeEvent event);
-	}
+        void onLoadPhenotype(LoadPhenotypeEvent event);
+    }
 	
 	public static final Type<LoadPhenotypeHandler> TYPE = new Type<LoadPhenotypeHandler>();
 	
@@ -31,8 +31,8 @@ public class LoadPhenotypeEvent extends GwtEvent<LoadPhenotypeHandler> {
 
 	@Override
 	protected void dispatch(LoadPhenotypeHandler handler) {
-		handler.onLoad(this);
-	}
+        handler.onLoadPhenotype(this);
+    }
 	
 	public static void fire(final HasHandlers source,
 			PhenotypeProxy phenotype) {

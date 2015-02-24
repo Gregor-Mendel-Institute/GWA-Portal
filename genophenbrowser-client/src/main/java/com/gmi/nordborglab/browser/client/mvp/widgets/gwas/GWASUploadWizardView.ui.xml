@@ -1,0 +1,11 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:fo='urn:import:com.gmi.nordborglab.browser.client.ui.fileupload'>
+
+    <ui:style>
+        .uploadPanel {
+
+        }
+    </ui:style>
+    <fo:FileUploadWidget ui:field="fileUploadWidget"
+                         addStyleNames="{style.uploadPanel}"></fo:FileUploadWidget>
+</ui:UiBinder>

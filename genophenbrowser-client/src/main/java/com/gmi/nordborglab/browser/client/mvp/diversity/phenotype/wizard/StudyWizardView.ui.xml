@@ -1,0 +1,130 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
+             xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
+             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+             ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+             ui:generateLocales='default'>
+    <ui:style
+            type="com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.wizard.StudyWizardView.MyStyle">
+        .title {
+            padding: 5px 0 0 30px;
+            color: #4D90FE;
+        }
+
+        .subtitle {
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 1px solid #DDD;
+            padding-bottom: 3px;
+            margin-bottom: 16px;
+        }
+
+        .chartContainer {
+            margin-left: 16px;
+        }
+
+        .emptyDataGridWidget, .loadingIndicator {
+            position: relative;
+            top: 250px;
+            font-size: 25px;
+            color: #669923;
+            font-weight: bold;
+        }
+
+        .loadingIndicator {
+            color: #C2C2C2;
+            font-weight: bold;
+        }
+
+        .pager {
+            margin: 0 auto;
+        }
+    </ui:style>
+
+
+    <gui:WizardPanel ui:field="wizard">
+        <gui:page title="General">
+            <g:LayoutPanel>
+                <g:layer top="0" height="5em" left="0" right="0">
+                    <g:HTMLPanel addStyleNames="{style.title}">
+                        <h1>1. General settings</h1>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="10em" bottom="0" left="0" right="50%">
+                    <g:FlowPanel>
+                        <ed:StudyCreateEditor ui:field="studyCreateEditor"></ed:StudyCreateEditor>
+                        <g:HTMLPanel ui:field="piechartContainer"></g:HTMLPanel>
+                    </g:FlowPanel>
+                </g:layer>
+                <g:layer top="10em" bottom="0" right="0" left="50%">
+                    <g:LayoutPanel>
+                        <g:layer top="0" height="2em" left="0" right="0">
+                            <g:HTMLPanel addStyleNames="{style.chartContainer}">
+                                <div class="{style.subtitle}">
+                                    MISSING GENOTYPES
+                                </div>
+                            </g:HTMLPanel>
+                        </g:layer>
+                        <g:layer top="2em" bottom="2.5em" left="0" right="0">
+                            <g:SimpleLayoutPanel>
+                                <c:DataGrid ui:field="missingGenotypesGrid"/>
+                            </g:SimpleLayoutPanel>
+                        </g:layer>
+                        <g:layer bottom="0em" height="2em" left="0" right="0">
+                            <g:HTMLPanel>
+                                <c:SimplePager ui:field="pager" addStyleNames="{style.pager}"/>
+                            </g:HTMLPanel>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+            </g:LayoutPanel>
+        </gui:page>
+        <gui:page title="Phenotype">
+            <g:LayoutPanel>
+                <g:layer top="0" height="5em" left="0" right="0">
+                    <g:HTMLPanel addStyleNames="{style.title}">
+                        <h1>2. Phenotype values</h1>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="5em" height="15em" left="10px" width="600px">
+                    <g:HTMLPanel>
+                        <div>Filter:
+                            <g:ValueListBox ui:field="statisticTypeListBox"/>
+                            <g:HTMLPanel ui:field="countryFilterContainer">
+                                <!--  <chzn:ChosenListBox ui:field="countryFilterLb" placeholderText="Filter countries..." />-->
+                            </g:HTMLPanel>
+                            <g:TextBox ui:field="searchNameTb"/>
+                        </div>
+
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="15em" bottom="2.5em" left="10px" width="600px">
+                    <g:SimpleLayoutPanel>
+                        <c:DataGrid ui:field="phenotypeDataGrid"/>
+                    </g:SimpleLayoutPanel>
+                </g:layer>
+                <g:layer bottom="0em" height="2em" left="10px" width="600px">
+                    <g:HTMLPanel>
+                        <c:SimplePager ui:field="phenotypeDataGridPager"
+                                       addStyleNames="{style.pager}"/>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="0" bottom="0" right="0" left="620px">
+                    <g:LayoutPanel>
+                        <g:layer top="0" left="0" right="0" height="50%">
+                            <g:SimpleLayoutPanel ui:field="mapContainer"/>
+                        </g:layer>
+                        <g:layer top="50%" bottom="0" left="0" right="0">
+                            <g:SimpleLayoutPanel ui:field="phenotypeContainer"/>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+            </g:LayoutPanel>
+        </gui:page>
+    </gui:WizardPanel>
+</ui:UiBinder>

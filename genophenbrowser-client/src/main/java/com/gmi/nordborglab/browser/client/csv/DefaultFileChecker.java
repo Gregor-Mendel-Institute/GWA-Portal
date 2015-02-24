@@ -1,8 +1,8 @@
 
 package com.gmi.nordborglab.browser.client.csv;
 
-import com.gmi.nordborglab.browser.client.mvp.view.diversity.tools.GWASUploadWizardView;
-import com.gmi.nordborglab.browser.client.mvp.widgets.FileUploadWidget;
+import com.gmi.nordborglab.browser.client.mvp.widgets.gwas.GWASUploadWizardView;
+import com.gmi.nordborglab.browser.client.ui.fileupload.FileUploadWidget;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;

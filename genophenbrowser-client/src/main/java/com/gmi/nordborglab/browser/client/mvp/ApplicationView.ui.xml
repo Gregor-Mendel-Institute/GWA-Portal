@@ -1,0 +1,392 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+             ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
+             ui:generateLocales='default'>
+    <ui:with type="com.gmi.nordborglab.browser.client.place.NameTokens"
+             field="nameTokens"></ui:with>
+    <ui:with field="mainRes" type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
+
+    <ui:style ui:field="style"
+              type="com.gmi.nordborglab.browser.client.mvp.ApplicationView.MyStyle">
+
+        .navigation {
+            float: left;
+            margin: 0;
+            padding: 0;
+            background-color: #BBEB29;
+            background: literal("-moz-linear-gradient(center bottom, #689f21 0%, #a8d914 100%) !important");
+            background: literal("-webkit-gradient(linear, left bottom, left top, color-stop(0, #689f21), color-stop(1, #a8d914)) !important");
+            border-color: #669923;
+        }
+
+        .navigation ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .navigation a {
+            position: relative;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            text-decoration: none;
+            padding: 15px 20px 15px 20px;
+            line-height: 3.423em;
+        }
+
+        .navigation li {
+            list-style: none;
+            display: inline-block;
+            float: left;
+            height: 3.423em;
+            border-right: 1px solid #bae045;
+        }
+
+        .navigation li:hover {
+            color: white;
+            background: #51850d;
+            -webkit-transition: color 0.1s linear;
+            -moz-transition: color 0.1s linear;
+        }
+
+        .current_page_item {
+            background: #51850d;
+            background-image: literal("-webkit-gradient(linear,left bottom,left top,from(#689F21),to(#51850d)) !important");
+            background-image: literal("-moz-linear-gradient(top,#51850d,#689F21) !important");
+            -webkit-box-shadow: inset 1px 1px 0px #4a790d, inset -1px -1px 0px #4a790d;
+            box-shadow: inset 1px 1px 0px #4a790d, inset -1px -1px 0px #4a790d;
+            /*color : #508210*/
+        }
+
+        .current_page_item a {
+            color: white;
+        }
+
+        .footer {
+            background-image: literal("-webkit-linear-gradient(top,whiteSmoke,white) !important");
+            background-image: literal("-moz-linear-gradient(top,whiteSmoke,white) !important");
+            border-collapse: collapse;
+            border-top: 1px solid #CCC;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        .footer_content {
+            width: 500px;
+            margin: 0 auto;
+            line-height: 3.423em;
+            height: 3.423em;
+        }
+
+        .footer_items {
+            float: left;
+            line-height: 3.423em;
+            margin-right: 10px;
+            color: #999;
+        }
+
+        .userInfoPopup {
+            position: fixed;
+            min-width: 250px;
+            min-height: 200px;
+            z-index: 10000;
+            -webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, .3);;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .3);
+            /* -moz-border-radius: 0 0 5px 5px;*/
+            /*-webkit-border-radius: 0 0 5px 5px;*/
+            /*border-radius: 0 0 5px 5px;*/
+            -moz-box-shadow: 0 3px 10px rgba(0, 0, 0, .3);
+            border: 1px solid #BEBEBE;;
+            background: #FAFAFA;
+            left: -999px;
+            margin: 0;
+            padding: 0;
+            color: black;
+            margin-top: 4px;
+        }
+
+        .userItem {
+
+        }
+
+        .userItem:hover .userInfoPopup {
+            left: auto;
+        }
+
+        .userDetails {
+            float: left;
+            margin-left: 10px;
+        }
+
+        .userName {
+            font-weight: bold;
+        }
+
+        .userDetailLinks {
+
+        }
+
+        .userDetailLinks ul {
+            height: auto;
+        }
+
+        .userDetailLinks li {
+            height: auto;
+            border-right: none;
+            display: block;
+            float: none;
+            padding: 5px 0px 5px 10px;
+        }
+
+        .userDetailLinks li:hover {
+            color: black;
+            background: #eff5f9;
+            /*background:#51850d;*/
+            /*text-shadow: 0 0 10px #336699;
+                        text-shadow: 0 0 10px rgba(51,102,153,0.8);
+                        -webkit-transition: color 0.1s linear;
+                        -moz-transition: color 0.1s linear;*/
+        }
+
+        .userDetailLinks li:hover > a {
+            background: #eff5f9;
+            color: #1A74B0;
+            text-shadow: 0 0 0 black;
+        }
+
+        .userDetailLinks a {
+            position: relative;
+            color: #1A74B0;
+            font-weight: normal;
+            font-size: 13px;
+            text-decoration: none;
+            line-height: normal;
+            padding: 0;
+        }
+
+        .userDetailLinks li span {
+            margin-right: 5px;
+        }
+
+        .userDetailsContainer {
+            height: 50px;
+            padding-top: 10px;
+        }
+
+        .divider {
+            border: 0;
+            border-top: 1px dotted #c0c0c0;
+            margin: 0 0 -5px;
+        }
+
+        .loading_indicator {
+            background: literal("-webkit-gradient(linear, left top, left bottom, from(#FFE090),to(#FFF2B0) )");
+            background: literal("-moz-linear-gradient(center bottom, #FFE090 0%, #FFF2B0 100%)");
+            background-color: #FFF1A8;
+            color: black;
+            left: 50%;
+            padding: 3px 6px;
+            position: fixed;
+            top: 0;
+            z-index: 10000;
+            -webkit-border-bottom-left-radius: 5px;
+            -webkit-border-bottom-right-radius: 5px;
+            -webkit-box-shadow: rgba(0, 0, 0, 0.246094) 0px -3px 5px, rgba(0, 0, 0, 0.246094) 0px 3px 5px;
+            -moz-box-shadow: rgba(0, 0, 0, 0.246094) 0px -3px 5px, rgba(0, 0, 0, 0.246094) 0px 3px 5px;
+            box-shadow: rgba(0, 0, 0, 0.246094) 0px -3px 5px, rgba(0, 0, 0, 0.246094) 0px 3px 5px;
+            font-weight: bold;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .login_icon {
+            font-size: 16px;
+        }
+
+        .login_menu {
+            padding: 15px 30px 15px 45px !important;
+        }
+
+        .notify_bubble {
+            background: #e02424;
+            position: absolute;
+            left: 10px;
+            top: 4px;
+            padding: 2px 4px;
+            color: #fff;
+            font: bold .8em Tahoma, Arial, Helvetica;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+        }
+
+        .notificationContainer {
+            margin-left: 10px;
+            color: #828282;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+
+        .circle {
+            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            background-color: #eeeeee;
+        }
+
+        .circle_red {
+            background-color: #e02424;
+        }
+
+        .notificationTableContainer {
+            max-height: 400px;
+            overflow: auto;
+        }
+
+        .notificationTable {
+            color: #888;
+        }
+
+        .notificationTable td {
+            vertical-align: middle;
+        }
+
+        .notification_icon {
+            font-size: 19px;
+        }
+
+        .unread_notification {
+            background-color: #eff5f9;
+        }
+
+        .notificationTable td a {
+            text-decoration: none;
+            font-weight: bold;
+            color: #444;
+            padding: 0;
+            line-height: 13px;
+        }
+
+        .notificationTable td a:hover {
+            color: #888;
+        }
+
+        @external notificationNews;
+        .notificationTable td .notificationNews {
+            font-size: 110%;
+            color: #444;
+            font-weight: bold;
+        }
+
+    </ui:style>
+
+    <g:DockLayoutPanel unit="EM" ui:field="mainContainer">
+        <g:north size="3.423">
+            <g:HTMLPanel addStyleNames="{style.navigation}">
+                <ul id="topNav">
+                    <li class="{style.current_page_item}">
+                        <g:InlineHyperlink
+                                ui:field="homeLink" targetHistoryToken="{nameTokens.getHome}">Home
+                        </g:InlineHyperlink>
+                    </li>
+                    <li>
+                        <g:InlineHyperlink ui:field="diversityLink"
+                                           targetHistoryToken="{nameTokens.getExperiments}">Phenotypes
+                        </g:InlineHyperlink>
+                    </li>
+                    <li>
+                        <g:InlineHyperlink ui:field="germplasmLink"
+                                           targetHistoryToken="{nameTokens.getTaxonomies}">Germplasm
+                        </g:InlineHyperlink>
+                    </li>
+                    <li>
+                        <g:InlineHyperlink ui:field="genotypeLink"
+                                           targetHistoryToken="{nameTokens.getGenomebrowser}">Genotype
+                        </g:InlineHyperlink>
+                    </li>
+                    <li class="{style.userItem}" id="userMenuItem">
+                        <g:Anchor ui:field="userLink" addStyleNames="{style.login_menu}" href="">
+                            <span style="position: absolute;left: 15px;">
+                                <span class="{style.login_icon}">
+                                    <i class="e_icon-user"/>
+                                </span>
+                                <span class="{style.notify_bubble} animated" ui:field="notifyBubble"></span>
+                            </span>
+                            <span ui:field="loginTextLb">Login</span>
+                            <span class="{mainRes.style.arrow_down}" ui:field="arrorIcon"/>
+                        </g:Anchor>
+
+                        <g:HTMLPanel ui:field="userInfoContainer"
+                                     addStyleNames="{style.userInfoPopup}">
+                            <ul class="{style.userDetailLinks}">
+                                <li>
+                                    <div class="{style.userDetailsContainer}">
+                                        <div style="float:left;">
+                                            <img class="img-circle" ui:field="avatarImg"/>
+                                        </div>
+                                        <div class="{style.userDetails}">
+                                            <g:Label ui:field="userName" addStyleNames="{style.userName}"></g:Label>
+                                            <g:Label ui:field="userEmail"></g:Label>
+                                        </div>
+                                    </div>
+                                    <hr class="{style.divider}"/>
+                                </li>
+                                <li>
+                                    <a href="#{nameTokens.getAccount}">
+                                        <span class="{mainRes.style.profile}"/>
+                                        Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="logout">
+                                        <span class="{mainRes.style.logout}"></span>
+                                        Logout
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div class="{style.notificationContainer}">
+                                Notifications:
+                                <div class="{style.notificationTableContainer}">
+                                    <table id="notificationTable"
+                                           class="table table-condensed {style.notificationTable}">
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </g:HTMLPanel>
+                    </li>
+                </ul>
+            </g:HTMLPanel>
+        </g:north>
+        <g:center>
+            <g:SimpleLayoutPanel ui:field="container"/>
+        </g:center>
+        <g:south size="4.423">
+            <g:HTMLPanel addStyleNames="{style.footer}" ui:field="footerPanel">
+                <div ui:field="footerContentPanel">
+                    <div class="{style.footer_content}">
+                        <div class="{style.footer_items}">
+                            @ 2012 GMI
+                        </div>
+                        <div class="{mainRes.style.gmi_logo_footer} {style.footer_items}"></div>
+                        <div class="{mainRes.style.transplant_logo_footer} {style.footer_items}"></div>
+                        <div class="{mainRes.style.fp7_logo_footer} {style.footer_items}"></div>
+                        <div class="{mainRes.style.eu_logo_footer} {style.footer_items}"></div>
+                    </div>
+                    <div style="font-size: 10px;line-height: 10px;">The transPLANT project is funded by the European
+                        Commission within its 7th Framework Programme, under the thematic area "Infrastructures",
+                        contract number 283496.
+                    </div>
+                </div>
+                <div ui:field="loadingIndicator" class="{style.loading_indicator}">Loading ...</div>
+            </g:HTMLPanel>
+        </g:south>
+    </g:DockLayoutPanel>
+</ui:UiBinder>
