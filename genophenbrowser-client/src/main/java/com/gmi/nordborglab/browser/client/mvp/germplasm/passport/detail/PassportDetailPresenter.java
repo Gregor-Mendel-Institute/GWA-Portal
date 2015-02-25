@@ -24,7 +24,6 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 import com.gwtplatform.mvp.client.Presenter;
-import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
@@ -38,7 +37,7 @@ public class PassportDetailPresenter
         extends
         Presenter<PassportDetailPresenter.MyView, PassportDetailPresenter.MyProxy> {
 
-    public interface MyView extends View {
+    public interface MyView extends com.gwtplatform.mvp.client.View {
 
         PassportDisplayDriver getDisplayDriver();
 
