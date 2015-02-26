@@ -3,7 +3,8 @@ package com.gmi.nordborglab.browser.server.service.impl;
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.data.GWASDataForClient;
-import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnotation;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPInfo;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.google.common.collect.ImmutableList;
 import com.google.visualization.datasource.Capabilities;
@@ -99,7 +100,7 @@ public class GWASDataTableGenerator implements DataTableGenerator {
         if (data.getGVEs() != null) {
             table.addColumn(new ColumnDescription("gve", ValueType.NUMBER, "GVE"));
         }
-        if (data.getSnpAnnotations() != null) {
+        if (data.getSNPInfos() != null) {
             table.addColumn(new ColumnDescription("annotation", ValueType.TEXT, "Annotation"));
             table.addColumn(new ColumnDescription("inGene", ValueType.BOOLEAN, "inGene"));
         }
@@ -117,20 +118,34 @@ public class GWASDataTableGenerator implements DataTableGenerator {
             if (data.getGVEs() != null) {
                 row.addCell(new TableCell(round(data.getGVEs()[i])));
             }
-            if (data.getSnpAnnotations() != null) {
-                SNPAnnot annot = data.getSnpAnnotations().get(i);
+            if (data.getSNPInfos() != null) {
+                SNPInfo snpInfo = data.getSNPInfos().get(i);
                 Value annotationValue = TextValue.getNullValue();
 
-                if (annot.getAnnotation() != null) {
-                    annotationValue = new TextValue(data.getSnpAnnotations().get(i).getAnnotation());
+                if (snpInfo.getAnnotations() != null && snpInfo.getAnnotations().size() > 0) {
+                    SNPAnnotation annotation = snpInfo.getAnnotations().get(0);
+                    //TODO add more information
+                    annotationValue = new TextValue(getAnnotationFromEffect(annotation.getEffect()));
                 }
                 row.addCell(new TableCell(annotationValue));
-                Value inGeneValue = BooleanValue.getInstance(annot.isInGene());
+                Value inGeneValue = BooleanValue.getInstance(snpInfo.isInGene());
                 row.addCell(new TableCell(inGeneValue));
             }
             table.addRow(row);
         }
         return table;
+    }
+
+    private static String getAnnotationFromEffect(String effect) {
+        if (effect == null)
+            return null;
+        switch (effect) {
+            case "SYNONYMOUS_CODING":
+                return "S";
+            case "NON_SYNONYMOUS_CODING":
+                return "NS";
+        }
+        return "*";
     }
 
     private static double round(float value) {

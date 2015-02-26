@@ -3,7 +3,7 @@ package com.gmi.nordborglab.browser.server.service;
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAlleleInfo;
-import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPInfo;
 import com.google.visualization.datasource.datatable.DataTable;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public interface AnnotationDataService {
 
     public Isoform getGeneIsoform(String gene);
 
-    List<SNPAnnot> getSNPAnnotations(String chr, int[] positions);
+    List<SNPInfo> getSNPAnnotations(String chr, int[] positions);
 
     Gene getGeneById(String gene);
 

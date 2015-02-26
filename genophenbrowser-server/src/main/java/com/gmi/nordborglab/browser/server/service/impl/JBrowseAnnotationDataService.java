@@ -10,7 +10,7 @@ import com.gmi.nordborglab.browser.server.data.annotation.GeneAnnotation;
 import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
 import com.gmi.nordborglab.browser.server.data.annotation.JBrowseChrTrackData;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAlleleInfo;
-import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPInfo;
 import com.gmi.nordborglab.browser.server.data.annotation.nclist.HistogramMeta;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.google.common.base.Splitter;
@@ -73,7 +73,7 @@ public class JBrowseAnnotationDataService implements AnnotationDataService {
     }
 
     @Override
-    public List<SNPAnnot> getSNPAnnotations(String chr, int[] positions) {
+    public List<SNPInfo> getSNPAnnotations(String chr, int[] positions) {
         throw new RuntimeException("Not implemented");
     }
 

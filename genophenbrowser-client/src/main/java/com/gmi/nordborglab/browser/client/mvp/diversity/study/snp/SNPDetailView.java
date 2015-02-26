@@ -7,8 +7,9 @@ import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
-import com.gmi.nordborglab.browser.shared.proxy.SNPAnnotProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPGWASInfoProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SNPInfoProxy;
+import com.gmi.nordborglab.browser.shared.proxy.annotation.SNPAnnotationProxy;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -29,6 +30,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.layout.client.Layout;
 import com.google.gwt.query.client.GQuery;
 import com.google.gwt.resources.client.CssResource;
@@ -136,8 +138,6 @@ public class SNPDetailView
     @UiField
     SpanElement scoreLb;
     @UiField
-    SpanElement typeLb;
-    @UiField
     SpanElement geneLb;
     @UiField
     SimpleLayoutPanel lowerChartContainer;
@@ -159,12 +159,20 @@ public class SNPDetailView
     DivElement altAlleleBar;
     @UiField
     SpanElement altAlleleLb;
+    @UiField
+    SpanElement effectLb;
+    @UiField
+    SpanElement functionLb;
+    @UiField
+    SpanElement codonLb;
+    @UiField
+    SpanElement aminoAcidLb;
     private LayoutPanel boxPlotStripContainer = new LayoutPanel();
     private FlowPanel countryContainer = new FlowPanel();
     private ListBox countryFilter = new ListBox();
     private List<SNPAllele> snpAlleles;
 
-    SNPAnnotProxy alleleInfo;
+    SNPInfoProxy alleleInfo;
     private com.googlecode.gwt.charts.client.DataTable stripChartData;
     private ScatterChart stripChart = new ScatterChart();
     private CHART_TYPE chartType = CHART_TYPE.table;
@@ -185,6 +193,7 @@ public class SNPDetailView
     private double refMeanValue;
     private double altMeanValue;
     private ColumnSortEvent.ListHandler<SNPAllele> sortHandler = new ColumnSortEvent.ListHandler<>(null);
+    private static final NumberFormat decimalNumberFormat = NumberFormat.getFormat(NumberFormat.getDecimalFormat().getPattern()).overrideFractionDigits(2);
 
     private static final String COLOR_REF = "#3366cc";
     private static final String COLOR_ALT = "#dc3912";
@@ -240,7 +249,7 @@ public class SNPDetailView
     private void initDataGrid(FlagMap flagMap) {
 
         alleleDataGrid.setWidth("100%");
-        alleleDataGrid.setMinimumTableWidth(1000, Style.Unit.PX);
+        alleleDataGrid.setMinimumTableWidth(600, Style.Unit.PX);
         alleleDataGrid.setEmptyTableWidget(new Label("No Records found"));
         alleleDataGrid.addColumn(new SNPDetailDataGridColumns.RowIDColumn(), "#");
         alleleDataGrid.setColumnWidth(0, 60, Style.Unit.PX);
@@ -259,9 +268,9 @@ public class SNPDetailView
                 return Doubles.compare(v1, v2);
             }
         });
-        alleleDataGrid.addColumn(new SNPDetailDataGridColumns.LongitudeColumn(), "Lon");
+        alleleDataGrid.addColumn(new SNPDetailDataGridColumns.LongitudeColumn(decimalNumberFormat), "Lon");
         alleleDataGrid.setColumnWidth(4, 80, Style.Unit.PX);
-        alleleDataGrid.addColumn(new SNPDetailDataGridColumns.LatitudeColumn(), "Lat");
+        alleleDataGrid.addColumn(new SNPDetailDataGridColumns.LatitudeColumn(decimalNumberFormat), "Lat");
         alleleDataGrid.setColumnWidth(5, 80, Style.Unit.PX);
         alleleDataGrid.addColumn(new SNPDetailDataGridColumns.CountryColumn(flagMap), "Country");
         alleleDataGrid.setColumnWidth(6, 80, Style.Unit.PX);
@@ -534,7 +543,7 @@ public class SNPDetailView
     public void displaySNPInfo(SNPGWASInfoProxy response) {
         chrLb.setInnerText(response.getChr());
         posLb.setInnerText(String.valueOf(response.getPosition()));
-        scoreLb.setInnerText(String.valueOf(response.getScore()));
+        scoreLb.setInnerText(decimalNumberFormat.format(response.getScore()));
 
 
     }
@@ -546,10 +555,29 @@ public class SNPDetailView
 
 
     @Override
-    public void displayAlleInfo(SNPAnnotProxy snpAnnot) {
+    public void displayAlleInfo(SNPInfoProxy snpAnnot) {
         this.alleleInfo = snpAnnot;
-        typeLb.setInnerText(alleleInfo.getAnnotation());
-        geneLb.setInnerText(alleleInfo.getGene());
+        // TODO adapt for new annotation
+        String effect = "-";
+        String function = "-";
+        String codon = "-";
+        String aminoAcid = "-";
+        String gene = "-";
+        if (alleleInfo.getAnnotations() != null && alleleInfo.getAnnotations().size() > 0) {
+            SNPAnnotationProxy annotation = alleleInfo.getAnnotations().get(0);
+            effect = annotation.getEffect();
+            function = annotation.getFunction();
+            codon = annotation.getCodonChange();
+            aminoAcid = annotation.getAminoAcidChange();
+            if (annotation.getTrascript() != null) {
+                gene = annotation.getTrascript().split("\\.")[0];
+            }
+        }
+        effectLb.setInnerText(effect);
+        functionLb.setInnerText(function);
+        codonLb.setInnerText(codon);
+        aminoAcidLb.setInnerText(aminoAcid);
+        geneLb.setInnerText(gene);
     }
 
     @Override

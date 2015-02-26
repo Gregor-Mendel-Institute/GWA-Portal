@@ -5,7 +5,8 @@ import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.annotation.GoTerm;
 import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAlleleInfo;
-import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnotation;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPInfo;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -64,38 +65,79 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
     }
 
     @Override
-    public List<SNPAnnot> getSNPAnnotations(String chr, int[] positions) {
-        List<SNPAnnot> annotations = new ArrayList<SNPAnnot>();
+    public List<SNPInfo> getSNPAnnotations(String chr, int[] positions) {
+        List<SNPInfo> snpInfos = new ArrayList<SNPInfo>();
 
         MultiGetRequestBuilder requestBuilder = client.prepareMultiGet();
         for (int i = 0; i < positions.length; i++) {
-            requestBuilder.add(new MultiGetRequest.Item(String.format(INDEX_PREFIX, chr), "snps", String.valueOf(positions[i])).fields("annotation", "inGene", "ref", "alt").fetchSourceContext(new FetchSourceContext("gene")));
+            requestBuilder.add(new MultiGetRequest.Item(String.format(INDEX_PREFIX, chr), "snps", String.valueOf(positions[i])).fields("annotation", "inGene", "ref", "alt").fetchSourceContext(new FetchSourceContext("annotations")));
         }
         MultiGetResponse response = requestBuilder.execute().actionGet();
         Iterator<MultiGetItemResponse> iterator = response.iterator();
         MultiGetItemResponse itemResponse = null;
         int failed = 0;
         while (iterator.hasNext()) {
-            SNPAnnot snpAnnot = new SNPAnnot();
+            SNPInfo snpInfo = new SNPInfo();
             try {
                 itemResponse = iterator.next();
-                snpAnnot.setAnnotation(itemResponse.getResponse().getFields().get("annotation").getValue().toString());
-                snpAnnot.setInGene((Boolean) itemResponse.getResponse().getFields().get("inGene").getValue());
-                snpAnnot.setRef((String) itemResponse.getResponse().getFields().get("ref").getValue());
-                snpAnnot.setAlt((String) itemResponse.getResponse().getFields().get("alt").getValue());
-                List<Map<String, Object>> gene = (List<Map<String, Object>>) itemResponse.getResponse().getSourceAsMap().get("gene");
-                Map<String, Object> geneFields = gene.get(0);
-                snpAnnot.setGene((String) geneFields.get("name"));
-
+                snpInfo.setInGene((Boolean) itemResponse.getResponse().getFields().get("inGene").getValue());
+                snpInfo.setRef((String) itemResponse.getResponse().getFields().get("ref").getValue());
+                snpInfo.setAlt((String) itemResponse.getResponse().getFields().get("alt").getValue());
+                List<Map<String, Object>> annotationMap = (List<Map<String, Object>>) itemResponse.getResponse().getSourceAsMap().get("annotations");
+                List<SNPAnnotation> annotations = extractSNPAnnotations(annotationMap);
+                snpInfo.setAnnotations(annotations);
+                snpInfo.setGene(extractGeneFromAnnotations(annotations));
 
             } catch (Exception e) {
                 String test = "test";
                 failed = failed + 1;
             }
-            annotations.add(snpAnnot);
+            snpInfos.add(snpInfo);
+        }
+        return snpInfos;
+    }
+
+    private String extractGeneFromAnnotations(List<SNPAnnotation> annotations) {
+        String gene = null;
+        if (annotations != null && annotations.size() > 0) {
+            gene = annotations.get(0).getGene();
+        }
+        return gene;
+    }
+
+    private List<SNPAnnotation> extractSNPAnnotations(List<Map<String, Object>> annotationMap) {
+        List<SNPAnnotation> annotations = Lists.newArrayList();
+        if (annotationMap != null) {
+            for (Map<String, Object> an : annotationMap) {
+                SNPAnnotation annotation = new SNPAnnotation((String) an.get("effect"));
+                if (an.containsKey("impact")) {
+                    annotation.setImpact((String) an.get("impact"));
+                }
+                if (an.containsKey("function")) {
+                    annotation.setFunction((String) an.get("function"));
+                }
+                if (an.containsKey("codon_change")) {
+                    annotation.setCodonChange((String) an.get("codon_change"));
+                }
+                if (an.containsKey("amino_acid_change")) {
+                    annotation.setAminoAcidChange((String) an.get("amino_acid_change"));
+                }
+                if (an.containsKey("gene_name")) {
+                    annotation.setGene((String) an.get("gene_name"));
+                }
+                if (an.containsKey("transcript_id")) {
+                    annotation.setTrascript((String) an.get("transcript_id"));
+                }
+                if (an.containsKey("rank")) {
+                    annotation.setRank((Integer) an.get("rank"));
+                }
+                annotations.add(annotation);
+            }
+
         }
         return annotations;
     }
+
 
     @Override
     public Gene getGeneById(String id) {
@@ -152,7 +194,7 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
             }));
         }
         List<Byte> alleles = genotypeReader.getAlleles(genotype, chromosome, position, passportIdsString);
-        List<SNPAnnot> snpAnnotations = getSNPAnnotations(String.format("chr%s", chromosome), new int[]{position});
+        List<SNPInfo> snpAnnotations = getSNPAnnotations(String.format("chr%s", chromosome), new int[]{position});
         SNPAlleleInfo info = new SNPAlleleInfo(snpAnnotations.get(0), alleles);
         return info;
     }

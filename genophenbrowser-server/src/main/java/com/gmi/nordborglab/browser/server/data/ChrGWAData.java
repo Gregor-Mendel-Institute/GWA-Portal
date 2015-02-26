@@ -3,8 +3,7 @@ package com.gmi.nordborglab.browser.server.data;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gmi.nordborglab.browser.server.converters.ChrGWADataSerializer;
-import com.gmi.nordborglab.browser.server.data.annotation.GeneSerializer;
-import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPInfo;
 import com.google.common.primitives.Floats;
 
 import java.util.Arrays;
@@ -19,7 +18,7 @@ public class ChrGWAData {
     private final int[] macs;
     private final float[] mafs;
     private final float[] GVEs;
-    private List<SNPAnnot> snpAnnotations;
+    private List<SNPInfo> snpInfos;
 
     private final String chr;
 
@@ -134,11 +133,11 @@ public class ChrGWAData {
         return sortByIndex(chrGWAData, idx);
     }
 
-    public List<SNPAnnot> getSnpAnnotations() {
-        return snpAnnotations;
+    public List<SNPInfo> getSNPInfos() {
+        return snpInfos;
     }
 
-    public void setSnpAnnotations(List<SNPAnnot> snpAnnotations) {
-        this.snpAnnotations = snpAnnotations;
+    public void setSNPInfos(List<SNPInfo> snpInfos) {
+        this.snpInfos = snpInfos;
     }
 }

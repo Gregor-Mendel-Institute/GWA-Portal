@@ -5,7 +5,7 @@ import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetTermProxy;
 import com.gmi.nordborglab.browser.shared.proxy.LocalityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SNPAnnotProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SNPInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SampleDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
@@ -320,7 +320,7 @@ public class DataTableUtils {
         });
     }
 
-    public static com.googlecode.gwt.charts.client.DataTable createSNPAllelePhenotypeForBoxplotTable(ImmutableMultimap<String, SNPAllele> groupedByAllele, SNPAnnotProxy alleleInfo) {
+    public static com.googlecode.gwt.charts.client.DataTable createSNPAllelePhenotypeForBoxplotTable(ImmutableMultimap<String, SNPAllele> groupedByAllele, SNPInfoProxy alleleInfo) {
         com.googlecode.gwt.charts.client.DataTable dataTable = com.googlecode.gwt.charts.client.DataTable.create();
         dataTable.addColumn(ColumnType.STRING, null);
         dataTable.addColumn(ColumnType.NUMBER, alleleInfo.getRef());
@@ -362,7 +362,7 @@ public class DataTableUtils {
         return dataTable;
     }
 
-    public static com.googlecode.gwt.charts.client.DataTable createSNPAllelePhenotypeForStripChartTable(Collection<SNPAllele> snpAlleles, SNPAnnotProxy alleleInfo) {
+    public static com.googlecode.gwt.charts.client.DataTable createSNPAllelePhenotypeForStripChartTable(Collection<SNPAllele> snpAlleles, SNPInfoProxy alleleInfo) {
         String allele1 = alleleInfo.getRef();
         String allele2 = alleleInfo.getAlt();
         com.googlecode.gwt.charts.client.DataTable dataTable = com.googlecode.gwt.charts.client.DataTable.create();

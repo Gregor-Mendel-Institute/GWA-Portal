@@ -47,8 +47,8 @@ public interface SNPDetailDataGridColumns {
 
     public static class LongitudeColumn extends Column<SNPAllele, Number> {
 
-        public LongitudeColumn() {
-            super(new NumberCell());
+        public LongitudeColumn(NumberFormat format) {
+            super(new NumberCell(format));
         }
 
 
@@ -60,8 +60,8 @@ public interface SNPDetailDataGridColumns {
 
     public static class LatitudeColumn extends Column<SNPAllele, Number> {
 
-        public LatitudeColumn() {
-            super(new NumberCell());
+        public LatitudeColumn(NumberFormat format) {
+            super(new NumberCell(format));
         }
 
 

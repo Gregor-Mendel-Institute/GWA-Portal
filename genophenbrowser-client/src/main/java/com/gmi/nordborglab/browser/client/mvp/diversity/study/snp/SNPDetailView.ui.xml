@@ -41,7 +41,10 @@
                         <th>Chr</th>
                         <th>Position</th>
                         <th>Score</th>
-                        <th>Type</th>
+                        <th>Effect</th>
+                        <th>Function</th>
+                        <th>Codon</th>
+                        <th>Amino</th>
                         <th>Gene</th>
                         <th>Alleles</th>
                     </thead>
@@ -56,7 +59,16 @@
                             <span ui:field="scoreLb"></span>
                         </td>
                         <td>
-                            <span ui:field="typeLb"></span>
+                            <span ui:field="effectLb"></span>
+                        </td>
+                        <td>
+                            <span ui:field="functionLb"></span>
+                        </td>
+                        <td>
+                            <span ui:field="codonLb"></span>
+                        </td>
+                        <td>
+                            <span ui:field="aminoAcidLb"></span>
                         </td>
                         <td>
                             <span ui:field="geneLb"></span>

@@ -52,7 +52,7 @@ public class MetaAnalysisServiceTest extends BaseTest {
         assertNotNull(page);
         assertEquals(7, page.getNumberOfElements());
         MetaSNPAnalysis analysis = page.getContents().get(0);
-        assertNotNull(analysis.getSnpAnnotation());
+        assertNotNull(analysis.getSnpInfo());
     }
 
 

@@ -31,7 +31,6 @@ import com.gmi.nordborglab.browser.client.security.IsLoggedInGatekeeper;
 import com.gmi.nordborglab.browser.client.validation.ClientValidation;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
-import com.gmi.nordborglab.browser.shared.service.HelperFactory;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -92,7 +91,6 @@ public class ClientModule extends AbstractPresenterModule {
         bind(FlagMap.class).in(Singleton.class);
 
         bind(AppUserFactory.class).asEagerSingleton();
-        bind(HelperFactory.class).asEagerSingleton();
     }
 
 
