@@ -54,7 +54,7 @@ public class GoogleAnalyticsManager {
     }
 
     public void sendError(String action, String message, boolean isFatal) {
-        sendError(action, label, true, true, isFatal);
+        sendError(action, message, true, true, isFatal);
     }
 
     public void sendError(String action, String message, boolean includePlace, boolean includeUser, boolean isFatal) {
