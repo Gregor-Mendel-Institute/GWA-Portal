@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.gwas;
 
 import com.gmi.nordborglab.browser.client.events.GWASUploadedEvent;
-import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsManager;
 import com.google.inject.Inject;
@@ -58,14 +57,14 @@ public class GWASUploadWizardPresenterWidget extends PresenterWidget<GWASUploadW
     public void onUploadEnd() {
         fireEvent(new LoadingIndicatorEvent(false));
         analyticsManager.endTimingEvent("GWAS", "Upload", "OK");
-        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Upload", "URL:" + this.restURL));
+        analyticsManager.sendEvent("GWAS", "Upload", "URL:" + this.restURL);
     }
 
     @Override
     public void onUploadError(String errorMessage) {
         fireEvent(new LoadingIndicatorEvent(false));
         analyticsManager.endTimingEvent("GWAS", "Upload", "ERROR");
-        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Error - Upload", "URL:" + this.restURL + ",Error:" + errorMessage));
+        analyticsManager.sendError("GWAS", "URL:" + this.restURL + ",Error:" + errorMessage, true);
     }
 
     public void setMultipleUpload(boolean multipleUpload) {

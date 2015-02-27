@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.upload;
 
 import com.gmi.nordborglab.browser.client.dto.MyFactory;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
-import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PhenotypeUploadedEvent;
 import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
@@ -249,7 +248,7 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
                 getEventBus().fireEventFromSource(new PhenotypeUploadedEvent(response), PhenotypeUploadWizardPresenterWidget.this);
                 // isatab upload
                 String var = isIsaTabUpload() ? "ISATAB-Upload" : "Upload";
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", var, "Experiment:" + response.getName()));
+                analyticsManager.sendEvent("Phenotype", var, "Experiment:" + response.getName());
                 analyticsManager.endTimingEvent("Phenotype", var, "OK");
             }
 
@@ -260,7 +259,7 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
                 onEdit();
                 String var = isIsaTabUpload() ? "ISATAB-Upload" : "Upload";
                 analyticsManager.endTimingEvent("Phenotype", var, "ERROR");
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Phenotype", "Error -" + var, "Error:" + message.getMessage()));
+                analyticsManager.sendError("Phenotype", message.getMessage(), true);
             }
 
             @Override

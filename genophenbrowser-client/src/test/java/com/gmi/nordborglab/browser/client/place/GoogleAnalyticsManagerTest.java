@@ -7,15 +7,20 @@ import com.arcbees.analytics.shared.options.EventsOptions;
 import com.arcbees.analytics.shared.options.ExceptionOptions;
 import com.arcbees.analytics.shared.options.HitOptions;
 import com.arcbees.analytics.shared.options.TimingOptions;
-import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
+import com.gmi.nordborglab.browser.client.security.CurrentUser;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import org.jukito.JukitoModule;
 import org.jukito.JukitoRunner;
+import org.jukito.TestSingleton;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -26,6 +31,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -39,6 +45,7 @@ public class GoogleAnalyticsManagerTest {
     public static class Module extends JukitoModule {
         protected void configureTest() {
             // required because of builder pattern
+            bindMock(CurrentUser.class).in(TestSingleton.class);
             Analytics analyticsMock = mock(Analytics.class, RETURNS_DEEP_STUBS);
             bind(Analytics.class).toInstance(analyticsMock);
         }
@@ -50,9 +57,12 @@ public class GoogleAnalyticsManagerTest {
     @Inject
     PlaceManager placeManager;
 
-
     @Inject
     Analytics analytics;
+
+    @Inject
+    CurrentUser currentUser;
+
 
     ContentOptions contentOptions;
 
@@ -131,9 +141,7 @@ public class GoogleAnalyticsManagerTest {
 
     private void testSendException(boolean isfatal) {
         ExceptionOptions exceptionOptions = mock(ExceptionOptions.class, RETURNS_DEEP_STUBS);
-        given(analytics.sendException(anyString())).willReturn(exceptionOptions);
-        given(exceptionOptions.contentOptions()).willReturn(contentOptions);
-        given(exceptionOptions.isExceptionFatal(anyBoolean())).willReturn(exceptionOptions);
+        setupExceptionTest(exceptionOptions);
         sut.sendException("exception", isfatal);
         verify(analytics).sendException("exception");
         verify(exceptionOptions).isExceptionFatal(isfatal);
@@ -164,15 +172,51 @@ public class GoogleAnalyticsManagerTest {
         testSendEvent(null, "/custom/custom");
     }
 
+
     @Test
-    public void testSendEventWithGoogleAnalyticsEvent() {
-        GoogleAnalyticsEvent.GAEventData data = new GoogleAnalyticsEvent.GAEventData("category", "action", "label", 10, true);
-        GoogleAnalyticsEvent event = new GoogleAnalyticsEvent(data);
+    public void testSendErrorDefault() {
+        testSendError(true, true, true);
+    }
+
+    @Test
+    public void testSendErrorDefault_WithOutPlaceAndUser() {
+        testSendError(false, false, true);
+    }
+
+    @Test
+    public void testSendErrorDefault_WithOnlyPlace() {
+        testSendError(true, false, true);
+    }
+
+    @Test
+    public void testSendErrorDefault_WithOnlyUser() {
+        testSendError(false, true, true);
+    }
+
+    @Test
+    public void testSendErrorDefault_AsAdmin() {
+        testSendError(true, true, true, true);
+    }
+
+    private void testSendError(boolean includePlace, boolean includeUser, boolean isFatal) {
+        testSendError(includePlace, includeUser, isFatal, false);
+    }
+
+    private void testSendError(boolean includePlace, boolean includeUser, boolean isFatal, boolean isAdmin) {
+        if (isAdmin) {
+            given(currentUser.isLoggedIn()).willReturn(true);
+            given(currentUser.isAdmin()).willReturn(true);
+            given(currentUser.getUserId()).willReturn(1);
+        } else {
+            given(currentUser.isLoggedIn()).willReturn(false);
+        }
         EventsOptions eventOptions = mock(EventsOptions.class);
         HitOptions hitOptions = mock(HitOptions.class);
+        ExceptionOptions exceptionOptions = mock(ExceptionOptions.class);
+        setupExceptionTest(exceptionOptions);
         setUpEventTest(eventOptions, hitOptions);
-        sut.sendEvent(event, true);
-        verifyEventSent(eventOptions, hitOptions, 10, null);
+        sut.sendError("testError", "testMessage", includePlace, includeUser, isFatal);
+        verifyErrorSent(eventOptions, hitOptions, exceptionOptions, includePlace, includeUser, isFatal, isAdmin);
     }
 
     private void testSendEvent(Integer value, String customPlace) {
@@ -198,6 +242,34 @@ public class GoogleAnalyticsManagerTest {
         given(hitOptions.nonInteractionHit(anyBoolean())).willReturn(hitOptions);
         given(analytics.sendEvent(anyString(), anyString())).willReturn(eventOptions);
         given(hitOptions.contentOptions()).willReturn(contentOptions);
+    }
+
+    private void setupExceptionTest(ExceptionOptions exceptionOptions) {
+        given(analytics.sendException(anyString())).willReturn(exceptionOptions);
+        given(exceptionOptions.contentOptions()).willReturn(contentOptions);
+        given(exceptionOptions.isExceptionFatal(anyBoolean())).willReturn(exceptionOptions);
+    }
+
+    private void verifyErrorSent(EventsOptions eventOptions, HitOptions hitOptions, ExceptionOptions exceptionOptions, boolean includePlace, boolean includeUser, boolean isFatal, boolean isAdmin) {
+        verify(analytics).sendEvent("Errors", "testError");
+        List<String> messages = Lists.newArrayList();
+        if (includePlace) {
+            messages.add("Place: " + GoogleAnalyticsManagerTest.place);
+        }
+        if (includeUser) {
+            if (!isAdmin) {
+                messages.add("User:annonymous");
+            } else {
+                messages.add("User:1 (Admin)");
+            }
+        }
+        messages.add("Exception: testMessage");
+        String errorMessage = Joiner.on(", ").join(messages);
+        verify(eventOptions).eventLabel(errorMessage);
+        verify(analytics).sendException(errorMessage);
+        verify(exceptionOptions).isExceptionFatal(isFatal);
+        verify(contentOptions, times(2)).documentPath(GoogleAnalyticsManagerTest.place);
+        verify(contentOptions.documentPath(GoogleAnalyticsManagerTest.place), times(2)).go();
     }
 
     private void verifyEventSent(EventsOptions eventOptions, HitOptions hitOptions, Integer value, String customPlace) {

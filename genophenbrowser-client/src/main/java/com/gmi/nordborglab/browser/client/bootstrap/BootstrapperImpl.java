@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.bootstrap;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.eemi.gwt.tour.client.GwtTour;
-import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsManager;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.ParallelRunnable;
@@ -68,20 +67,7 @@ public class BootstrapperImpl implements Bootstrapper {
                 if (placeManager != null) {
                     place = placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest());
                 }
-                analyticsManager.sendEvent("Errors", "Uncaught", "Place: " + place + ", User:" + userId + ", Exception:" + e.getMessage(), true);
-                analyticsManager.sendException("Place: " + place + ", User:" + userId + "Exception:" + e.getMessage(), true);
-            }
-        });
-
-        eventBus.addHandler(GoogleAnalyticsEvent.TYPE, new GoogleAnalyticsEvent.Handler() {
-            @Override
-            public void onTrack(GoogleAnalyticsEvent event) {
-                int userId = currentUser.getUserId();
-                GoogleAnalyticsEvent.GAEventData data = event.getEventData();
-                // required because otehrwiase intValue will cause nullpointer
-                String label = data.getLabel() + ", UserId:" + userId;
-                String place = "";
-                analyticsManager.sendEvent(data.getCategory(), data.getAction(), label, true);
+                analyticsManager.sendError("Uncaught", e.getMessage(), true);
             }
         });
 

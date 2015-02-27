@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.home.wizard;
 
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
-import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PhenotypeUploadedEvent;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
@@ -620,13 +619,13 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     study.setJob(studyJob);
                 }
                 fireEvent(new LoadingIndicatorEvent(true, "Saving..."));
-                analyticsManager.startTimingEvent("Study", "Create");
+                analyticsManager.startTimingEvent("BasicStudyWizard", "Create");
                 ctx.saveStudy(study).fire(new Receiver<StudyProxy>() {
                     @Override
                     public void onSuccess(StudyProxy response) {
                         fireEvent(new LoadingIndicatorEvent(false));
-                        analyticsManager.endTimingEvent("StudyJob", "Create", "OK");
-                        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Study", "Create", "Study:" + response.getId().toString()));
+                        analyticsManager.endTimingEvent("BasicStudyWizard", "Create", "OK");
+                        analyticsManager.sendEvent("BasicStudyWizard", "Create", "Study:" + response.getId().toString());
                         PlaceRequest placeRequest = new PlaceRequest.Builder()
                                 .nameToken(NameTokens.study)
                                 .with("id", response.getId().toString()).build();
@@ -639,9 +638,9 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     @Override
                     public void onFailure(ServerFailure error) {
                         fireEvent(new LoadingIndicatorEvent(false));
-                        analyticsManager.endTimingEvent("StudyJob", "Create", "ERROR");
+                        analyticsManager.endTimingEvent("BasicStudyWizard", "Create", "ERROR");
+                        analyticsManager.sendError("BasicStudyWizard", error.getMessage(), true);
                         fireEvent(new DisplayNotificationEvent("Error", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, DisplayNotificationEvent.DURATION_NORMAL));
-                        GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("Study", "Error - Create", "Error:" + error.getMessage()));
                     }
                 });
                 break;

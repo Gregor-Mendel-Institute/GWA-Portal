@@ -3,7 +3,6 @@ package com.gmi.nordborglab.browser.client.mvp.diversity.study.detail;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.GWASUploadedEvent;
-import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadStudyEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.StudyModifiedEvent;
@@ -327,13 +326,13 @@ public class StudyDetailPresenter extends
                 getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
                 StudyModifiedEvent.fire(getEventBus(), response);
                 analyticsManager.endTimingEvent("StudyJob", "Start", "OK");
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Start", "Study:" + study.getId().toString()));
+                analyticsManager.sendEvent("StudyJob", "Start", "Study:" + study.getId().toString());
             }
 
             @Override
             public void onFailure(ServerFailure error) {
                 analyticsManager.endTimingEvent("StudyJob", "Start", "ERROR");
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Start", "Study:" + study.getId().toString() + ", Error" + error.getMessage()));
+                analyticsManager.sendError("StudyJob", "Start:" + study.getId().toString() + ", Error" + error.getMessage(), true);
             }
         }, study.getId());
     }
@@ -382,13 +381,13 @@ public class StudyDetailPresenter extends
                 getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
                 StudyModifiedEvent.fire(getEventBus(), response);
                 analyticsManager.endTimingEvent("StudyJob", "Delete", "OK");
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Delete", "Study:" + study.getId().toString()));
+                analyticsManager.sendEvent("StudyJob", "Delete", "Study:" + study.getId().toString());
             }
 
             @Override
             public void onFailure(ServerFailure error) {
                 analyticsManager.endTimingEvent("StudyJob", "Delete", "ERROR");
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Delete", "Study:" + study.getId().toString() + ", Error" + error.getMessage()));
+                analyticsManager.sendError("StudyJob", "Study:" + study.getId().toString() + ", Error" + error.getMessage(), true);
             }
         }, study.getId());
     }
@@ -407,13 +406,13 @@ public class StudyDetailPresenter extends
                 getView().showJobInfo(study.getJob(), currentUser.getPermissionMask(study.getUserPermission()));
                 StudyModifiedEvent.fire(getEventBus(), response);
                 analyticsManager.endTimingEvent("StudyJob", "Rerun", "OK");
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Rerun", "Study:" + study.getId().toString()));
+                analyticsManager.sendEvent("StudyJob", "Rerun", "Study:" + study.getId().toString());
             }
 
             @Override
             public void onFailure(ServerFailure error) {
                 analyticsManager.endTimingEvent("StudyJob", "Rerun", "ERROR");
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("StudyJob", "Error - Rerun", "Study:" + study.getId().toString() + ", Error" + error.getMessage()));
+                analyticsManager.sendError("StudyJob", "Rerun:" + study.getId().toString() + ", Error" + error.getMessage(), true);
             }
         }, study.getId());
     }

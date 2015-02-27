@@ -4,7 +4,6 @@ import com.gmi.nordborglab.browser.client.dispatch.CustomCallback;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataActionResult;
 import com.gmi.nordborglab.browser.client.dto.GWASDataDTO;
-import com.gmi.nordborglab.browser.client.events.GoogleAnalyticsEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.SelectSNPEvent;
 import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsManager;
@@ -60,13 +59,13 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
                 getView().drawGWASPlots(result.getResultData());
                 LoadingIndicatorEvent.fire(this, false);
                 analyticsManager.endTimingEvent("GWAS", "View", "SUCCESS");
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Display", "Type:" + type + ",ID:" + id));
+                analyticsManager.sendEvent("GWAS", "Display", "Type:" + type + ",ID:" + id);
             }
 
             @Override
             public void onFailure(Throwable caught) {
                 analyticsManager.endTimingEvent("GWAS", "View", "ERROR");
-                GoogleAnalyticsEvent.fire(getEventBus(), new GoogleAnalyticsEvent.GAEventData("GWAS", "Error - Display", "Type:" + type + ",ID:" + id + ",Error:" + caught.getMessage()));
+                analyticsManager.sendError("GWAS", "Type:" + type + ",ID:" + id + ",Error:" + caught.getMessage(), true);
                 //FIXME fix backend to not show HTML error page
                 //super.onFailure(caught);
             }
