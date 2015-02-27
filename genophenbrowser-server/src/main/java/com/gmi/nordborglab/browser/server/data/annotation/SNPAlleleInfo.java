@@ -7,20 +7,20 @@ import java.util.List;
  */
 public class SNPAlleleInfo {
 
-    protected SNPAnnot snpAnnot;
+    protected SNPInfo snpInfo;
     protected List<Byte> alleles;
 
-    public SNPAlleleInfo(SNPAnnot annot, List<Byte> alleles) {
-        this.snpAnnot = annot;
+    public SNPAlleleInfo(SNPInfo annot, List<Byte> alleles) {
+        this.snpInfo = annot;
         this.alleles = alleles;
     }
 
-    public SNPAnnot getSnpAnnot() {
-        return snpAnnot;
+    public SNPInfo getSnpInfo() {
+        return snpInfo;
     }
 
-    public void setSnpAnnot(SNPAnnot snpAnnot) {
-        this.snpAnnot = snpAnnot;
+    public void setSnpInfo(SNPInfo snpInfo) {
+        this.snpInfo = snpInfo;
     }
 
     public List<Byte> getAlleles() {

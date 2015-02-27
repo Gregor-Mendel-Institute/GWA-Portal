@@ -279,7 +279,7 @@ public class MetaAnalysisGenePresenter extends
 
     @Override
     public void onSelectMetaAnalysis(MetaSNPAnalysisProxy metaAnalysis) {
-        getView().setGeneViewerSelection(metaAnalysis.getSnpAnnotation().getPosition());
+        getView().setGeneViewerSelection(metaAnalysis.getSnpInfo().getPosition());
     }
 
     @Override

@@ -4,7 +4,8 @@ import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SNPAnnotProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SNPInfoProxy;
+import com.gmi.nordborglab.browser.shared.proxy.annotation.SNPAnnotationProxy;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -105,9 +106,15 @@ public interface MetaSNPAnalysisDataGridColumns {
 
         @Override
         public String getValue(MetaSNPAnalysisProxy object) {
-            SNPAnnotProxy snpAnnot = object.getSnpAnnotation();
-            return snpAnnot.getPosition() + (snpAnnot.getAnnotation() == null ? "" : " [" + snpAnnot.getAnnotation() + "]");
+            SNPInfoProxy snpInfo = object.getSnpInfo();
+            // TODO adapt to new annotation
+            String snpText = String.valueOf(snpInfo.getPosition());
+            if (snpInfo.getAnnotations() != null && snpInfo.getAnnotations().size() > 0) {
+                SNPAnnotationProxy annotation = snpInfo.getAnnotations().get(0);
+                snpText += " [" + annotation.getEffect() + "]";
 
+            }
+            return snpText;
         }
     }
 
@@ -119,7 +126,7 @@ public interface MetaSNPAnalysisDataGridColumns {
 
         @Override
         public HyperlinkParam getValue(MetaSNPAnalysisProxy object) {
-            String gene = object.getSnpAnnotation().getGene();
+            String gene = object.getSnpInfo().getGene();
             if (gene == null || gene.isEmpty()) {
                 return null;
             }
@@ -165,7 +172,7 @@ public interface MetaSNPAnalysisDataGridColumns {
 
         @Override
         public String getValue(MetaSNPAnalysisProxy object) {
-            return object.getSnpAnnotation().getChr();
+            return object.getSnpInfo().getChr();
         }
     }
 }

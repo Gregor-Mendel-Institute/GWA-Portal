@@ -13,7 +13,7 @@ import com.google.web.bindery.requestfactory.shared.ValueProxy;
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.meta.MetaSNPAnalysis")
 public interface MetaSNPAnalysisProxy extends ValueProxy {
 
-    public SNPAnnotProxy getSnpAnnotation();
+    public SNPInfoProxy getSnpInfo();
 
     public Double getPValue();
 

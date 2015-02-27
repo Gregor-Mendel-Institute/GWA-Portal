@@ -56,7 +56,6 @@ import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramFacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
-import com.gmi.nordborglab.browser.shared.service.HelperFactory;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -65,7 +64,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import com.google.web.bindery.autobean.vm.AutoBeanFactorySource;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchResponse;
@@ -111,9 +109,6 @@ import java.util.Map;
 @Service
 @Transactional(readOnly = true)
 public class HelperServiceImpl implements HelperService {
-
-    private static HelperFactory helperFactory = AutoBeanFactorySource.create(HelperFactory.class);
-
 
     private static class SupressException extends CellProcessorAdaptor {
 

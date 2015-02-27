@@ -314,7 +314,7 @@ public class HDF5GWASDataService implements GWASDataService {
     private GWASData addAnnotation(GWASData data) {
         for (Map.Entry<String, ChrGWAData> dataEntry : data.getChrGWASData().entrySet()) {
             ChrGWAData chrData = dataEntry.getValue();
-            chrData.setSnpAnnotations(annotationDataService.getSNPAnnotations(dataEntry.getKey().toLowerCase(), chrData.getPositions()));
+            chrData.setSNPInfos(annotationDataService.getSNPAnnotations(dataEntry.getKey().toLowerCase(), chrData.getPositions()));
         }
         return data;
     }

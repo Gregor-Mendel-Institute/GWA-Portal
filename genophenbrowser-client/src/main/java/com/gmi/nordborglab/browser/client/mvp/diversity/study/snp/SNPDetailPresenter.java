@@ -8,8 +8,8 @@ import com.gmi.nordborglab.browser.client.mvp.diversity.study.StudyTabPresenter;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPAlleleInfoProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SNPAnnotProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPGWASInfoProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SNPInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.google.common.base.Function;
@@ -54,7 +54,7 @@ public class SNPDetailPresenter extends Presenter<SNPDetailPresenter.MyView, SNP
 
         void setPhenotypeRange(Range<Double> valueRange);
 
-        void displayAlleInfo(SNPAnnotProxy snpAnnot);
+        void displayAlleInfo(SNPInfoProxy snpAnnot);
 
         void setList(List<SNPAllele> snpAlleles);
     }
@@ -161,7 +161,7 @@ public class SNPDetailPresenter extends Presenter<SNPDetailPresenter.MyView, SNP
         dataProvider.setList(snpAlleles);
         getView().setList(dataProvider.getList());
         Integer score = 0;
-        getView().displayAlleInfo(alleleInfo.getSnpAnnot());
+        getView().displayAlleInfo(alleleInfo.getSnpInfo());
         getView().setExplorerData(snpAlleles);
         getView().scheduledLayout();
     }
@@ -173,7 +173,7 @@ public class SNPDetailPresenter extends Presenter<SNPDetailPresenter.MyView, SNP
         }
         ImmutableMap<Long, Byte> passport2Byte = passport2ByteBuilder.build();
         List<SNPAllele> allelesInfo = Lists.newArrayList();
-        SNPAnnotProxy annot = alleleInfo.getSnpAnnot();
+        SNPInfoProxy annot = alleleInfo.getSnpInfo();
         int i = 1;
         for (TraitProxy trait : study.getTraits()) {
             PassportProxy passport = trait.getObsUnit().getStock().getPassport();

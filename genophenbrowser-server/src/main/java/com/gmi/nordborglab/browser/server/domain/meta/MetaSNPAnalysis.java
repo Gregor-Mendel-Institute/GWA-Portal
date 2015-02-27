@@ -1,6 +1,6 @@
 package com.gmi.nordborglab.browser.server.domain.meta;
 
-import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPInfo;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,7 +11,7 @@ import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
  */
 public class MetaSNPAnalysis {
 
-    protected SNPAnnot snpAnnotation;
+    protected SNPInfo snpInfo;
     protected Double pValue;
     protected String analysis;
     protected Long analysisId;
@@ -27,7 +27,7 @@ public class MetaSNPAnalysis {
 
     public static class Builder {
 
-        private SNPAnnot snpAnnotation;
+        private SNPInfo snpAnnotation;
         private Double pValue;
         private String analysis;
         private String phenotype;
@@ -41,7 +41,7 @@ public class MetaSNPAnalysis {
         private Integer mac;
         private Double maf;
 
-        public Builder setSnpAnnotation(SNPAnnot snpAnnotation) {
+        public Builder setSnpAnnotation(SNPInfo snpAnnotation) {
             this.snpAnnotation = snpAnnotation;
             return this;
         }
@@ -118,7 +118,7 @@ public class MetaSNPAnalysis {
     }
 
     private MetaSNPAnalysis(Builder builder) {
-        this.snpAnnotation = builder.snpAnnotation;
+        this.snpInfo = builder.snpAnnotation;
         this.pValue = builder.pValue;
         this.analysis = builder.analysis;
         this.phenotype = builder.phenotype;
@@ -133,8 +133,8 @@ public class MetaSNPAnalysis {
         this.maf = builder.maf;
     }
 
-    public SNPAnnot getSnpAnnotation() {
-        return snpAnnotation;
+    public SNPInfo getSnpInfo() {
+        return snpInfo;
     }
 
 

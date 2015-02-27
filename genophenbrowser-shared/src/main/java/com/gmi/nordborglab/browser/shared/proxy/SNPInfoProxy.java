@@ -1,7 +1,10 @@
 package com.gmi.nordborglab.browser.shared.proxy;
 
+import com.gmi.nordborglab.browser.shared.proxy.annotation.SNPAnnotationProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyForName;
 import com.google.web.bindery.requestfactory.shared.ValueProxy;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,8 +14,8 @@ import com.google.web.bindery.requestfactory.shared.ValueProxy;
  * To change this template use File | Settings | File Templates.
  */
 
-@ProxyForName(value = "com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot")
-public interface SNPAnnotProxy extends ValueProxy {
+@ProxyForName(value = "com.gmi.nordborglab.browser.server.data.annotation.SNPInfo")
+public interface SNPInfoProxy extends ValueProxy {
 
     public long getPosition();
 
@@ -26,7 +29,7 @@ public interface SNPAnnotProxy extends ValueProxy {
 
     public String getLyr();
 
-    public String getAnnotation();
+    public List<SNPAnnotationProxy> getAnnotations();
 
     public String getGene();
 }

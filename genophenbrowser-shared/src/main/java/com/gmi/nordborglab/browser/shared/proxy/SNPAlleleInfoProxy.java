@@ -12,7 +12,7 @@ import java.util.List;
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.data.annotation.SNPAlleleInfo")
 public interface SNPAlleleInfoProxy extends ValueProxy {
 
-    SNPAnnotProxy getSnpAnnot();
+    SNPInfoProxy getSnpInfo();
 
     List<Byte> getAlleles();
 }

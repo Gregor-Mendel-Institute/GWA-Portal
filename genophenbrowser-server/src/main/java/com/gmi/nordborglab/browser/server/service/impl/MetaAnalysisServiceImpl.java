@@ -2,7 +2,8 @@ package com.gmi.nordborglab.browser.server.service.impl;
 
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.annotation.GoTerm;
-import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnot;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnotation;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPInfo;
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.data.es.ESTermsFacet;
 import com.gmi.nordborglab.browser.server.domain.DomainFunctions;
@@ -202,16 +203,19 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                     studyId = Long.valueOf((String) fields.get("_parent").getValue());
                 }
                 Study study = studyCache.get(studyId);
-                SNPAnnot annot = new SNPAnnot();
-                annot.setPosition((Integer) fields.get("position").getValue());
-                annot.setChr(chr);
+                SNPInfo info = new SNPInfo();
+                info.setPosition((Integer) fields.get("position").getValue());
+                info.setChr(chr);
+                String annotationString = null;
+                info.setInGene((Boolean) fields.get("inGene").getValue());
                 if (fields.containsKey("annotation")) {
-                    annot.setAnnotation((String) fields.get("annotation").getValue());
-                    annot.setInGene((Boolean) fields.get("inGene").getValue());
+                    annotationString = fields.get("annotation").getValue();
+
                 }
+                info.setAnnotations(convertOldAnnotationTonewFormat(annotationString));
                 MetaSNPAnalysis.Builder metaAnalysisBuilder = new MetaSNPAnalysis.Builder()
                         .setAnalysisId(studyId)
-                        .setSnpAnnotation(annot)
+                        .setSnpAnnotation(info)
                         .setpValue((Double) fields.get("score").getValue())
                         .setAnalysis(study.getName())
                         .setPhenotype(study.getPhenotype().getLocalTraitName())
@@ -486,6 +490,25 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         }           */
     }
 
+    private List<SNPAnnotation> convertOldAnnotationTonewFormat(String annotationString) {
+        List<SNPAnnotation> annotations = Lists.newArrayList();
+        SNPAnnotation annotation = null;
+        switch (annotationString) {
+            case "S":
+                annotation = new SNPAnnotation("S");
+                break;
+            case "NS":
+                annotation = new SNPAnnotation("NS");
+                break;
+            default:
+                annotation = new SNPAnnotation("*");
+        }
+        if (annotation != null) {
+            annotations.add(annotation);
+        }
+        return annotations;
+    }
+
 
     @Override
     public MetaSNPAnalysisPage findTopAnalysis(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems, int start, int size) {
@@ -511,20 +534,23 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                     studyId = Long.parseLong((String) fields.get("_parent").getValue());
                 }
                 Study study = studyRepository.findOne(studyId);
-                SNPAnnot annot = new SNPAnnot();
-                annot.setPosition((Integer) fields.get("position").getValue());
-                annot.setChr((String) fields.get("chr").getValue());
+                SNPInfo info = new SNPInfo();
+                info.setPosition((Integer) fields.get("position").getValue());
+                info.setChr((String) fields.get("chr").getValue());
+                String annotationString = null;
+                //FIXME Change to new annotation format
+                info.setInGene((Boolean) fields.get("inGene").getValue());
                 if (fields.containsKey("annotation")) {
-                    annot.setAnnotation((String) fields.get("annotation").getValue());
-                    annot.setInGene((Boolean) fields.get("inGene").getValue());
+                    annotationString = fields.get("annotation").getValue();
                 }
+                info.setAnnotations(convertOldAnnotationTonewFormat(annotationString));
                 if (fields.containsKey("gene.name")) {
-                    annot.setGene((String) fields.get("gene.name").getValue());
+                    info.setGene((String) fields.get("gene.name").getValue());
 
                 }
                 MetaSNPAnalysis.Builder metaAnalysisBuilder = new MetaSNPAnalysis.Builder()
                         .setAnalysisId(studyId)
-                        .setSnpAnnotation(annot)
+                        .setSnpAnnotation(info)
                         .setpValue((Double) fields.get("score").getValue())
                         .setAnalysis(study.getName())
                         .setPhenotype(study.getPhenotype().getLocalTraitName())

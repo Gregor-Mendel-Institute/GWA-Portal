@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.server.data.annotation;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: uemit.seren
@@ -7,7 +9,7 @@ package com.gmi.nordborglab.browser.server.data.annotation;
  * Time: 3:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SNPAnnot {
+public class SNPInfo {
 
     protected long position;
     protected String chr;
@@ -15,11 +17,11 @@ public class SNPAnnot {
     protected String alt = "1";
     protected String ref = "0";
     protected String lyr;
-    protected String annotation;
+    protected List<SNPAnnotation> annotations;
     protected String gene;
 
 
-    public SNPAnnot() {
+    public SNPInfo() {
     }
 
     public long getPosition() {
@@ -70,12 +72,12 @@ public class SNPAnnot {
         this.lyr = lyr;
     }
 
-    public String getAnnotation() {
-        return annotation;
+    public List<SNPAnnotation> getAnnotations() {
+        return annotations;
     }
 
-    public void setAnnotation(String annotation) {
-        this.annotation = annotation;
+    public void setAnnotations(List<SNPAnnotation> annotations) {
+        this.annotations = annotations;
     }
 
 
