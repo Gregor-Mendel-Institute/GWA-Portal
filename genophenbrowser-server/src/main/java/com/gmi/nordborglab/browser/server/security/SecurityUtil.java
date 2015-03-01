@@ -15,6 +15,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Sid;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -100,6 +101,11 @@ public class SecurityUtil {
         } else {
             return auth.getPrincipal().toString();
         }
+    }
+
+    public static boolean isLoggedIn() {
+        Authentication auth = getAuthentication();
+        return !(auth instanceof AnonymousAuthenticationToken);
     }
 
     public static Authentication getAuthentication() {

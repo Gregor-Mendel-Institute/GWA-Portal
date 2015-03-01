@@ -4,6 +4,7 @@ import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.util.AppContextManager;
+import com.gmi.nordborglab.browser.shared.exceptions.SessionTimeOutException;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.bus.client.api.messaging.MessageCallback;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -29,6 +30,10 @@ public class UpdateCheckNotificationDateService implements MessageCallback {
         if (userRepository == null) {
             ApplicationContext ctx = AppContextManager.getContext();
             userRepository = ctx.getBean(UserRepository.class);
+        }
+
+        if (!SecurityUtil.isLoggedIn()) {
+            throw new SessionTimeOutException();
         }
         AppUser appUser = userRepository.findOne(Long.parseLong(SecurityUtil.getUsername()));
         appUser.setNotificationCheckDate(message.get(Date.class, MessageParts.Value));

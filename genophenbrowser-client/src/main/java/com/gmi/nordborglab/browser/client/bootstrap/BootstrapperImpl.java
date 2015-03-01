@@ -2,10 +2,13 @@ package com.gmi.nordborglab.browser.client.bootstrap;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.eemi.gwt.tour.client.GwtTour;
+import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
+import com.gmi.nordborglab.browser.client.events.UserChangeEvent;
 import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsManager;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.util.ParallelRunnable;
 import com.gmi.nordborglab.browser.client.util.ParentCallback;
+import com.gmi.nordborglab.browser.shared.exceptions.SessionTimeOutException;
 import com.gmi.nordborglab.browser.shared.proxy.AppDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
@@ -60,13 +63,14 @@ public class BootstrapperImpl implements Bootstrapper {
 
             @Override
             public void onUncaughtException(Throwable e) {
+                if (e instanceof SessionTimeOutException) {
+                    currentUser.setAppUser(null);
+                    eventBus.fireEvent(new UserChangeEvent(null));
+                    DisplayNotificationEvent.fireWarning(eventBus, "Authentication error", "Your session timed out. Log In again");
+                    return;
+                }
                 Logger logger = Logger.getLogger("uncaught");
                 logger.log(Level.SEVERE, "Uncaught Exception" + e.getMessage(), e);
-                int userId = currentUser.getUserId();
-                String place = "";
-                if (placeManager != null) {
-                    place = placeManager.buildHistoryToken(placeManager.getCurrentPlaceRequest());
-                }
                 analyticsManager.sendError("Uncaught", e.getMessage(), true);
             }
         });
