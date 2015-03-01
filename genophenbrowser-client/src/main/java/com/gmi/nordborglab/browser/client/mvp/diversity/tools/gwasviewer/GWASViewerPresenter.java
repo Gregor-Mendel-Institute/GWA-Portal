@@ -126,7 +126,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
             }
 
             public void onFailure(ServerFailure error) {
-                fireEvent(new DisplayNotificationEvent("Error while saving", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, 0));
+                DisplayNotificationEvent.fireError(getEventBus(), "Error while saving", error.getMessage());
                 getView().showEditPanel(false);
             }
 

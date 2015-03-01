@@ -203,6 +203,13 @@
             border-radius: 0 0 5px 5px;
         }
 
+        .notification_bar {
+            left: 50%;
+            position: fixed;
+            top: 48px;
+            z-index: 10000;
+        }
+
         .login_icon {
             font-size: 16px;
         }
@@ -308,7 +315,7 @@
                                            targetHistoryToken="{nameTokens.getGenomebrowser}">Genotype
                         </g:InlineHyperlink>
                     </li>
-                    <li class="{style.userItem}" id="userMenuItem">
+                    <li class="{style.userItem}" ui:field="userMenuItem">
                         <g:Anchor ui:field="userLink" addStyleNames="{style.login_menu}" href="">
                             <span style="position: absolute;left: 15px;">
                                 <span class="{style.login_icon}">
@@ -383,6 +390,20 @@
                     <div style="font-size: 10px;line-height: 10px;">The transPLANT project is funded by the European
                         Commission within its 7th Framework Programme, under the thematic area "Infrastructures",
                         contract number 283496.
+                    </div>
+                </div>
+                <div class="{style.notification_bar}">
+                    <div ui:field="notificationBarElement" class="alert alert-error"
+                         style="-webkit-transition: all 0s ease 0s; transition: all 0s ease 0s;opacity:0;">
+                        <a class="close" id="notification_close">×</a>
+                        <span>
+                            <span>
+                                <strong id="notification_caption">testerror</strong>
+                            </span>
+                        </span>
+                        <span>
+                            <span id="notification_text">test</span>
+                        </span>
                     </div>
                 </div>
                 <div ui:field="loadingIndicator" class="{style.loading_indicator}">Loading ...</div>

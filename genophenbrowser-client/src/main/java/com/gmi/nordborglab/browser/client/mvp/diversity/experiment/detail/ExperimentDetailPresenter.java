@@ -154,7 +154,7 @@ public class ExperimentDetailPresenter
 
             public void onFailure(ServerFailure error) {
                 fireEvent(new LoadingIndicatorEvent(false));
-                fireEvent(new DisplayNotificationEvent("Error while saving", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, 0));
+                DisplayNotificationEvent.fireError(getEventBus(), "Error while saving", error.getMessage());
                 onEdit();
             }
 
@@ -362,35 +362,35 @@ public class ExperimentDetailPresenter
 
                                 @Override
                                 public void onFailure(ServerFailure error) {
-                                    DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this, "Publication", "Error saving publicaiton");
+                                    DisplayNotificationEvent.fireError(getEventBus(), "Publication", "Error saving publicaiton");
                                     fireEvent(new LoadingIndicatorEvent(false));
                                 }
                             });
                         } catch (Exception e) {
-                            DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this, "DOI query failed", "Could not parse meta-data");
+                            DisplayNotificationEvent.fireError(getEventBus(), "DOI query failed", "Could not parse meta-data");
                             fireEvent(new LoadingIndicatorEvent(false));
                         }
 
                     } else if (response.getStatusCode() == 204) {
-                        DisplayNotificationEvent.fireWarning(ExperimentDetailPresenter.this, "DOI query failed", "No metadata found");
+                        DisplayNotificationEvent.fireWarning(getEventBus(), "DOI query failed", "No metadata found");
                         fireEvent(new LoadingIndicatorEvent(false));
                     } else if (response.getStatusCode() == 404) {
-                        DisplayNotificationEvent.fireWarning(ExperimentDetailPresenter.this, "DOI query failed", "DOI doesn't exist");
+                        DisplayNotificationEvent.fireWarning(getEventBus(), "DOI query failed", "DOI doesn't exist");
                         fireEvent(new LoadingIndicatorEvent(false));
                     } else {
-                        DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this, "DOI query failed", "General error");
+                        DisplayNotificationEvent.fireError(getEventBus(), "DOI query failed", "General error");
                         fireEvent(new LoadingIndicatorEvent(false));
                     }
                 }
 
                 @Override
                 public void onError(Request request, Throwable exception) {
-                    DisplayNotificationEvent.fireError(ExperimentDetailPresenter.this, "Error", exception.getMessage());
+                    DisplayNotificationEvent.fireError(getEventBus(), "Error", exception.getMessage());
                     fireEvent(new LoadingIndicatorEvent(false));
                 }
             });
         } catch (Exception e) {
-            DisplayNotificationEvent.fireError(this, "Error", e.getMessage());
+            DisplayNotificationEvent.fireError(getEventBus(), "Error", e.getMessage());
             fireEvent(new LoadingIndicatorEvent(false));
         }
     }

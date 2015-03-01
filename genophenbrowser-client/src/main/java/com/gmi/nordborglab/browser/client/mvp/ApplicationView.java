@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp;
 
+import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.gmi.nordborglab.browser.client.mvp.ApplicationPresenter.MENU;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
@@ -12,11 +13,13 @@ import com.gmi.nordborglab.browser.shared.proxy.UserNotificationProxy;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.query.client.Function;
+import com.google.gwt.query.client.GQuery;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -97,6 +100,11 @@ public class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> i
     DockLayoutPanel mainContainer;
     @UiField
     ImageElement avatarImg;
+    @UiField
+    LIElement userMenuItem;
+    @UiField
+    DivElement notificationBarElement;
+    final GQuery notificationbar;
     //@UiField FlowPanel userInfoContainer;
     protected final NotificationPopup notificationPopup = new NotificationPopup();
     private final PlaceManager placeManager;
@@ -106,8 +114,10 @@ public class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> i
     private Function onHoverAccountHandler = new Function() {
         @Override
         public boolean f(com.google.gwt.user.client.Event e) {
-            updateCheckNotificationDate();
-            e.stopPropagation();
+            if (e.getEventTarget() != e.getCurrentEventTarget()) {
+                updateCheckNotificationDate();
+            }
+
             return false;
         }
     };
@@ -115,8 +125,9 @@ public class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> i
     private Function onHoverEndAccountHandler = new Function() {
         @Override
         public boolean f(com.google.gwt.user.client.Event e) {
-            getUiHandlers().onCloseAccountInfo();
-            e.stopPropagation();
+            if (e.getEventTarget() != e.getCurrentEventTarget()) {
+                getUiHandlers().onCloseAccountInfo();
+            }
             return false;
         }
     };
@@ -131,6 +142,14 @@ public class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> i
         FavicoOptions options = FavicoOptions.create();
         options.setAnimation(FavicoOptions.ANIMATION.SLIDE).setPosition(FavicoOptions.POSITION.UP);
         this.favIco = new Favico(options);
+        notificationbar = $(notificationBarElement);
+        notificationbar.css("opacity", "0");
+        notificationbar.find("#notification_close").click(new Function() {
+            @Override
+            public void f(Element e) {
+                notificationbar.stop().fadeTo(500, 0);
+            }
+        });
     }
 
     @Override
@@ -185,7 +204,10 @@ public class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> i
             userInfoContainer.setVisible(true);
             userEmail.setText(user.getEmail());
             userName.setText(user.getFirstname() + " " + user.getLastname());
-            $(userLink).mouseenter(onHoverAccountHandler).mouseleave(onHoverEndAccountHandler);
+            $(userLink).hover(onHoverAccountHandler, onHoverEndAccountHandler);
+            $(userLink).unbind("mouseover").unbind("mouseout");
+
+            //$(userLink).mouseenter(onHoverAccountHandler).mouseleave(onHoverEndAccountHandler);
         }
     }
 
@@ -196,11 +218,7 @@ public class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> i
         diversityLink.getElement().getParentElement().setClassName("");
         germplasmLink.getElement().getParentElement().setClassName("");
         genotypeLink.getElement().getParentElement().setClassName("");
-        /*homeLink.removeStyleName(currentPageItemStyleName);
-        diversityLink.removeStyleName(style.current_page_item());
-		germplasmLink.removeStyleName(style.current_page_item());
-		genotypeLink.removeStyleName(style.current_page_item());*/
-        InlineHyperlink currentLink = null;
+        InlineHyperlink currentLink;
         boolean showFooter = false;
         switch (menu) {
             case DIVERSITY:
@@ -228,11 +246,19 @@ public class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> i
     }
 
     @Override
-    public void showNotification(String caption, String message, int level,
-                                 int duration) {
-        notificationPopup.setNotificatonContent(caption, message, level);
-        notificationPopup.show();
-        notificationPopup.center();
+    public void showNotification(String caption, String message, AlertType type,
+                                 int duration, boolean isDismissable) {
+        notificationbar.find("#notification_caption").text(caption);
+        notificationbar.find("#notification_text").text(message);
+        if (isDismissable)
+            notificationbar.find("#notification_close").show();
+        else
+            notificationbar.find("#notification_close").hide();
+        notificationbar.get(0).setClassName("alert alert-" + type.name().toLowerCase());
+        notificationbar.stop().fadeTo(200, 1);
+        if (duration != 0) {
+            notificationbar.delay(duration).fadeTo(500, 0);
+        }
     }
 
     @Override

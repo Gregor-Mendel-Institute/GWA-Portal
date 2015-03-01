@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp;
 
+import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadUserNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
@@ -40,8 +41,8 @@ public class ApplicationPresenter extends
 
         void setActiveNavigationItem(MENU menu);
 
-        void showNotification(String caption, String message, int level,
-                              int duration);
+        void showNotification(String caption, String message, AlertType type,
+                              int duration, boolean isDismissable);
 
         void showLoadingIndicator(boolean show, String text);
 
@@ -90,7 +91,10 @@ public class ApplicationPresenter extends
 
             @Override
             public void onDisplayNotifcation(DisplayNotificationEvent event) {
-                getView().showNotification(event.getCaption(), event.getMessage(), event.getLevel(), event.getDuration());
+                if (!event.isAlreadyDisplayed()) {
+                    getView().showNotification(event.getCaption(), event.getMessage(), event.getAlertType(), event.getDuration(), event.isDismissable());
+                    event.setAlreadyDisplayed();
+                }
             }
         }));
 

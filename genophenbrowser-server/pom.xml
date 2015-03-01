@@ -815,7 +815,7 @@
                             <groupId>org.eclipse.jetty</groupId>
                             <artifactId>jetty-maven-plugin</artifactId>
                             <configuration>
-                                <scanIntervalSeconds>1</scanIntervalSeconds>
+                                <!--<scanIntervalSeconds>1</scanIntervalSeconds>-->
                                 <webApp>
                                     <baseResource implementation="org.eclipse.jetty.util.resource.ResourceCollection">
                                         <resourcesAsCSV>src/main/webapp,${basedir}/../target/gwt/launcherDir/

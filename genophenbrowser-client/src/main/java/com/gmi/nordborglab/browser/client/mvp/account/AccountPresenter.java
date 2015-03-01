@@ -72,7 +72,7 @@ public class AccountPresenter extends Presenter<AccountPresenter.MyView, Account
 
         public void onFailure(ServerFailure error) {
             fireEvent(new LoadingIndicatorEvent(false));
-            fireEvent(new DisplayNotificationEvent("Error while saving", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, 0));
+            DisplayNotificationEvent.fireError(getEventBus(), "Error while saving", error.getMessage());
             onEdit();
         }
 

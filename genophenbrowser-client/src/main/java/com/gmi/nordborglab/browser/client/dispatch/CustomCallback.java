@@ -19,8 +19,8 @@ public abstract class CustomCallback<T> implements AsyncCallback<T>,HasHandlers{
 
 	@Override
 	public void onFailure(Throwable caught) {
-		DisplayNotificationEvent.fireError(this, "Error", caught.getMessage());
-	}
+        DisplayNotificationEvent.fireError(eventBus, "Error", caught.getMessage());
+    }
 	
 	@Override
 	public void fireEvent(GwtEvent<?> event) {

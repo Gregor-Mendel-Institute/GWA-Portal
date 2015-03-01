@@ -1,23 +1,20 @@
 package com.gmi.nordborglab.browser.client.events;
 
 
+import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HasHandlers;
+import com.google.web.bindery.event.shared.Event;
+import com.google.web.bindery.event.shared.EventBus;
 
 
-public class DisplayNotificationEvent extends GwtEvent<DisplayNotificationEvent.DisplayNotificationHandler>  {
+public class DisplayNotificationEvent extends Event<DisplayNotificationEvent.DisplayNotificationHandler> {
 
 	  
 	public interface DisplayNotificationHandler extends EventHandler {
 		  void onDisplayNotifcation(DisplayNotificationEvent event);
 	}
 	
-	public static final int LEVEL_MESSAGE = 0;
-	public static final int LEVEL_WARNING = 1;
-	public static final int LEVEL_ERROR = 2;
-	public static final int LEVEL_SEVERE = 3;
-
 	public static final int DURATION_PERMANENT = 0;
 	public static final int DURATION_SHORT = 5000;
 	public static final int DURATION_NORMAL = 10000;
@@ -42,9 +39,9 @@ public class DisplayNotificationEvent extends GwtEvent<DisplayNotificationEvent.
 	 * permanent message. Should preferably be one of: {@code DURATION_PERMANENT,
 	 * DURATION_SHORT, DURATION_NORMAL, DURATION_LONG}.
 	 */
-	public static void fire(HasHandlers source, String caption,String message, boolean dismissable, int level, int duration) {
-		source.fireEvent(new DisplayNotificationEvent(caption,message, dismissable, level, duration));
-	}
+    public static void fire(EventBus source, String caption, String message, boolean dismissable, AlertType alertType, int duration) {
+        source.fireEvent(new DisplayNotificationEvent(caption, message, dismissable, alertType, duration));
+    }
 
 	/**
 	 * Fires a new event to display short messages. The message will be
@@ -54,9 +51,9 @@ public class DisplayNotificationEvent extends GwtEvent<DisplayNotificationEvent.
 	 * @param source The source of this event (See {@link HasEventBus}).
 	 * @param message Any {@link Widget} containing the message to display.
 	 */
-	public static void fireMessage(HasHandlers source, String caption,String message) {
-		fire(source, caption,message, true, LEVEL_MESSAGE, DURATION_NORMAL);
-	}
+    public static void fireMessage(EventBus source, String caption, String message) {
+        fire(source, caption, message, true, AlertType.DEFAULT, DURATION_NORMAL);
+    }
 
 	/**
 	 * Fires a new event to clear all displayed short messages.
@@ -75,21 +72,21 @@ public class DisplayNotificationEvent extends GwtEvent<DisplayNotificationEvent.
 	 * @param source The source of this event (See {@link HasEventBus}).
 	 * @param message Any {@link Widget} containing the message to display.
 	 */
-	public static void fireError(HasHandlers source, String caption, String message) {
-		fire(source,caption, message, true, LEVEL_ERROR, DURATION_PERMANENT);
-	}
-	
-	public static void fireWarning(HasHandlers source,String caption, String message) {
-		fire(source,caption,message,true,LEVEL_WARNING,DURATION_NORMAL);
-	}
+    public static void fireError(EventBus source, String caption, String message) {
+        fire(source, caption, message, true, AlertType.ERROR, DURATION_PERMANENT);
+    }
+
+    public static void fireWarning(EventBus source, String caption, String message) {
+        fire(source, caption, message, true, AlertType.WARNING, DURATION_NORMAL);
+    }
 
 
 
 	private final String caption;
 	private final String message;
 	private final boolean dismissable;
-	private final int level;
-	private final int duration;
+    private final AlertType alertType;
+    private final int duration;
 
 	private boolean alreadyDisplayed;
 
@@ -105,12 +102,12 @@ public class DisplayNotificationEvent extends GwtEvent<DisplayNotificationEvent.
 	 * permanent message. Should preferably be one of: {@code DURATION_PERMANENT,
 	 * DURATION_SHORT, DURATION_NORMAL, DURATION_LONG}.
 	 */
-	public DisplayNotificationEvent(String caption, String message, boolean dismissable, int level, int duration) {
-		this.caption = caption;
+    public DisplayNotificationEvent(String caption, String message, boolean dismissable, AlertType alertType, int duration) {
+        this.caption = caption;
 		this.message = message;
 		this.dismissable = dismissable;
-		this.level = level;
-		this.duration = duration;
+        this.alertType = alertType;
+        this.duration = duration;
 	}
 
 	/**
@@ -139,9 +136,9 @@ public class DisplayNotificationEvent extends GwtEvent<DisplayNotificationEvent.
 	 * 
 	 * @return The level of the message.
 	 */
-	public int getLevel() {
-		return level;
-	}
+    public AlertType getAlertType() {
+        return alertType;
+    }
 
 	/**
 	 * Access the desired duration of the message. The UI should leave the message visible

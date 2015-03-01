@@ -640,7 +640,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                         fireEvent(new LoadingIndicatorEvent(false));
                         analyticsManager.endTimingEvent("BasicStudyWizard", "Create", "ERROR");
                         analyticsManager.sendError("BasicStudyWizard", error.getMessage(), true);
-                        fireEvent(new DisplayNotificationEvent("Error", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, DisplayNotificationEvent.DURATION_NORMAL));
+                        DisplayNotificationEvent.fireError(getEventBus(), "Error", error.getMessage());
                     }
                 });
                 break;
@@ -719,7 +719,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     }
 
     private void showError(String message) {
-        DisplayNotificationEvent.fireError(this, "Error", message);
+        DisplayNotificationEvent.fireError(getEventBus(), "Error", message);
     }
 
     @Override
@@ -749,7 +749,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
             @Override
             public void onFailure(ServerFailure error) {
-                DisplayNotificationEvent.fireError(BasicStudyWizardPresenter.this, "Error", "Failed to save experiment");
+                DisplayNotificationEvent.fireError(getEventBus(), "Error", error.getMessage());
             }
 
             @Override

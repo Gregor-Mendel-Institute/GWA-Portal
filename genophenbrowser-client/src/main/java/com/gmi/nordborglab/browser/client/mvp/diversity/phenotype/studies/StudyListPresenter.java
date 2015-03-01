@@ -208,7 +208,7 @@ public class StudyListPresenter extends
             }
 
             public void onFailure(ServerFailure error) {
-                fireEvent(new DisplayNotificationEvent("Error", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, 0));
+                DisplayNotificationEvent.fireError(getEventBus(), "Error", error.getMessage());
                 if (callback != null) {
                     callback.onFailure(null);
                 }

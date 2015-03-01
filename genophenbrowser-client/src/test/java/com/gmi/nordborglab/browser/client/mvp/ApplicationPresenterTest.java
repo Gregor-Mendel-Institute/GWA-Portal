@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp;
 
+import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.mvp.ApplicationPresenter.MENU;
 import com.gmi.nordborglab.browser.client.testutils.PresenterTestBase;
@@ -65,8 +66,8 @@ public class ApplicationPresenterTest extends PresenterTestBase {
     @Test
     public void testNotificationDisplayEvent() {
         presenter.onBind();
-        eventBus.fireEvent(new DisplayNotificationEvent("test", "test", true, DisplayNotificationEvent.LEVEL_MESSAGE, 0));
-        verify(view).showNotification("test", "test", DisplayNotificationEvent.LEVEL_MESSAGE, 0);
+        eventBus.fireEvent(new DisplayNotificationEvent("test", "test", true, AlertType.INFO, 0));
+        verify(view).showNotification("test", "test", AlertType.INFO, 0, true);
     }
 
 }

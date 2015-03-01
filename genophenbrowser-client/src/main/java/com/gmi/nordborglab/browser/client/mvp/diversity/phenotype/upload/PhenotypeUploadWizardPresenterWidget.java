@@ -255,7 +255,7 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
             @Override
             public void onFailure(ServerFailure message) {
                 fireEvent(new LoadingIndicatorEvent(false));
-                DisplayNotificationEvent.fireError(PhenotypeUploadWizardPresenterWidget.this, "Error", "Failed to save data");
+                DisplayNotificationEvent.fireError(getEventBus(), "Error", "Failed to save data");
                 onEdit();
                 String var = isIsaTabUpload() ? "ISATAB-Upload" : "Upload";
                 analyticsManager.endTimingEvent("Phenotype", var, "ERROR");

@@ -414,7 +414,7 @@ public class StudyWizardPresenter extends
 
                     @Override
                     public void onFailure(ServerFailure error) {
-                        fireEvent(new DisplayNotificationEvent("Error", error.getMessage(), true, DisplayNotificationEvent.LEVEL_ERROR, DisplayNotificationEvent.DURATION_NORMAL));
+                        DisplayNotificationEvent.fireError(getEventBus(), "Error", error.getMessage());
                     }
 
                     @Override
@@ -425,7 +425,7 @@ public class StudyWizardPresenter extends
                         for (ConstraintViolation<?> violation : violations) {
                             builder.append(violation.getMessage());
                         }
-                        fireEvent(new DisplayNotificationEvent("Warning", builder.toString(), true, DisplayNotificationEvent.LEVEL_WARNING, DisplayNotificationEvent.DURATION_NORMAL));
+                        DisplayNotificationEvent.fireWarning(getEventBus(), "Error", builder.toString());
                     }
 
                     @Override
