@@ -1,4 +1,4 @@
-package com.gmi.nordborglab.browser.client.mvp.diversity.study.snp;
+package com.gmi.nordborglab.browser.client.mvp.widgets.snps;
 
 import com.gmi.nordborglab.browser.client.dto.SNPAllele;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;

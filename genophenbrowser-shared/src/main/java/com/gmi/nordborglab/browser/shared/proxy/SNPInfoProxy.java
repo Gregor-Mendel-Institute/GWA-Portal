@@ -32,4 +32,8 @@ public interface SNPInfoProxy extends ValueProxy {
     public List<SNPAnnotationProxy> getAnnotations();
 
     public String getGene();
+
+    public Integer getRefCount();
+
+    public Integer getAltCount();
 }

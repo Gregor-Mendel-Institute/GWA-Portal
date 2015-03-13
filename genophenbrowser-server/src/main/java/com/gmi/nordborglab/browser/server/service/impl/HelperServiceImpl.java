@@ -282,6 +282,9 @@ public class HelperServiceImpl implements HelperService {
         List<UnitOfMeasure> unitOfMeasureValues = unitOfMeasureRepository.findAll();
         List<StatisticType> statisticTypeValues = statisticTypeRepository.findAll();
         List<AlleleAssay> alleleAssayValues = alleleAssayRepository.findAll();
+        for (AlleleAssay alleleAssay : alleleAssayValues) {
+            alleleAssay.setAvailableAllelesCount(alleleAssay.getAlleles().size());
+        }
         List<StudyProtocol> studyProtocolValues = studyProtocolRepository.findAll();
         List<Sampstat> sampStatValues = sampstatRepository.findAll();
         List<Transformation> transformationValues = transformationRepository.findAll();

@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.server.domain;
 
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
@@ -31,6 +32,10 @@ public final class DomainFunctions {
         return GetTraitUomIdFunction.INSTANCE;
     }
 
+    public static Function<Passport, Long> getPassportId() {
+        return GetPassportIdFunction.INSTANCE;
+    }
+
     public static Function<Study, Long> getStudyId() {
         return GetStudyIdFunction.INSTANCE;
     }
@@ -46,6 +51,16 @@ public final class DomainFunctions {
     public static Function<CandidateGeneListEnrichment, Long> getCandidateGeneListEnrichmentId() {
         return GetCandidateGeneListEnrichmentIdFunction.INSTANCE;
     }
+
+    // enum singleton pattern
+    private enum GetPassportIdFunction implements Function<Passport, Long> {
+        INSTANCE;
+
+        public Long apply(Passport item) {
+            return item.getId();
+        }
+    }
+
 
     // enum singleton pattern
     private enum GetExperimentIdFunction implements Function<Experiment, Long> {

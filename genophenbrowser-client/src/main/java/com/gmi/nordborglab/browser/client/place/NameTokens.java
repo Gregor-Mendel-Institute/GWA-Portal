@@ -33,6 +33,7 @@ public final class NameTokens {
     public static final String dashboard = "/dashboard";
     public static final String news = "/news/{id}";
     public static final String genomebrowser = "/genotype/genomebrowser";
+    public static final String snpviewer = "/genotype/snpviewer";
     public static final String candidateGeneList = "/meta/candidategenelists";
     public static final String candidateGeneListDetail = "/meta/candidategenelist/{id}";
     public static final String profile = "/profile/{id}";
@@ -42,8 +43,8 @@ public final class NameTokens {
     public static final String phenotypeEnrichments = "/phenotype/{id}/enrichments";
     public static final String studyEnrichments = "/analysis/{id}/enrichments";
     public static final String isaTabDownload = "/provider/study/{id}/{name}";
-    public static final String snps = "/analysis/{id}/snp/{chr}/{position}";
 
+    public static final String snps = "/analysis/{id}/snp/{chr}/{position}";
     public static final ImmutableMap<SearchItemProxy.SUB_CATEGORY, String> subCategory2Token = ImmutableMap.<SearchItemProxy.SUB_CATEGORY, String>builder()
             .put(SearchItemProxy.SUB_CATEGORY.STUDY, NameTokens.experiments)
             .put(SearchItemProxy.SUB_CATEGORY.PHENOTYPE, NameTokens.phenotypeoverview)
@@ -181,5 +182,9 @@ public final class NameTokens {
 
     public static String getSNPs() {
         return snps;
+    }
+
+    public static String getSNPViewer() {
+        return snpviewer;
     }
 }

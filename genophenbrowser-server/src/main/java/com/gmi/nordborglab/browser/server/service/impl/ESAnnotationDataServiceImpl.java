@@ -7,9 +7,26 @@ import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAlleleInfo;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnotation;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPInfo;
+import com.gmi.nordborglab.browser.server.data.es.ESFacet;
+import com.gmi.nordborglab.browser.server.data.es.ESTermsFacet;
+import com.gmi.nordborglab.browser.server.domain.DomainFunctions;
+import com.gmi.nordborglab.browser.server.domain.genotype.Allele;
+import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
+import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
+import com.gmi.nordborglab.browser.server.domain.pages.SNPInfoPage;
+import com.gmi.nordborglab.browser.server.repository.AlleleAssayRepository;
+import com.gmi.nordborglab.browser.server.repository.PassportRepository;
+import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
+import com.google.common.base.Function;
+import com.google.common.base.Predicates;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
+import com.google.common.primitives.Bytes;
 import com.google.visualization.datasource.datatable.DataTable;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
@@ -17,9 +34,20 @@ import org.elasticsearch.action.get.MultiGetItemResponse;
 import org.elasticsearch.action.get.MultiGetRequest;
 import org.elasticsearch.action.get.MultiGetRequestBuilder;
 import org.elasticsearch.action.get.MultiGetResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.nested.Nested;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.fetch.source.FetchSourceContext;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
@@ -45,10 +73,20 @@ import java.util.regex.Pattern;
 public class ESAnnotationDataServiceImpl implements AnnotationDataService {
 
 
-    private static Pattern geneIdPattern = Pattern.compile("AT([1-5]{1})G\\d+");
+    private static Pattern geneIdPattern = Pattern.compile("^AT([1-5]{1})G\\d+$");
+    private static Pattern regionPattern = Pattern.compile("^Chr([1-5]{1})\\:(\\d+)\\-(\\d+)$");
 
     @Resource
     protected GenotypeReader genotypeReader;
+
+    @Resource
+    protected AlleleAssayRepository alleleAssayRepository;
+
+    @Resource
+    protected TraitUomRepository traitUomRepository;
+
+    @Resource
+    protected PassportRepository passportRepository;
 
     @Resource
     protected Client client;
@@ -181,7 +219,7 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
     }
 
     @Override
-    public SNPAlleleInfo getSNPAlleleInfo(Long alleleAssayId, Integer chromosome, Integer position, List<Long> passportIds) {
+    public SNPAlleleInfo getSNPAlleleInfo(Long alleleAssayId, Integer chromosome, Integer position, List<Long> passportIds, boolean fetchPassportInfos) {
         String genotype = alleleAssayId.toString();
         LinkedHashSet<String> passportIdsString = null;
         if (passportIds != null) {
@@ -193,9 +231,159 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
                 }
             }));
         }
-        List<Byte> alleles = genotypeReader.getAlleles(genotype, chromosome, position, passportIdsString);
+        byte[] alleles = genotypeReader.getAlleles(genotype, chromosome, position, passportIdsString);
         List<SNPInfo> snpAnnotations = getSNPAnnotations(String.format("chr%s", chromosome), new int[]{position});
-        SNPAlleleInfo info = new SNPAlleleInfo(snpAnnotations.get(0), alleles);
+        List<Long> ids2Fetch = Lists.transform(genotypeReader.getAccessionIds(genotype, passportIdsString), new Function<String, Long>() {
+            @Nullable
+            @Override
+            public Long apply(@Nullable String input) {
+                return Long.valueOf(input);
+            }
+        });
+        List<Passport> passports = null;
+        if (fetchPassportInfos) {
+            passports = passportRepository.findAll(ids2Fetch);
+            Ordering<Passport> orderByIds = Ordering.explicit(ids2Fetch).onResultOf(DomainFunctions.getPassportId());
+            passports = orderByIds.immutableSortedCopy(passports);
+        }
+        SNPInfo snpInfo = snpAnnotations.get(0);
+        snpInfo.setChr(chromosome.toString());
+        snpInfo.setPosition(position);
+        SNPAlleleInfo info = new SNPAlleleInfo(snpInfo, Bytes.asList(alleles), passports);
         return info;
+    }
+
+    @Override
+    public SNPInfoPage getSNPInfosForFilter(Long alleleAssayId, String region, int page, int size, List<Long> passportIds) {
+        SNPInfoPage snpInfoPage = null;
+        if (alleleAssayId == null)
+            throw new RuntimeException("genotype not specified");
+
+        Matcher geneMatcher = geneIdPattern.matcher(region);
+        Matcher regionMatcher = regionPattern.matcher(region);
+        if (!geneMatcher.matches() && (!regionMatcher.matches() || regionMatcher.groupCount() != 3))
+            throw new RuntimeException(String.format("Region %s invalid", region));
+        int start = 0;
+        int end = 0;
+        Integer chr = null;
+        if (geneMatcher.matches()) {
+            Gene gene = getGeneById(region);
+            start = (int) gene.getStart();
+            end = (int) gene.getEnd();
+            chr = Integer.valueOf(gene.getChr());
+        } else {
+            chr = Integer.valueOf(regionMatcher.group(1));
+            start = Integer.valueOf(regionMatcher.group(2));
+            end = Integer.valueOf(regionMatcher.group(3));
+
+        }
+        FilterBuilder filter = FilterBuilders.rangeFilter("position").from(start).to(end);
+        SearchRequestBuilder requestBuilder = client.prepareSearch(String.format(INDEX_PREFIX, "chr" + chr))
+                .setSize(size).setFrom(page).addFields("annotation", "inGene", "ref", "alt", "lyr").setFetchSource("annotations", null)
+                .setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter));
+
+        // Add aggregation
+        requestBuilder.addAggregation(AggregationBuilders.terms("inGene").field("inGene").size(2))
+                .addAggregation(AggregationBuilders.nested("annotations").path("annotations")
+                        .subAggregation(AggregationBuilders.terms("impact").field("impact").size(3))
+                        .subAggregation(AggregationBuilders.terms("function").field("function").size(4))
+                        .subAggregation(AggregationBuilders.terms("effect").field("effect")));
+
+
+        SearchResponse response = requestBuilder.execute().actionGet();
+        List<SNPInfo> snpInfos = Lists.newArrayList();
+        long total = response.getHits().getTotalHits();
+        for (SearchHit hit : response.getHits()) {
+            SNPInfo snpInfo = new SNPInfo();
+            try {
+                //FIXME reindex data
+                snpInfo.setInGene(hit.getFields().get("inGene").<Integer>getValue() != 0);
+                snpInfo.setRef(hit.getFields().get("ref").<String>getValue());
+                snpInfo.setAlt(hit.getFields().get("alt").<String>getValue());
+                snpInfo.setPosition(Long.parseLong(hit.getId()));
+                snpInfo.setChr(chr.toString());
+                List<Map<String, Object>> annotationMap = (List<Map<String, Object>>) hit.getSource().get("annotations");
+                List<SNPAnnotation> annotations = extractSNPAnnotations(annotationMap);
+                snpInfo.setAnnotations(annotations);
+                snpInfo.setGene(extractGeneFromAnnotations(annotations));
+
+            } catch (Exception e) {
+                String test = "test";
+            }
+            snpInfos.add(snpInfo);
+        }
+        List<ESFacet> facets = Lists.newArrayList();
+        //Extract aggregations
+        Aggregations aggregations = response.getAggregations();
+
+        // get inGene facet
+        Terms searchFacet = aggregations.get("inGene");
+        List<ESTermsFacet> terms = Lists.newArrayList();
+        for (Terms.Bucket termEntry : searchFacet.getBuckets()) {
+            String term = "intergenic";
+            if (termEntry.getKeyAsText().string().equalsIgnoreCase("T")) {
+                term = "genic";
+            }
+            terms.add(new ESTermsFacet(term, termEntry.getDocCount()));
+        }
+        facets.add(new ESFacet("inGene", 0, 0, 0, terms));
+        //
+        Aggregations subAggregations = ((Nested) aggregations.get("annotations")).getAggregations();
+
+        facets.add(getTermFacet(subAggregations, "effect"));
+        facets.add(getTermFacet(subAggregations, "function"));
+        facets.add(getTermFacet(subAggregations, "impact"));
+
+        if (alleleAssayId != null) {
+            LinkedHashSet<String> passportIdSet = null;
+            final AlleleAssay alleleAssay = alleleAssayRepository.findOne(alleleAssayId);
+            int totalAlleles = alleleAssay.getAlleles().size();
+            if (passportIds != null) {
+                final ImmutableSet<Long> allelePassportLookup = FluentIterable.from(alleleAssay.getAlleles()).transform(new Function<Allele, Long>() {
+                    @Nullable
+                    @Override
+                    public Long apply(@Nullable Allele input) {
+                        return input.getPassport().getId();
+                    }
+                }).toSet();
+                passportIdSet = Sets.newLinkedHashSet(FluentIterable.from(passportIds)
+                        .filter(Predicates.in(allelePassportLookup))
+                        .transform(new Function<Long, String>() {
+                            @Nullable
+                            @Override
+                            public String apply(@Nullable Long input) {
+                                return input.toString();
+                            }
+                        }));
+                totalAlleles = passportIdSet.size();
+            }
+            int[] allelesCount = genotypeReader.getAlleleCount(alleleAssayId.toString(), chr, start, end, passportIdSet);
+            int[] positions = genotypeReader.getPositions(alleleAssayId.toString(), chr, start, end);
+            Map<Integer, Integer> lookUpMap = Maps.newHashMap();
+            for (int i = 0; i < positions.length; i++) {
+                lookUpMap.put(positions[i], i);
+            }
+
+            for (SNPInfo info : snpInfos) {
+                if (lookUpMap.containsKey((int) info.getPosition())) {
+                    int altCount = allelesCount[lookUpMap.get((int) info.getPosition())];
+                    info.setAltCount(altCount);
+                    info.setRefCount(totalAlleles - altCount);
+                }
+            }
+        }
+
+        snpInfoPage = new SNPInfoPage(snpInfos, new PageRequest(page, size), total, facets);
+        return snpInfoPage;
+    }
+
+
+    private ESFacet getTermFacet(Aggregations aggregation, String name) {
+        Terms facet = aggregation.get(name);
+        List<ESTermsFacet> terms = Lists.newArrayList();
+        for (Terms.Bucket termEntry : facet.getBuckets()) {
+            terms.add(new ESTermsFacet(termEntry.getKeyAsText().string(), termEntry.getDocCount()));
+        }
+        return new ESFacet("function", 0, 0, 0, terms);
     }
 }

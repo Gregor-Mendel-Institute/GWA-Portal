@@ -5,6 +5,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.primitives.Bytes;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,6 +27,7 @@ public class HDF5GenotypeReaderTest {
     private static final String genotype = "4";
     private static final Integer chr = 5;
     private static final Integer position = 18592365;
+    private static final Integer endPosition = 18592484;
     private static LinkedHashSet<String> passportIds;
 
 
@@ -53,7 +55,7 @@ public class HDF5GenotypeReaderTest {
 
     @Test
     public void testGetAllelesForAllAccessions() {
-        List<Byte> data = sut.getAlleles(genotype, chr, position, null);
+        List<Byte> data = Bytes.asList(sut.getAlleles(genotype, chr, position, null));
         assertThat(data.size(), is(259));
         int allele1 = Collections2.filter(data, new Predicate<Byte>() {
             @Override
@@ -72,8 +74,18 @@ public class HDF5GenotypeReaderTest {
     }
 
     @Test
+    public void testGetAllelesCount() {
+        int[] alleleCount = sut.getAlleleCount(genotype, chr, position, endPosition, null);
+        assertThat(alleleCount.length, is(4));
+        assertThat(alleleCount[0], is(111));
+        assertThat(alleleCount[1], is(5));
+        assertThat(alleleCount[2], is(1));
+        assertThat(alleleCount[3], is(5));
+    }
+
+    @Test
     public void testGetAllelesForSpecificAccessions() {
-        List<Byte> data = sut.getAlleles(genotype, chr, position, passportIds);
+        List<Byte> data = Bytes.asList(sut.getAlleles(genotype, chr, position, passportIds));
         assertThat(data.size(), is(219));
         int allele1 = Collections2.filter(data, new Predicate<Byte>() {
             @Override
@@ -90,5 +102,36 @@ public class HDF5GenotypeReaderTest {
         assertThat(allele1, is(124));
         assertThat(allele2, is(95));
     }
+
+    @Test
+    public void testGetPositions() {
+        int[] positions = sut.getPositions(genotype, chr, position, endPosition);
+        assertThat(positions.length, is(4));
+        assertThat(positions[0], is(18592365));
+        assertThat(positions[1], is(18592395));
+        assertThat(positions[2], is(18592469));
+        assertThat(positions[3], is(18592484));
+
+    }
+
+    @Test
+    public void testGetAccessionsWithPassportList() {
+        List<String> accessionIds = sut.getAccessionIds(genotype, passportIds);
+        assertThat(accessionIds.size(), is(passportIds.size()));
+        int i = 0;
+        for (String passportId : passportIds) {
+            assertThat(accessionIds.get(i), is(passportId));
+            i += 1;
+        }
+    }
+
+    @Test
+    public void testGetAccessionsWithOutPassportList() {
+        List<String> accessionIds = sut.getAccessionIds(genotype, null);
+        assertThat(accessionIds.size(), is(259));
+        assertThat(accessionIds.get(0), is("991"));
+        assertThat(accessionIds.get(258), is("9481"));
+    }
+
 
 }

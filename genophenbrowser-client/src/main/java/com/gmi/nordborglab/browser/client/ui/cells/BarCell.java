@@ -14,19 +14,34 @@ public class BarCell extends AbstractSafeHtmlCell<Number> {
 
     public BarCell() {
         super(BarChartCellRenderer.getInstance());
+    }
 
+    public BarCell(double height, String color) {
+        super(new BarChartCellRenderer(height, color));
     }
 
     @Override
     protected void render(Context context, SafeHtml data, SafeHtmlBuilder sb) {
-        sb.append(data);
+        if (data != null)
+            sb.append(data);
     }
 
     public static class BarChartCellRenderer extends AbstractSafeHtmlRenderer<Number> {
 
+        private double height = 1.17;
+        private String color = "#058dc7";
+
+        public BarChartCellRenderer() {
+        }
+
+        public BarChartCellRenderer(double height, String color) {
+            this.height = height;
+            this.color = color;
+        }
+
         static interface Template extends SafeHtmlTemplates {
-            @Template("<div style=\"width:{0}%;background-color: #058dc7;display: inline;float: left;height: 1.17em;margin: 0 10px 0 0;min-width: 1px;\"></div>")
-            SafeHtml bar(Double percentage);
+            @Template("<div style=\"width:{0}%;background-color: {1};display: inline;float: left;height: {2}em;margin: 0 10px 0 0;min-width: 1px;\"></div>")
+            SafeHtml bar(Double percentage, String color, Double height);
         }
 
         private static Template template = GWT.create(Template.class);
@@ -42,11 +57,10 @@ public class BarCell extends AbstractSafeHtmlCell<Number> {
         @Override
         public SafeHtml render(Number object) {
             SafeHtml output = null;
-            if (object != null) {
-                output = template.bar(object.doubleValue());
-            } else {
-                output = template.bar(0D);
-            }
+            double value = 0D;
+            if (object != null)
+                value = object.doubleValue();
+            output = template.bar(value, color, height);
             return output;
         }
     }
