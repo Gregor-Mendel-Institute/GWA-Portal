@@ -190,8 +190,6 @@ public class FileUploadWidget extends Composite {
         }
     };
 
-    public static List<String> CSV_MIME_TYPES = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
-
     @UiField
     Widget uploadContainer;
     @UiField
@@ -229,9 +227,7 @@ public class FileUploadWidget extends Composite {
     SpanElement additionalInfoLb;
     private boolean multiUpload = false;
     private Map<File, FileCheckerResult> filesToUpload = Maps.newLinkedHashMap();
-    private List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
     private BiMap<File, Element> filesToRow = HashBiMap.create();
-    private File file = null;
     private Queue<File> filesInUploadQueue = Lists.newLinkedList();
     private int currentUploadCount = 0;
     private String restURL;
@@ -308,7 +304,7 @@ public class FileUploadWidget extends Composite {
             if (fileCheckerResult.canParse)
                 nameCell = "<td><a href=\"javascript:;\">" + file.getName() + "</a></td>";
         } else {
-            progressBarCell = "<td><span class=\"label label-important\">Error</span> Filetype not allowed</div></td>";
+            progressBarCell = "<td><span class=\"label label-important\">Error</span> Filetype " + file.getType() + "not allowed</div></td>";
         }
         String cancelBtnCell = "<td><a id=\"test\" class=\"btn btn-warning\" style=\"\" aria-hidden=\"false\"><i class=\"icon-ban-circle\"></i> Remove </a></td>";
         GQuery row = $("<tr>" + nameCell + sizeCell + extCell + progressBarCell + cancelBtnCell + "</tr>").appendTo($("#fileToUploadTable > tbody", this));

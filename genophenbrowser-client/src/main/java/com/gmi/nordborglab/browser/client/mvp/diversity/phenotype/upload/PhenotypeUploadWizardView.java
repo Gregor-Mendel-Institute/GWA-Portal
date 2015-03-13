@@ -403,7 +403,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     private final PhenotypeUploadDataCardCell phenotypeUploadDataCard;
     private static final String restURL = "/provider/phenotype/upload";
     private static final String restISATABURL = "/provider/isatab/upload";
-    private static final List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
+    private static final List<String> csvMimeTypes = Lists.newArrayList("text/txt", "text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
     private final List<String> allowedISAExtensions = Lists.newArrayList("application/zip", "application/x-gzip");
     private List<String> headerColumns = ImmutableList.of("accessionid", "Phenotype1", "Phenotype2", "Phenotype3", "PhenotypeN");
     private List<String> defaultValues = ImmutableList.of("6909", "12.2", "-", "12.23", "12.5");
@@ -447,11 +447,11 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         this.cardCellListResources = cardCellListResources;
         this.phenotypeUploadDataCard = phenotypeUploadDataCard;
         this.experimentUploadDataEditDriver = experimentUploadDataEditDriver;
-        phenotypeValuesDataGrid = new DataGrid<SampleDataProxy>(Integer.MAX_VALUE, dataGridResources);
-        summaryDataGrid = new DataGrid<SampleDataProxy>(50, dataGridResources);
+        phenotypeValuesDataGrid = new DataGrid<>(Integer.MAX_VALUE, dataGridResources);
+        summaryDataGrid = new DataGrid<>(50, dataGridResources);
         initDataGrid();
         this.phenotypeListEditor = new PhenotypeUploadDataListEditor(ontologyManager, currentUser.getAppData().getUnitOfMeasureList(), changeHandler);
-        phenotypeList = new CellList<PhenotypeUploadDataProxy>(phenotypeUploadDataCard, cardCellListResources);
+        phenotypeList = new CellList<>(phenotypeUploadDataCard, cardCellListResources);
         widget = binder.createAndBindUi(this);
         vizContainer.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         vizContainer.getElement().getFirstChildElement().getNextSiblingElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
