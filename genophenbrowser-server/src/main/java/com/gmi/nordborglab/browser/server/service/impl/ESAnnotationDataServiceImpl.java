@@ -46,6 +46,7 @@ import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.fetch.source.FetchSourceContext;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -279,6 +280,7 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
         }
         FilterBuilder filter = FilterBuilders.rangeFilter("position").from(start).to(end);
         SearchRequestBuilder requestBuilder = client.prepareSearch(String.format(INDEX_PREFIX, "chr" + chr))
+                .addSort("position", SortOrder.ASC)
                 .setSize(size).setFrom(page).addFields("annotation", "inGene", "ref", "alt", "lyr").setFetchSource("annotations", null)
                 .setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter));
 
