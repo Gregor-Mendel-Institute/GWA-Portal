@@ -302,6 +302,7 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
                 snpInfo.setInGene(hit.getFields().get("inGene").<Integer>getValue() != 0);
                 snpInfo.setRef(hit.getFields().get("ref").<String>getValue());
                 snpInfo.setAlt(hit.getFields().get("alt").<String>getValue());
+                snpInfo.setLyr(hit.getFields().get("lyr").<String>getValue());
                 snpInfo.setPosition(Long.parseLong(hit.getId()));
                 snpInfo.setChr(chr.toString());
                 List<Map<String, Object>> annotationMap = (List<Map<String, Object>>) hit.getSource().get("annotations");
