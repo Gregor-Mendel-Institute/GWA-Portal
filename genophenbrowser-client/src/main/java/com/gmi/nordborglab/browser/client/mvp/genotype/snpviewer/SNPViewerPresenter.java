@@ -183,6 +183,7 @@ public class SNPViewerPresenter extends Presenter<SNPViewerPresenter.MyView, SNP
         boolean isLoad = isPhenotypeChanged(phenotypeId);
         if (phenotypeId == null) {
             phenotype = null;
+            isLoad = false;
         }
         if (!isLoad) {
             return new PromiseFunction() {
@@ -254,13 +255,15 @@ public class SNPViewerPresenter extends Presenter<SNPViewerPresenter.MyView, SNP
 
     @Override
     public void onSelectSNP(SNPInfoProxy snp) {
-        PlaceRequest.Builder request = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest());
+        PlaceRequest.Builder rqBuilder = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest());
         if (snp == null) {
-            request.without("chr").without("position");
+            rqBuilder.without("chr").without("position");
         } else {
-            request.with("chr", snp.getChr()).with("position", String.valueOf(snp.getPosition()));
+            rqBuilder.with("chr", snp.getChr()).with("position", String.valueOf(snp.getPosition()));
         }
-        placeManager.revealPlace(request.build());
+        PlaceRequest request = rqBuilder.build();
+        if (!placeManager.getCurrentPlaceRequest().equals(request))
+            placeManager.revealPlace(request);
     }
 
 
@@ -336,10 +339,8 @@ public class SNPViewerPresenter extends Presenter<SNPViewerPresenter.MyView, SNP
     }
 
     private boolean isPhenotypeChanged(Long phenotypeId) {
-        return phenotypeId != null
-                && (phenotype == null
-                || (phenotype != null && phenotypeId != phenotype.getId())
-        );
+        return (phenotype != null && phenotypeId == null) || (phenotype == null && phenotypeId != null) || (phenotype != null && phenotypeId != phenotype.getId());
+
     }
 
     private boolean parseSNPChromURL() {
