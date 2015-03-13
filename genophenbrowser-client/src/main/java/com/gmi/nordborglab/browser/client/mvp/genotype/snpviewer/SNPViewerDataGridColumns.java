@@ -9,6 +9,7 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.IdentityColumn;
@@ -35,7 +36,7 @@ public interface SNPViewerDataGridColumns {
     public static class PositionColumn extends Column<SNPInfoProxy, Number> {
 
         public PositionColumn() {
-            super(new NumberCell());
+            super(new NumberCell(NumberFormat.getFormat(NumberFormat.getDecimalFormat().getPattern()).overrideFractionDigits(0)));
         }
 
         @Override
@@ -216,7 +217,7 @@ public interface SNPViewerDataGridColumns {
 
         @Override
         public Cell<Number> getCell() {
-            return new NumberCell();
+            return new NumberCell(NumberFormat.getFormat(NumberFormat.getDecimalFormat().getPattern()).overrideFractionDigits(0));
         }
 
         @Override
