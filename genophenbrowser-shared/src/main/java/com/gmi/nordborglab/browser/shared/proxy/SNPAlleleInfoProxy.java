@@ -15,4 +15,6 @@ public interface SNPAlleleInfoProxy extends ValueProxy {
     SNPInfoProxy getSnpInfo();
 
     List<Byte> getAlleles();
+
+    List<PassportProxy> getPassports();
 }

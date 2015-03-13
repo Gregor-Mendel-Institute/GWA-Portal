@@ -4,7 +4,9 @@ import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPAlleleInfo;
 import com.gmi.nordborglab.browser.server.data.annotation.SNPInfo;
+import com.gmi.nordborglab.browser.server.domain.pages.SNPInfoPage;
 import com.google.visualization.datasource.datatable.DataTable;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -29,6 +31,9 @@ public interface AnnotationDataService {
 
     DataTable getGenomeStatData(String stats, String chr);
 
-    SNPAlleleInfo getSNPAlleleInfo(Long alleleAssayId, Integer chromosome, Integer position, List<Long> passportIds);
+    SNPAlleleInfo getSNPAlleleInfo(Long alleleAssayId, Integer chromosome, Integer position, List<Long> passportIds, boolean fetchPassportInfos);
+
+    @PreAuthorize("hasPermission(#alleleAssayId,'com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay','READ')")
+    SNPInfoPage getSNPInfosForFilter(Long alleleAssayId, String region, int start, int size, List<Long> passportIds);
 
 }

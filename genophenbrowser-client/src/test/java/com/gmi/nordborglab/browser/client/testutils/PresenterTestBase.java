@@ -22,4 +22,9 @@ public class PresenterTestBase {
         GWTMockUtilities.restore();
     }
 
+
+    protected RecordingAndCountingEventBus eventBus() {
+        return (RecordingAndCountingEventBus) eventBus;
+    }
+
 }

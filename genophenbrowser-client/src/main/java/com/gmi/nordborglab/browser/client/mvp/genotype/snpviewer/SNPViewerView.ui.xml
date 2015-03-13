@@ -1,0 +1,100 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui">
+
+    <ui:style type="com.gmi.nordborglab.browser.client.mvp.genotype.snpviewer.SNPViewerView.MyStyle">
+        .snps_container {
+            min-height: 500px !important;
+        }
+
+        .loadingIndicator {
+            font-size: 30px;
+            margin-top: 50%;
+            color: #444;
+        }
+
+        .backbtn {
+            margin-left: 10px;
+        }</ui:style>
+    <g:ScrollPanel>
+        <g:HTMLPanel ui:field="container">
+            <div>
+                <g:DisclosurePanel width="100%" ui:field="filterContainer" open="true">
+                    <g:header>
+                        Filter
+                    </g:header>
+                    <b:WellForm type="HORIZONTAL">
+                        <b:ControlGroup>
+                            <b:ControlLabel for="region">Region:</b:ControlLabel>
+                            <b:Controls>
+                                <b:Tooltip
+                                        text="Select a genomic region. Can be either location in the form 'Chr1:100-5000' or by specifying a gene id (AT1G01950)"
+                                        placement="RIGHT">
+                                    <b:TextBox placeholder="Chr1:1000-5000 or AT1G01950"
+                                               ui:field="regionTb"></b:TextBox>
+                                </b:Tooltip>
+                            </b:Controls>
+                        </b:ControlGroup>
+                        <b:ControlGroup>
+                            <b:ControlLabel for="genotype">Genotype:</b:ControlLabel>
+                            <b:Controls>
+                                <!-- If you add id attribute to element,You should use b:id attribute. -->
+                                <b:Tooltip
+                                        text="Select a genotype. This will be used to retrieve allele information and mac/maf for accessions"
+                                        placement="RIGHT">
+                                    <g:ValueListBox ui:field="genotypeLb"></g:ValueListBox>
+                                </b:Tooltip>
+                            </b:Controls>
+                        </b:ControlGroup>
+                        <b:ControlGroup>
+                            <b:ControlLabel for="accessions">Accessions (optional):</b:ControlLabel>
+                            <b:Controls>
+                                <b:Tooltip
+                                        text="Optionally it is possible to filter accessions by specifying a phenotype"
+                                        placement="RIGHT">
+                                    <b:InputAddOn prependIcon="SEARCH">
+                                        <b:Typeahead ui:field="phenotypeTa">
+                                            <b:TextBox placeholder="Search for a phenotype" ui:field="phenotypeTb"/>
+                                        </b:Typeahead>
+                                    </b:InputAddOn>
+                                </b:Tooltip>
+                            </b:Controls>
+                        </b:ControlGroup>
+                    </b:WellForm>
+                </g:DisclosurePanel>
+            </div>
+            <div>
+                <g:ResizeLayoutPanel addStyleNames="{style.snps_container}" ui:field="snpContainer">
+                    <g:DeckLayoutPanel ui:field="snpDetailContainerDeckPanel" animationVertical="true"
+                                       animationDuration="100">
+                        <g:LayoutPanel ui:field="snpDataGridContainer">
+                            <g:layer top="0" bottom="30px">
+                                <c:DataGrid ui:field="snpsDataGrid"/>
+                            </g:layer>
+                            <g:layer bottom="0" height="30px">
+                                <gui:CustomPager ui:field="snpsPager"/>
+                            </g:layer>
+                        </g:LayoutPanel>
+                        <g:LayoutPanel ui:field="snpDetailContainer">
+                            <g:layer top="0" height="40px">
+                                <g:HTMLPanel>
+                                    <div>
+                                        <b:Button type="LINK" icon="LONG_ARROW_LEFT" text="Back"
+                                                  ui:field="snpDetailBackBtn"
+                                                  addStyleNames="{style.backbtn}"></b:Button>
+                                    </div>
+                                </g:HTMLPanel>
+                            </g:layer>
+                            <g:layer top="40px" bottom="0">
+                                <g:SimpleLayoutPanel ui:field="snpDetailPresenterContainer"/>
+                            </g:layer>
+                        </g:LayoutPanel>
+                    </g:DeckLayoutPanel>
+                </g:ResizeLayoutPanel>
+            </div>
+        </g:HTMLPanel>
+    </g:ScrollPanel>
+
+</ui:UiBinder>

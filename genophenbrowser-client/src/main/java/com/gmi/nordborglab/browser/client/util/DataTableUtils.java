@@ -269,13 +269,22 @@ public class DataTableUtils {
             int i = 0;
             for (SNPAllele snpAllele : snpAlleles) {
                 LocalityProxy locality = snpAllele.getPassport().getCollection().getLocality();
+                String country = "N/A";
+                if (locality != null && locality.getCountry() != null)
+                    country = locality.getCountry();
+                Double value = null;
+                try {
+                    value = Double.parseDouble(snpAllele.getPhenotype());
+                } catch (NumberFormatException e) {
+
+                }
                 addRowToPhentoypeExplorerTable(dataTable, i,
                         snpAllele.getPassport().getAccename(),
                         snpAllele.getPassport().getId(),
                         locality.getLatitude(),
                         locality.getLongitude(),
-                        Double.parseDouble(snpAllele.getPhenotype()),
-                        locality.getCountry());
+                        value,
+                        country);
                 dataTable.setValue(i, 7, snpAllele.getAllele());
                 i = i + 1;
             }
@@ -339,10 +348,14 @@ public class DataTableUtils {
             ImmutableList<SNPAllele> orderedSNPAlleles = snpOrdering.immutableSortedCopy(groupedByAllele.get(allele));
             String[] stat = new String[4];
             int size = orderedSNPAlleles.size();
-            stat[0] = df.format(Double.valueOf(orderedSNPAlleles.get(0).getPhenotype()));
-            stat[1] = df.format(Double.valueOf(orderedSNPAlleles.get((int) Math.round(size * 25 / 100)).getPhenotype()));
-            stat[2] = df.format(Double.valueOf(orderedSNPAlleles.get((int) Math.round(size * 75 / 100)).getPhenotype()));
-            stat[3] = df.format(Double.valueOf(orderedSNPAlleles.get(orderedSNPAlleles.size() - 1).getPhenotype()));
+            if (orderedSNPAlleles.get(0).getPhenotype() != null)
+                stat[0] = df.format(Double.valueOf(orderedSNPAlleles.get(0).getPhenotype()));
+            if (orderedSNPAlleles.get((int) Math.round(size * 25 / 100)).getPhenotype() != null)
+                stat[1] = df.format(Double.valueOf(orderedSNPAlleles.get((int) Math.round(size * 25 / 100)).getPhenotype()));
+            if (orderedSNPAlleles.get((int) Math.round(size * 75 / 100)).getPhenotype() != null)
+                stat[2] = df.format(Double.valueOf(orderedSNPAlleles.get((int) Math.round(size * 75 / 100)).getPhenotype()));
+            if (orderedSNPAlleles.get(orderedSNPAlleles.size() - 1).getPhenotype() != null)
+                stat[3] = df.format(Double.valueOf(orderedSNPAlleles.get(orderedSNPAlleles.size() - 1).getPhenotype()));
             stats.put(allele, stat);
         }
         int i = 0;
@@ -376,10 +389,12 @@ public class DataTableUtils {
         int jitter = 1;
         int i = 0;
         for (SNPAllele allele : snpAlleles) {
+            if (allele.getPhenotype() == null)
+                continue;
             dataTable.addRow();
             Double value = Double.valueOf(allele.getPhenotype());
             double random = Random.nextDouble();
-            Double xValue = null;
+            Double xValue;
             if (allele1.equals(allele.getAllele())) {
 
                 dataTable.setValue(i, 1, value);

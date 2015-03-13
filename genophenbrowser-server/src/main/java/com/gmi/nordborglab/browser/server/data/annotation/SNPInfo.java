@@ -19,6 +19,8 @@ public class SNPInfo {
     protected String lyr;
     protected List<SNPAnnotation> annotations;
     protected String gene;
+    protected Integer refCount;
+    protected Integer altCount;
 
 
     public SNPInfo() {
@@ -87,5 +89,21 @@ public class SNPInfo {
 
     public void setGene(String gene) {
         this.gene = gene;
+    }
+
+    public Integer getRefCount() {
+        return refCount;
+    }
+
+    public void setRefCount(Integer refCount) {
+        this.refCount = refCount;
+    }
+
+    public Integer getAltCount() {
+        return altCount;
+    }
+
+    public void setAltCount(Integer altCount) {
+        this.altCount = altCount;
     }
 }

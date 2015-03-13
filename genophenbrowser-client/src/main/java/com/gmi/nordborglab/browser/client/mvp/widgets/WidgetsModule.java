@@ -18,6 +18,8 @@ import com.gmi.nordborglab.browser.client.mvp.widgets.permissions.PermissionDeta
 import com.gmi.nordborglab.browser.client.mvp.widgets.permissions.PermissionDetailView;
 import com.gmi.nordborglab.browser.client.mvp.widgets.search.SearchPresenter;
 import com.gmi.nordborglab.browser.client.mvp.widgets.search.SearchView;
+import com.gmi.nordborglab.browser.client.mvp.widgets.snps.SNPDetailPresenterWidget;
+import com.gmi.nordborglab.browser.client.mvp.widgets.snps.SNPDetailPresenterWidgetView;
 import com.gwtplatform.mvp.client.gin.AbstractPresenterModule;
 
 /**
@@ -52,11 +54,14 @@ public class WidgetsModule extends AbstractPresenterModule {
 
         bindSingletonPresenterWidget(GWASUploadWizardPresenterWidget.class, GWASUploadWizardPresenterWidget.MyView.class, GWASUploadWizardView.class);
 
+        bindSingletonPresenterWidget(SNPDetailPresenterWidget.class, SNPDetailPresenterWidget.MyView.class, SNPDetailPresenterWidgetView.class);
+
         bindPresenterWidget(PermissionDetailPresenter.class,
                 PermissionDetailPresenter.MyView.class,
                 PermissionDetailView.class);
 
         bindPresenterWidget(SearchPresenter.class,
                 SearchPresenter.MyView.class, SearchView.class);
+
     }
 }

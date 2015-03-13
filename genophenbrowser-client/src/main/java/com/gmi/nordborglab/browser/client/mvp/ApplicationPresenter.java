@@ -161,7 +161,8 @@ public class ApplicationPresenter extends
                 request.matchesNameToken(NameTokens.stock)
                 )
             menu = MENU.GERMPLASM;
-        else if (request.matchesNameToken(NameTokens.genomebrowser)) {
+        else if (request.matchesNameToken(NameTokens.genomebrowser) ||
+                request.matchesNameToken(NameTokens.snpviewer)) {
             menu = MENU.GENOTYPE;
         }
         return menu;

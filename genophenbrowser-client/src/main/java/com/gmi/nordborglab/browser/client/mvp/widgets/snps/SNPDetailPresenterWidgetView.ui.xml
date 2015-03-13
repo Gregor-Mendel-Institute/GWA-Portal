@@ -1,0 +1,123 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+    <ui:with field="mainRes"
+             type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
+    <ui:style type="com.gmi.nordborglab.browser.client.mvp.widgets.snps.SNPDetailPresenterWidgetView.MyStyle">
+
+        .meanLine {
+            margin: 0;
+            position: absolute;
+            border: 1px solid black;
+        }
+
+        .vizContainer {
+            min-height: 500px;
+        }
+
+        .snpinfo {
+            margin-top: 15px;
+        }
+
+        .alleleBar {
+            width: 100%;
+            padding-right: 10px;
+            display: block;
+            height: 1.17em;
+            min-width: 1px;
+            color: #ffffff;
+            padding-left: 10px;
+            line-height: 1.17em;
+            box-sizing: border-box;
+        }
+    </ui:style>
+
+    <g:LayoutPanel>
+        <g:layer top="0" height="7em">
+            <g:HTMLPanel addStyleNames="{style.snpinfo}">
+                <table class="table">
+                    <thead>
+                        <th>Chr</th>
+                        <th>Position</th>
+                        <th>Score</th>
+                        <th>Effect</th>
+                        <th>Function</th>
+                        <th>Codon</th>
+                        <th>Amino</th>
+                        <th>Gene</th>
+                        <th>Alleles</th>
+                    </thead>
+                    <tbody>
+                        <td>
+                            <span ui:field="chrLb"></span>
+                        </td>
+                        <td>
+                            <span ui:field="posLb"></span>
+                        </td>
+                        <td>
+                            <span ui:field="scoreLb"></span>
+                        </td>
+                        <td>
+                            <span ui:field="effectLb"></span>
+                        </td>
+                        <td>
+                            <span ui:field="functionLb"></span>
+                        </td>
+                        <td>
+                            <span ui:field="codonLb"></span>
+                        </td>
+                        <td>
+                            <span ui:field="aminoAcidLb"></span>
+                        </td>
+                        <td>
+                            <span ui:field="geneLb"></span>
+                        </td>
+                        <td>
+                            <div ui:field="refAlleleBar" class="{style.alleleBar}">
+                                <span ui:field="refAlleleLb"></span>
+                            </div>
+                            <div ui:field="altAlleleBar" class="{style.alleleBar}">
+                                <span ui:field="altAlleleLb"></span>
+                            </div>
+                        </td>
+                    </tbody>
+                </table>
+            </g:HTMLPanel>
+        </g:layer>
+        <g:layer top="7em" bottom="0">
+            <g:LayoutPanel addStyleNames="{style.vizContainer}" ui:field="vizContainer">
+                <g:layer top="0" height="40px">
+                    <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                        <div class="{mainRes.style.chartIconContainer}">
+                            <g:HTMLPanel ui:field="tableChartBtnContainer"
+                                         addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
+                                <b:Tooltip text="Shows the phenotype values and alleles in a table">
+                                    <g:Button ui:field="tableChartBtn"
+                                              addStyleNames="{mainRes.style.tablechart} {mainRes.style.iconItem}"/>
+                                </b:Tooltip>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="motionChartBtnContainer"
+                                         addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
+                                <b:Tooltip text="Shows the phenotype values and alleles in a motionchart">
+                                    <g:Button ui:field="motionChartBtn"
+                                              addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}"/>
+                                </b:Tooltip>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="boxplotChartBtnContainer"
+                                         addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
+                                <b:Tooltip text="Shows the phenotype values and alleles in a candlestick chart">
+                                    <g:Button ui:field="boxplotChartBtn"
+                                              addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}"/>
+                                </b:Tooltip>
+                            </g:HTMLPanel>
+                        </div>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="40px" bottom="0">
+                    <g:SimpleLayoutPanel ui:field="lowerChartContainer"/>
+                </g:layer>
+            </g:LayoutPanel>
+        </g:layer>
+    </g:LayoutPanel>
+</ui:UiBinder>

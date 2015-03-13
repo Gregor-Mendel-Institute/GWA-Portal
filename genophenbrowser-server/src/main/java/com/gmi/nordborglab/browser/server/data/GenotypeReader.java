@@ -8,5 +8,11 @@ import java.util.List;
  */
 public interface GenotypeReader {
 
-    List<Byte> getAlleles(String genotype, Integer chr, Integer position, LinkedHashSet<String> passportIds);
+    byte[] getAlleles(String genotype, Integer chr, Integer position, LinkedHashSet<String> passportIds);
+
+    int[] getAlleleCount(String genotype, Integer chr, Integer start, Integer end, LinkedHashSet<String> passportIds);
+
+    int[] getPositions(String s, Integer chr, int start, int end);
+
+    List<String> getAccessionIds(String genotype, LinkedHashSet<String> passportIds);
 }

@@ -1,0 +1,139 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+
+    <ui:with type="com.gmi.nordborglab.browser.client.place.NameTokens"
+             field="nameTokens"></ui:with>
+
+    <ui:style type="com.gmi.nordborglab.browser.client.mvp.genotype.GenotypeView.MyStyle">
+        .titleHeader {
+            background-color: #f9fff4;
+            border-bottom: 1px solid #E5E5E5;
+            padding: 10px;
+        }
+
+        .titleLabel {
+            font-weight: bold;
+            font-size: 150%;
+        }
+
+        .breadcrumbs {
+            padding-top: 5px;
+        }
+
+        .menu_item {
+            border: 1px solid #ccc;
+            -webkit-border-radius: 0;
+            border-radius: 0;
+            border-right: 0;
+            border-left: 0;
+            border-bottom: 0;
+        }
+
+        .menu_item_last {
+            border-bottom: 1px solid #ccc !important;
+        }
+
+        .header_section {
+            width: 100%;
+            line-height: 24px;
+            height: 24px;
+            background-color: #F9F9F9;
+            display: inline-block;
+            padding: 10px 0;
+            cursor: pointer;
+            outline: 0;
+            zoom: 1;
+            font-size: 13px;
+            color: #444;
+            -moz-transition: all 130ms ease-in-out;
+            -webkit-transition: all 130ms ease-in-out;
+            transition: all 130ms ease-in-out;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+        }
+
+        .header_section a {
+            color: #444;
+        }
+
+        .header_section a:hover {
+            text-decoration: none;
+        }
+
+        .header_section_active {
+            border-left: 4px solid #35aa47 !important;
+        }
+
+        .header_section:hover {
+            background-color: #EFEFEF;
+            color: #444;
+            text-decoration: none;
+        }
+
+        .icon_header {
+            font-size: 20px;
+            float: left;
+            margin-right: 10px;
+            margin-left: 6px;
+        }
+
+    </ui:style>
+
+    <g:DockLayoutPanel unit="EM">
+        <g:west size="17.923">
+            <gui:VerticalNavSplitLayoutPanel>
+                <g:LayoutPanel>
+                    <g:layer top="0" left="0" height="70px" right="0">
+                        <g:SimpleLayoutPanel ui:field="searchContainer"/>
+                    </g:layer>
+                    <g:layer top="70px" left="0" right="0" bottom="0">
+                        <g:FlowPanel>
+                            <g:SimplePanel addStyleNames="{style.menu_item}">
+                                <b:Tooltip
+                                        text="A Genome Browser"
+                                        placement="BOTTOM">
+                                    <g:Hyperlink addStyleNames="{style.header_section}" ui:field="genomeBrowserMenu"
+                                                 targetHistoryToken="{nameTokens.getGenomebrowser}">
+                                        <div class="{style.icon_header}">
+                                            <i class="e_icon-infinity"/>
+                                        </div>
+                                        <span>Genome Browser</span>
+                                    </g:Hyperlink>
+                                </b:Tooltip>
+                            </g:SimplePanel>
+                            <g:SimplePanel addStyleNames="{style.menu_item} {style.menu_item_last}">
+                                <b:Tooltip
+                                        text="Display SNPs for a specific genotype and region"
+                                        placement="BOTTOM">
+                                    <g:Hyperlink addStyleNames="{style.header_section}" ui:field="snpViewerMenu"
+                                                 targetHistoryToken="{nameTokens.getSNPViewer}">
+                                        <div class="{style.icon_header}">
+                                            <i class="e_icon-dot-3"/>
+                                        </div>
+                                        <span>SNP Viewer</span>
+                                    </g:Hyperlink>
+                                </b:Tooltip>
+                            </g:SimplePanel>
+                        </g:FlowPanel>
+                    </g:layer>
+                </g:LayoutPanel>
+
+            </gui:VerticalNavSplitLayoutPanel>
+        </g:west>
+        <g:center>
+            <g:DockLayoutPanel unit="EM">
+                <g:north size="4.6">
+                    <g:FlowPanel addStyleNames="{style.titleHeader}">
+                        <g:Label ui:field="titleLabel" addStyleNames="{style.titleLabel}"/>
+                        <g:FlowPanel ui:field="breadcrumbs" addStyleNames="{style.breadcrumbs}"></g:FlowPanel>
+                    </g:FlowPanel>
+                </g:north>
+                <g:center>
+                    <g:SimpleLayoutPanel ui:field="container"/>
+                </g:center>
+            </g:DockLayoutPanel>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder>

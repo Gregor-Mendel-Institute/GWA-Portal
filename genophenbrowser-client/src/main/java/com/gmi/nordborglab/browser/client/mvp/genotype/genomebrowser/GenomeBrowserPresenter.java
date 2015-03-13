@@ -1,6 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.genotype.genomebrowser;
 
-import com.gmi.nordborglab.browser.client.mvp.ApplicationPresenter;
+import com.gmi.nordborglab.browser.client.mvp.genotype.GenotypePresenter;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
@@ -33,7 +33,7 @@ public class GenomeBrowserPresenter extends Presenter<GenomeBrowserPresenter.MyV
 
     @Inject
     public GenomeBrowserPresenter(EventBus eventBus, MyView view, MyProxy proxy) {
-        super(eventBus, view, proxy, ApplicationPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, GenotypePresenter.TYPE_SetMainContent);
         getView().setUiHandlers(this);
     }
 }
