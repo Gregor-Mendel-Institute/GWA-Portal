@@ -68,7 +68,7 @@
             <div>
                 <g:ResizeLayoutPanel addStyleNames="{style.snps_container}" ui:field="snpContainer">
                     <g:DeckLayoutPanel ui:field="snpDetailContainerDeckPanel" animationVertical="true"
-                                       animationDuration="100">
+                                       animationDuration="400">
                         <g:LayoutPanel ui:field="snpDataGridContainer">
                             <g:layer top="0" bottom="30px">
                                 <c:DataGrid ui:field="snpsDataGrid"/>
