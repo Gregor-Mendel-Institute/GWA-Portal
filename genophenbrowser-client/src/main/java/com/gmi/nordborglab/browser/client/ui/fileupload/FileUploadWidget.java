@@ -340,7 +340,7 @@ public class FileUploadWidget extends Composite {
         if (file == null || result == null || !result.canParse)
             return;
         FileReader reader = Browser.getWindow().newFileReader();
-        Blob blob = ((HTML5Helper.ExtJsFile) file).webkitSlice(0, 100, file.getType(), "test");
+        Blob blob = ((HTML5Helper.ExtJsFile) file).webkitSlice(0, 100000, file.getType(), "test");
         reader.addEventListener("loadend", new EventListener() {
             @Override
             public void handleEvent(Event event) {
