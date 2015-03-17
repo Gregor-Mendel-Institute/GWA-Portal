@@ -105,6 +105,8 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         void setUploadActionUrl(String url);
 
         void setEnrichmentCount(int count);
+
+        void setCandidateGeneListId(Long id);
     }
 
     @ProxyCodeSplit
@@ -320,6 +322,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         fireEvent(new LoadingIndicatorEvent(false));
         refreshView();
         requestGenes(getView().getGenesDisplay(), null);
+        getView().setCandidateGeneListId(candidateGeneList.getId());
     }
 
     @Override

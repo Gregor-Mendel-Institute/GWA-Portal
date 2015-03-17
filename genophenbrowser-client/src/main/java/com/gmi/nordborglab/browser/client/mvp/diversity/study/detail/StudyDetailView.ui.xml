@@ -14,18 +14,10 @@
 
 
     <ui:style>
-        .container {
-            padding: 19px 19px;
-        }
-
         .actionRow {
             float: right;
         }
 
-        .subheader {
-            border-bottom: 1px solid #cdcdcd;
-            margin-bottom: 5px;
-        }
 
         .subheader h1 {
             font-size: 15px;
@@ -34,63 +26,17 @@
             color: #808080;
         }
 
-        .subheader_container {
-            margin-left: 10px;
-            margin-top: 10px;
-        }
-
-        .progressBar {
-            margin-bottom: 0px !important;
-            display: inline-block;
-            width: 100px;
-            margin-left: 25px;
-        }
-
-        .job_table {
-
-        }
-
         .job_table td {
             padding: 3px 0;
             vertical-align: middle;
         }
 
-        .job_action_container {
-            float: right;
-            width: auto;
-            margin-top: 10px;
-        }
-
-        .job_actions {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            border: 1px solid #ccc;
-            color: #808185;
-            display: block;
-            float: right;
-            font-size: 13px;
-            margin-right: 5px;
-            padding: 2px 4px 4px;
-            text-decoration: none;
-        }
-
-        .actionDropDown {
-
-        }
 
         .actionDropDown > a {
             margin-top: 0px !important;
             margin-bottom: 0px !important;
         }
 
-        .actionDropDownContainer {
-            margin-bottom: 0px;
-            margin-left: 150px;
-        }
-
-        .statusLabel {
-            margin-top: 6px;
-            float: left;
-        }
 
         .gwas_dropdown {
             text-align: left;
@@ -110,11 +56,6 @@
             text-align: center;
         }
 
-        .buttontoolbar {
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-        }
-
     </ui:style>
     <g:ScrollPanel>
         <g:LayoutPanel>
@@ -125,18 +66,9 @@
                             <g:layer top="5px" height="40px" left="0" right="0">
                                 <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="actionBarPanel">
                                     <div class="{style.actionRow}">
-                                        <b:ButtonToolbar addStyleNames="{style.buttontoolbar}">
-                                            <b:ButtonGroup>
-                                                <b:Button ui:field="edit" icon="EDIT" size="SMALL" type="PRIMARY"
-                                                          text="Edit"/>
-                                            </b:ButtonGroup>
-                                            <b:ButtonGroup>
-                                                <b:Button ui:field="delete" icon="REMOVE" size="SMALL" type="DANGER"
-                                                          text="Delete"/>
-                                            </b:ButtonGroup>
-                                            <b:ButtonGroup>
-                                                <b:DropdownButton text="Download" size="SMALL" type="INFO"
-                                                                  icon="DOWNLOAD">
+                                        <div class="{mainRes.style.actionIcon}">
+                                            <b:Tooltip placement="BOTTOM" text="Click to display download options">
+                                                <gui:IconDropdown icon="DOWNLOAD_ALT">
                                                     <b:NavLink text="Phenotype (CSV)"
                                                                ui:field="navLinkPhenCSV"></b:NavLink>
                                                     <b:NavLink text="Phenotype (JSON)" target="_BLANK"
@@ -149,9 +81,20 @@
                                                     <b:NavLink text="GWAS-Pvalues (JSON)" target="_BLANK"
                                                                ui:field="navLinkPvalJSON"></b:NavLink>
                                                     <b:NavLink text="Download Plots" ui:field="plotsLink"/>
-                                                </b:DropdownButton>
-                                            </b:ButtonGroup>
-                                        </b:ButtonToolbar>
+                                                </gui:IconDropdown>
+                                            </b:Tooltip>
+                                        </div>
+                                        <div class="{mainRes.style.actionIcon}">
+                                            <b:Tooltip placement="BOTTOM" text="Delete analysis">
+                                                <b:Icon type="TRASH" ui:field="delete"/>
+                                            </b:Tooltip>
+                                        </div>
+                                        <div class="{mainRes.style.actionIcon}">
+                                            <b:Tooltip placement="BOTTOM" text="Edit analysis">
+                                                <b:Icon type="EDIT" iconSize="LARGE" ui:field="edit"/>
+                                            </b:Tooltip>
+                                        </div>
+
                                     </div>
                                 </g:HTMLPanel>
                             </g:layer>

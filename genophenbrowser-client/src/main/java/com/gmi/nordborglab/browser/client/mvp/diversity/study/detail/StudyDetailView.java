@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.client.mvp.diversity.study.detail;
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Divider;
+import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.ModalFooter;
 import com.github.gwtbootstrap.client.ui.NavLink;
@@ -119,9 +120,9 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     @UiField
     HTMLPanel motionChartBtnContainer;
     @UiField
-    Button edit;
+    Icon edit;
     @UiField
-    Button delete;
+    Icon delete;
     @UiField(provided = true)
     MainResources mainRes;
     @UiField
@@ -168,6 +169,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     NavLink navLinkPhenCSV;
     @UiField
     NavLink navLinkPhenJSON;
+
 
     @Inject
     public StudyDetailView(final Binder binder, final StudyDisplayDriver displayDriver, final StudyEditDriver editDriver,
@@ -233,6 +235,20 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
                 .put(Range.closed(100, 100), "#5bb75b")
                 .build();
         jobProgress.setThresholds(colorRanges);
+
+        edit.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onEdit();
+            }
+        }, ClickEvent.getType());
+
+        delete.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onDelete();
+            }
+        }, ClickEvent.getType());
     }
 
     @Override
@@ -517,15 +533,6 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         getUiHandlers().onStartAnalysis();
     }
 
-    @UiHandler("edit")
-    public void onEdit(ClickEvent e) {
-        getUiHandlers().onEdit();
-    }
-
-    @UiHandler("delete")
-    public void onDelete(ClickEvent e) {
-        getUiHandlers().onDelete();
-    }
 
     @Override
     public void setInSlot(Object slot, IsWidget content) {

@@ -2,8 +2,10 @@ package com.gmi.nordborglab.browser.client.mvp.diversity.meta.candidategenelist.
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.FileUpload;
+import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.ModalFooter;
+import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.Tooltip;
 import com.github.gwtbootstrap.client.ui.Typeahead;
@@ -127,11 +129,11 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     Button addGeneBtn;
 
     @UiField
-    Button shareBtn;
+    Icon shareBtn;
     @UiField
-    Button deleteBtn;
+    Icon deleteBtn;
     @UiField
-    Button editBtn;
+    Icon editBtn;
     @UiField
     Tooltip shareTooltip;
     @UiField
@@ -152,6 +154,9 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     HTMLPanel actionBarPanel;
     @UiField
     SimplePanel facetContainer;
+    @UiField
+    NavLink downloadJSONLink;
+
     private int minCharSize = 3;
     private final CandidateGeneListDisplayDriver candidateGeneListDisplayDriver;
     private final CandidateGeneListView.CandidateGeneListEditDriver candidateGeneListEditDriver;
@@ -290,7 +295,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
 
         deletePopup.setBackdrop(BackdropType.STATIC);
         deletePopup.setCloseVisible(true);
-        deletePopup.add(new HTML("<h4>Do you really want to delete the study?</h4>"));
+        deletePopup.add(new HTML("<h4>Do you really want to delete the candidate gene list?</h4>"));
         com.github.gwtbootstrap.client.ui.Button cancelDeleteBtn = new com.github.gwtbootstrap.client.ui.Button("Cancel", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -330,6 +335,26 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         });
         actionBarPanel.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+
+        editBtn.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onEdit();
+            }
+        }, ClickEvent.getType());
+
+        this.deleteBtn.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onDelete();
+            }
+        }, ClickEvent.getType());
+        shareBtn.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onShare();
+            }
+        }, ClickEvent.getType());
     }
 
     @Override
@@ -438,15 +463,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         }
     }
 
-    @UiHandler("editBtn")
-    public void onEdit(ClickEvent e) {
-        getUiHandlers().onEdit();
-    }
 
-    @UiHandler("deleteBtn")
-    public void onDelete(ClickEvent e) {
-        getUiHandlers().onDelete();
-    }
 
     @Override
     public void showEditPopup(boolean show) {
@@ -456,10 +473,6 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
             editPopup.hide();
     }
 
-    @UiHandler("shareBtn")
-    public void onClickShareBtn(ClickEvent e) {
-        getUiHandlers().onShare();
-    }
 
     @Override
     public void setInSlot(Object slot, IsWidget content) {
@@ -622,6 +635,11 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     public void setEnrichmentCount(int count) {
         enrichmentCount = count;
         resetEnrichmentPopup.hide();
+    }
+
+    @Override
+    public void setCandidateGeneListId(Long id) {
+        downloadJSONLink.setHref("/provider/candidategenelist/" + id + "/genes.json");
     }
 
 }

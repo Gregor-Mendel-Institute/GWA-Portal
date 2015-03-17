@@ -41,6 +41,8 @@ public interface MainResources extends ClientBundle {
 
         String iconContainer();
 
+        String actionIcon();
+
         String iconItem();
 
         String iconContainer_right();
