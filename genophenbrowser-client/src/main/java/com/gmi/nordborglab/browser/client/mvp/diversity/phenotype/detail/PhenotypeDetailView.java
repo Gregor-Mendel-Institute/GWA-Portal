@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.detail;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.ModalFooter;
 import com.github.gwtbootstrap.client.ui.NavLink;
@@ -83,9 +84,9 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     @UiField
     HTMLPanel motionChartBtnContainer;
     @UiField
-    Button edit;
+    Icon edit;
     @UiField
-    Button delete;
+    Icon delete;
     @UiField(provided = true)
     MainResources mainRes;
     @UiField
@@ -195,6 +196,18 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
         actionBarPanel.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        edit.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onEdit();
+            }
+        }, ClickEvent.getType());
+        delete.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onDelete();
+            }
+        }, ClickEvent.getType());
     }
 
     private void resetStatisticTypeLinkActive() {
@@ -312,15 +325,7 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         container.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.AUTO);
     }
 
-    @UiHandler("edit")
-    public void onEdit(ClickEvent e) {
-        getUiHandlers().onEdit();
-    }
 
-    @UiHandler("delete")
-    public void onDelete(ClickEvent e) {
-        getUiHandlers().onDelete();
-    }
 
 
     private GeoChart.Options createGeoChartOptions() {

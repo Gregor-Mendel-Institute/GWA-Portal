@@ -1,8 +1,8 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.experiment.detail;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.github.gwtbootstrap.client.ui.Form;
+import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.ModalFooter;
 import com.github.gwtbootstrap.client.ui.NavLink;
@@ -78,11 +78,11 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     @UiField(provided = true)
     ExperimentDisplayEditor experimentDisplayEditor;
     @UiField
-    Button edit;
+    Icon edit;
     @UiField
-    Button delete;
+    Icon delete;
     @UiField
-    com.github.gwtbootstrap.client.ui.Button share;
+    Icon share;
     @UiField(provided = true)
     PublicationResponsiveDataGrid publicationDataGrid;
     @UiField
@@ -188,6 +188,26 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
         actionBarPanel.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+
+        edit.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onEdit();
+            }
+        }, ClickEvent.getType());
+        delete.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onDelete();
+            }
+        }, ClickEvent.getType());
+
+        share.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onShare();
+            }
+        }, ClickEvent.getType());
     }
 
     private void initDataGrid() {
@@ -281,10 +301,6 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         return experimentDisplayDriver;
     }
 
-    @UiHandler("share")
-    public void onClickShareBtn(ClickEvent e) {
-        getUiHandlers().onShare();
-    }
 
     @UiHandler("addPublication")
     public void onClickAddPublication(ClickEvent e) {
@@ -315,15 +331,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         return doiTb;
     }
 
-    @UiHandler("edit")
-    public void onEdit(ClickEvent e) {
-        getUiHandlers().onEdit();
-    }
 
-    @UiHandler("delete")
-    public void onDelete(ClickEvent e) {
-        getUiHandlers().onDelete();
-    }
 
     @Override
     public void showEditPopup(boolean show) {

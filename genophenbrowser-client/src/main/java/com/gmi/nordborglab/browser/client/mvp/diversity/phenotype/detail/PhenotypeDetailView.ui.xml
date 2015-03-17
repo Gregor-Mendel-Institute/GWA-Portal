@@ -4,6 +4,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
              xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -22,13 +23,8 @@
         }
 
         .statisticTypeContainer {
-            margin-top: -4px;
+            margin-top: 2px;
             float: left;
-        }
-
-        .buttontoolbar {
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
         }
 
     </ui:style>
@@ -40,25 +36,26 @@
                         <g:layer top="5px" height="40px" left="0" right="0">
                             <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="actionBarPanel">
                                 <div class="{style.actionRow}">
-                                    <b:ButtonToolbar addStyleNames="{style.buttontoolbar}">
-                                        <b:ButtonGroup>
-                                            <b:Button ui:field="edit" icon="EDIT" size="SMALL" type="PRIMARY"
-                                                      text="Edit"/>
-                                        </b:ButtonGroup>
-                                        <b:ButtonGroup>
-                                            <b:Button ui:field="delete" icon="REMOVE" size="SMALL" type="DANGER"
-                                                      text="Delete"/>
-                                        </b:ButtonGroup>
-                                        <b:ButtonGroup>
-                                            <b:DropdownButton text="Download" size="SMALL" type="INFO"
-                                                              icon="DOWNLOAD">
+                                    <div class="{mainRes.style.actionIcon}">
+                                        <b:Tooltip placement="BOTTOM" text="Click to display download options">
+                                            <gui:IconDropdown icon="DOWNLOAD_ALT">
                                                 <b:NavLink text="Phenotype (CSV)"
                                                            ui:field="navLinkPhenCSV"></b:NavLink>
                                                 <b:NavLink text="Phenotype (JSON)" target="_BLANK"
                                                            ui:field="navLinkPhenJSON"></b:NavLink>
-                                            </b:DropdownButton>
-                                        </b:ButtonGroup>
-                                    </b:ButtonToolbar>
+                                            </gui:IconDropdown>
+                                        </b:Tooltip>
+                                    </div>
+                                    <div class="{mainRes.style.actionIcon}">
+                                        <b:Tooltip placement="BOTTOM" text="Delete phenotype">
+                                            <b:Icon type="TRASH" ui:field="delete"/>
+                                        </b:Tooltip>
+                                    </div>
+                                    <div class="{mainRes.style.actionIcon}">
+                                        <b:Tooltip placement="BOTTOM" text="Edit phenotype">
+                                            <b:Icon type="EDIT" iconSize="LARGE" ui:field="edit"/>
+                                        </b:Tooltip>
+                                    </div>
                                 </div>
                             </g:HTMLPanel>
                         </g:layer>

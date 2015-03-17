@@ -154,21 +154,29 @@
                 <g:layer top="5px" height="40px" left="0" right="0">
                     <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="actionBarPanel">
                         <div class="{style.actionRow}">
-                            <b:ButtonToolbar addStyleNames="{style.buttontoolbar}">
-                                <b:ButtonGroup>
-                                    <b:Button ui:field="editBtn" icon="EDIT" size="SMALL" type="PRIMARY" text="Edit"/>
-                                </b:ButtonGroup>
-                                <b:ButtonGroup>
-                                    <b:Button ui:field="deleteBtn" icon="REMOVE" size="SMALL" type="DANGER"
-                                              text="Delete"/>
-                                </b:ButtonGroup>
-                                <b:ButtonGroup>
-                                    <b:Tooltip ui:field="shareTooltip" placement="BOTTOM">
-                                        <b:Button icon="LOCK" text="Share" size="SMALL" type="INFO"
-                                                  ui:field="shareBtn"/>
-                                    </b:Tooltip>
-                                </b:ButtonGroup>
-                            </b:ButtonToolbar>
+                            <div class="{mainRes.style.actionIcon}">
+                                <b:Tooltip placement="BOTTOM" text="Click to display download options">
+                                    <gui:IconDropdown icon="DOWNLOAD_ALT">
+                                        <b:NavLink text="JSON"
+                                                   ui:field="downloadJSONLink"></b:NavLink>
+                                    </gui:IconDropdown>
+                                </b:Tooltip>
+                            </div>
+                            <div class="{mainRes.style.actionIcon}">
+                                <b:Tooltip placement="BOTTOM" text="Share candidate gene list" ui:field="shareTooltip">
+                                    <b:Icon type="SHARE" ui:field="shareBtn"/>
+                                </b:Tooltip>
+                            </div>
+                            <div class="{mainRes.style.actionIcon}">
+                                <b:Tooltip placement="BOTTOM" text="Delete candidate gene list">
+                                    <b:Icon type="TRASH" ui:field="deleteBtn"/>
+                                </b:Tooltip>
+                            </div>
+                            <div class="{mainRes.style.actionIcon}">
+                                <b:Tooltip placement="BOTTOM" text="Edit candidate gene list">
+                                    <b:Icon type="EDIT" iconSize="LARGE" ui:field="editBtn"/>
+                                </b:Tooltip>
+                            </div>
                         </div>
                     </g:HTMLPanel>
                 </g:layer>
