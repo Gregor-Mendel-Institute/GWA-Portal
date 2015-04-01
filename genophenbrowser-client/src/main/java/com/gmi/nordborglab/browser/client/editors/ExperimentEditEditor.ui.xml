@@ -1,43 +1,53 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 			 xmlns:g="urn:import:com.google.gwt.user.client.ui"
-			 xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
 		>
 	<ui:style>
 	</ui:style>
-	<g:FlowPanel>
-		<b:ControlGroup ui:field="nameGroup">
-			<b:ControlLabel for="name">Name</b:ControlLabel>
-			<b:Tooltip text='Name of the Study' trigger="FOCUS" placement="RIGHT">
-				<b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="name" controlGroup="{nameGroup}"
-						   errorLabel="{nameErrors}"/>
-			</b:Tooltip>
-			<b:HelpInline ui:field="nameErrors"></b:HelpInline>
-		</b:ControlGroup>
-		<b:ControlGroup ui:field="originatorGroup">
-			<b:ControlLabel for="originator">Originator</b:ControlLabel>
-			<b:Tooltip text='Originator of the Study' trigger="FOCUS" placement="RIGHT">
-				<b:TextBox placeholder="Originator" alternateSize="XLARGE" ui:field="originator"
-						   controlGroup="{originatorGroup}" errorLabel="{originatorErrors}"/>
-			</b:Tooltip>
-			<b:HelpInline ui:field="originatorErrors"></b:HelpInline>
-		</b:ControlGroup>
-
-		<b:ControlGroup ui:field="designGroup">
-			<b:ControlLabel for="design">Design</b:ControlLabel>
-			<b:Tooltip text='Design of the Study' trigger="FOCUS" placement="RIGHT">
-				<b:TextArea characterWidth="80" visibleLines="10" placeholder="Design" alternateSize="XLARGE"
-							ui:field="design" controlGroup="{designGroup}" errorLabel="{designErrors}"/>
-			</b:Tooltip>
-			<b:HelpInline ui:field="designErrors"></b:HelpInline>
-		</b:ControlGroup>
-		<b:ControlGroup ui:field="commentsGroup">
-			<b:ControlLabel for="originator">Comments</b:ControlLabel>
-			<b:Tooltip text='Originator of the Study' trigger="FOCUS" placement="RIGHT">
-				<b:TextArea characterWidth="80" visibleLines="10" placeholder="Comments" alternateSize="XLARGE"
-							ui:field="comments" controlGroup="{commentsGroup}" errorLabel="{commentsErrors}"/>
-			</b:Tooltip>
-			<b:HelpInline ui:field="commentsErrors"></b:HelpInline>
-		</b:ControlGroup>
-	</g:FlowPanel>
+    <g:HTMLPanel>
+        <div>
+            <b:Form type="HORIZONTAL">
+                <b:FormGroup>
+                    <b:FormLabel addStyleNames="col-sm-2" for="name">Name</b:FormLabel>
+                    <b:Tooltip title='Name of Study' trigger="FOCUS" placement="RIGHT">
+                        <g:FlowPanel addStyleNames="col-sm-7">
+                            <b:TextBox placeholder="Name" b:id="name" ui:field="name" allowBlank="false"
+                                       validateOnBlur="true"></b:TextBox>
+                        </g:FlowPanel>
+                    </b:Tooltip>
+                    <b:HelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>
+                </b:FormGroup>
+                <b:FormGroup>
+                    <b:FormLabel addStyleNames="col-sm-2" for="originator">Originator</b:FormLabel>
+                    <b:Tooltip title='Originator of the Study' trigger="FOCUS" placement="RIGHT">
+                        <g:FlowPanel addStyleNames="col-sm-7">
+                            <b:TextBox placeholder="Name" b:id="originator" ui:field="originator"></b:TextBox>
+                        </g:FlowPanel>
+                    </b:Tooltip>
+                    <b:HelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>
+                </b:FormGroup>
+                <b:FormGroup>
+                    <b:FormLabel addStyleNames="col-sm-2" for="design">Design</b:FormLabel>
+                    <b:Tooltip title='Design of the Study' trigger="FOCUS" placement="RIGHT">
+                        <g:FlowPanel addStyleNames="col-sm-7">
+                            <b:TextArea characterWidth="80" visibleLines="10" placeholder="Design"
+                                        ui:field="design"/>
+                        </g:FlowPanel>
+                    </b:Tooltip>
+                    <b:HelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>
+                </b:FormGroup>
+                <b:FormGroup>
+                    <b:FormLabel addStyleNames="col-sm-2" for="comments">Comments</b:FormLabel>
+                    <b:Tooltip title='Design of the Study' trigger="FOCUS" placement="RIGHT">
+                        <g:FlowPanel addStyleNames="col-sm-7">
+                            <b:TextArea characterWidth="80" visibleLines="10" placeholder="Comments"
+                                        ui:field="comments"/>
+                        </g:FlowPanel>
+                    </b:Tooltip>
+                    <b:HelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>
+                </b:FormGroup>
+            </b:Form>
+        </div>
+    </g:HTMLPanel>
 </ui:UiBinder>

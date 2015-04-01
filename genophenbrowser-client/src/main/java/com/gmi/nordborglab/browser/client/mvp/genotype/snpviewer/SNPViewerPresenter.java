@@ -1,16 +1,15 @@
 package com.gmi.nordborglab.browser.client.mvp.genotype.snpviewer;
 
+import com.gmi.nordborglab.browser.client.manager.SearchManager;
 import com.gmi.nordborglab.browser.client.mvp.genotype.GenotypePresenter;
 import com.gmi.nordborglab.browser.client.mvp.widgets.snps.SNPDetailPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsManager;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
-import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPInfoPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPInfoProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SearchFacetPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
@@ -18,7 +17,6 @@ import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.gwt.query.client.Function;
@@ -26,7 +24,6 @@ import com.google.gwt.query.client.Promise;
 import com.google.gwt.query.client.plugins.deferred.PromiseFunction;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
-import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
@@ -44,7 +41,6 @@ import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -90,6 +86,7 @@ public class SNPViewerPresenter extends Presenter<SNPViewerPresenter.MyView, SNP
     protected final SNPDetailPresenterWidget snpDetailPresenter;
     protected PhenotypeProxy phenotype;
     protected final GoogleAnalyticsManager analyticsManager;
+    protected final SearchManager searchManager;
 
     protected final AsyncDataProvider<SNPInfoProxy> snpsDataProvider = new AsyncDataProvider<SNPInfoProxy>() {
         @Override
@@ -119,11 +116,13 @@ public class SNPViewerPresenter extends Presenter<SNPViewerPresenter.MyView, SNP
                               final CurrentUser currentUser,
                               final PlaceManager placeManager,
                               final CustomRequestFactory rf,
+                              final SearchManager searchManager,
                               SNPDetailPresenterWidget snpDetailPresenter,
                               final GoogleAnalyticsManager analyticsManager) {
         super(eventBus, view, proxy, GenotypePresenter.TYPE_SetMainContent);
         this.snpDetailPresenter = snpDetailPresenter;
         this.analyticsManager = analyticsManager;
+        this.searchManager = searchManager;
         getView().setUiHandlers(this);
         this.currentUser = currentUser;
         this.rf = rf;
@@ -198,21 +197,8 @@ public class SNPViewerPresenter extends Presenter<SNPViewerPresenter.MyView, SNP
 
 
     @Override
-    public void onSearchPhenotype(final SuggestOracle.Request request, final SuggestOracle.Callback callback) {
-        rf.searchRequest().searchByFilter(request.getQuery(), ConstEnums.FILTERS.PHENOTYPE).fire(new Receiver<SearchFacetPageProxy>() {
-            @Override
-            public void onSuccess(SearchFacetPageProxy response) {
-                SuggestOracle.Response searchResponse = new SuggestOracle.Response();
-                Collection<SuggestOracle.Suggestion> suggestions = Lists.newArrayList();
-                if (response != null) {
-                    for (SearchItemProxy searchItem : response.getContents()) {
-                        suggestions.add(new SearchSuggestOracle.SearchSuggestion(searchItem, response));
-                    }
-                }
-                searchResponse.setSuggestions(suggestions);
-                callback.onSuggestionsReady(request, searchResponse);
-            }
-        });
+    public void onSearchPhenotype(final String request, final SearchManager.SearchCallback callback) {
+        searchManager.searchByFilter(request, ConstEnums.FILTERS.PHENOTYPE, callback);
     }
 
     @Override
@@ -231,13 +217,12 @@ public class SNPViewerPresenter extends Presenter<SNPViewerPresenter.MyView, SNP
     }
 
     @Override
-    public void onSelectPhenotype(SuggestOracle.Suggestion suggestion) {
+    public void onSelectPhenotype(SearchItemProxy phenotype) {
         PlaceRequest.Builder request = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest());
-        SearchSuggestOracle.SearchSuggestion searchSuggestion = (SearchSuggestOracle.SearchSuggestion) suggestion;
-        if (searchSuggestion == null) {
+        if (phenotype == null) {
             request.without("phenotype");
         } else {
-            request.with("phenotype", searchSuggestion.getId());
+            request.with("phenotype", phenotype.getId());
         }
         placeManager.revealPlace(request.build());
     }

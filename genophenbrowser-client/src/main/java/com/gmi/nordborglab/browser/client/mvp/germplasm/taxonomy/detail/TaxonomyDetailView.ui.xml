@@ -5,7 +5,7 @@
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
              xmlns:gchart='urn:import:com.googlecode.gwt.charts.client.corechart'
              xmlns:geo='urn:import:com.googlecode.gwt.charts.client.geochart'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -42,12 +42,11 @@
                         <g:layer top="5px" height="40px" left="0" right="0">
                             <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
                                 <div class="{style.actionRow}">
-                                    <b:ButtonToolbar addStyleNames="{style.buttontoolbar}">
-                                        <b:ButtonGroup>
-                                            <b:Button ui:field="edit" icon="EDIT" size="SMALL" type="PRIMARY"
-                                                      text="Edit"/>
-                                        </b:ButtonGroup>
-                                    </b:ButtonToolbar>
+                                    <div class="{mainRes.style.actionIcon}">
+                                        <b:Tooltip placement="BOTTOM" title="Edit taxonomy">
+                                            <b:Icon type="EDIT" ui:field="edit"/>
+                                        </b:Tooltip>
+                                    </div>
                                 </div>
                             </g:HTMLPanel>
                         </g:layer>

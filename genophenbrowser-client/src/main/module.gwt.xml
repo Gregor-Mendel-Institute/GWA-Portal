@@ -8,7 +8,6 @@
     <inherits name='com.gwtplatform.mvp.Mvp'/>
     <inherits name="com.google.gwt.resources.Resources"/>
     <inherits name='com.gwtplatform.dispatch.Dispatch'/>
-    <inherits name='com.google.gwt.user.theme.clean.Clean'/>
     <inherits name="com.google.web.bindery.autobean.AutoBean"/>
     <inherits name="com.google.gwt.editor.Editor"/>
     <inherits name='com.google.gwt.maps.Maps'/>
@@ -20,7 +19,11 @@
     <inherits name="com.google.common.collect.Collect"/>
     <inherits name="com.google.gwt.precompress.Precompress"/>
     <inherits name="org.hibernate.validator.HibernateValidator"/>
-    <inherits name="com.github.gwtbootstrap.Bootstrap"/>
+    <inherits name="org.gwtbootstrap3.GwtBootstrap3"/>
+    <!-- GWTBootstrap3 must come before extras otherwise jquery is not initialiased -->
+    <inherits name="org.gwtbootstrap3.extras.typeahead.Typeahead"/>
+    <inherits name="org.gwtbootstrap3.extras.bootbox.Bootbox"/>
+    <inherits name="org.gwtbootstrap3.extras.toggleswitch.ToggleSwitch"/>
     <inherits name='com.watopi.chosen.Chosen'/>
     <inherits name="elemental.Elemental"/>
     <inherits name="org.jboss.errai.bus.ErraiBus"/>
@@ -29,6 +32,7 @@
     <inherits name='com.gwtplatform.mvp.MvpWithEntryPoint'/>
     <inherits name='org.gwtsupercsv.GWTSuperCSV'/>
     <inherits name="com.arcbees.analytics.Analytics"/>
+
     <!-- Other module inherits                                      -->
 
     <!-- Specify the paths for translatable code                    -->

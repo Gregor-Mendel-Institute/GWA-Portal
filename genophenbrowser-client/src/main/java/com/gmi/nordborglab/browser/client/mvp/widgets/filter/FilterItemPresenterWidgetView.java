@@ -1,10 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.filter;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.ModalFooter;
-import com.github.gwtbootstrap.client.ui.constants.BackdropType;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiField;
@@ -12,6 +7,12 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,14 +32,14 @@ public abstract class FilterItemPresenterWidgetView<C extends FilterItemPresente
     @UiField
     protected Widget container;
 
-    protected final Modal popup = new Modal(true);
+    protected final Modal popup = new Modal();
 
     protected FilterItemPresenterWidgetView() {
     }
 
     protected void initContainer() {
-        popup.setBackdrop(BackdropType.STATIC);
-        popup.setCloseVisible(true);
+        popup.setDataBackdrop(ModalBackdrop.STATIC);
+        popup.setClosable(true);
         popup.setTitle("Add filter");
         Button cancelEditBtn = new Button("Cancel", new ClickHandler() {
             @Override
@@ -54,8 +55,12 @@ public abstract class FilterItemPresenterWidgetView<C extends FilterItemPresente
             }
         });
         saveEditBtn.setType(ButtonType.PRIMARY);
-        ModalFooter footer = new ModalFooter(cancelEditBtn, saveEditBtn);
-        popup.add(container);
+        ModalFooter footer = new ModalFooter();
+        footer.add(cancelEditBtn);
+        footer.add(saveEditBtn);
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(container);
+        popup.add(modalBody);
         popup.add(footer);
         container.setVisible(true);
     }

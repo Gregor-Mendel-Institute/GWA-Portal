@@ -195,8 +195,8 @@ public class SearchSuggestDisplay extends SuggestionDisplay {
         TableCellElement searchTd = Document.get().createTDElement();
         Element searchIcon = DOM.createElement("i");
         Element arrowIcon = DOM.createElement("i");
-        arrowIcon.setClassName("icon-circle-arrow-right");
-        searchIcon.setClassName("icon-search");
+        arrowIcon.setClassName("fa fa-arrow-circle-right");
+        searchIcon.setClassName("fa fa-search");
         SpanElement spanElement = Document.get().createSpanElement();
         spanElement.setClassName("searchBoxPopup_term");
         spanElement.appendChild(searchIcon);

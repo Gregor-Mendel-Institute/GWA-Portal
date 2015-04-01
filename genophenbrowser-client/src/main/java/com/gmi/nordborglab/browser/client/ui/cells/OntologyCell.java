@@ -28,7 +28,7 @@ public class OntologyCell extends AbstractCell<Term2TermProxy> {
         MyStyle getStyle();
     }
 
-    private static String ICON_OK = "icon-ok";
+    private static String ICON_OK = "fa fa-check";
     private final Renderer uiRenderer;
     private boolean menuOpened = false;
 
@@ -49,9 +49,9 @@ public class OntologyCell extends AbstractCell<Term2TermProxy> {
         if (relationShipTerm != null) {
             relationship = relationShipTerm.getName();
             if ("is_a".equalsIgnoreCase(relationship)) {
-                relationshipClass = "badge badge-info";
+                relationshipClass = "label label-info";
             } else if ("part_of".equalsIgnoreCase(relationship)) {
-                relationshipClass = "badge badge-success";
+                relationshipClass = "label label-success";
             }
         }
         uiRenderer.render(sb, name, count, relationship, relationshipClass);

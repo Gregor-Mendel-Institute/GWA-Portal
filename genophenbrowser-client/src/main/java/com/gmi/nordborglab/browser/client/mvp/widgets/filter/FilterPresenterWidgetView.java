@@ -1,7 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.filter;
 
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.shared.dto.FilterItem;
 import com.gmi.nordborglab.browser.shared.dto.FilterItemValue;
 import com.google.common.base.Function;
@@ -24,6 +22,8 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.Icon;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 import javax.annotation.Nullable;
 

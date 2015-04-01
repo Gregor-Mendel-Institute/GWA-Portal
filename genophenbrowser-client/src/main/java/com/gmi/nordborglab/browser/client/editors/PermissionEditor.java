@@ -25,7 +25,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.IdentityColumn;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -69,9 +68,9 @@ public class PermissionEditor extends Composite implements Editor<CustomAclProxy
             if (object.getIsUser()) {
                 imageCell.render(null, UriUtils.fromSafeConstant(CurrentUser.GRAVATAR_URL + object.getAvatarHash() + "&s=29"), builder);
             } else {
-                String icon = "icon-unlock";
+                String icon = "fa fa-unlock";
                 if (object.getName().startsWith("Private")) {
-                    icon = "icon-lock";
+                    icon = "fa fa-lock";
                 }
                 builder.appendHtmlConstant("<div style=\"height:29px;width:29px;font-size:15px;background-color:#f5f5f5;\"><i class=\"" + icon + "\" style=\"line-height: 29px;text-align: center;margin-left: 10px;\"></i></div>");
             }
@@ -86,7 +85,7 @@ public class PermissionEditor extends Composite implements Editor<CustomAclProxy
 
     @Path("isEntriesInheriting")
     @UiField
-    CheckBox isEntriesInheriting;
+    org.gwtbootstrap3.client.ui.CheckBox isEntriesInheriting;
     private final PermissionSelectionCell permissionSelectionCell;
 
     private ActionCell.Delegate<AccessControlEntryProxy> deleteDelegate;

@@ -1,11 +1,11 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
-import com.github.gwtbootstrap.client.ui.base.ProgressBarBase;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import org.gwtbootstrap3.client.ui.constants.ProgressBarType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,17 +17,22 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 public class ProgressBarCell extends AbstractCell<Number> {
 
     interface Template extends SafeHtmlTemplates {
-        @Template("<div style=\"margin-bottom:0px;width:100px\"class=\"progress {0}\"><div class=\"bar\" style=\"width:{1}\"></div></div>")
-        SafeHtml progressbar(String cssClass, String percentage);
+        @Template(
+                "<div style=\"margin-bottom:0px;margin-top:2px;width:100px\"class=\"progress\" role=\"progressbar\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"{1}\">" +
+                        "<div class=\"progress-bar {0}\" style=\"min-width:2em;width:{1}%\" >" +
+                        "{1}%" +
+                        "</div>" +
+                        "</div>")
+        SafeHtml progressbar(String cssClass, Number percentage);
     }
 
     private static Template template = GWT.create(Template.class);
 
     private boolean isStriped = false;
     private boolean isAnimated = false;
-    private ProgressBarBase.Color color;
+    private ProgressBarType color;
 
-    public ProgressBarCell(boolean striped, boolean animated, ProgressBarBase.Color color) {
+    public ProgressBarCell(boolean striped, boolean animated, ProgressBarType color) {
         isStriped = striped;
         isAnimated = animated;
         this.color = color;
@@ -36,18 +41,16 @@ public class ProgressBarCell extends AbstractCell<Number> {
     @Override
     public void render(Context context, Number value, SafeHtmlBuilder sb) {
         if (value != null) {
-            String percentage = value + "%";
-            String percentageText = percentage;
             String className = "";
             if (color != null) {
-                className = color.get();
+                className = color.getCssName();
             } else {
                 if (value.intValue() <= 1) {
-                    className = ProgressBarBase.Color.DANGER.get();
+                    className = ProgressBarType.DANGER.getCssName();
                 } else if (value.intValue() < 100) {
-                    className = ProgressBarBase.Color.WARNING.get();
+                    className = ProgressBarType.WARNING.getCssName();
                 } else {
-                    className = ProgressBarBase.Color.SUCCESS.get();
+                    className = ProgressBarType.SUCCESS.getCssName();
                 }
 
             }
@@ -57,7 +60,7 @@ public class ProgressBarCell extends AbstractCell<Number> {
             if (isAnimated && value.intValue() < 100) {
                 className += " active";
             }
-            sb.append(template.progressbar(className, percentage));
+            sb.append(template.progressbar(className, value));
         }
     }
 }

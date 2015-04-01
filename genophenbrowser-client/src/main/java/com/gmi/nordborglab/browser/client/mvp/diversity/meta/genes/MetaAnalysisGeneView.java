@@ -2,11 +2,12 @@ package com.gmi.nordborglab.browser.client.mvp.diversity.meta.genes;
 
 import at.gmi.nordborglab.widgets.geneviewer.client.GeneViewer;
 import at.gmi.nordborglab.widgets.geneviewer.client.datasource.DataSource;
-import com.github.gwtbootstrap.client.ui.Typeahead;
 import com.gmi.nordborglab.browser.client.mvp.diversity.meta.topsnps.MetaSNPAnalysisDataGridColumns;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
+import com.gmi.nordborglab.browser.client.util.TypeaheadUtils;
 import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
@@ -30,7 +31,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
@@ -40,6 +40,12 @@ import com.google.gwt.view.client.SingleSelectionModel;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
+import org.gwtbootstrap3.extras.typeahead.client.base.Dataset;
+import org.gwtbootstrap3.extras.typeahead.client.base.Suggestion;
+import org.gwtbootstrap3.extras.typeahead.client.base.SuggestionCallback;
+import org.gwtbootstrap3.extras.typeahead.client.events.TypeaheadSelectedEvent;
+import org.gwtbootstrap3.extras.typeahead.client.events.TypeaheadSelectedHandler;
+import org.gwtbootstrap3.extras.typeahead.client.ui.Typeahead;
 
 /**
  * Created with IntelliJ IDEA.
@@ -87,8 +93,7 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
     }
 
     private final Widget widget;
-    @UiField
-    com.github.gwtbootstrap.client.ui.TextBox searchGeneTb;
+
     @UiField
     GeneViewer geneViewer;
     @UiField(provided = true)
@@ -112,7 +117,7 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
     @UiField
     LayoutPanel contentPanel;
     @UiField(provided = true)
-    Typeahead searchGeneTa;
+    org.gwtbootstrap3.extras.typeahead.client.ui.Typeahead searchGeneTa;
     @UiField
     SimplePanel filterContainer;
     @UiField
@@ -137,14 +142,15 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
                                 final PlaceManager placeManger,
                                 final CustomDataGridResources customDataGridResources) {
         this.placeManger = placeManger;
-        searchGeneTa = new Typeahead(new SuggestOracle() {
+        searchGeneTa = new Typeahead(new Dataset<SearchItemProxy>() {
             @Override
-            public void requestSuggestions(Request request, Callback callback) {
-                if (request.getQuery().length() >= minCharSize)
-                    getUiHandlers().onSearchForGene(request, callback);
+            public void findMatches(String query, SuggestionCallback<SearchItemProxy> suggestionCallback) {
+                if (query.length() >= minCharSize)
+                    getUiHandlers().onSearchForGene(query, new TypeaheadUtils(suggestionCallback));
+
             }
         });
-        dataGrid = new DataGrid<MetaSNPAnalysisProxy>(20, customDataGridResources);
+        dataGrid = new DataGrid<>(25, customDataGridResources);
         dataGrid.setSelectionModel(selectionModel);
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
@@ -172,11 +178,11 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
         container.getWidgetContainerElement(searchContainer).getStyle().setOverflow(Style.Overflow.VISIBLE);
 
         pager.setDisplay(dataGrid);
-        searchGeneTa.setUpdaterCallback(new Typeahead.UpdaterCallback() {
+        searchGeneTa.addTypeaheadSelectedHandler(new TypeaheadSelectedHandler<SearchItemProxy>() {
             @Override
-            public String onSelection(SuggestOracle.Suggestion suggestion) {
-                getUiHandlers().onSelectGene(suggestion);
-                return suggestion.getReplacementString();
+            public void onSelected(TypeaheadSelectedEvent<SearchItemProxy> typeaheadSelectedEvent) {
+                Suggestion<SearchItemProxy> suggestion = typeaheadSelectedEvent.getSuggestion();
+                getUiHandlers().onSelectGene(suggestion.getData().getReplacementText());
             }
         });
         geneViewer.setHeight("290px");
@@ -221,7 +227,7 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.GenotypeColumn(), "Genotype");
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.MethodColumn(), "Method");
         dataGrid.setColumnWidth(4, 80, Style.Unit.PX);
-        dataGrid.addColumn(new IdentityColumn<MetaSNPAnalysisProxy>(new MetaAnalysisGeneView.ScoreCell()), "pVal");
+        dataGrid.addColumn(new IdentityColumn<>(new MetaAnalysisGeneView.ScoreCell()), "pVal");
         dataGrid.setColumnWidth(5, 60, Style.Unit.PX);
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.MafColumn(), "Maf");
         dataGrid.setColumnWidth(6, 60, Style.Unit.PX);
@@ -250,7 +256,7 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
         geneViewer.setChromosome(null);
         geneViewer.setViewRegion(0, 1);
         geneViewer.updateZoom(0, 1);
-        searchGeneTb.setValue("");
+        searchGeneTa.setValue("");
     }
 
 

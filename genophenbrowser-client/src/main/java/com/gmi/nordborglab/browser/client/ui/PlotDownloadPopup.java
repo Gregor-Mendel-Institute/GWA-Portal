@@ -1,9 +1,8 @@
 package com.gmi.nordborglab.browser.client.ui;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.google.common.base.Preconditions;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.query.client.Function;
@@ -14,6 +13,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.AnchorButton;
+import org.gwtbootstrap3.client.ui.FormGroup;
 
 import static com.google.gwt.query.client.GQuery.$;
 
@@ -30,19 +31,19 @@ public class PlotDownloadPopup extends Composite {
     @UiField
     TextBox macTb;
     @UiField
-    SpanElement upperLimitLb;
+    DivElement upperLimitLb;
     @UiField
-    SpanElement lowerLimitLb;
+    DivElement lowerLimitLb;
     @UiField
-    ControlGroup chrGroup;
+    FormGroup chrGroup;
     @UiField
-    ControlGroup formatGroup;
+    FormGroup formatGroup;
     @UiField
     SpanElement macLb;
     @UiField
-    Button downloadBtn;
+    AnchorButton downloadBtn;
     @UiField
-    ControlGroup macGroup;
+    FormGroup macGroup;
 
     public enum FORMAT {PNG, PDF}
 

@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp;
 
-import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadUserNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
@@ -26,6 +25,7 @@ import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.Proxy;
 import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 import javax.annotation.Nullable;
 import java.util.List;

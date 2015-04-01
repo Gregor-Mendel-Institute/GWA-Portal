@@ -1,9 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.facets;
 
-import com.github.gwtbootstrap.client.ui.InputAddOn;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.NavPills;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -13,6 +9,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.InputGroup;
+import org.gwtbootstrap3.client.ui.NavPills;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 import java.util.Map;
 
@@ -26,13 +26,13 @@ public class FacetSearchPresenterWidgetView extends ViewWithUiHandlers<FacetSear
     @UiField
     TextBox searchBox;
     @UiField
-    InputAddOn searchBoxContainer;
+    InputGroup searchBoxContainer;
 
     public interface Binder extends UiBinder<Widget, FacetSearchPresenterWidgetView> {
 
     }
 
-    private Map<String, NavLink> navLinkMap;
+    private Map<String, AnchorListItem> navLinkMap;
 
     @Inject
     public FacetSearchPresenterWidgetView(Binder binder) {
@@ -49,9 +49,9 @@ public class FacetSearchPresenterWidgetView extends ViewWithUiHandlers<FacetSear
 
     @Override
     public void setFacet(String name, String title, String historyToken) {
-        NavLink link = navLinkMap.get(name);
+        AnchorListItem link = navLinkMap.get(name);
         if (link == null) {
-            link = new NavLink();
+            link = new AnchorListItem();
             navLinkMap.put(name, link);
             navPills.add(link);
         }
@@ -66,7 +66,7 @@ public class FacetSearchPresenterWidgetView extends ViewWithUiHandlers<FacetSear
 
     @Override
     public void setActiveNavLink(String facet) {
-        for (NavLink link : navLinkMap.values()) {
+        for (AnchorListItem link : navLinkMap.values()) {
             link.setActive(false);
         }
         if (navLinkMap.containsKey(facet))

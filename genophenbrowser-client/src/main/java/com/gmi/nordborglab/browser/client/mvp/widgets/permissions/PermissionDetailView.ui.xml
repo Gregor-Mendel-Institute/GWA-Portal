@@ -4,7 +4,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              xmlns:chzn="urn:import:com.watopi.chosen.client.gwt"
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
@@ -20,70 +20,86 @@
             width: 100%;
         }
 
-        .newPermissionDd {
-            margin-left: 125px;
-            vertical-align: top;
+        .userlistbox {
+
+        }
+
+        .userlistbox * {
+            box-sizing: content-box !important;
         }
     </ui:style>
-    <b:FluidContainer height="520px">
-        <b:FluidRow>
-            <b:Column size="12">
-                <g:HTMLPanel>
-                    <div>Link to share</div>
-                    <div>
-                        <b:TextBox ui:field="shareUrlTb" addStyleNames="{style.link_box}"></b:TextBox>
-                    </div>
-                </g:HTMLPanel>
-            </b:Column>
-        </b:FluidRow>
-        <b:FluidRow>
-            <b:Column size="12">
-                <g:HTMLPanel>
-                    <div class="{style.title}">Permissions</div>
-                </g:HTMLPanel>
-            </b:Column>
-        </b:FluidRow>
-        <b:FluidRow>
-            <b:Column size="12" height="230px">
+    <g:HTMLPanel addStyleNames="container-fluid">
+        <div class="row">
+            <div class="col-xs-12">
+                <h5>Link to share</h5>
+                <div>
+                    <b:TextBox ui:field="shareUrlTb" addStyleNames="{style.link_box}"></b:TextBox>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <h5 class="{style.title}">Permissions</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12" style="height:230px;">
                 <ed:PermissionEditor ui:field="permissionEditor"/>
-            </b:Column>
-        </b:FluidRow>
-
-        <b:FluidRow ui:field="addUserPanel">
-            <b:Column size="12">
-                <b:WellForm>
-                    <b:ControlLabel>Add users:</b:ControlLabel>
-                    <g:HTMLPanel>
-                        <chzn:ChosenListBox ui:field="usersSearchBox" placeholderText="Enter name or email address..."/>
-                        <c:CellWidget ui:field="newPermissionDd" visible="false"
-                                      addStyleNames="{style.newPermissionDd}"/>
-                    </g:HTMLPanel>
-                    <b:ButtonToolbar ui:field="addUserBtnPanel">
-                        <b:Button type="SUCCESS" ui:field="addUserBtn">
-                            Add user(s)
+            </div>
+        </div>
+        <div class="row" ui:field="addUserPanel">
+            <div class="col-xs-12">
+                <b:Well>
+                    <b:Form>
+                        <b:FormGroup>
+                            <b:FormLabel>Add users:</b:FormLabel>
+                            <g:HTMLPanel addStyleNames="row">
+                                <div class="col-xs-10 {style.userlistbox}">
+                                    <chzn:ChosenListBox ui:field="usersSearchBox" width="100%"
+                                                        placeholderText="Enter name or email address..."/>
+                                </div>
+                                <div class="col-xs-2">
+                                    <c:CellWidget ui:field="newPermissionDd" visible="false"
+                                            />
+                                </div>
+                            </g:HTMLPanel>
+                        </b:FormGroup>
+                        <g:FlowPanel ui:field="addUserBtnPanel" addStyleNames="form-group">
+                            <b:ButtonToolBar>
+                                <b:ButtonGroup>
+                                    <b:Button type="SUCCESS" ui:field="addUserBtn">
+                                        Add user(s)
+                                    </b:Button>
+                                </b:ButtonGroup>
+                                <b:ButtonGroup>
+                                    <b:Button type="DEFAULT" ui:field="cancelUserBtn">Cancel</b:Button>
+                                </b:ButtonGroup>
+                            </b:ButtonToolBar>
+                        </g:FlowPanel>
+                    </b:Form>
+                </b:Well>
+            </div>
+        </div>
+        <div class="row" ui:field="changeNotificationPanel">
+            <div class="col-xs-12">
+                <b:Alert ui:field="alertMessage" type="WARNING" dismissable="false"
+                         text="Permission modified, please save..."/>
+                <b:ButtonToolBar>
+                    <b:ButtonGroup>
+                        <b:Button type="SUCCESS" ui:field="saveBtn">
+                            Save changes
                         </b:Button>
-                        <b:Button type="DEFAULT" ui:field="cancelUserBtn">Cancel</b:Button>
-                    </b:ButtonToolbar>
-                </b:WellForm>
-            </b:Column>
-        </b:FluidRow>
-        <b:FluidRow ui:field="changeNotificationPanel">
-            <b:Column size="12">
-                <b:Alert ui:field="alertMessage" type="WARNING" close="false" animation="true">Permission modified.
-                    Please save
-                </b:Alert>
-                <b:ButtonToolbar>
-                    <b:Button type="SUCCESS" ui:field="saveBtn">
-                        Save changes
-                    </b:Button>
-                    <b:Button type="DEFAULT" ui:field="cancelBtn">Cancel</b:Button>
-                </b:ButtonToolbar>
-            </b:Column>
-        </b:FluidRow>
-        <b:FluidRow ui:field="donePanel">
-            <b:Column size="12">
+                    </b:ButtonGroup>
+                    <b:ButtonGroup>
+                        <b:Button type="DEFAULT" ui:field="cancelBtn">Cancel</b:Button>
+                    </b:ButtonGroup>
+                </b:ButtonToolBar>
+            </div>
+        </div>
+        <div class="row" ui:field="donePanel">
+            <div class="col-xs-12">
                 <b:Button type="PRIMARY" ui:field="doneBtn">Done</b:Button>
-            </b:Column>
-        </b:FluidRow>
-    </b:FluidContainer>
+            </div>
+        </div>
+    </g:HTMLPanel>
 </ui:UiBinder>

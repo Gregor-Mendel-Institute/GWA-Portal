@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.publication.list;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
@@ -23,6 +22,7 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,7 +51,7 @@ public class PublicationOverviewView extends ViewWithUiHandlers<PublicationOverv
     public PublicationOverviewView(final Binder binder, final PlaceManager placeManger,
                                    final CustomDataGridResources dataGridResources) {
         this.placeManger = placeManger;
-        dataGrid = new DataGrid<PublicationProxy>(20, dataGridResources, new EntityProxyKeyProvider<PublicationProxy>());
+        dataGrid = new DataGrid<>(25, dataGridResources, new EntityProxyKeyProvider<PublicationProxy>());
         initGrid();
         widget = binder.createAndBindUi(this);
         pager.setDisplay(dataGrid);

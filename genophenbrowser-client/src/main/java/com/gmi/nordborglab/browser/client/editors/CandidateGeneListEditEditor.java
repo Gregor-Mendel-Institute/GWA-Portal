@@ -3,11 +3,12 @@ package com.gmi.nordborglab.browser.client.editors;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.ui.client.ValueBoxEditorDecorator;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.TextArea;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,9 +26,9 @@ public class CandidateGeneListEditEditor extends Composite implements Editor<Can
 
 
     @UiField
-    ValueBoxEditorDecorator<String> name;
+    TextBox name;
     @UiField
-    ValueBoxEditorDecorator<String> description;
+    TextArea description;
 
     public CandidateGeneListEditEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));

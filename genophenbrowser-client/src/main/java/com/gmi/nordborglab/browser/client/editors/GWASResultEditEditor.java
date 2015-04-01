@@ -1,16 +1,14 @@
 package com.gmi.nordborglab.browser.client.editors;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextArea;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.ui.client.ValueBoxEditorDecorator;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.TextArea;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,14 +26,10 @@ public class GWASResultEditEditor extends Composite implements Editor<GWASResult
 
 
     @UiField
-    ValueBoxEditorDecorator<String> name;
+    TextBox name;
     @UiField
-    ValueBoxEditorDecorator<String> type;
+    TextBox type;
 
-    @UiField
-    Button createGWASBtn;
-    @UiField
-    Button cancelGWASBtn;
     @UiField
     TextArea comments;
 
@@ -44,11 +38,4 @@ public class GWASResultEditEditor extends Composite implements Editor<GWASResult
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    public HasClickHandlers getSaveButton() {
-        return createGWASBtn;
-    }
-
-    public HasClickHandlers getCancelButton() {
-        return cancelGWASBtn;
-    }
 }

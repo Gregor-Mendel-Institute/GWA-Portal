@@ -1,8 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
-	xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
-	xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+    xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
 		>
 	<ui:style>
 		.genotypeLabel {
@@ -11,45 +10,55 @@
 		}
 	</ui:style>
 
-	<g:FlowPanel>
-		<b:ControlGroup ui:field="studyNameGroup">
-			<b:ControlLabel for="name">Name</b:ControlLabel>
-			<b:Tooltip text='Name of the Analysis' trigger="FOCUS" placement="RIGHT">
-				<b:TextBox visibleLength="30" placeholder="Name" alternateSize="XLARGE" ui:field="name"
-						   controlGroup="{studyNameGroup}" errorLabel="{studyNameErrors}"/>
-			</b:Tooltip>
-			<b:HelpInline ui:field="studyNameErrors"></b:HelpInline>
-		</b:ControlGroup>
-		<b:ControlGroup ui:field="producerGroup">
-			<b:ControlLabel for="producer">Producer</b:ControlLabel>
-			<b:Tooltip text='Name of the Producer' trigger="FOCUS" placement="RIGHT">
-				<b:TextBox visibleLength="30" placeholder="Producer" alternateSize="XLARGE" ui:field="producer"
-						   controlGroup="{producerGroup}" errorLabel="{producerErrors}"/>
-			</b:Tooltip>
-			<b:HelpInline ui:field="producerErrors"></b:HelpInline>
-		</b:ControlGroup>
-		<b:ControlGroup ui:field="protocolGroup">
-			<b:ControlLabel for="protocol">Protocol</b:ControlLabel>
-			<b:Tooltip text='Type of Analysis' trigger="FOCUS" placement="RIGHT">
-				<gui:ValidationValueListBox ui:field="protocol" controlGroup="{protocolGroup}"
-											errorLabel="{protocolErrors}"></gui:ValidationValueListBox>
-			</b:Tooltip>
-			<b:HelpInline ui:field="protocolErrors"></b:HelpInline>
-		</b:ControlGroup>
-		<b:ControlGroup ui:field="genotypeGroup">
-			<b:ControlLabel for="genotype">Genotype</b:ControlLabel>
-			<b:Tooltip text='Genotype dataset' trigger="FOCUS" placement="RIGHT">
-				<b:Label ui:field="genotype" addStyleNames="{style.genotypeLabel}"/>
-			</b:Tooltip>
-			<b:HelpInline ui:field="genotypeErrors"></b:HelpInline>
-		</b:ControlGroup>
-		<b:ControlGroup ui:field="studyDateGroup">
-			<b:ControlLabel for="studyDate">Producer</b:ControlLabel>
-			<b:Tooltip text='Date of the Analysis' trigger="FOCUS" placement="RIGHT">
-				<b:TextBox visibleLength="20" placeholder="Study Date" alternateSize="XLARGE" ui:field="studyDate"
-						   controlGroup="{studyDateGroup}" errorLabel="{studyErrors}"/>
-			</b:Tooltip>
-			<b:HelpInline ui:field="studyErrors"></b:HelpInline>
-		</b:ControlGroup>
-	</g:FlowPanel>
+    <g:HTMLPanel>
+        <div>
+            <b:Form type="HORIZONTAL">
+                <b:FormGroup>
+                    <b:FormLabel addStyleNames="col-sm-2" for="name">Name</b:FormLabel>
+                    <b:Tooltip title='Name of Analysis' trigger="FOCUS" placement="RIGHT">
+                        <g:FlowPanel addStyleNames="col-sm-7">
+                            <b:TextBox placeholder="Name" b:id="name" ui:field="name" allowBlank="false"
+                                       validateOnBlur="true"></b:TextBox>
+                        </g:FlowPanel>
+                    </b:Tooltip>
+                    <b:HelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>
+                </b:FormGroup>
+                <b:FormGroup>
+                    <b:FormLabel addStyleNames="col-sm-2" for="producer">Producer</b:FormLabel>
+                    <b:Tooltip title='Name of Analysis' trigger="FOCUS" placement="RIGHT">
+                        <g:FlowPanel addStyleNames="col-sm-7">
+                            <b:TextBox placeholder="Producer" b:id="producer" ui:field="producer"></b:TextBox>
+                        </g:FlowPanel>
+                    </b:Tooltip>
+                    <b:HelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>
+                </b:FormGroup>
+                <b:FormGroup>
+                    <b:FormLabel addStyleNames="col-sm-2" for="protocol">Protocol</b:FormLabel>
+                    <b:Tooltip title='Type of Analysis' trigger="FOCUS" placement="RIGHT">
+                        <g:FlowPanel addStyleNames="col-sm-7">
+                            <b:ValueListBox ui:field="protocol"></b:ValueListBox>
+                        </g:FlowPanel>
+                    </b:Tooltip>
+                    <b:HelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>
+                </b:FormGroup>
+                <b:FormGroup>
+                    <b:FormLabel addStyleNames="col-sm-2" for="genotype">Genotype</b:FormLabel>
+                    <b:Tooltip title='Type of Analysis' trigger="FOCUS" placement="RIGHT">
+                        <g:FlowPanel addStyleNames="col-sm-7">
+                            <b:Label ui:field="genotype" addStyleNames="{style.genotypeLabel}"/>
+                        </g:FlowPanel>
+                    </b:Tooltip>
+                </b:FormGroup>
+                <b:FormGroup>
+                    <b:FormLabel addStyleNames="col-sm-2" for="studyDate">Protocol</b:FormLabel>
+                    <b:Tooltip title='Date of the Analysis' trigger="FOCUS" placement="RIGHT">
+                        <g:FlowPanel addStyleNames="col-sm-7">
+                            <b:TextBox placeholder="Study Date" b:id="studyDate" ui:field="studyDate"></b:TextBox>
+                        </g:FlowPanel>
+                    </b:Tooltip>
+                    <b:HelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>
+                </b:FormGroup>
+            </b:Form>
+        </div>
+    </g:HTMLPanel>
 </ui:UiBinder>

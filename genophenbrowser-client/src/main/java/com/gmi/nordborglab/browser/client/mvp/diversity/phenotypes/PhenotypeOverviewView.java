@@ -45,7 +45,7 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
                                  final PlaceManager placeManager,
                                  final CustomDataGridResources customDataGridResources) {
         this.placeManager = placeManager;
-        dataGrid = new DataGrid<PhenotypeProxy>(20, customDataGridResources, new EntityProxyKeyProvider<PhenotypeProxy>());
+        dataGrid = new DataGrid<>(25, customDataGridResources, new EntityProxyKeyProvider<PhenotypeProxy>());
         initGrid();
         widget = binder.createAndBindUi(this);
         pager.setDisplay(dataGrid);

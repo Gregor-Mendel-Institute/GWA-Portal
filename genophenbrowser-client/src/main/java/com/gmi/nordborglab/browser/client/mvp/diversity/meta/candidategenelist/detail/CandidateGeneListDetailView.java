@@ -1,17 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.meta.candidategenelist.detail;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.FileUpload;
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.ModalFooter;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.Tooltip;
-import com.github.gwtbootstrap.client.ui.Typeahead;
-import com.github.gwtbootstrap.client.ui.constants.BackdropType;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
+
 import com.gmi.nordborglab.browser.client.editors.CandidateGeneListDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.CandidateGeneListEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.diversity.meta.candidategenelist.list.CandidateGeneListView;
@@ -20,7 +9,9 @@ import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.PhaseAnimation;
 import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
+import com.gmi.nordborglab.browser.client.util.TypeaheadUtils;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
@@ -51,7 +42,6 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ProvidesKey;
@@ -64,6 +54,24 @@ import com.googlecode.gwt.charts.client.corechart.PieChart;
 import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
 import com.googlecode.gwt.charts.client.options.Animation;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.Anchor;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.Tooltip;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
+import org.gwtbootstrap3.extras.bootbox.client.Bootbox;
+import org.gwtbootstrap3.extras.bootbox.client.callback.AlertCallback;
+import org.gwtbootstrap3.extras.typeahead.client.base.Dataset;
+import org.gwtbootstrap3.extras.typeahead.client.base.Suggestion;
+import org.gwtbootstrap3.extras.typeahead.client.base.SuggestionCallback;
+import org.gwtbootstrap3.extras.typeahead.client.events.TypeaheadSelectedEvent;
+import org.gwtbootstrap3.extras.typeahead.client.events.TypeaheadSelectedHandler;
+import org.gwtbootstrap3.extras.typeahead.client.ui.Typeahead;
 
 import java.util.List;
 import java.util.Map;
@@ -123,17 +131,16 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
 
     @UiField(provided = true)
     Typeahead searchGeneTa;
-    @UiField
-    TextBox searchGeneTb;
-    @UiField
-    Button addGeneBtn;
 
     @UiField
-    Icon shareBtn;
+    org.gwtbootstrap3.client.ui.Button addGeneBtn;
+
     @UiField
-    Icon deleteBtn;
+    Anchor shareBtn;
     @UiField
-    Icon editBtn;
+    Anchor deleteBtn;
+    @UiField
+    Anchor editBtn;
     @UiField
     Tooltip shareTooltip;
     @UiField
@@ -143,7 +150,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     @UiField
     PieChart strandPieChart;
     @UiField
-    FileUpload fileUpload;
+    com.google.gwt.user.client.ui.FileUpload fileUpload;
     @UiField
     FormPanel formPanel;
     @UiField
@@ -155,7 +162,9 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     @UiField
     SimplePanel facetContainer;
     @UiField
-    NavLink downloadJSONLink;
+    AnchorListItem downloadJSONLink;
+    @UiField
+    HTMLPanel contentPanel;
 
     private int minCharSize = 3;
     private final CandidateGeneListDisplayDriver candidateGeneListDisplayDriver;
@@ -164,17 +173,18 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     private Map<CandidateGeneListDetailPresenter.STATS, DataTable> stats2DataTable = Maps.newHashMap();
     private HandlerRegistration clickhandlerRegistration;
 
-    private Modal editPopup = new Modal(true);
-    private Modal deletePopup = new Modal(true);
-    private Modal permissionPopUp = new Modal(true);
-    private Modal resetEnrichmentPopup = new Modal(true);
+    private Modal editPopup = new Modal();
+    private Bootbox.Dialog deletePopup = Bootbox.Dialog.create();
+    private Modal permissionPopUp = new Modal();
+
+    private Modal resetEnrichmentPopup = new Modal();
 
     private static enum ACTION {UPLOAD, ADD, REMOVE}
 
     private BiMap<ACTION, ClickHandler> action2ClickHandler;
     private int enrichmentCount = 0;
     private GeneProxy geneToDelete = null;
-    private final com.github.gwtbootstrap.client.ui.Button continueGeneBtn = new com.github.gwtbootstrap.client.ui.Button("Add");
+    private final Button continueGeneBtn = new Button("Add");
 
     private final ClickHandler uploadClickHandler = new ClickHandler() {
         @Override
@@ -214,12 +224,13 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         this.candidateGeneListDisplayDriver = candidateGeneListDisplayDriver;
         this.candidateGeneListDisplayEditor = candidateGeneListDisplayEditor;
         this.candidateGeneListEditDriver = candidateGeneListEditDriver;
-        genesDataGrid = new DataGrid<GeneProxy>(50, dataGridResources, geneProvidesKey);
-        searchGeneTa = new Typeahead(new SuggestOracle() {
+        genesDataGrid = new DataGrid<>(50, dataGridResources, geneProvidesKey);
+        searchGeneTa = new Typeahead(new Dataset<SearchItemProxy>() {
             @Override
-            public void requestSuggestions(Request request, Callback callback) {
-                if (request.getQuery().length() >= minCharSize)
-                    getUiHandlers().onSearchForGene(request, callback);
+            public void findMatches(String query, SuggestionCallback<SearchItemProxy> suggestionCallback) {
+                if (query.length() >= minCharSize)
+                    getUiHandlers().onSearchForGene(query, new TypeaheadUtils(suggestionCallback));
+
             }
         });
         widget = binder.createAndBindUi(this);
@@ -232,34 +243,42 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         this.candidateGeneListEditDriver.initialize(candidateGeneListEditEditor);
         initGeneDataGrid();
         genesPager.setDisplay(genesDataGrid);
-        searchGeneTa.setUpdaterCallback(new Typeahead.UpdaterCallback() {
+        searchGeneTa.addTypeaheadSelectedHandler(new TypeaheadSelectedHandler<SearchItemProxy>() {
             @Override
-            public String onSelection(SuggestOracle.Suggestion suggestion) {
-                addGeneBtn.setEnabled(true);
-                getUiHandlers().onSelectGene(suggestion);
-                return suggestion.getReplacementString();
+            public void onSelected(TypeaheadSelectedEvent<SearchItemProxy> typeaheadSelectedEvent) {
+                Suggestion<SearchItemProxy> suggestion = typeaheadSelectedEvent.getSuggestion();
+                getUiHandlers().onSelectGene(suggestion.getData().getReplacementText());
             }
         });
 
-        permissionPopUp.setBackdrop(BackdropType.STATIC);
+        permissionPopUp.setDataBackdrop(ModalBackdrop.STATIC);
         permissionPopUp.setTitle("Permissions");
-        permissionPopUp.setMaxHeigth("700px");
-        permissionPopUp.setCloseVisible(false);
-        permissionPopUp.setKeyboard(false);
+        //permissionPopUp.setMaxHeigth("700px");
+        permissionPopUp.setClosable(false);
+        permissionPopUp.setDataKeyboard(false);
         //initDataGrid();
 
-        editPopup.setBackdrop(BackdropType.STATIC);
-        editPopup.setCloseVisible(true);
+        editPopup.setDataBackdrop(ModalBackdrop.STATIC);
+        editPopup.setClosable(true);
         editPopup.setTitle("Edit study");
 
 
-        resetEnrichmentPopup.setBackdrop(BackdropType.STATIC);
-        resetEnrichmentPopup.setCloseVisible(false);
         resetEnrichmentPopup.setTitle("Add/remove gene");
-        resetEnrichmentPopup.setKeyboard(false);
+        resetEnrichmentPopup.setDataKeyboard(false);
+        resetEnrichmentPopup.setClosable(false);
+
+        deletePopup.setTitle("Delete candidate gene List");
+        deletePopup.setMessage("Do you really want to delete the candidate gene list?");
+        deletePopup.addButton("Cancel", ButtonType.DEFAULT.getCssName());
+        deletePopup.addButton("Delete", ButtonType.DANGER.getCssName(), new AlertCallback() {
+            @Override
+            public void callback() {
+                getUiHandlers().onConfirmDelete();
+            }
+        });
 
 
-        com.github.gwtbootstrap.client.ui.Button cancelEnrichmentBtn = new com.github.gwtbootstrap.client.ui.Button("Cancel", new ClickHandler() {
+        Button cancelEnrichmentBtn = new Button("Cancel", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 resetEnrichmentPopup.hide();
@@ -267,50 +286,42 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         });
         cancelEnrichmentBtn.setType(ButtonType.DEFAULT);
         continueGeneBtn.setType(ButtonType.DANGER);
-        resetEnrichmentPopup.add(new HTML("<h4>This list contains enrichments analyses.<br>If you modify the gene list, those analyes will be automatically removed.<br><br>Do you want to continue?</h4>"));
+
         action2ClickHandler = ImmutableBiMap.<ACTION, ClickHandler>builder()
                 .put(ACTION.UPLOAD, uploadClickHandler)
                 .put(ACTION.ADD, addGeneClickHandler)
                 .put(ACTION.REMOVE, removeClickHandler).build();
-        ModalFooter footer = new ModalFooter(cancelEnrichmentBtn, continueGeneBtn);
+        ModalFooter footer = new ModalFooter();
+        footer.add(cancelEnrichmentBtn);
+        footer.add(continueGeneBtn);
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(new HTML("<h4>This list contains enrichments analyses.<br>If you modify the gene list, those analyes will be automatically removed.<br><br>Do you want to continue?</h4>"));
+        resetEnrichmentPopup.add(modalBody);
         resetEnrichmentPopup.add(footer);
 
-        com.github.gwtbootstrap.client.ui.Button cancelEditBtn = new com.github.gwtbootstrap.client.ui.Button("Cancel", new ClickHandler() {
+        Button cancelEditBtn = new Button("Cancel", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 getUiHandlers().onCancel();
             }
         });
         cancelEditBtn.setType(ButtonType.DEFAULT);
-        com.github.gwtbootstrap.client.ui.Button saveEditBtn = new com.github.gwtbootstrap.client.ui.Button("Save", new ClickHandler() {
+        Button saveEditBtn = new Button("Save", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 getUiHandlers().onSave();
             }
         });
         saveEditBtn.setType(ButtonType.PRIMARY);
-        footer = new ModalFooter(cancelEditBtn, saveEditBtn);
-        editPopup.add(candidateGeneListEditEditor);
+        footer = new ModalFooter();
+        footer.add(cancelEditBtn);
+        footer.add(saveEditBtn);
+        modalBody = new ModalBody();
+        modalBody.add(candidateGeneListEditEditor);
+        editPopup.add(modalBody);
         editPopup.add(footer);
 
-        deletePopup.setBackdrop(BackdropType.STATIC);
-        deletePopup.setCloseVisible(true);
-        deletePopup.add(new HTML("<h4>Do you really want to delete the candidate gene list?</h4>"));
-        com.github.gwtbootstrap.client.ui.Button cancelDeleteBtn = new com.github.gwtbootstrap.client.ui.Button("Cancel", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                deletePopup.hide();
-            }
-        });
-        cancelDeleteBtn.setType(ButtonType.DEFAULT);
-        com.github.gwtbootstrap.client.ui.Button deleteBtn = new com.github.gwtbootstrap.client.ui.Button("Delete", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                getUiHandlers().onConfirmDelete();
-            }
-        });
-        deleteBtn.setType(ButtonType.DANGER);
-        deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
+
         shareBtn.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
 
         fileUpload.setName("file");
@@ -319,9 +330,8 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         formPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
             @Override
             public void onSubmit(FormPanel.SubmitEvent event) {
-                if (fileUpload.getText().equals("")) {
+                if (fileUpload.getFilename().equals("")) {
                     event.cancel();
-                    ;
                 }
             }
         });
@@ -355,6 +365,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
                 getUiHandlers().onShare();
             }
         }, ClickEvent.getType());
+        contentPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
     }
 
     @Override
@@ -477,7 +488,9 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     @Override
     public void setInSlot(Object slot, IsWidget content) {
         if (slot == CandidateGeneListDetailPresenter.TYPE_SetPermissionContent) {
-            permissionPopUp.add(content);
+            ModalBody modalBody = new ModalBody();
+            modalBody.add(content);
+            permissionPopUp.add(modalBody);
         } else if (slot == CandidateGeneListDetailPresenter.TYPE_SetEnrichmentCntent) {
             enrichmentContainer.add(content);
         } else if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
@@ -489,10 +502,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
 
     @Override
     public void showDeletePopup(boolean show) {
-        if (show)
-            deletePopup.show();
-        else
-            deletePopup.hide();
+        Bootbox.dialog(deletePopup);
     }
 
     @Override
@@ -502,7 +512,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
 
     @Override
     public void setShareTooltip(String toopltipMsg, IconType icon) {
-        shareTooltip.setText(toopltipMsg);
+        shareTooltip.setTitle(toopltipMsg);
         shareBtn.setIcon(icon);
         shareTooltip.reconfigure();
     }
@@ -522,7 +532,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
 
     @Override
     public HasText getSearchBox() {
-        return searchGeneTb;
+        return searchGeneTa;
     }
 
     @Override
@@ -627,7 +637,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         }
         resetEnrichmentPopup.setTitle(title);
         continueGeneBtn.setText(btnText);
-        continueGeneBtn.setCompleteText(btnText);
+        continueGeneBtn.setDataLoadingText(btnText);
         resetEnrichmentPopup.show();
     }
 

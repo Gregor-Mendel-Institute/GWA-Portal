@@ -1,8 +1,9 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
 
     <ui:with type="com.gmi.nordborglab.browser.client.resources.CardRendererResources" field="cardRen"></ui:with>
+
     <ui:style>
         .card_container {
             float: left;
@@ -13,7 +14,7 @@
         }
 
         .newContainer {
-            padding: 20px !important;
+            padding: 18px !important;
         }
     </ui:style>
 
@@ -24,9 +25,9 @@
                 <g:HTMLPanel ui:field="cardContent" visible="false">
                     <h4 class="{cardRen.style.title}" ui:field="title"></h4>
                     <p class="{cardRen.style.sub_title}" ui:field="subtitle"></p>
-                    <ul class="unstyled">
+                    <ul class="list-unstyled">
                         <li>
-                            <b:Tooltip text="Number of phenotypes" placement="RIGHT">
+                            <b:Tooltip title="Number of phenotypes" placement="RIGHT">
                                 <g:HTML>
                                     <span class="{cardRen.style.stats_icon} {style.stats_icon}">
                                     <i class="e_icon-feather"/>
@@ -38,15 +39,16 @@
                     </ul>
                     <p>
                         <span class="label label-success" ui:field="permissionLabel">PUBLIC</span>
-                        <b:Icon type="OK" addStyleNames="pull-right {cardRen.style.empty_ok}" ui:field="selectIcon"/>
+                        <b:Icon type="CHECK_CIRCLE_O" addStyleNames="pull-right {cardRen.style.empty_ok}"
+                                ui:field="selectIcon"/>
                     </p>
                 </g:HTMLPanel>
                 <g:HTMLPanel ui:field="newCardContent"
                              addStyleNames="{cardRen.style.newCardContainer} {style.newContainer}">
-                    <i class="icon-file-alt {cardRen.style.icon}"></i>
+                    <i class="fa fa-file-o {cardRen.style.icon}"></i>
                     <div class="{cardRen.style.icon_text}">Create new study</div>
                     <span class="{cardRen.style.icon_new}">
-                        <i class="icon-plus {cardRen.style.new_icon_icon}"></i>
+                        <i class="fa fa-plus {cardRen.style.new_icon_icon}"></i>
                     </span>
                 </g:HTMLPanel>
             </div>

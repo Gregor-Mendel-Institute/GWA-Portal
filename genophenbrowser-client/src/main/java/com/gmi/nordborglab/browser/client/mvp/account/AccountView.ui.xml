@@ -3,8 +3,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-             xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -91,60 +90,70 @@
         <g:ScrollPanel>
             <g:HTMLPanel addStyleNames="{style.container}">
                 <div class="container-fluid">
-                    <div class="row-fluid">
-                        <div class="span3">
+                    <div class="row">
+                        <div class="col-md-4">
                             <div class="{style.avatar_container}">
                                 <img ui:field="avatarImg"/>
                             </div>
                             <div class="{style.avatar_button}">
-                                <b:DropdownButton text="Change picture" icon="USER"
-                                                  addStyleNames="{style.avatar_popup}">
-                                    <b:NavHeader addStyleNames="{style.avatar_header}">Change your picture</b:NavHeader>
-                                    <b:Divider/>
-                                    <base:ListItem addStyleNames="{style.avatar_row}">
-                                        <g:FocusPanel ui:field="gravatarPanel">
-                                            <g:HTMLPanel>
-                                                <img ui:field="gravatarImg"/>
-                                                <a href="javascript:;">
-                                                    <span class="{style.avatar_type}">Gravatar</span>
-                                                </a>
-                                                <span style="font-size:12px;">[<a href="http://gravatar.com/emails/"
-                                                                                  ui:field="gravatarLink"
-                                                                                  target="_blank" style="cursor:help;">
-                                                    Change</a>]
-                                                </span>
-                                                <i ui:field="gravatarImgCheck"
-                                                   class="e_icon-check {style.avatar_icon}"/>
-                                            </g:HTMLPanel>
-                                        </g:FocusPanel>
-                                    </base:ListItem>
-                                    <b:Divider/>
-                                    <base:ListItem addStyleNames="{style.avatar_row}">
-                                        <g:FocusPanel ui:field="identiconPanel">
-                                            <g:HTMLPanel>
-                                                <a href="javascript:;">
-                                                    <img ui:field="identiconImg"/>
-                                                    <span class="{style.avatar_type}">Identicon</span>
-                                                    <i ui:field="identiconImgCheck"
-                                                       class="e_icon-check {style.avatar_icon}"/>
-                                                </a>
-                                            </g:HTMLPanel>
-                                        </g:FocusPanel>
-                                    </base:ListItem>
-                                    <b:Divider/>
-                                </b:DropdownButton>
+                                <b:ButtonGroup>
+                                    <b:Button dataToggle="DROPDOWN" text="Change picture" icon="USER"></b:Button>
+                                    <b:DropDownMenu>
+                                        <b:Panel>
+                                            <b:PanelHeader>
+                                                <b:Heading size="H3" text="Change your picture"/>
+                                            </b:PanelHeader>
+                                            <b:PanelBody>
+                                                <b:ListGroup>
+                                                    <b:ListGroupItem>
+                                                        <g:FocusPanel ui:field="gravatarPanel">
+                                                            <g:HTMLPanel>
+                                                                <img ui:field="gravatarImg"/>
+                                                                <a href="javascript:;">
+                                                                    <span class="{style.avatar_type}">Gravatar</span>
+                                                                </a>
+                                                                <span style="font-size:12px;">[<a
+                                                                        href="http://gravatar.com/emails/"
+                                                                        ui:field="gravatarLink"
+                                                                        target="_blank" style="cursor:help;">
+                                                                    Change</a>]
+                                                                </span>
+                                                                <i ui:field="gravatarImgCheck"
+                                                                   class="e_icon-check {style.avatar_icon}"/>
+                                                            </g:HTMLPanel>
+                                                        </g:FocusPanel>
+                                                    </b:ListGroupItem>
+                                                    <b:ListGroupItem>
+                                                        <g:FocusPanel ui:field="identiconPanel">
+                                                            <g:HTMLPanel>
+                                                                <a href="javascript:;">
+                                                                    <img ui:field="identiconImg"/>
+                                                                    <span class="{style.avatar_type}">Identicon</span>
+                                                                    <i ui:field="identiconImgCheck"
+                                                                       class="e_icon-check {style.avatar_icon}"/>
+                                                                </a>
+                                                            </g:HTMLPanel>
+                                                        </g:FocusPanel>
+                                                    </b:ListGroupItem>
+                                                </b:ListGroup>
+                                            </b:PanelBody>
+                                        </b:Panel>
+                                    </b:DropDownMenu>
+                                </b:ButtonGroup>
                             </div>
                         </div>
-                        <div class="span9">
+                        <div class="col-md-8">
                             <div class="{style.form_container}">
                                 <form class="form-horizontal">
                                     <fieldset>
                                         <legend>Personal Information</legend>
                                         <ed:UserEditEditor ui:field="userEditEditor"/>
                                     </fieldset>
-                                    <div class="form-actions">
-                                        <b:Button type="PRIMARY" ui:field="saveBtn">Save changes</b:Button>
-                                        <b:Button ui:field="cancelBtn">Cancel</b:Button>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <b:Button type="PRIMARY" ui:field="saveBtn">Save changes</b:Button>
+                                            <b:Button ui:field="cancelBtn">Cancel</b:Button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>

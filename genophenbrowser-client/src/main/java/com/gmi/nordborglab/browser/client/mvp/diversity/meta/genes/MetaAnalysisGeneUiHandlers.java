@@ -1,7 +1,7 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.meta.genes;
 
+import com.gmi.nordborglab.browser.client.manager.SearchManager;
 import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
-import com.google.gwt.user.client.ui.SuggestOracle;
 import com.gwtplatform.mvp.client.UiHandlers;
 
 /**
@@ -13,9 +13,9 @@ import com.gwtplatform.mvp.client.UiHandlers;
  */
 public interface MetaAnalysisGeneUiHandlers extends UiHandlers {
 
-    void onSearchForGene(SuggestOracle.Request request, SuggestOracle.Callback callback);
+    void onSearchForGene(String request, final SearchManager.SearchCallback callback);
 
-    void onSelectGene(SuggestOracle.Suggestion suggestion);
+    void onSelectGene(String gene);
 
     void onSelectMetaAnalysis(MetaSNPAnalysisProxy metaAnalysis);
 

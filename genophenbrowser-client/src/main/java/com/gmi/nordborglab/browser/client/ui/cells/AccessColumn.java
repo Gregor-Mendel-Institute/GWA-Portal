@@ -1,9 +1,9 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
-import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.google.common.collect.ImmutableMap;
 import com.google.gwt.user.cellview.client.Column;
+import org.gwtbootstrap3.client.ui.constants.LabelType;
 
 /**
  * Created with IntelliJ IDEA.

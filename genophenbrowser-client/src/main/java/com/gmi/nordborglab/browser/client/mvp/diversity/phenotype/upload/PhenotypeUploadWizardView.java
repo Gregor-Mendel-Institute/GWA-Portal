@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.upload;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.gmi.nordborglab.browser.client.csv.DefaultFileChecker;
 import com.gmi.nordborglab.browser.client.csv.SupressException;
 import com.gmi.nordborglab.browser.client.editors.ExperimentEditEditor;
@@ -30,6 +29,7 @@ import com.gmi.nordborglab.browser.shared.proxy.SampleDataProxy;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
@@ -87,6 +87,7 @@ import com.googlecode.gwt.charts.client.corechart.Histogram;
 import com.googlecode.gwt.charts.client.geochart.GeoChart;
 import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.Button;
 import org.gwtsupercsv.cellprocessor.ParseDouble;
 import org.gwtsupercsv.cellprocessor.ParseInt;
 import org.gwtsupercsv.cellprocessor.constraint.NotNull;
@@ -709,10 +710,12 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
                 return input.isIdKnown();
             }
         }).toList());
-        markers = ImmutableSet.copyOf(Iterables.transform(uniqueSet, new Function<SampleDataProxy, Marker>() {
+        markers = ImmutableSet.copyOf(FluentIterable.from(uniqueSet).transform(new Function<SampleDataProxy, Marker>() {
             @Nullable
             @Override
             public Marker apply(@Nullable SampleDataProxy input) {
+                if (input.getLatitude() == null || input.getLongitude() == null)
+                    return null;
                 MarkerOptions options = MarkerOptions.newInstance();
                 final Marker marker = Marker.newInstance(options);
                 LatLng position = LatLng.newInstance(input.getLatitude(), input.getLongitude());
@@ -727,7 +730,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
                 }));
                 return marker;
             }
-        }));
+        }).filter(Predicates.notNull()));
 
     }
 

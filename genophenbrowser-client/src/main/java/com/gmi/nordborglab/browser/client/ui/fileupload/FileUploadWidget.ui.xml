@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
 
     <ui:style>
         .filedroppanel {
@@ -43,16 +43,13 @@
             border: 2px dashed #00848e;
         }
 
-        .buttonWithMargin {
-            margin-left: 10px !important;
-        }
 
 
     </ui:style>
 
-    <b:FluidContainer ui:field="uploadContainer" addStyleNames="{style.uploadContainer}">
-        <b:FluidRow>
-            <b:Column size="12">
+    <b:Container fluid="true" ui:field="uploadContainer" addStyleNames="{style.uploadContainer}">
+        <b:Row>
+            <b:Column size="XS_12">
                 <g:HTMLPanel>
                     <h4>File-Format:
                         <p style="display:inline-block;font-weight:normal;font-size:14px;"
@@ -65,11 +62,11 @@
                     </table>
                 </g:HTMLPanel>
             </b:Column>
-        </b:FluidRow>
-        <b:FluidRow>
-            <b:Column size="12">
-                <b:FluidRow>
-                    <b:Column size="12">
+        </b:Row>
+        <b:Row>
+            <b:Column size="XS_12">
+                <b:Row>
+                    <b:Column size="XS_12">
                         <g:HTML ui:field="uploadDropPanel">
                             <h4>Upload</h4>
                             <p>Use one of the methods below to upload a file:</p>
@@ -95,30 +92,38 @@
                             </div>
                         </g:HTML>
                     </b:Column>
-                </b:FluidRow>
+                </b:Row>
             </b:Column>
-        </b:FluidRow>
-        <b:FluidRow addStyleNames="{style.uploadButtonRow}">
-            <b:Column size="3">
-                <b:Controls>
-                    <b:Form ui:field="uploadForm">
-                        <b:ButtonGroup>
+        </b:Row>
+        <b:Row addStyleNames="{style.uploadButtonRow}">
+            <b:Column size="XS_3 MD_6 LG_4">
+                <b:Form ui:field="uploadForm">
+                    <b:FormGroup>
+                        <b:ButtonToolBar>
+                            <b:ButtonGroup>
                             <b:Button type="SUCCESS" icon="PLUS" ui:field="fileBrowseBtn">Add files...</b:Button>
-                            <b:Button type="WARNING" icon="BAN_CIRCLE" ui:field="fileUploadCancelBtn"
-                                      visible="false" addStyleNames="{style.buttonWithMargin}">Cancel
+                            </b:ButtonGroup>
+                            <b:ButtonGroup>
+                                <b:Button type="WARNING" icon="BAN" ui:field="fileUploadCancelBtn"
+                                          visible="false">Cancel
                             </b:Button>
+                            </b:ButtonGroup>
+                            <b:ButtonGroup>
                             <b:Button icon="UPLOAD" type="PRIMARY" ui:field="fileUploadStartBtn" visible="false"
-                                      addStyleNames="{style.buttonWithMargin}">Start Upload
+                                    >Start Upload
                             </b:Button>
+                            </b:ButtonGroup>
+                            <b:ButtonGroup>
                             <b:Button type="PRIMARY" ui:field="fileUploadCloseBtn" visible="false"
-                                      addStyleNames="{style.buttonWithMargin}">Close
+                                    >Close
                             </b:Button>
-                        </b:ButtonGroup>
-                        <b:FileUpload ui:field="fileUploadBtn" addStyleNames="{style.fileinput}"></b:FileUpload>
+                            </b:ButtonGroup>
+                        </b:ButtonToolBar>
+                    </b:FormGroup>
+                    <g:FileUpload ui:field="fileUploadBtn" addStyleNames="{style.fileinput}"></g:FileUpload>
                     </b:Form>
-                </b:Controls>
             </b:Column>
-            <b:Column size="9">
+            <b:Column size="XS_9 MD_6 LG_8">
                 <g:HTMLPanel ui:field="fileSelectPanel" addStyleNames="fade">
                     <div class="alert">
                         <span id="checkStatusMsg" style="font-size:130%"></span>
@@ -129,6 +134,6 @@
                     </table>
                 </g:HTMLPanel>
             </b:Column>
-        </b:FluidRow>
-    </b:FluidContainer>
+        </b:Row>
+    </b:Container>
 </ui:UiBinder>

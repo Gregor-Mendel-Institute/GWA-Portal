@@ -27,7 +27,7 @@
                 <p class="{cardRen.style.sub_title}">
                 <ui:text from="{traitOntology}"/>
                 </p>
-                <ul class="unstyled">
+                <ul class="list-unstyled">
                     <li>
                         <span class="{cardRen.style.stats_icon}">
                         <i class="e_icon-tag"/>
@@ -57,14 +57,14 @@
                     <span class="label {permissionStyle}">
                         <ui:text from="{permission}"/>
                     </span>
-                    <i class="pull-right {cardRen.style.empty_ok} icon-ok-circle {cardRes.cellListStyle.selectedCard}"/>
+                    <i class="pull-right {cardRen.style.empty_ok} fa fa-check-circle-o {cardRes.cellListStyle.selectedCard}"/>
                 </p>
             </div>
             <div ui:field="newCardContent" class="{cardRen.style.newCardContainer}" style="{newCardContentStyle}">
-                <i class="icon-upload-alt {cardRen.style.icon}"></i>
+                <i class="fa fa-upload {cardRen.style.icon}"></i>
                 <div class="{cardRen.style.icon_text}">Upload phenotype</div>
                 <span class="{cardRen.style.icon_new}">
-                    <i class="icon-plus {cardRen.style.new_icon_icon}"></i>
+                    <i class="fa fa-plus {cardRen.style.new_icon_icon}"></i>
                 </span>
             </div>
         </div>

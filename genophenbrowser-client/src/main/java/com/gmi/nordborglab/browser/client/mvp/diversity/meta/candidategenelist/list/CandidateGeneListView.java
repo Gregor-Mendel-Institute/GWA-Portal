@@ -1,10 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.meta.candidategenelist.list;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.ModalFooter;
-import com.github.gwtbootstrap.client.ui.constants.BackdropType;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
+
 import com.gmi.nordborglab.browser.client.editors.CandidateGeneListEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.widgets.facets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
@@ -44,6 +40,11 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
 
 /**
  * Created with IntelliJ IDEA.
@@ -78,7 +79,7 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
     private final PlaceManager placeManager;
     private final CandidateGeneListEditDriver candidateGeneListEditDriver;
     private final AvatarNameCell avatarNameCell;
-    private Modal editPopup = new Modal(true);
+    private Modal editPopup = new Modal();
 
     public static class TitleCell extends AbstractCell<CandidateGeneListProxy> {
 
@@ -124,30 +125,34 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
                                  final AvatarNameCell avatarNameCell) {
         this.placeManager = placeManager;
         this.avatarNameCell = avatarNameCell;
-        dataGrid = new DataGrid<CandidateGeneListProxy>(50, dataGridResources, new EntityProxyKeyProvider<CandidateGeneListProxy>());
+        dataGrid = new DataGrid<>(50, dataGridResources, new EntityProxyKeyProvider<CandidateGeneListProxy>());
         initCellTable();
         widget = binder.createAndBindUi(this);
         this.candidateGeneListEditDriver = candidateGeneListEditDriver;
         this.candidateGeneListEditDriver.initialize(candidateGeneListEditor);
         pager.setDisplay(dataGrid);
-        editPopup.setBackdrop(BackdropType.STATIC);
-        editPopup.setCloseVisible(true);
+        editPopup.setDataBackdrop(ModalBackdrop.STATIC);
+        editPopup.setClosable(true);
+        editPopup.setFade(true);
         editPopup.setTitle("Create Candidate Gene list");
-        com.github.gwtbootstrap.client.ui.Button cancelEditBtn = new com.github.gwtbootstrap.client.ui.Button("Cancel", new ClickHandler() {
+        Button cancelEditBtn = new Button("Cancel", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 getUiHandlers().onCancel();
             }
         });
+
         cancelEditBtn.setType(ButtonType.DEFAULT);
-        com.github.gwtbootstrap.client.ui.Button saveEditBtn = new com.github.gwtbootstrap.client.ui.Button("Save", new ClickHandler() {
+        Button saveEditBtn = new Button("Save", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 getUiHandlers().onSave();
             }
         });
         saveEditBtn.setType(ButtonType.PRIMARY);
-        ModalFooter footer = new ModalFooter(cancelEditBtn, saveEditBtn);
+        ModalFooter footer = new ModalFooter();
+        footer.add(cancelEditBtn);
+        footer.add(saveEditBtn);
         editPopup.add(candidateGeneListEditor);
         editPopup.add(footer);
     }

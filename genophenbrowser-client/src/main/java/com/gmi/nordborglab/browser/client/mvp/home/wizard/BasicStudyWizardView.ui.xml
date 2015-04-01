@@ -1,10 +1,12 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              xmlns:c='urn:import:com.google.gwt.user.cellview.client'
              xmlns:card="urn:import:com.gmi.nordborglab.browser.client.ui.card"
-             xmlns:ed="urn:import:com.gmi.nordborglab.browser.client.editors">
+             xmlns:ed="urn:import:com.gmi.nordborglab.browser.client.editors"
+             xmlns:toggle="urn:import:org.gwtbootstrap3.extras.toggleswitch.client.ui"
+        >
 
 
 <ui:with field="mainRes"
@@ -24,7 +26,7 @@
 
         .selectExperimentContainer {
             margin-left: 20px;
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         .cellList {
@@ -63,18 +65,21 @@
                         <g:FlowPanel ui:field="experimentsContainer"/>
                     </div>
                 </g:HTMLPanel>
-                <b:Modal ui:field="createExperimentPanel" title="Create new experiment" backdrop="STATIC"
-                         keyboard="true" animation="true">
-                    <g:TabLayoutPanel barHeight="2.5" barUnit="EM" height="400px" ui:field="createExperimentTabPanel">
-                        <g:tab>
-                            <g:header>Create</g:header>
-                            <ed:ExperimentEditEditor ui:field="experimentEditEditor"/>
-                        </g:tab>
-                        <g:tab>
-                            <g:header>Upload ISA-TAB</g:header>
-                            <g:ResizeLayoutPanel ui:field="isaTabUploadContainer"/>
-                        </g:tab>
-                    </g:TabLayoutPanel>
+                <b:Modal ui:field="createExperimentPanel" title="Create new experiment" dataBackdrop="STATIC"
+                         dataKeyboard="true" fade="true">
+                    <b:ModalBody>
+                        <g:TabLayoutPanel barHeight="2.5" barUnit="EM" height="400px"
+                                          ui:field="createExperimentTabPanel">
+                            <g:tab>
+                                <g:header>Create</g:header>
+                                <ed:ExperimentEditEditor ui:field="experimentEditEditor"/>
+                            </g:tab>
+                            <g:tab>
+                                <g:header>Upload ISA-TAB</g:header>
+                                <g:ResizeLayoutPanel ui:field="isaTabUploadContainer"/>
+                            </g:tab>
+                        </g:TabLayoutPanel>
+                    </b:ModalBody>
 
                     <b:ModalFooter ui:field="createExperimentPanelFooter">
                         <b:Button icon="FILE" type="PRIMARY" ui:field="saveExperimentBtn">Save</b:Button>
@@ -96,10 +101,10 @@
                         <g:layer left="0" width="290px">
                             <g:LayoutPanel>
                                 <g:layer top="0" height="50px">
-                                    <b:InputAddOn appendIcon="SEARCH">
-                                        <b:TextBox placeholder="Filter phenotypes"
-                                                   ui:field="phenotypeSearchBox"></b:TextBox>
-                                    </b:InputAddOn>
+                                    <b:InputGroup>
+                                        <b:TextBox ui:field="phenotypeSearchBox" placeholder="Filter phenotypes..."/>
+                                        <b:InputGroupAddon icon="SEARCH"/>
+                                    </b:InputGroup>
                                 </g:layer>
                                 <g:layer top="50px" bottom="40px">
                                     <g:ScrollPanel>
@@ -123,21 +128,21 @@
                                         <div class="{mainRes.style.chartIconContainer}">
                                             <g:HTMLPanel ui:field="phenotypeColumnChartBtnContainer"
                                                          addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
-                                                <b:Tooltip text="Shows the phenotype distrubtion as a histogram">
+                                                <b:Tooltip title="Shows the phenotype distrubtion as a histogram">
                                                     <g:Button ui:field="phenotypeColumnChartBtn"
                                                               addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}"/>
                                                 </b:Tooltip>
                                             </g:HTMLPanel>
                                             <g:HTMLPanel ui:field="phenotypeMotionChartBtnContainer"
                                                          addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
-                                                <b:Tooltip text="Shows the phenotype values in a motionchart">
+                                                <b:Tooltip title="Shows the phenotype values in a motionchart">
                                                     <g:Button ui:field="phenotypeMotionChartBtn"
                                                               addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}"/>
                                                 </b:Tooltip>
                                             </g:HTMLPanel>
                                             <g:HTMLPanel ui:field="phenotypeGeoChartBtnContainer"
                                                          addStyleNames="{mainRes.style.iconContainer}">
-                                                <b:Tooltip text="Shows the geographic distribution on a map">
+                                                <b:Tooltip title="Shows the geographic distribution on a map">
                                                     <g:Button ui:field="phenotypeGeoChartBtn"
                                                               addStyleNames="{mainRes.style.earth} {mainRes.style.iconItem}"/>
                                                 </b:Tooltip>
@@ -257,24 +262,32 @@
                 <g:layer top="90px" bottom="0" left="20px" right="0">
                     <g:HTMLPanel>
                         <div>
-                            <b:ControlGroup ui:field="studyNameGroup">
-                                <b:ControlLabel>Analysis name</b:ControlLabel>
-                                <b:Tooltip text='Name of the study' trigger="FOCUS" placement="RIGHT">
-                                    <b:TextBox placeholder="Name" alternateSize="XLARGE" ui:field="studyNameTb"
-                                               controlGroup="{studyNameGroup}" errorLabel="{studyNameErrors}"/>
-                                </b:Tooltip>
-                                <b:HelpInline ui:field="studyNameErrors"></b:HelpInline>
-                            </b:ControlGroup>
-                            <b:Tooltip
-                                    text='If checked a job for the selected analysis will be run on the GMI HPC cluster '
-                                    trigger="FOCUS" placement="RIGHT">
-                                <b:CheckBox ui:field="studyJobCb">Create HPC Job</b:CheckBox>
-                            </b:Tooltip>
-                            <b:Tooltip
-                                    text='If checked a enrichment analysis for all available candidate genes will be run.'
-                                    trigger="FOCUS" placement="RIGHT">
-                                <b:CheckBox ui:field="enrichmentJobCb">Run Enrichment Analysis</b:CheckBox>
-                            </b:Tooltip>
+                            <b:Form ui:field="studyForm">
+                                <b:FormGroup>
+                                    <b:Row>
+                                        <b:Column size="SM_4">
+                                            <b:FormLabel for="studyNameTb">Analysis name</b:FormLabel>
+                                            <b:InlineHelpBlock iconType="EXCLAMATION_TRIANGLE"/>
+                                            <b:TextBox b:id="studyNameTb" ui:field="studyNameTb"
+                                                       placeholder="Name of the analysis"
+                                                       validateOnBlur="true" allowBlank="false"/>
+                                        </b:Column>
+                                    </b:Row>
+                                </b:FormGroup>
+                                <b:FormGroup>
+                                    <toggle:ToggleSwitch ui:field="studyJobCb" b:id="studyJobCb"
+                                                         labelText="Create HPC Job"/>
+                                </b:FormGroup>
+                                <b:FormGroup>
+                                    <!--<b:Tooltip
+                                            title='If checked a enrichment analysis for all available candidate genes will be run.'
+                                            trigger="FOCUS" placement="RIGHT">
+                                        <b:FormLabel for="enrichmentJobCb"></b:FormLabel>
+                                    </b:Tooltip>-->
+                                    <toggle:ToggleSwitch ui:field="enrichmentJobCb" b:id="enrichmentJobCb"
+                                                         labelText="Run Enrichment analysis"/>
+                                </b:FormGroup>
+                            </b:Form>
                         </div>
                         <div class="{style.selectExperimentContainer}" id="method">
                             <g:FlowPanel ui:field="methodContainer"/>

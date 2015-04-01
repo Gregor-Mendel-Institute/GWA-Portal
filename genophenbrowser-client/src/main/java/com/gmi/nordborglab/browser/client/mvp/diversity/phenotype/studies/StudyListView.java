@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.studies;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.gmi.nordborglab.browser.client.mvp.widgets.facets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
@@ -27,6 +26,7 @@ import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.Button;
 
 import java.util.List;
 

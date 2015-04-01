@@ -4,17 +4,6 @@ import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.eemi.gwt.tour.client.CallOut;
 import com.eemi.gwt.tour.client.GwtTour;
 import com.eemi.gwt.tour.client.Placement;
-import com.github.gwtbootstrap.client.ui.CheckBox;
-import com.github.gwtbootstrap.client.ui.ControlGroup;
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.ModalFooter;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.NavPills;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.github.gwtbootstrap.client.ui.constants.BackdropType;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
-import com.github.gwtbootstrap.client.ui.event.HideEvent;
 import com.gmi.nordborglab.browser.client.editors.ExperimentEditEditor;
 import com.gmi.nordborglab.browser.client.events.SelectMethodEvent;
 import com.gmi.nordborglab.browser.client.events.SelectTransformationEvent;
@@ -90,6 +79,17 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.shared.event.ModalHideEvent;
+import org.gwtbootstrap3.client.ui.Anchor;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.NavPills;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 
 import java.util.HashMap;
 import java.util.List;
@@ -143,7 +143,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
 
 
     @UiField
-    com.github.gwtbootstrap.client.ui.TextBox phenotypeSearchBox;
+    TextBox phenotypeSearchBox;
 
     @UiField(provided = true)
     CellList<PhenotypeProxy> phenotypeList;
@@ -164,8 +164,6 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @UiField
     TextBox studyNameTb;
     @UiField
-    ControlGroup studyNameGroup;
-    @UiField
     SpanElement studyTitleLb;
     @UiField
     NavPills statisticTypePills;
@@ -182,9 +180,9 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @UiField
     CustomPager missingGenotypesPager;
     @UiField
-    CheckBox studyJobCb;
+    ToggleSwitch studyJobCb;
     @UiField
-    CheckBox enrichmentJobCb;
+    ToggleSwitch enrichmentJobCb;
     @UiField
     ResizeLayoutPanel isaTabUploadContainer;
     @UiField
@@ -193,6 +191,8 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     ModalFooter createExperimentPanelFooter;
     @UiField
     ExperimentEditEditor experimentEditEditor;
+    @UiField
+    Form studyForm;
     private Modal phenotypeUploadPopup = new Modal();
     private ResizeLayoutPanel phenotypeUploadPanel = new ResizeLayoutPanel();
 
@@ -207,7 +207,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     private DataTable phenotypeHistogramData;
     private DataTable phenotypeGeoChartData;
     private final FlagMap flagMap;
-    private ImmutableBiMap<StatisticTypeProxy, NavLink> statisticTypeLinks;
+    private ImmutableBiMap<StatisticTypeProxy, AnchorListItem> statisticTypeLinks;
 
     private static enum PHENTOYPE_CHART_TYPE {
         HISTOGRAM, GEOCHART, EXPLORER
@@ -249,10 +249,10 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     ClickHandler statisticTypeClickhandler = new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-            IconAnchor source = (IconAnchor) event.getSource();
-            if (source.getParent() instanceof NavLink) {
-                NavLink link = (NavLink) source.getParent();
-                if (link.isDisabled())
+            Anchor source = (Anchor) event.getSource();
+            if (source.getParent() instanceof AnchorListItem) {
+                AnchorListItem link = (AnchorListItem) source.getParent();
+                if (!link.isEnabled())
                     return;
                 GwtTour.removeAllCallOuts();
                 resetStatisticTypeLinkActive();
@@ -312,10 +312,12 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
             }
         });
 
-        phenotypeUploadPopup.add(phenotypeUploadPanel);
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(phenotypeUploadPanel);
+        phenotypeUploadPopup.add(modalBody);
         phenotypeUploadPopup.setTitle("Upload phenotype");
-        phenotypeUploadPopup.setAnimation(true);
-        phenotypeUploadPopup.setBackdrop(BackdropType.STATIC);
+        phenotypeUploadPopup.setFade(true);
+        phenotypeUploadPopup.setDataBackdrop(ModalBackdrop.STATIC);
         //phenotypeContainterPanel.setWidgetVisible(phenotypeUploadPopup, false);
 
 
@@ -351,7 +353,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     }
 
     @UiHandler("createExperimentPanel")
-    public void onHideCreateExperimentPopup(HideEvent e) {
+    public void onHideCreateExperimentPopup(ModalHideEvent e) {
         getUiHandlers().onCloseCreateExperimentPopup();
     }
 
@@ -455,14 +457,14 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         if (event.getItem() == 1) {
             int top = GQuery.$(createExperimentPanel).top();
             int height = Window.getClientHeight() - top;
-            createExperimentPanel.setMaxHeigth(height + "px");
+            //createExperimentPanel.setMaxHeigth(height + "px");
             createExperimentPanel.setHeight(height + "px");
-            createExperimentPanel.setWidth(Window.getClientWidth() - 50);
-            createExperimentTabPanel.setHeight(GQuery.$(createExperimentPanel).innerHeight() - 50 + "px");
+            createExperimentPanel.setWidth((Window.getClientWidth() - 50) + "px");
+            createExperimentTabPanel.setHeight(GQuery.$(createExperimentPanel).innerHeight() - 150 + "px");
             createExperimentPanelFooter.setVisible(false);
 
         } else {
-            createExperimentPanel.setWidth(560);
+            createExperimentPanel.setWidth("560px");
             createExperimentPanel.getElement().getStyle().clearHeight();
             createExperimentPanel.getElement().getStyle().clearWidth();
             createExperimentTabPanel.setHeight(400 + "px");
@@ -493,10 +495,10 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         // phenotypeContainterPanel.setWidgetVisible(phenotypeUploadPopup,!isShow);
         //phenotypeContainterPanel.setWidgetVisible(phenotypeUploadPopup, isShow);
         int height = Window.getClientHeight() - 50;
-        phenotypeUploadPopup.setMaxHeigth(height + "px");
+        //phenotypeUploadPopup.setMaxHeigth(height + "px");
         phenotypeUploadPopup.setHeight(height + "px");
-        phenotypeUploadPopup.setWidth(Window.getClientWidth() - 50);
-        phenotypeUploadPanel.setHeight(height - 100 + "px");
+        phenotypeUploadPopup.setWidth((Window.getClientWidth() - 50) + "px");
+        phenotypeUploadPanel.setHeight(height - 150 + "px");
         if (isShow) {
             phenotypeUploadPopup.show();
         } else {
@@ -591,7 +593,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @Override
     public boolean isShowUploadPhenotypePanel() {
         //return phenotypeUploadPanel.isVisible();
-        return phenotypeUploadPopup.isVisible();
+        return phenotypeUploadPopup.isVisible() && phenotypeUploadPopup.isAttached();
     }
 
 
@@ -632,11 +634,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
 
     @Override
     public void validateInputs() {
-        if (studyNameTb.getText().equals("")) {
-            studyNameGroup.setType(ControlGroupType.ERROR);
-        } else {
-            studyNameGroup.setType(ControlGroupType.SUCCESS);
-        }
+        studyForm.validate();
     }
 
     @Override
@@ -654,12 +652,12 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @Override
     public void setAvailableStatisticTypes(List<StatisticTypeProxy> statisticTypes) {
         statisticTypePills.clear();
-        ImmutableBiMap.Builder builder = ImmutableBiMap.<StatisticTypeProxy, NavLink>builder();
+        ImmutableBiMap.Builder builder = ImmutableBiMap.<StatisticTypeProxy, AnchorListItem>builder();
         for (StatisticTypeProxy statisticType : statisticTypes) {
             if (statisticType == null)
                 continue;
-            NavLink link = new NavLink(statisticType.getStatType());
-            link.setDisabled(true);
+            AnchorListItem link = new AnchorListItem(statisticType.getStatType());
+            link.setEnabled(false);
             link.addClickHandler(statisticTypeClickhandler);
             builder.put(statisticType, link);
             statisticTypePills.add(link);
@@ -670,7 +668,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     @Override
     public StatisticTypeProxy getSelectedStatisticType() {
         StatisticTypeProxy statisticTypeProxy = null;
-        for (Map.Entry<StatisticTypeProxy, NavLink> entries : statisticTypeLinks.entrySet()) {
+        for (Map.Entry<StatisticTypeProxy, AnchorListItem> entries : statisticTypeLinks.entrySet()) {
             if (entries.getValue().isActive()) {
                 statisticTypeProxy = entries.getKey();
                 break;
@@ -748,17 +746,17 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     }
 
     private void resetStatisticTypeLinks() {
-        for (Map.Entry<StatisticTypeProxy, NavLink> entrySet : statisticTypeLinks.entrySet()) {
-            NavLink link = entrySet.getValue();
+        for (Map.Entry<StatisticTypeProxy, AnchorListItem> entrySet : statisticTypeLinks.entrySet()) {
+            AnchorListItem link = entrySet.getValue();
             StatisticTypeProxy statisticType = entrySet.getKey();
-            link.setDisabled(true);
+            link.setEnabled(false);
             link.setText(statisticType.getStatType());
             link.setActive(false);
         }
     }
 
     private void resetStatisticTypeLinkActive() {
-        for (NavLink link : statisticTypeLinks.values()) {
+        for (AnchorListItem link : statisticTypeLinks.values()) {
             link.setActive(false);
         }
     }
@@ -768,10 +766,10 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         resetStatisticTypeLinks();
         for (int i = 0; i < statisticTypes.size(); i++) {
             StatisticTypeProxy statisticType = statisticTypes.get(i);
-            NavLink link = statisticTypeLinks.get(statisticType);
+            AnchorListItem link = statisticTypeLinks.get(statisticType);
             if (link != null) {
                 link.setText(statisticType.getStatType() + " [" + statisticTypeTraitCounts.get(i) + "]");
-                link.setDisabled(false);
+                link.setEnabled(true);
             }
         }
         if (statisticTypes.size() == 1) {
@@ -812,7 +810,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         phenotypeGeoChartData = null;
         phenotypeExplorerData = null;
         studyNameTb.setText("");
-        studyNameGroup.setType(ControlGroupType.NONE);
+        studyForm.reset();
         phenotypeSearchBox.setValue("");
         studyJobCb.setValue(false);
         wizard.reset();
@@ -859,7 +857,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     private boolean isStatisticTypeSelected() {
         boolean selected = false;
         for (int i = 0; i < statisticTypePills.getWidgetCount(); i++) {
-            NavLink link = (NavLink) statisticTypePills.getWidget(i);
+            AnchorListItem link = (AnchorListItem) statisticTypePills.getWidget(i);
             if (link.isActive()) {
                 selected = true;
                 break;
@@ -964,13 +962,6 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
             return;
         activePhenotypeChartType = PHENTOYPE_CHART_TYPE.EXPLORER;
         selectPhenotypeChart((Widget) e.getSource());
-    }
-
-    @UiHandler("studyNameTb")
-    public void onKeyUpHandler(KeyUpEvent e) {
-        if (studyNameTb.getValue().length() == 1) {
-            GwtTour.removeAllCallOuts();
-        }
     }
 
 

@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.study.gwas;
 
-import com.github.gwtbootstrap.client.ui.Modal;
 import com.gmi.nordborglab.browser.client.events.SelectSNPEvent;
 import com.gmi.nordborglab.browser.client.ui.PlotDownloadPopup;
 import com.gmi.nordborglab.browser.client.ui.SNPDetailPopup;
@@ -13,6 +12,8 @@ import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewImpl;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
 
 public class StudyGWASPlotView extends ViewImpl implements
         StudyGWASPlotPresenter.MyView {
@@ -33,7 +34,9 @@ public class StudyGWASPlotView extends ViewImpl implements
     public StudyGWASPlotView(final Binder binder, SNPDetailPopup snpPopOver) {
         this.snpPopOver = snpPopOver;
         widget = binder.createAndBindUi(this);
-        popUpPanel.add(plotPanel);
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(plotPanel);
+        popUpPanel.add(modalBody);
         popUpPanel.setTitle("Download GWAS Plots");
         snpPopOver.setAnimationEnabled(true);
     }

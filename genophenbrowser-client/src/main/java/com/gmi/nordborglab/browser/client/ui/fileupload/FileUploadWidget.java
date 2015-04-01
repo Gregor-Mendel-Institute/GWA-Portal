@@ -1,9 +1,5 @@
 package com.gmi.nordborglab.browser.client.ui.fileupload;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.FileUpload;
-import com.github.gwtbootstrap.client.ui.FluidContainer;
-import com.github.gwtbootstrap.client.ui.Form;
 import com.gmi.nordborglab.browser.client.events.FileUploadCloseEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadEndEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadErrorEvent;
@@ -35,6 +31,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -47,6 +44,9 @@ import elemental.html.File;
 import elemental.html.FileList;
 import elemental.html.FileReader;
 import elemental.xml.XMLHttpRequest;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Container;
+import org.gwtbootstrap3.client.ui.Form;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -61,7 +61,7 @@ import static com.google.gwt.query.client.GQuery.$;
 public class FileUploadWidget extends Composite {
 
 
-    interface Binder extends UiBinder<FluidContainer, FileUploadWidget> {
+    interface Binder extends UiBinder<Container, FileUploadWidget> {
     }
 
     private static Binder binder = GWT.create(Binder.class);
@@ -284,11 +284,11 @@ public class FileUploadWidget extends Composite {
         int errorCount = countFilesWithError();
         if (errorCount == 0) {
             query.html("All added files (" + totalCount + ") are valid!");
-            query.closest("div").removeClass("alert-error").addClass("alert-success");
+            query.closest("div").removeClass("alert-danger").addClass("alert-success");
             fileUploadStartBtn.setEnabled(true);
         } else {
             query.html(errorCount + " out of " + totalCount + " file(s) have errors. Please fix!");
-            query.closest("div").removeClass("alert-success").addClass("alert-error");
+            query.closest("div").removeClass("alert-success").addClass("alert-danger");
             fileUploadStartBtn.setEnabled(false);
         }
 
@@ -304,9 +304,9 @@ public class FileUploadWidget extends Composite {
             if (fileCheckerResult.canParse)
                 nameCell = "<td><a href=\"javascript:;\">" + file.getName() + "</a></td>";
         } else {
-            progressBarCell = "<td><span class=\"label label-important\">Error</span> Filetype " + file.getType() + "not allowed</div></td>";
+            progressBarCell = "<td><span class=\"label label-danger\">Error</span> Filetype " + file.getType() + "not allowed</div></td>";
         }
-        String cancelBtnCell = "<td><a id=\"test\" class=\"btn btn-warning\" style=\"\" aria-hidden=\"false\"><i class=\"icon-ban-circle\"></i> Remove </a></td>";
+        String cancelBtnCell = "<td><a id=\"test\" class=\"btn btn-warning\" style=\"\" aria-hidden=\"false\"><i class=\"fa fa-ban\"></i> Remove </a></td>";
         GQuery row = $("<tr>" + nameCell + sizeCell + extCell + progressBarCell + cancelBtnCell + "</tr>").appendTo($("#fileToUploadTable > tbody", this));
         Element elem = row.get(0);
         $("a", elem.getChild(0)).click(clickOnFileFunc);
@@ -320,7 +320,7 @@ public class FileUploadWidget extends Composite {
         if (result.hasParseErrors()) {
             Element elem = filesToRow.get(file);
             GQuery query = $(elem);
-            query.find("td:nth-child(4)").html("<span class=\"label label-important\">Error</span> " + result.getParseErrorMsg() + "</div>");
+            query.find("td:nth-child(4)").html("<span class=\"label label-danger\">Error</span> " + result.getParseErrorMsg() + "</div>");
         }
     }
 
@@ -544,7 +544,7 @@ public class FileUploadWidget extends Composite {
         if (isSuccess) {
             query.find("td:nth-child(4)").html("<span class=\"label label-success\">FINISHED</div>");
         } else {
-            query.find("td:nth-child(4)").html("<span class=\"label label-important\">FAILED</div>");
+            query.find("td:nth-child(4)").html("<span class=\"label label-danger\">FAILED</div>");
         }
         query.find("td:nth-child(5)").hide();
         updateUploadStatus();
@@ -558,10 +558,10 @@ public class FileUploadWidget extends Composite {
         int errorCount = countFilesWithError();
         if (errorCount == 0) {
             query.html("All added files (" + totalCount + ") successfully uploaded!");
-            query.closest("div").removeClass("alert-error").addClass("alert-success");
+            query.closest("div").removeClass("alert-danger").addClass("alert-success");
         } else {
             query.html(errorCount + " out of " + totalCount + " file(s) failed to upload!");
-            query.closest("div").removeClass("alert-success").addClass("alert-error");
+            query.closest("div").removeClass("alert-success").addClass("alert-danger");
         }
     }
 

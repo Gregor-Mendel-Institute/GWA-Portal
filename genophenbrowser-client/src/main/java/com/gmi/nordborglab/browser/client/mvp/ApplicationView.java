@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp;
 
-import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.gmi.nordborglab.browser.client.mvp.ApplicationPresenter.MENU;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
@@ -37,6 +36,7 @@ import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 import java.util.List;
 

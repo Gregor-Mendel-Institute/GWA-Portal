@@ -1,7 +1,6 @@
 
 package com.gmi.nordborglab.browser.client.mvp.widgets.snps;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
 import com.gmi.nordborglab.browser.client.dto.SNPAllele;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
@@ -66,6 +65,7 @@ import com.googlecode.gwt.charts.client.options.TextPosition;
 import com.googlecode.gwt.charts.client.options.VAxis;
 import com.googlecode.gwt.charts.client.options.ViewWindowMode;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.ListBox;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

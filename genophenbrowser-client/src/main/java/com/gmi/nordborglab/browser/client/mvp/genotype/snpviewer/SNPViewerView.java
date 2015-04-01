@@ -1,11 +1,11 @@
 package com.gmi.nordborglab.browser.client.mvp.genotype.snpviewer;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.Typeahead;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
+import com.gmi.nordborglab.browser.client.util.TypeaheadUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPInfoProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.common.collect.Lists;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.core.client.Scheduler;
@@ -13,8 +13,6 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -22,15 +20,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
-import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeLayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
-import com.google.gwt.user.client.ui.SuggestOracle;
-import com.google.gwt.user.client.ui.ValueListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -38,6 +33,16 @@ import com.google.gwt.view.client.SingleSelectionModel;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.ui.client.ProxyRenderer;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.shared.event.ShowEvent;
+import org.gwtbootstrap3.client.ui.Panel;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.ValueListBox;
+import org.gwtbootstrap3.extras.typeahead.client.base.Dataset;
+import org.gwtbootstrap3.extras.typeahead.client.base.Suggestion;
+import org.gwtbootstrap3.extras.typeahead.client.base.SuggestionCallback;
+import org.gwtbootstrap3.extras.typeahead.client.events.TypeaheadSelectedEvent;
+import org.gwtbootstrap3.extras.typeahead.client.events.TypeaheadSelectedHandler;
+import org.gwtbootstrap3.extras.typeahead.client.ui.Typeahead;
 
 import java.util.List;
 
@@ -55,8 +60,6 @@ public class SNPViewerView extends ViewWithUiHandlers<SNPViewerUiHandlers> imple
 
     @UiField(provided = true)
     ValueListBox<AlleleAssayProxy> genotypeLb;
-    @UiField
-    TextBox phenotypeTb;
     @UiField(provided = true)
     Typeahead phenotypeTa;
     @UiField(provided = true)
@@ -70,18 +73,20 @@ public class SNPViewerView extends ViewWithUiHandlers<SNPViewerUiHandlers> imple
     @UiField
     ResizeLayoutPanel snpContainer;
     @UiField
-    DisclosurePanel filterContainer;
+    Panel filterContainer;
     @UiField
     HTMLPanel container;
 
     @UiField
     MyStyle style;
     @UiField
-    TextBox regionTb;
+    org.gwtbootstrap3.client.ui.TextBox regionTb;
     @UiField
     SimpleLayoutPanel snpDetailPresenterContainer;
     @UiField
     LayoutPanel snpDetailContainer;
+    @UiField
+    PanelCollapse filterCollapse;
 
     private boolean layoutScheduled = false;
     private Label snpsDataGridEmptyWidget = new Label("No Records found");
@@ -113,22 +118,22 @@ public class SNPViewerView extends ViewWithUiHandlers<SNPViewerUiHandlers> imple
                 return object.getName() + " (" + object.getAvailableAllelesCount() + ")";
             }
         });
-        phenotypeTa = new Typeahead(new SuggestOracle() {
+        phenotypeTa = new Typeahead(new Dataset<SearchItemProxy>() {
             @Override
-            public void requestSuggestions(Request request, Callback callback) {
-                if (request.getQuery().length() >= minCharSize)
-                    getUiHandlers().onSearchPhenotype(request, callback);
+            public void findMatches(String request, SuggestionCallback<SearchItemProxy> suggestionCallback) {
+                if (request.length() >= minCharSize)
+                    getUiHandlers().onSearchPhenotype(request, new TypeaheadUtils(suggestionCallback));
             }
         });
         snpsDataGrid = new DataGrid(50, customDataGridResources);
         defaultDataGridLoadingIndicator = snpsDataGrid.getLoadingIndicator();
         initWidget(binder.createAndBindUi(this));
 
-        phenotypeTa.setUpdaterCallback(new Typeahead.UpdaterCallback() {
+        phenotypeTa.addTypeaheadSelectedHandler(new TypeaheadSelectedHandler<SearchItemProxy>() {
             @Override
-            public String onSelection(SuggestOracle.Suggestion suggestion) {
-                getUiHandlers().onSelectPhenotype(suggestion);
-                return suggestion.getReplacementString();
+            public void onSelected(TypeaheadSelectedEvent<SearchItemProxy> typeaheadSelectedEvent) {
+                Suggestion<SearchItemProxy> suggestion = typeaheadSelectedEvent.getSuggestion();
+                getUiHandlers().onSelectPhenotype(suggestion.getData());
             }
         });
         snpDetailContainerDeckPanel.showWidget(0);
@@ -214,7 +219,7 @@ public class SNPViewerView extends ViewWithUiHandlers<SNPViewerUiHandlers> imple
 
     @Override
     public void setPhenotype(String phenotype) {
-        phenotypeTb.setValue(phenotype);
+        phenotypeTa.setValue(phenotype);
     }
 
     @Override
@@ -246,13 +251,13 @@ public class SNPViewerView extends ViewWithUiHandlers<SNPViewerUiHandlers> imple
         }
     }
 
-    @UiHandler("filterContainer")
-    public void onOpenFilter(OpenEvent<DisclosurePanel> e) {
+    @UiHandler("filterCollapse")
+    public void onOpenFilter(ShowEvent e) {
         resize();
     }
 
-    @UiHandler("filterContainer")
-    public void onCloseFilter(CloseEvent<DisclosurePanel> e) {
+    @UiHandler("filterCollapse")
+    public void onCloseFilter(org.gwtbootstrap3.client.shared.event.HideEvent e) {
         resize();
     }
 
@@ -270,9 +275,9 @@ public class SNPViewerView extends ViewWithUiHandlers<SNPViewerUiHandlers> imple
         }
     }
 
-    @UiHandler("phenotypeTb")
+    @UiHandler("phenotypeTa")
     public void onKeyUpPhenotypeTb(KeyUpEvent e) {
-        if (phenotypeTb.getValue().equalsIgnoreCase("")) {
+        if (phenotypeTa.getValue().equalsIgnoreCase("")) {
             getUiHandlers().onSelectPhenotype(null);
         }
     }

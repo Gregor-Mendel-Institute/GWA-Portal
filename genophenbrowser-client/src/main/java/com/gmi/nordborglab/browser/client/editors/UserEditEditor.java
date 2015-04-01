@@ -1,8 +1,5 @@
 package com.gmi.nordborglab.browser.client.editors;
 
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.PasswordTextBox;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
@@ -12,6 +9,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.FormControlStatic;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,14 +41,16 @@ public class UserEditEditor extends Composite implements Editor<AppUserProxy> {
     @UiField
     TextBox lastname;
     @UiField
-    PasswordTextBox newPassword;
+    TextBox newPassword;
     @UiField
-    PasswordTextBox newPasswordConfirm;
+    TextBox newPasswordConfirm;
     @UiField
-    Label email;
+    FormControlStatic email;
 
     public UserEditEditor() {
         initWidget(uiBinder.createAndBindUi(this));
+        newPassword.getElement().setAttribute("type", "password");
+        newPassword.getElement().setAttribute("type", "password");
     }
 
 

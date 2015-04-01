@@ -1,12 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-             xmlns:e="urn:import:com.google.gwt.editor.ui.client"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
         >
     <ui:style>
-        .actionButtons {
-            margin-top: 10px;
-        }
 
         .cancelButton {
             float: right;
@@ -14,45 +10,40 @@
 
 
     </ui:style>
-    <b:FluidContainer ui:field="gwasSavePanel">
-        <b:FluidRow>
-            <b:Column size="12">
-                <g:HTMLPanel>
-                    <div>
-                        <b:WellForm ui:field="gwasForm">
-                            <b:ControlLabel>Name</b:ControlLabel>
-                            <b:Tooltip text='Name of GWAS result' trigger="FOCUS" placement="RIGHT">
-                                <e:ValueBoxEditorDecorator ui:field="name">
-                                    <e:valuebox>
-                                        <b:TextBox placeholder="Name" alternateSize="XLARGE"></b:TextBox>
-                                    </e:valuebox>
-                                </e:ValueBoxEditorDecorator>
+    <g:HTMLPanel>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <b:Form type="HORIZONTAL" ui:field="gwasForm">
+                        <b:FormGroup>
+                            <b:FormLabel addStyleNames="col-sm-2" for="name">Name</b:FormLabel>
+                            <b:Tooltip title='Name of GWAS result' trigger="FOCUS" placement="RIGHT">
+                                <g:FlowPanel addStyleNames="col-sm-10">
+                                    <b:TextBox placeholder="Name" b:id="name" ui:field="name" allowBlank="false"
+                                               validateOnBlur="true"></b:TextBox>
+                                </g:FlowPanel>
                             </b:Tooltip>
-                            <b:ControlLabel>Type</b:ControlLabel>
-                            <b:Tooltip text='Type of GWAS result (LM, AMM, etc)' trigger="FOCUS" placement="RIGHT">
-                                <e:ValueBoxEditorDecorator ui:field="type">
-                                    <e:valuebox>
-                                        <b:TextBox placeholder="Type" alternateSize="XLARGE"></b:TextBox>
-                                    </e:valuebox>
-                                </e:ValueBoxEditorDecorator>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel addStyleNames="col-sm-2" for="type">Type</b:FormLabel>
+                            <b:Tooltip title='Type of GWAS result (LM, AMM, etc)' trigger="FOCUS" placement="RIGHT">
+                                <g:FlowPanel addStyleNames="col-sm-10">
+                                    <b:TextBox placeholder="Type" b:id="type" ui:field="type"></b:TextBox>
+                                </g:FlowPanel>
                             </b:Tooltip>
-                            <b:ControlLabel>Comments</b:ControlLabel>
-                            <b:Tooltip text='Additonal comments' trigger="FOCUS" placement="RIGHT">
-                                <b:TextArea placeholder="Comments" visibleLines="6" alternateSize="XLARGE"
-                                            ui:field="comments"></b:TextArea>
+                        </b:FormGroup>
+                        <b:FormGroup>
+                            <b:FormLabel addStyleNames="col-sm-2" for="comments">Comments</b:FormLabel>
+                            <b:Tooltip title='Additonal comments' trigger="FOCUS" placement="RIGHT">
+                                <g:FlowPanel addStyleNames="col-sm-10">
+                                    <b:TextArea placeholder="Comments" visibleLines="6" b:id="comments"
+                                                ui:field="comments"></b:TextArea>
+                                </g:FlowPanel>
                             </b:Tooltip>
-                            <b:ButtonToolbar>
-                                <b:ButtonGroup addStyleNames="{style.actionButtons}">
-                                    <b:Button type="PRIMARY" icon="UPLOAD" ui:field="createGWASBtn">Save</b:Button>
-                                    <b:Button ui:field="cancelGWASBtn" icon="BAN_CIRCLE"
-                                              addStyleNames="{style.cancelButton}">Cancel
-                                    </b:Button>
-                                </b:ButtonGroup>
-                            </b:ButtonToolbar>
-                        </b:WellForm>
-                    </div>
-                </g:HTMLPanel>
-            </b:Column>
-        </b:FluidRow>
-    </b:FluidContainer>
+                        </b:FormGroup>
+                    </b:Form>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
 </ui:UiBinder>

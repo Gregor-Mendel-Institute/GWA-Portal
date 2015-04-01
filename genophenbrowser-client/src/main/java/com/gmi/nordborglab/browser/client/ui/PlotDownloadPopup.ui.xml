@@ -1,57 +1,60 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
         >
     <ui:style>
 
-        @external radio;
 
-        .label {
-            margin-right: 20px;
-            width: 100px;
+        .macFilter {
+            display: inline-block !important;
+
         }
 
-        .form {
+        .macLimits {
+            display: inline-block !important;
+            padding-top: 8px;
+            vertical-align: top;
         }
-
-        .form .radio {
-            margin-right: 10px;
-        }
-
     </ui:style>
-    <g:FlowPanel>
-        <b:Form type="INLINE" addStyleNames="{style.form}">
-            <b:Fieldset>
-                <b:ControlGroup ui:field="chrGroup">
-                    <b:ControlLabel for="chr" addStyleNames="{style.label}">Chr</b:ControlLabel>
-                    <b:RadioButton name="chr" text="All" formValue="" value="true"/>
-                    <b:RadioButton name="chr" text="1" formValue="chr1"/>
-                    <b:RadioButton name="chr" text="2" formValue="chr2"/>
-                    <b:RadioButton name="chr" text="3" formValue="chr3"/>
-                    <b:RadioButton name="chr" text="4" formValue="chr4"/>
-                    <b:RadioButton name="chr" text="5" formValue="chr5"/>
-                </b:ControlGroup>
-            </b:Fieldset>
-            <b:Fieldset>
-                <b:ControlGroup ui:field="macGroup">
-                    <b:ControlLabel for="mac" addStyleNames="{style.label}">
-                        Mac [ >=<span ui:field="macLb"/>]
-                    </b:ControlLabel>
-                    <span ui:field="lowerLimitLb">0</span>
-                    <g:TextBox ui:field="macTb" width="150px"></g:TextBox>
-                    <span ui:field="upperLimitLb"></span>
-                </b:ControlGroup>
-            </b:Fieldset>
-            <b:Fieldset>
-                <b:ControlGroup ui:field="formatGroup">
-                    <b:ControlLabel for="format" addStyleNames="{style.label}">Format</b:ControlLabel>
-                    <b:RadioButton name="format" text="PNG" formValue="PNG" value="true"/>
-                    <b:RadioButton name="format" text="PDF" formValue="PDF"/>
-                </b:ControlGroup>
-            </b:Fieldset>
-            <b:Button icon="FILE" ui:field="downloadBtn" type="PRIMARY" addStyleNames="pull-right">Download</b:Button>
-        </b:Form>
-
-    </g:FlowPanel>
+    <g:HTMLPanel>
+        <div>
+            <form class="form-horizontal">
+                <fieldset>
+                    <b:FormGroup ui:field="chrGroup">
+                        <b:FormLabel for="chr" addStyleNames="col-sm-3">Chr</b:FormLabel>
+                        <g:FlowPanel addStyleNames="col-sm-7">
+                            <b:InlineRadio name="chr" text="All" formValue="" value="true"/>
+                            <b:InlineRadio name="chr" text="1" formValue="chr1"/>
+                            <b:InlineRadio name="chr" text="2" formValue="chr2"/>
+                            <b:InlineRadio name="chr" text="3" formValue="chr3"/>
+                            <b:InlineRadio name="chr" text="4" formValue="chr4"/>
+                            <b:InlineRadio name="chr" text="5" formValue="chr5"/>
+                        </g:FlowPanel>
+                    </b:FormGroup>
+                    <b:FormGroup ui:field="macGroup">
+                        <b:FormLabel for="mac" addStyleNames="col-sm-3">Mac [ >=<span ui:field="macLb"/>]
+                        </b:FormLabel>
+                        <g:HTMLPanel addStyleNames="col-sm-7">
+                            <div ui:field="lowerLimitLb" class="{style.macLimits}">0</div>
+                            <g:TextBox ui:field="macTb" width="150px" addStyleNames="{style.macFilter}"></g:TextBox>
+                            <div ui:field="upperLimitLb" class="{style.macLimits}"></div>
+                        </g:HTMLPanel>
+                    </b:FormGroup>
+                    <b:FormGroup ui:field="formatGroup">
+                        <b:FormLabel addStyleNames="col-sm-3" for="format">Format</b:FormLabel>
+                        <g:FlowPanel>
+                            <b:InlineRadio name="format" text="PNG" formValue="PNG" value="true"/>
+                            <b:InlineRadio name="format" text="PDF" formValue="PDF"/>
+                        </g:FlowPanel>
+                    </b:FormGroup>
+                </fieldset>
+                <b:FormGroup>
+                    <g:FlowPanel addStyleNames="col-sm-offset-9 col-sm-3">
+                        <b:AnchorButton icon="FILE" ui:field="downloadBtn" type="PRIMARY">Download</b:AnchorButton>
+                    </g:FlowPanel>
+                </b:FormGroup>
+            </form>
+        </div>
+    </g:HTMLPanel>
 
 </ui:UiBinder>

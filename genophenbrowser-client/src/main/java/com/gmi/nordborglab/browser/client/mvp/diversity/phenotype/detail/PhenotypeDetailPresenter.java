@@ -169,7 +169,6 @@ public class PhenotypeDetailPresenter
         }
         getView().setPhenotypeId(phenotype.getId());
         getView().scheduledLayout();
-
     }
 
     private void resetCharts() {
@@ -328,11 +327,11 @@ public class PhenotypeDetailPresenter
         if (phenotype != event.getPhenotype()) {
             cache.clear();
             resetCharts();
+            phenotype = event.getPhenotype();
             statisticTypes = event.getPhenotype().getStatisticTypes();
             getView().setStatisticTypes(statisticTypes);
             isRefresh = true;
         }
-        phenotype = event.getPhenotype();
         PlaceRequest request = new PlaceRequest.Builder()
                 .nameToken(getProxy().getNameToken())
                 .with("id", phenotype.getId().toString())

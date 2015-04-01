@@ -1,12 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.experiment.phenotypes;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.constants.BackdropType;
-import com.github.gwtbootstrap.client.ui.event.HideEvent;
-import com.github.gwtbootstrap.client.ui.event.HideHandler;
-import com.github.gwtbootstrap.client.ui.event.ShownEvent;
-import com.github.gwtbootstrap.client.ui.event.ShownHandler;
+
 import com.gmi.nordborglab.browser.client.mvp.widgets.facets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
@@ -34,6 +28,13 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.shared.event.ModalHideEvent;
+import org.gwtbootstrap3.client.shared.event.ModalHideHandler;
+import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
+import org.gwtbootstrap3.client.shared.event.ModalShownHandler;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
 
 public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListUiHandlers> implements
         PhenotypeListPresenter.MyView {
@@ -61,30 +62,30 @@ public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListUiHandler
     @Inject
     public PhenotypeListView(final Binder binder, final PlaceManager placeManager, final CustomDataGridResources dataGridResources) {
         this.placeManager = placeManager;
-        dataGrid = new DataGrid<PhenotypeProxy>(20, dataGridResources, new EntityProxyKeyProvider<PhenotypeProxy>());
+        dataGrid = new DataGrid<>(20, dataGridResources, new EntityProxyKeyProvider<PhenotypeProxy>());
         initCellTable();
         widget = binder.createAndBindUi(this);
         pager.setDisplay(dataGrid);
-        phenotypeUploadPopup.add(phenotypeUploadPanel);
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(phenotypeUploadPanel);
+        phenotypeUploadPopup.add(modalBody);
         phenotypeUploadPopup.setTitle("Upload phenotype");
-        phenotypeUploadPopup.setAnimation(true);
-        phenotypeUploadPopup.setBackdrop(BackdropType.STATIC);
-        phenotypeUploadPopup.addHideHandler(new HideHandler() {
+        phenotypeUploadPopup.addHideHandler(new ModalHideHandler() {
             @Override
-            public void onHide(HideEvent hideEvent) {
+            public void onHide(ModalHideEvent modalHideEvent) {
                 getUiHandlers().onClosePhenotypeUploadPopup();
             }
         });
 
-        phenotypeUploadPopup.addShownHandler(new ShownHandler() {
+        phenotypeUploadPopup.addShownHandler(new ModalShownHandler() {
+
             @Override
-            public void onShown(ShownEvent shownEvent) {
+            public void onShown(ModalShownEvent modalShownEvent) {
                 int top = GQuery.$(phenotypeUploadPopup).top();
                 int height = Window.getClientHeight() - top;
-                phenotypeUploadPopup.setMaxHeigth(height + "px");
-                phenotypeUploadPopup.setHeight(height + "px");
-                phenotypeUploadPopup.setWidth(Window.getClientWidth() - 50);
-                phenotypeUploadPanel.setHeight(GQuery.$(phenotypeUploadPopup).innerHeight() - 50 + "px");
+                //phenotypeUploadPopup.setMaxHeigth(height + "px");
+                phenotypeUploadPopup.setWidth(Window.getClientWidth() - 50 + "px");
+                phenotypeUploadPanel.setHeight(GQuery.$(phenotypeUploadPopup).innerHeight() - 150 + "px");
             }
         });
     }

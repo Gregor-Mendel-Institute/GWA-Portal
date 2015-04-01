@@ -461,19 +461,19 @@ public class SubmitAnalysisTask {
     }
 
     private static String getBadgeFromStatus(String status) {
-        String badge = "";
+        String label = "";
         if ("Pending".equalsIgnoreCase(status)) {
-            badge = "warning";
+            label = "warning";
         } else if ("Failed".equalsIgnoreCase(status) || "Error".equalsIgnoreCase(status)) {
-            badge = "important";
+            label = "danger";
         } else if ("Running".equalsIgnoreCase(status) || "Progress".equalsIgnoreCase(status)) {
-            badge = "info";
+            label = "info";
         } else if ("Done".equalsIgnoreCase(status) || "Finished".equalsIgnoreCase(status)) {
-            badge = "success";
+            label = "success";
         }
-        if (!badge.isEmpty())
-            badge = "badge-" + badge;
-        return badge;
+        if (!label.isEmpty())
+            label = "label-" + label;
+        return label;
     }
 
     private static UserNotification getUserNotificationFromStudyJob(StudyJob studyJob) {
@@ -481,7 +481,7 @@ public class SubmitAnalysisTask {
         notification.setAppUser(studyJob.getAppUser());
         notification.setType("gwasjob");
         String badge = getBadgeFromStatus(studyJob.getStatus());
-        String notificationText = "State of <a href=\"/#/analysis/%s/overview\">GWAS-Job (%s)</a> on HPC cluster changed to <span class=\"badge %s\">%s</span>";
+        String notificationText = "State of <a href=\"/#/analysis/%s/overview\">GWAS-Job (%s)</a> on HPC cluster changed to <span class=\"label %s\">%s</span>";
         notification.setText(String.format(notificationText, studyJob.getStudy().getId(), studyJob.getStudy().getName(), badge, studyJob.getStatus()));
         return notification;
     }

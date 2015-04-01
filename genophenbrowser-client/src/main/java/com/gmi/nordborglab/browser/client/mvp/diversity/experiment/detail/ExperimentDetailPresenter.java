@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.experiment.detail;
 
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.LoadExperimentEvent;
@@ -50,6 +49,7 @@ import com.gwtplatform.mvp.client.annotations.TitleFunction;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;

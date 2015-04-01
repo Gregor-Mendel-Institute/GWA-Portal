@@ -1,12 +1,12 @@
 package com.gmi.nordborglab.browser.client.ui.cells;
 
-import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import org.gwtbootstrap3.client.ui.constants.LabelType;
 
 import java.util.Map;
 
@@ -37,9 +37,9 @@ public class LabelTypeCell extends AbstractCell<String> {
     @Override
     public void render(Context context, String value, SafeHtmlBuilder sb) {
         LabelType type = LabelType.DEFAULT;
-        if (map.containsKey(value)) {
-            type = map.get(value);
+        if (value != null && map.containsKey(value.toUpperCase())) {
+            type = map.get(value.toUpperCase());
         }
-        sb.append(templates.cell(type.get(), SafeHtmlUtils.fromSafeConstant(value)));
+        sb.append(templates.cell(type.getCssName(), SafeHtmlUtils.fromSafeConstant(value)));
     }
 }

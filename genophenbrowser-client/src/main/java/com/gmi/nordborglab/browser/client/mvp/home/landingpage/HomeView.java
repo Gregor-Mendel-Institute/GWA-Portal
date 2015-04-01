@@ -2,9 +2,6 @@ package com.gmi.nordborglab.browser.client.mvp.home.landingpage;
 
 import com.eemi.gwt.tour.client.GwtTour;
 import com.eemi.gwt.tour.client.Tour;
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonGroup;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.ui.cells.NewsItemCell;
 import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
@@ -42,6 +39,9 @@ import com.googlecode.gwt.charts.client.options.VAxis;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.Anchor;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.RadioButton;
 
 import java.util.List;
 import java.util.Map;
@@ -53,7 +53,7 @@ public class HomeView extends ViewWithUiHandlers<HomeUiHandlers> implements Home
     @UiField
     SimpleLayoutPanel container;
     @UiField
-    IconAnchor wizardLink;
+    Anchor wizardLink;
     @UiField
     SpanElement statsUsers;
     @UiField
@@ -77,19 +77,18 @@ public class HomeView extends ViewWithUiHandlers<HomeUiHandlers> implements Home
     @UiField
     SpanElement chartTypeLb;
     @UiField
-    Button studyTypeBtn;
+    RadioButton studyTypeBtn;
     @UiField
-    Button phenotypeBtn;
+    RadioButton phenotypeBtn;
     @UiField
-    Button analysisBtn;
+    RadioButton analysisBtn;
+
     @UiField
-    ButtonGroup typeBtnGroup;
+    RadioButton weekBtn;
     @UiField
-    Button weekBtn;
+    RadioButton monthBtn;
     @UiField
-    Button monthBtn;
-    @UiField
-    Button yearBtn;
+    RadioButton yearBtn;
 
     private final Tour tour;
     private final PlaceManager placeManager;
@@ -175,40 +174,40 @@ public class HomeView extends ViewWithUiHandlers<HomeUiHandlers> implements Home
     }
 
     private void selectChartIntervalType(DateStatHistogramProxy.INTERVAL interval) {
-        weekBtn.removeStyleName("active");
-        monthBtn.removeStyleName("active");
-        yearBtn.removeStyleName("active");
+       /* weekBtn.setActive(false);
+
+        yearBtn.setActive(false);
+        monthBtn.setActive(false);
         switch (interval) {
             case WEEK:
-                weekBtn.addStyleName("active");
+                weekBtn.setActive(true);
                 break;
             case MONTH:
-                monthBtn.addStyleName("active");
-                phenotypeBtn.addStyleName("active");
+                monthBtn.setActive(true);
                 break;
             case YEAR:
-                yearBtn.addStyleName("active");
+                yearBtn.setActive(true);
                 break;
-        }
+        }    */
     }
 
     private String getLabelFromChartType(DateStatHistogramFacetProxy.TYPE chartType) {
         String label = "";
-        studyTypeBtn.removeStyleName("active");
-        analysisBtn.removeStyleName("active");
-        phenotypeBtn.removeStyleName("active");
+        // studyTypeBtn.setActive(false);
+        // analysisBtn.setActive(false);
+        // phenotypeBtn.setActive(false);
         switch (chartType) {
             case study:
                 label = "Studies";
-                studyTypeBtn.addStyleName("active");
+                //      studyTypeBtn.setActive(true);
                 break;
             case phenotype:
                 label = "Phenotypes";
-                phenotypeBtn.addStyleName("active");
+                //     phenotypeBtn.setActive(true);
                 break;
             case analysis:
                 label = "Analyses";
-                analysisBtn.addStyleName("active");
+                //     analysisBtn.setActive(true);
                 break;
         }
         return label;

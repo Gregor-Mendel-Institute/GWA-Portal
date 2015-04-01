@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
         >
 
     <ui:style>
@@ -8,46 +8,41 @@
     </ui:style>
     <g:HTMLPanel>
         <div>
-            <b:ControlGroup ui:field="firstnameGroup">
-                <b:ControlLabel for="firstname">Firstname</b:ControlLabel>
-                <b:Controls>
-                    <b:TextBox visibleLength="40" b:id="firstname" ui:field="firstname" placeholder="Firstname"
-                               controlGroup="{firstnameGroup}" errorLabel="{firstnameErrors}"/>
-                    <b:HelpInline ui:field="firstnameErrors"></b:HelpInline>
-                </b:Controls>
-            </b:ControlGroup>
-            <b:ControlGroup ui:field="lastnameGroup">
-                <b:ControlLabel for="lastname">Lastname</b:ControlLabel>
-                <b:Controls>
-                    <b:TextBox visibleLength="40" b:id="lastname" ui:field="lastname" placeholder="Lastname"
-                               controlGroup="{lastnameGroup}" errorLabel="{lastnameErrors}"/>
-                    <b:HelpInline ui:field="lastnameErrors"></b:HelpInline>
-                </b:Controls>
-            </b:ControlGroup>
-            <b:ControlGroup>
-                <b:ControlLabel for="email">Email</b:ControlLabel>
-                <b:Controls>
-                    <b:Label ui:field="email"></b:Label>
-                </b:Controls>
-            </b:ControlGroup>
-            <b:ControlGroup ui:field="newPasswordGroup">
-                <b:ControlLabel for="password">Password</b:ControlLabel>
-                <b:Controls>
-                    <b:PasswordTextBox ui:field="newPassword" b:id="password" placeholder="Password"
-                                       controlGroup="{newPasswordGroup}" errorLabel="{newPasswordErrors}"/>
-                    <b:HelpInline ui:field="newPasswordErrors"></b:HelpInline>
-                </b:Controls>
-            </b:ControlGroup>
-            <b:ControlGroup ui:field="newPasswordConfirmGroup">
-                <b:ControlLabel for="confirm_passport">Confirm password</b:ControlLabel>
-                <b:Controls>
-                    <b:PasswordTextBox ui:field="newPasswordConfirm" b:id="confirm_password"
-                                       placeholder="Confirm password"
-                                       controlGroup="{newPasswordConfirmGroup}"
-                                       errorLabel="{newPasswordConfirmErrors}"/>
-                    <b:HelpInline ui:field="newPasswordConfirmErrors"></b:HelpInline>
-                </b:Controls>
-            </b:ControlGroup>
+            <b:FormGroup>
+                <b:FormLabel for="firstname" addStyleNames="col-sm-2">Firstname</b:FormLabel>
+                <g:FlowPanel addStyleNames="col-sm-7">
+                    <b:TextBox b:id="firstname" ui:field="firstname" placeholder="Firstname"/>
+                </g:FlowPanel>
+                <b:HelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>
+            </b:FormGroup>
+            <b:FormGroup>
+                <b:FormLabel for="lastname" addStyleNames="col-sm-2">Lastname</b:FormLabel>
+                <g:FlowPanel addStyleNames="col-sm-7">
+                    <b:TextBox b:id="lastname" ui:field="lastname" placeholder="Lastname"/>
+                </g:FlowPanel>
+                <b:HelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>
+            </b:FormGroup>
+            <b:FormGroup>
+                <b:FormLabel for="email" addStyleNames="col-sm-2">Email</b:FormLabel>
+                <g:FlowPanel addStyleNames="col-sm-7">
+                    <b:FormControlStatic ui:field="email"></b:FormControlStatic>
+                </g:FlowPanel>
+            </b:FormGroup>
+            <b:FormGroup ui:field="newPasswordGroup">
+                <b:FormLabel for="password" addStyleNames="col-sm-2">Password</b:FormLabel>
+                <g:FlowPanel addStyleNames="col-sm-7">
+                    <b:TextBox ui:field="newPassword" b:id="password" placeholder="Password" addStyleNames="col-sm-10"/>
+                </g:FlowPanel>
+                <b:HelpBlock ui:field="newPasswordErrors" iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>
+            </b:FormGroup>
+            <b:FormGroup ui:field="newPasswordConfirmGroup">
+                <b:FormLabel for="confirm_passport" addStyleNames="col-sm-2">Confirm password</b:FormLabel>
+                <g:FlowPanel addStyleNames="col-sm-7">
+                    <b:TextBox ui:field="newPasswordConfirm" b:id="confirm_password" placeholder="Confirm password"/>
+                </g:FlowPanel>
+                <b:HelpBlock ui:field="newPasswordConfirmErrors" iconType="EXCLAMATION_TRIANGLE"
+                             addStyleNames="col-sm-3"/>
+            </b:FormGroup>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

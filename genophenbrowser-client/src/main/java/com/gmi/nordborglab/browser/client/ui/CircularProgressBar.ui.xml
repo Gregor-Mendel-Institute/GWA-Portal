@@ -156,7 +156,7 @@
 
         .text {
             text-align: center;
-            padding-top: 30px;
+            padding-top: 25px;
             font-size: 20px;
             color: rgba(255, 255, 255, 0.3);
             font-weight: bold;

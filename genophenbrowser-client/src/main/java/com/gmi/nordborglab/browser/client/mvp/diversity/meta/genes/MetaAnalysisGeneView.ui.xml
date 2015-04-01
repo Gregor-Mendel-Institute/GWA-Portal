@@ -2,9 +2,10 @@
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
              xmlns:gview="urn:import:at.gmi.nordborglab.widgets.geneviewer.client"
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
+             xmlns:be='urn:import:org.gwtbootstrap3.extras.typeahead.client.ui'
              xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
@@ -25,6 +26,7 @@
         .slider {
             background-color: black;
             height: 2px;
+            display: inline-block !important;
         }
 
         .slider::-webkit-slider-thumb {
@@ -47,9 +49,6 @@
             line-height: 35px;
         }
 
-        .searchContainer {
-            float: left;
-        }
 
         .geneContainer {
             border: solid 1px #ccc;
@@ -73,21 +72,24 @@
     <g:LayoutPanel ui:field="container">
         <g:layer top="10" height="50px">
             <g:HTMLPanel addStyleNames="{style.geneControlContainer}" ui:field="searchContainer">
-            <div class="{style.searchContainer}">
-                    <b:InputAddOn prependIcon="SEARCH">
-                        <b:Typeahead ui:field="searchGeneTa">
-                            <b:TextBox placeholder="search for a gene" ui:field="searchGeneTb"/>
-                        </b:Typeahead>
-                    </b:InputAddOn>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <b:InputGroup ui:field="searchBoxContainer">
+                            <b:InputGroupAddon icon="SEARCH"/>
+                            <be:Typeahead ui:field="searchGeneTa" placeholder="search for a gene"/>
+                        </b:InputGroup>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="{style.sliderContainer}">
+                            <span ui:field="lowerLimitLb"></span>
+                            <g:TextBox ui:field="lowerLimitTb" width="150px" addStyleNames="{style.slider}"></g:TextBox>
+                            <span ui:field="geneLb" class="{style.geneContainer}"></span>
+                            <g:TextBox ui:field="upperLimitTb" width="150px" addStyleNames="{style.slider}"></g:TextBox>
+                            <span ui:field="upperLimitLb"></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="{style.sliderContainer}">
-                    <span ui:field="lowerLimitLb"></span>
-                    <g:TextBox ui:field="lowerLimitTb" width="150px" addStyleNames="{style.slider}"></g:TextBox>
-                    <span ui:field="geneLb" class="{style.geneContainer}"></span>
-                    <g:TextBox ui:field="upperLimitTb" width="150px" addStyleNames="{style.slider}"></g:TextBox>
-                    <span ui:field="upperLimitLb"></span>
-                </div>
-                <hr style="clear:both;"/>
+                <hr class="clearfix"/>
             </g:HTMLPanel>
         </g:layer>
         <g:layer top="60px" bottom="0">

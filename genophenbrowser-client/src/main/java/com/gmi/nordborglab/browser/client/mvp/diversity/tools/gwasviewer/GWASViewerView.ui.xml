@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              xmlns:c='urn:import:com.google.gwt.user.cellview.client'
              xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
         >
@@ -22,12 +22,10 @@
         }</ui:style>
     <g:LayoutPanel>
         <g:layer top="5px" height="40px">
-            <b:TabPanel ui:field="tabPanel">
-                <b:TabLink createTabPane="false" text="Existing GWAS plots" ui:field="gwasListTab"
-                           dataTarget="gwasListTab" active="true"/>
-                <b:TabLink createTabPane="false" text="Upload GWAS plots" ui:field="gwasUploadTab"
-                           dataTarget="gwassUploadTab"/>
-            </b:TabPanel>
+            <b:NavTabs ui:field="tabPanel">
+                <b:TabListItem active="true" ui:field="gwasListTab" text="Existing GWAS plots"></b:TabListItem>
+                <b:TabListItem ui:field="gwasUploadTab" text="Upload GWAS plot"></b:TabListItem>
+            </b:NavTabs>
         </g:layer>
         <g:layer top="45px" bottom="0">
             <g:DeckLayoutPanel ui:field="tabPaneContainer">
@@ -47,7 +45,7 @@
                 <g:LayoutPanel ui:field="gwasPlotContainer">
                     <g:layer top="0" height="40px">
                         <g:FlowPanel>
-                            <b:Button ui:field="downloadBtn" size="SMALL" type="PRIMARY" icon="CIRCLE_ARROW_DOWN"
+                            <b:Button ui:field="downloadBtn" size="SMALL" type="PRIMARY" icon="ARROW_CIRCLE_DOWN"
                                       text="Download plots" addStyleNames="pull-right {style.button}"></b:Button>
                         </g:FlowPanel>
                     </g:layer>

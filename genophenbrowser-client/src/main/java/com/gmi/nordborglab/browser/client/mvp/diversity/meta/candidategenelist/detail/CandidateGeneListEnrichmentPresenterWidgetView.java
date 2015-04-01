@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.meta.candidategenelist.detail;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
 import com.gmi.nordborglab.browser.client.mvp.widgets.facets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
@@ -37,6 +36,7 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.Button;
 
 import java.util.List;
 

@@ -1,9 +1,6 @@
 package com.gmi.nordborglab.browser.client.editors;
 
-import com.github.gwtbootstrap.client.ui.TextArea;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.gmi.nordborglab.browser.client.manager.OntologyManager;
-import com.gmi.nordborglab.browser.client.ui.OntologyTermSuggestOracle;
 import com.gmi.nordborglab.browser.client.ui.OntologyTypeahead;
 import com.gmi.nordborglab.browser.client.ui.ValidationValueListBox;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
@@ -11,7 +8,6 @@ import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
@@ -26,8 +22,12 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.google.web.bindery.requestfactory.gwt.ui.client.ProxyRenderer;
 import com.google.web.bindery.requestfactory.shared.Receiver;
+import org.gwtbootstrap3.client.ui.TextArea;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.extras.typeahead.client.base.Dataset;
+import org.gwtbootstrap3.extras.typeahead.client.base.Suggestion;
+import org.gwtbootstrap3.extras.typeahead.client.base.SuggestionCallback;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 
 public class PhenotypeEditEditor extends Composite implements Editor<PhenotypeProxy> {
@@ -59,7 +59,7 @@ public class PhenotypeEditEditor extends Composite implements Editor<PhenotypePr
 
 
     public PhenotypeEditEditor() {
-        unitOfMeasure = new ValidationValueListBox<UnitOfMeasureProxy>(new ProxyRenderer<UnitOfMeasureProxy>(null) {
+        unitOfMeasure = new ValidationValueListBox(new ProxyRenderer<UnitOfMeasureProxy>(null) {
 
             @Override
             public String render(UnitOfMeasureProxy object) {
@@ -67,63 +67,50 @@ public class PhenotypeEditEditor extends Composite implements Editor<PhenotypePr
             }
 
         }, new EntityProxyKeyProvider<UnitOfMeasureProxy>());
-        traitOntologyTerm = new OntologyTypeahead(new OntologyTermSuggestOracle() {
+        traitOntologyTerm = new OntologyTypeahead(new Dataset<TermProxy>() {
 
             @Override
-            public void requestDefaultSuggestions(SuggestOracle.Request request, Callback callback) {
-                onSearchOntology(new OntologyTermSuggestOracle.Request(), callback, ConstEnums.ONTOLOGY_TYPE.TRAIT);
-            }
-
-            @Override
-            public void requestSuggestions(SuggestOracle.Request request, Callback callback) {
-                onSearchOntology(request, callback, ConstEnums.ONTOLOGY_TYPE.TRAIT);
+            public void findMatches(String query, SuggestionCallback<TermProxy> callback) {
+                onSearchOntology(query, callback, ConstEnums.ONTOLOGY_TYPE.TRAIT);
             }
         });
-        environOntologyTerm = new OntologyTypeahead(new OntologyTermSuggestOracle() {
+        environOntologyTerm = new OntologyTypeahead(new Dataset<TermProxy>() {
 
             @Override
-            public void requestDefaultSuggestions(SuggestOracle.Request request, Callback callback) {
-                onSearchOntology(new OntologyTermSuggestOracle.Request(), callback, ConstEnums.ONTOLOGY_TYPE.ENVIRONMENT);
-            }
-
-            @Override
-            public void requestSuggestions(SuggestOracle.Request request, Callback callback) {
-                onSearchOntology(request, callback, ConstEnums.ONTOLOGY_TYPE.ENVIRONMENT);
+            public void findMatches(String query, SuggestionCallback<TermProxy> callback) {
+                onSearchOntology(query, callback, ConstEnums.ONTOLOGY_TYPE.ENVIRONMENT);
             }
         });
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-    private void onSearchOntology(final SuggestOracle.Request request, final SuggestOracle.Callback callback, final ConstEnums.ONTOLOGY_TYPE type) {
+    private void onSearchOntology(final String request, final SuggestionCallback<TermProxy> callback, final ConstEnums.ONTOLOGY_TYPE type) {
         if (ontologyManager == null)
             return;
         ontologyManager.findByQuery(new Receiver<TermPageProxy>() {
             @Override
             public void onSuccess(TermPageProxy termPage) {
-                SuggestOracle.Response response = new SuggestOracle.Response();
-                response.setMoreSuggestionsCount((int) termPage.getTotalElements() - request.getLimit());
-                switch (type) {
-                    case TRAIT:
-                        if (traitOntologyTerm.getValue() != null) {
-                            termPage.getContents().add(0, traitOntologyTerm.getValue());
-                        }
-                        break;
-                    case ENVIRONMENT:
-                        if (environOntologyTerm.getValue() != null) {
-                            termPage.getContents().add(0, environOntologyTerm.getValue());
-                        }
-                        break;
-                }
-                response.setSuggestions(Lists.transform(termPage.getContents(), new Function<TermProxy, SuggestOracle.Suggestion>() {
-                    @Nullable
-                    @Override
-                    public SuggestOracle.Suggestion apply(@Nullable TermProxy termProxy) {
-                        return new OntologyTermSuggestOracle.OntologySuggestion(termProxy);
+                Collection<Suggestion<TermProxy>> suggestions = Lists.newArrayList();
+                if (termPage != null) {
+                    switch (type) {
+                        case TRAIT:
+                            if (traitOntologyTerm.getValue() != null) {
+                                termPage.getContents().add(0, traitOntologyTerm.getValue());
+                            }
+                            break;
+                        case ENVIRONMENT:
+                            if (environOntologyTerm.getValue() != null) {
+                                termPage.getContents().add(0, environOntologyTerm.getValue());
+                            }
+                            break;
                     }
-                }));
-                callback.onSuggestionsReady(request, response);
+                    for (TermProxy term : termPage.getContents()) {
+                        suggestions.add(Suggestion.create(term.getName() + " (" + term.getAcc() + ")", term, null));
+                    }
+                }
+                callback.execute(suggestions);
             }
-        }, request.getQuery(), type, request.getLimit());
+        }, request, type, 10);
     }
 
     public void setAcceptableValuesForUnitOfMeasure(Collection<UnitOfMeasureProxy> values) {

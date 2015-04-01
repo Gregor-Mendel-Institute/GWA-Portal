@@ -1,13 +1,13 @@
 package com.gmi.nordborglab.browser.client.ui;
 
-import com.github.gwtbootstrap.client.ui.Typeahead;
-import com.github.gwtbootstrap.client.ui.base.TextBoxBase;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.google.gwt.editor.client.LeafValueEditor;
-import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.HasChangeHandlers;
-import com.google.gwt.user.client.ui.SuggestOracle;
+import com.google.gwt.user.client.ui.Composite;
+import org.gwtbootstrap3.extras.typeahead.client.base.Dataset;
+import org.gwtbootstrap3.extras.typeahead.client.events.TypeaheadSelectedEvent;
+import org.gwtbootstrap3.extras.typeahead.client.events.TypeaheadSelectedHandler;
+import org.gwtbootstrap3.extras.typeahead.client.ui.Typeahead;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,26 +16,27 @@ import com.google.gwt.user.client.ui.SuggestOracle;
  * Time: 18:48
  * To change this template use File | Settings | File Templates.
  */
-public class OntologyTypeahead extends Typeahead implements LeafValueEditor<TermProxy> {
+public class OntologyTypeahead extends Composite implements LeafValueEditor<TermProxy> {
 
     private TermProxy value;
     private ChangeHandler changeHandler;
+    private final Typeahead<TermProxy> typeahead;
 
-    public OntologyTypeahead(OntologyTermSuggestOracle oracle) {
-        super(oracle);
-        setMinLength(0);
-        setUpdaterCallback(new UpdaterCallback() {
+    public OntologyTypeahead(Dataset<TermProxy> dataset) {
+        super();
+        typeahead = new Typeahead<>(dataset);
+        typeahead.setPlaceholder("Type to search..");
+        initWidget(typeahead);
+        typeahead.setMinLength(0);
+        typeahead.addTypeaheadSelectedHandler(new TypeaheadSelectedHandler<TermProxy>() {
             @Override
-            public String onSelection(SuggestOracle.Suggestion selectedSuggestion) {
-                value = ((OntologyTermSuggestOracle.OntologySuggestion) selectedSuggestion).getTerm();
+            public void onSelected(TypeaheadSelectedEvent<TermProxy> typeaheadSelectedEvent) {
+                value = typeaheadSelectedEvent.getSuggestion().getData();
                 if (changeHandler != null) {
                     changeHandler.onChange(null);
                 }
-                return selectedSuggestion.getReplacementString();
-
             }
         });
-        reconfigure();
     }
 
     public void setChangeHandler(ChangeHandler changeHandler) {
@@ -48,9 +49,9 @@ public class OntologyTypeahead extends Typeahead implements LeafValueEditor<Term
         if (getWidget() == null)
             return;
         if (value != null) {
-            ((TextBoxBase) getWidget()).setValue(value.getName() + " (" + value.getAcc() + ")");
+            typeahead.setValue(value.getName() + " (" + value.getAcc() + ")");
         } else {
-            ((TextBoxBase) getWidget()).setValue(null);
+            typeahead.setValue(null);
         }
     }
 
