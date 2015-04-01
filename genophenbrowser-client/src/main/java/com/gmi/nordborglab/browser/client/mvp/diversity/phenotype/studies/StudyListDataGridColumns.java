@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.studies;
 
-import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
 import com.gmi.nordborglab.browser.client.ui.cells.LabelTypeCell;
@@ -29,6 +28,7 @@ import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.constants.LabelType;
 
 import java.util.Date;
 import java.util.List;
@@ -171,10 +171,10 @@ public interface StudyListDataGridColumns {
         public Cell<String> getCell() {
             return new LabelTypeCell(
                     ImmutableMap.<String, LabelType>builder()
-                            .put("Finished", LabelType.SUCCESS)
-                            .put("Running", LabelType.WARNING)
-                            .put("Queued", LabelType.IMPORTANT)
-                            .put("Error", LabelType.IMPORTANT).build()
+                            .put("FINISHED", LabelType.SUCCESS)
+                            .put("RUNNING", LabelType.WARNING)
+                            .put("QUEUED", LabelType.DANGER)
+                            .put("ERROR", LabelType.DANGER).build()
             );
         }
 

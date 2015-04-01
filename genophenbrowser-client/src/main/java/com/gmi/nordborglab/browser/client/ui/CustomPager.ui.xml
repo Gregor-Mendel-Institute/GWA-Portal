@@ -1,7 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
-	xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+    xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
 	>
 	<ui:style>
 		.pager {
@@ -47,7 +47,7 @@
 		}
 	</ui:style>
 	<g:HTMLPanel addStyleNames="{style.pager}">
-		<div class="{style.pager_row}">
+        <div class="{style.pager_row} form-inline">
 			<div class="{style.pager_item}">
 				Show rows:
 				<b:ListBox addStyleNames="{style.pager_page_size}" ui:field="pageSize" visibleItemCount='1' />
@@ -59,13 +59,10 @@
 			<div class="{style.pager_item}">
 				<g:Label ui:field="label" />
 			</div>
-			<div class="btn-group {style.pager_arrow_group}">
-				<g:Anchor addStyleNames="btn btn-mini {style.pager_arrows} " ui:field="previousPage">
-					<i class="icon-chevron-left"></i>
-				</g:Anchor>
-				<g:Anchor addStyleNames="btn btn-mini {style.pager_arrows} " ui:field="nextPage">
-					<i class="icon-chevron-right"></i>
-				</g:Anchor>
+            <div class="btn-group btn-group-xs {style.pager_arrow_group}">
+                <b:Button icon="ARROW_LEFT" ui:field="previousPage"/>
+
+                <b:Button icon="ARROW_RIGHT" ui:field="nextPage"/>
 			</div>
 		</div>
 	</g:HTMLPanel>

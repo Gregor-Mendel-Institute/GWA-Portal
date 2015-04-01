@@ -594,7 +594,6 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                 getView().validateInputs();
                 if (getView().getStudyText().getText().equals("")) {
                     isOk = false;
-                    getView().showCallout("analysis", true);
                     break;
                 }
                 if (isOk)

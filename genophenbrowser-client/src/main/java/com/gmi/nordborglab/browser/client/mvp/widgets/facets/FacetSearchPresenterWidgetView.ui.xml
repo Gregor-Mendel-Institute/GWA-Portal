@@ -1,12 +1,10 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
         >
     <ui:style>
         .searchBox {
-            display: inline-block;
-            margin-top: 20px;
-            margin-right: 20px;
+            margin-top: 26px;
         }
 
         .navPills {
@@ -16,14 +14,16 @@
     </ui:style>
 
     <g:HTMLPanel>
-        <div style="float:right;">
-            <b:InputAddOn appendIcon="SEARCH" addStyleNames="{style.searchBox}" ui:field="searchBoxContainer">
-                <b:TextBox ui:field="searchBox" placeholder="Search..."></b:TextBox>
-            </b:InputAddOn>
-        </div>
-        <div style="float:left;">
-            <b:NavPills addStyleNames="{style.navPills}" ui:field="navPills">
-            </b:NavPills>
+        <div class="row">
+            <div class="col-xs-9">
+                <b:NavPills addStyleNames="{style.navPills}" ui:field="navPills"/>
+            </div>
+            <div class="col-xs-3">
+                <b:InputGroup ui:field="searchBoxContainer" addStyleNames="{style.searchBox}">
+                    <b:TextBox ui:field="searchBox" placeholder="Search..."></b:TextBox>
+                    <b:InputGroupAddon icon="SEARCH"/>
+                </b:InputGroup>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

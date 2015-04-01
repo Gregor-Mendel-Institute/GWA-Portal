@@ -1,9 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.tools.gwasviewer;
 
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.TabLink;
-import com.github.gwtbootstrap.client.ui.TabPanel;
-import com.github.gwtbootstrap.client.ui.constants.BackdropType;
+
 import com.gmi.nordborglab.browser.client.editors.GWASResultEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.widgets.facets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
@@ -48,6 +45,18 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.shared.event.TabShowEvent;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
+import org.gwtbootstrap3.extras.bootbox.client.Bootbox;
+import org.gwtbootstrap3.extras.bootbox.client.callback.AlertCallback;
 
 import java.util.List;
 
@@ -104,9 +113,9 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     @UiField
     DeckLayoutPanel tabPaneContainer;
     @UiField
-    TabPanel tabPanel;
+    NavTabs tabPanel;
     @UiField
-    TabLink gwasListTab;
+    TabListItem gwasListTab;
     @UiField
     SimpleLayoutPanel gwasUploadPanel;
     @UiField
@@ -118,11 +127,27 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     @UiField
     LayoutPanel gwasPlotContainer;
     @UiField
-    TabLink gwasUploadTab;
+    TabListItem gwasUploadTab;
     @UiField
     SimplePanel facetContainer;
     @UiField
     SimpleLayoutPanel gwasPlots;
+
+    private final class DeleteCallBack implements AlertCallback {
+
+        private GWASResultProxy object;
+
+        public void setObject(GWASResultProxy object) {
+            this.object = object;
+        }
+
+        @Override
+        public void callback() {
+            getUiHandlers().onConfirmDelete(object);
+        }
+    }
+
+    private final DeleteCallBack deleteCallBack = new DeleteCallBack();
 
 
     public enum PANELS {PLOTS, LIST, UPLOAD}
@@ -131,8 +156,9 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     private boolean isPlotsDisplayed = false;
     private final GWASResultEditDriver editDriver;
     private GWASResultEditEditor gwasEditEditor = new GWASResultEditEditor();
-    private Modal editPopUp = new Modal(true);
-    private Modal permissionPopUp = new Modal(true);
+    private Modal editPopUp = new Modal();
+    private Modal permissionPopUp = new Modal();
+    private Bootbox.Dialog deletePopup = Bootbox.Dialog.create();
     private final CurrentUser currentUser;
 
     @Inject
@@ -144,49 +170,53 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         this.currentUser = currentUser;
         this.editDriver = editDriver;
         this.avatarNameCell = avatarNameCell;
-        gwasResultDataGrid = new DataGrid<GWASResultProxy>(50, dataGridResources, new EntityProxyKeyProvider<GWASResultProxy>());
+        gwasResultDataGrid = new DataGrid<>(50, dataGridResources, new EntityProxyKeyProvider<GWASResultProxy>());
         widget = binder.createAndBindUi(this);
         tabPaneContainer.showWidget(0);
         gwasResultPager.setDisplay(gwasResultDataGrid);
-        tabPanel.addShowHandler(new TabPanel.ShowEvent.Handler() {
-            @Override
-            public void onShow(TabPanel.ShowEvent showEvent) {
-                if (showEvent.getTarget() == gwasListTab) {
-                    activePanel = isPlotsDisplayed ? PANELS.PLOTS : PANELS.LIST;
-                } else {
-                    activePanel = PANELS.UPLOAD;
-                }
-                updatePanelVisibility();
-            }
-        });
         initDataGridColumns();
         this.editDriver.initialize(gwasEditEditor);
 
-        this.gwasEditEditor.getSaveButton().addClickHandler(new ClickHandler() {
+        Button saveBtn = new Button("Save", IconType.SAVE, new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 getUiHandlers().saveEdits();
             }
         });
+        saveBtn.setType(ButtonType.PRIMARY);
 
-        this.gwasEditEditor.getCancelButton().addClickHandler(new ClickHandler() {
+        Button cancelBtn = new Button("Cancel", IconType.SAVE, new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 getUiHandlers().cancelEdits();
             }
         });
-        editPopUp.setBackdrop(BackdropType.STATIC);
+        cancelBtn.setType(ButtonType.DEFAULT);
+        ModalFooter footer = new ModalFooter();
+        footer.add(saveBtn);
+        footer.add(cancelBtn);
+
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(gwasEditEditor);
         editPopUp.setTitle("Edit GWAS result");
-        editPopUp.add(gwasEditEditor);
-        permissionPopUp.setBackdrop(BackdropType.STATIC);
+        editPopUp.add(modalBody);
+        editPopUp.add(footer);
+
+        permissionPopUp.setDataBackdrop(ModalBackdrop.STATIC);
         permissionPopUp.setTitle("Permissions");
-        permissionPopUp.setMaxHeigth("700px");
-        permissionPopUp.setCloseVisible(false);
-        permissionPopUp.setKeyboard(false);
+        permissionPopUp.setClosable(false);
+        permissionPopUp.setDataKeyboard(false);
+
+        modalBody = new ModalBody();
+        modalBody.add(plotDownload);
         plotPoupup.setTitle("Download plots");
-        plotPoupup.add(plotDownload);
+        plotPoupup.add(modalBody);
         // FIXME change once we have information about availabilty of macs
         plotDownload.setMacFilterEnabled(false);
+
+        deletePopup.setTitle("Delete GWAS result");
+        deletePopup.addButton("Cancel");
+        deletePopup.addButton("Delete", ButtonType.DANGER.getCssName(), deleteCallBack);
     }
 
     private void initDataGridColumns() {
@@ -283,12 +313,15 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
 
     @Override
     public void setInSlot(Object slot, IsWidget content) {
+
         if (slot == GWASViewerPresenter.TYPE_SetGWASUploadContent) {
             gwasUploadPanel.setWidget(content);
         } else if (slot == GWASViewerPresenter.TYPE_SetGWASPLOTContent) {
             gwasPlots.setWidget(content);
         } else if (slot == GWASViewerPresenter.TYPE_SetPermissionContent) {
-            permissionPopUp.add(content);
+            ModalBody modalBody = new ModalBody();
+            modalBody.add(content);
+            permissionPopUp.add(modalBody);
         } else if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
             facetContainer.setWidget(content);
         } else {
@@ -305,27 +338,32 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         switch (panel) {
             case PLOTS:
             case LIST:
-                tabPanel.selectTab(0);
+                gwasListTab.showTab();
                 break;
             case UPLOAD:
-                tabPanel.selectTab(1);
+                gwasUploadTab.showTab();
                 break;
         }
         updatePanelVisibility();
     }
 
     private void updatePanelVisibility() {
+        gwasListTab.setActive(false);
+        gwasUploadTab.setActive(false);
         switch (activePanel) {
             case PLOTS:
                 tabPaneContainer.showWidget(gwasPlotContainer);
+                gwasListTab.setActive(true);
                 isPlotsDisplayed = true;
                 break;
             case LIST:
                 tabPaneContainer.showWidget(gwasListPanel);
+                gwasListTab.setActive(true);
                 isPlotsDisplayed = false;
                 break;
             case UPLOAD:
                 tabPaneContainer.showWidget(gwasUploadPanel);
+                gwasUploadTab.setActive(true);
                 break;
         }
     }
@@ -370,6 +408,13 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         plotDownload.setId(id);
     }
 
+    @Override
+    public void showDeletePopup(GWASResultProxy object) {
+        deleteCallBack.setObject(object);
+        deletePopup.setMessage("Do you really want to delete " + object.getName());
+        Bootbox.dialog(deletePopup);
+    }
+
     private void showPlotDownloadPopup() {
         plotPoupup.show();
     }
@@ -377,5 +422,17 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     @UiHandler("downloadBtn")
     public void onClickDownloadBtn(ClickEvent e) {
         showPlotDownloadPopup();
+    }
+
+    @UiHandler("gwasUploadTab")
+    public void onSelectUploadTab(TabShowEvent e) {
+        activePanel = PANELS.UPLOAD;
+        updatePanelVisibility();
+    }
+
+    @UiHandler("gwasListTab")
+    public void onSelectListTab(TabShowEvent e) {
+        activePanel = isPlotsDisplayed ? PANELS.PLOTS : PANELS.LIST;
+        updatePanelVisibility();
     }
 }

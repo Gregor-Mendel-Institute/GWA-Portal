@@ -1,16 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.experiment.detail;
 
-import com.github.gwtbootstrap.client.ui.ButtonGroup;
-import com.github.gwtbootstrap.client.ui.Form;
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.ModalFooter;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.Tooltip;
-import com.github.gwtbootstrap.client.ui.constants.BackdropType;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.editors.ExperimentDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.ExperimentEditEditor;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
@@ -55,6 +44,20 @@ import com.googlecode.gwt.charts.client.options.Legend;
 import com.googlecode.gwt.charts.client.options.LegendAlignment;
 import com.googlecode.gwt.charts.client.options.LegendPosition;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.Anchor;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.Tooltip;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
+import org.gwtbootstrap3.extras.bootbox.client.Bootbox;
+import org.gwtbootstrap3.extras.bootbox.client.callback.AlertCallback;
 
 import java.util.HashMap;
 import java.util.List;
@@ -78,11 +81,11 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     @UiField(provided = true)
     ExperimentDisplayEditor experimentDisplayEditor;
     @UiField
-    Icon edit;
+    Anchor edit;
     @UiField
-    Icon delete;
+    Anchor delete;
     @UiField
-    Icon share;
+    Anchor share;
     @UiField(provided = true)
     PublicationResponsiveDataGrid publicationDataGrid;
     @UiField
@@ -98,15 +101,15 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     @UiField
     PieChart ontologyChart;
     @UiField
-    ButtonGroup ontologyTypeBtnGrp;
+    org.gwtbootstrap3.client.ui.ButtonGroup ontologyTypeBtnGrp;
     @UiField
     HTMLPanel actionBarPanel;
     @UiField
-    NavLink navLinkIsaTab;
+    AnchorListItem navLinkIsaTab;
     private final ExperimentEditDriver experimentEditDriver;
     private final ExperimentDisplayDriver experimentDisplayDriver;
     private final MainResources resources;
-    private Modal permissionPopUp = new Modal(true);
+    private Modal permissionPopUp = new Modal();
     private boolean layoutScheduled = false;
     private final Scheduler.ScheduledCommand layoutCmd = new Scheduler.ScheduledCommand() {
         public void execute() {
@@ -114,8 +117,8 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
             forceLayout();
         }
     };
-    private Modal editPopup = new Modal(true);
-    private Modal deletePopup = new Modal(true);
+    private Modal editPopup = new Modal();
+    private Bootbox.Dialog deletePopup = Bootbox.Dialog.create();
 
     private ONTOLOGY_TYPE currentOntologyType = ConstEnums.ONTOLOGY_TYPE.TRAIT;
     private Map<ONTOLOGY_TYPE, DataTable> ontology2Map = new HashMap<ONTOLOGY_TYPE, DataTable>();
@@ -140,52 +143,47 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         this.experimentDisplayDriver = experimentDisplayDriver;
         this.experimentDisplayDriver.initialize(experimentDisplayEditor);
         this.experimentEditDriver.initialize(experimentEditEditor);
-        permissionPopUp.setBackdrop(BackdropType.STATIC);
+
         permissionPopUp.setTitle("Permissions");
-        permissionPopUp.setMaxHeigth("700px");
-        permissionPopUp.setCloseVisible(false);
-        permissionPopUp.setKeyboard(false);
+        //permissionPopUp.setMaxHeigth("700px");
+        permissionPopUp.setClosable(false);
+        permissionPopUp.setDataKeyboard(false);
         //initDataGrid();
 
-        editPopup.setBackdrop(BackdropType.STATIC);
-        editPopup.setCloseVisible(true);
+        editPopup.setDataBackdrop(ModalBackdrop.STATIC);
+        editPopup.setClosable(true);
         editPopup.setTitle("Edit study");
-        com.github.gwtbootstrap.client.ui.Button cancelEditBtn = new com.github.gwtbootstrap.client.ui.Button("Cancel", new ClickHandler() {
+        Button cancelEditBtn = new Button("Cancel", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 getUiHandlers().onCancel();
             }
         });
         cancelEditBtn.setType(ButtonType.DEFAULT);
-        com.github.gwtbootstrap.client.ui.Button saveEditBtn = new com.github.gwtbootstrap.client.ui.Button("Save", new ClickHandler() {
+        Button saveEditBtn = new Button("Save", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 getUiHandlers().onSave();
             }
         });
         saveEditBtn.setType(ButtonType.PRIMARY);
-        ModalFooter footer = new ModalFooter(cancelEditBtn, saveEditBtn);
-        editPopup.add(experimentEditEditor);
+        ModalFooter footer = new ModalFooter();
+        footer.add(cancelEditBtn);
+        footer.add(saveEditBtn);
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(experimentEditEditor);
+        editPopup.add(modalBody);
         editPopup.add(footer);
 
-        deletePopup.setBackdrop(BackdropType.STATIC);
-        deletePopup.setCloseVisible(true);
-        deletePopup.add(new HTML("<h4>Do you really want to delete the study?</h4>"));
-        com.github.gwtbootstrap.client.ui.Button cancelDeleteBtn = new com.github.gwtbootstrap.client.ui.Button("Cancel", new ClickHandler() {
+        deletePopup.setTitle("Delete study");
+        deletePopup.setMessage("Do you really want to delete the study?");
+        deletePopup.addButton("Cancel");
+        deletePopup.addButton("Delete", ButtonType.DANGER.getCssName(), new AlertCallback() {
             @Override
-            public void onClick(ClickEvent event) {
-                deletePopup.hide();
-            }
-        });
-        cancelDeleteBtn.setType(ButtonType.DEFAULT);
-        com.github.gwtbootstrap.client.ui.Button deleteBtn = new com.github.gwtbootstrap.client.ui.Button("Delete", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
+            public void callback() {
                 getUiHandlers().onConfirmDelete();
             }
         });
-        deleteBtn.setType(ButtonType.DANGER);
-        deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
         actionBarPanel.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
 
@@ -276,7 +274,9 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     @Override
     public void setInSlot(Object slot, IsWidget content) {
         if (slot == ExperimentDetailPresenter.TYPE_SetPermissionContent) {
-            permissionPopUp.add(content);
+            ModalBody modalBody = new ModalBody();
+            modalBody.add(content);
+            permissionPopUp.add(modalBody);
         } else {
             super.setInSlot(slot, content);
         }
@@ -343,10 +343,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 
     @Override
     public void showDeletePopup(boolean show) {
-        if (show)
-            deletePopup.show();
-        else
-            deletePopup.hide();
+        Bootbox.dialog(deletePopup);
     }
 
     @Override
@@ -356,7 +353,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 
     @Override
     public void setShareTooltip(String toopltipMsg, IconType icon) {
-        shareTooltip.setText(toopltipMsg);
+        shareTooltip.setTitle(toopltipMsg);
         share.setIcon(icon);
         shareTooltip.reconfigure();
     }

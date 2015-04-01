@@ -1,6 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.filter;
 
-import com.google.gwt.user.client.ui.SuggestOracle;
+import com.gmi.nordborglab.browser.client.manager.SearchManager;
 import com.gwtplatform.mvp.client.UiHandlers;
 
 /**
@@ -18,5 +18,5 @@ public interface FilterItemPresenterUiHandlers extends UiHandlers {
 
     void onAdd();
 
-    void onSearchByQuery(SuggestOracle.Request request, SuggestOracle.Callback callback);
+    void onSearchByQuery(String request, final SearchManager.SearchCallback callback);
 }

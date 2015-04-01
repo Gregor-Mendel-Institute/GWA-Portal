@@ -122,7 +122,7 @@
     <div class="dropdown {style.select_container}" title="" role="listbox">
         <div class="{style.access_container} {accessClass}" ui:field="menu">
             <div class="{style.access_text}"><ui:text from="{access}" /></div>
-            <div class="icon-caret-down {style.access_icon} {iconClass}" ui:field="downIcon" />
+            <div class="fa fa-caret-down {style.access_icon} {iconClass}" ui:field="downIcon"/>
         </div>
 
         <ul class="{style.menu}" role="menu" ui:field="permMenu">

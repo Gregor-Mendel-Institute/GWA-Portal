@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
              xmlns:c='urn:import:com.google.gwt.user.cellview.client'
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
@@ -113,7 +113,7 @@
                                                                 <g:HTMLPanel ui:field="tableChartBtnContainer"
                                                                              addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
                                                                     <b:Tooltip
-                                                                            text="Shows the phenotype values in a table">
+                                                                            title="Shows the phenotype values in a table">
                                                                         <g:Button ui:field="tableChartBtn"
                                                                                   addStyleNames="{mainRes.style.tablechart} {mainRes.style.iconItem}"/>
                                                                     </b:Tooltip>
@@ -121,7 +121,7 @@
                                                                 <g:HTMLPanel ui:field="histogramChartBtnContainer"
                                                                              addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
                                                                     <b:Tooltip
-                                                                            text="Shows the phenotype values in histogram">
+                                                                            title="Shows the phenotype values in histogram">
                                                                         <g:Button ui:field="histogramChartBtn"
                                                                                   addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}"/>
                                                                     </b:Tooltip>
@@ -129,7 +129,7 @@
                                                                 <g:HTMLPanel ui:field="motionChartBtnContainer"
                                                                              addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
                                                                     <b:Tooltip
-                                                                            text="Shows the phenotype values in a motionchart">
+                                                                            title="Shows the phenotype values in a motionchart">
                                                                         <g:Button ui:field="motionChartBtn"
                                                                                   addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}"/>
                                                                     </b:Tooltip>
@@ -137,14 +137,14 @@
                                                                 <g:HTMLPanel ui:field="geoChartBtnContainer"
                                                                              addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
                                                                     <b:Tooltip
-                                                                            text="Shows the geographic distibution of the phenotype values">
+                                                                            title="Shows the geographic distibution of the phenotype values">
                                                                         <g:Button ui:field="geoChartBtn"
                                                                                   addStyleNames="{mainRes.style.earth} {mainRes.style.iconItem}"/>
                                                                     </b:Tooltip>
                                                                 </g:HTMLPanel>
                                                                 <g:HTMLPanel ui:field="mapBtnContainer"
                                                                              addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
-                                                                    <b:Tooltip text="Shows the accessions on a map">
+                                                                    <b:Tooltip title="Shows the accessions on a map">
                                                                         <g:Button ui:field="mapBtn"
                                                                                   addStyleNames="{mainRes.style.map} {mainRes.style.iconItem}"/>
                                                                     </b:Tooltip>
@@ -167,7 +167,7 @@
                         <g:HTMLPanel>
                             <div>
                                 <b:Button icon="SAVE" text="SAVE" type="PRIMARY" ui:field="saveBtn" enabled="false"/>
-                                <b:Button icon="REMOVE_CIRCLE" text="CANCEL" type="DEFAULT" ui:field="cancelBtn"/>
+                                <b:Button icon="REMOVE" text="CANCEL" type="DEFAULT" ui:field="cancelBtn"/>
                                 <span style="margin-left:20px;" class="alert alert-danger" ui:field="saveMessage">
                                     One or more phenotypes have an error. Please fix and re-upload them!
                                 </span>

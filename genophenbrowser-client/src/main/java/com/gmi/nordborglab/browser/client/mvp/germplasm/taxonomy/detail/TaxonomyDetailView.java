@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.germplasm.taxonomy.detail;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
-import com.github.gwtbootstrap.client.ui.Button;
 import com.gmi.nordborglab.browser.client.editors.TaxonomyDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.TaxonomyEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.diversity.experiment.detail.ExperimentDetailPresenter.State;
@@ -25,6 +24,7 @@ import com.googlecode.gwt.charts.client.options.Legend;
 import com.googlecode.gwt.charts.client.options.LegendAlignment;
 import com.googlecode.gwt.charts.client.options.LegendPosition;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.Icon;
 
 public class TaxonomyDetailView extends ViewWithUiHandlers<TaxonomyDetailUiHandlers> implements
         TaxonomyDetailPresenter.MyView {
@@ -45,7 +45,7 @@ public class TaxonomyDetailView extends ViewWithUiHandlers<TaxonomyDetailUiHandl
     @UiField
     TaxonomyEditEditor taxonomyEditEditor;
     @UiField
-    Button edit;
+    Icon edit;
     @UiField
     com.googlecode.gwt.charts.client.corechart.PieChart stockChart;
     @UiField

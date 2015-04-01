@@ -58,7 +58,7 @@ public class PermissionSelectionCell extends AbstractEditableCell<AccessControlE
         void onBrowserEvent(PermissionSelectionCell permissionSelectionCell, NativeEvent event, Element parent, AccessControlEntryProxy value, ValueUpdater<AccessControlEntryProxy> valueUpdater);
     }
 
-    private static String ICON_OK = "icon-ok";
+    private static String ICON_OK = "fa fa-check";
     private final Renderer uiRenderer;
     private boolean menuOpened = false;
 

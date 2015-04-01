@@ -29,7 +29,7 @@
                 <p class="{cardRen.style.sub_title}">
                     <ui:text from="{traitOntology}"/>
                 </p>
-                <ul class="unstyled">
+                <ul class="list-unstyled">
                     <li>
                         <span class="{cardRen.style.stats_icon}">
                             <i class="e_icon-tag"/>

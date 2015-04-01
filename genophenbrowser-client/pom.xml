@@ -30,7 +30,7 @@
         <gwtquery.version>1.4.3</gwtquery.version>
         <jukito.version>1.4.1</jukito.version>
         <gwtchosen.version>1.2.0</gwtchosen.version>
-        <gwtbootstrap.version>2.3.2.0</gwtbootstrap.version>
+        <gwtbootstrap3.version>1.0-SNAPSHOT</gwtbootstrap3.version>
         <gwasgeneviewer.version>0.4.13-SNAPSHOT</gwasgeneviewer.version>
         <gwtmaps.version>3.10.0-alpha-7</gwtmaps.version>
         <geochart.version>0.1.4-SNAPSHOT</geochart.version>
@@ -153,8 +153,12 @@
             <artifactId>gin</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.gwtbootstrap</groupId>
-            <artifactId>gwt-bootstrap</artifactId>
+            <groupId>org.gwtbootstrap3</groupId>
+            <artifactId>gwtbootstrap3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.gwtbootstrap3</groupId>
+            <artifactId>gwtbootstrap3-extras</artifactId>
         </dependency>
         <dependency>
             <groupId>at.gmi.nordborglab.widgets</groupId>
@@ -258,9 +262,14 @@
                 <version>${gin.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.gwtbootstrap</groupId>
-                <artifactId>gwt-bootstrap</artifactId>
-                <version>${gwtbootstrap.version}</version>
+                <groupId>org.gwtbootstrap3</groupId>
+                <artifactId>gwtbootstrap3</artifactId>
+                <version>${gwtbootstrap3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.gwtbootstrap3</groupId>
+                <artifactId>gwtbootstrap3-extras</artifactId>
+                <version>${gwtbootstrap3.version}</version>
             </dependency>
             <dependency>
                 <groupId>at.gmi.nordborglab.widgets</groupId>

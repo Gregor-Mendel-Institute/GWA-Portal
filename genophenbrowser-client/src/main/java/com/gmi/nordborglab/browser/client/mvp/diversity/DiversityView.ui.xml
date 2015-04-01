@@ -3,8 +3,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:gui='urn:import:com.gmi.nordborglab.browser.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-             xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -29,6 +28,7 @@
         }
 
         .header_section {
+            box-sizing: content-box;
             width: 100%;
             line-height: 24px;
             height: 24px;
@@ -63,12 +63,8 @@
             margin-left: 6px;
         }
 
-        .accordion_group_top {
-            border-top: 1px solid #CCC !important;
-        }
-
-        @external .accordion-group;
-        .accordion-group {
+        @external panel-default;
+        .panel-default {
             border: 1px solid #CCC;
             border-top: 0;
             -webkit-border-radius: 0px;
@@ -76,41 +72,40 @@
             border-right: 0px;
             border-left: 0px;
             margin-bottom: 0px !important;
+            border-radius: 0px !important;
         }
 
-        @external .accordion-toggle;
-        .accordion-toggle {
+        @external panel;
+        .panel + .panel {
+            margin-top: 0px !important;
+        }
+
+        .panel:first-child {
+            border-top: 1px solid #CCC !important;
+        }
+
+        @external panel-heading;
+        .panel-default > .panel-heading {
             padding: 0 !important;
-        }
-
-        @external .accordion-inner;
-        .accordion-inner {
-            padding: 0 !important;
-            border-top: 1px solid #ccc !important;
-        }
-
-        @external .accordion-heading;
-        .accordion-heading {
             border-left: 4px solid transparent;
+            border-color: transparent;
+            border-radius: 0px;
         }
 
-        .submenu_container {
-            padding: 0 8px 2px 40px;
-            margin: 0;
+        @external list-group;
+        .list-group {
+            padding: 0 8px 0px 33px;
         }
 
-        .submenu_item {
-            list-style: none;
-            margin-top: 4px;
+        @external list-group-item;
+        .list-group-item {
             font-size: 13px;
-            padding: 6px 0 6px 8px;
         }
 
-        .submenu_item a {
-            cursor: pointer;
+        .list-group-item a {
             color: #444 !important;
+            cursor: pointer;
         }
-
         .subitem_active {
             font-weight: bold;
         }
@@ -123,170 +118,180 @@
                         <g:SimpleLayoutPanel ui:field="searchContainer"/>
                     </g:layer>
                     <g:layer top="70px" left="0" right="0" bottom="0">
-                        <b:Accordion>
-                            <b:AccordionGroup addStyleNames="{style.accordion_group_top}"
-                                              ui:field="experimentAccGroup">
-                                <b:customTrigger>
-                                    <g:SimplePanel>
-                                        <b:Tooltip
-                                                text="Studies are the starting category. Studies are used to group one or more phenotypes together."
-                                                placement="BOTTOM">
-                                            <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">
-                                                    <i class="e_icon-thermometer"/>
-                                                </div>
-                                                <span>Studies</span>
-                                            </g:HTMLPanel>
-                                        </b:Tooltip>
-                                    </g:SimplePanel>
+                        <b:PanelGroup b:id="menuPanel">
+                            <b:Panel ui:field="experimentAccGroup">
+                                <b:PanelHeader dataToggle="COLLAPSE" dataParent="#menuPanel"
+                                               dataTarget="#experimentMenu">
+                                    <b:Tooltip
+                                            title="Studies are the starting category. Studies are used to group one or more phenotypes together."
+                                            placement="BOTTOM">
+                                        <g:HTMLPanel addStyleNames="{style.header_section}">
+                                            <div class="{style.icon_header}">
+                                                <i class="e_icon-thermometer"/>
+                                            </div>
+                                            <span>Studies</span>
+                                        </g:HTMLPanel>
+                                    </b:Tooltip>
+                                </b:PanelHeader>
+                                <b:PanelCollapse b:id="experimentMenu">
+                                    <b:ListGroup>
+                                        <b:ListGroupItem>
+                                            <g:InlineHyperlink text="Overview"
+                                                               targetHistoryToken="{nameTokens.getExperiments}"></g:InlineHyperlink>
+                                        </b:ListGroupItem>
+                                    </b:ListGroup>
+                                </b:PanelCollapse>
+                            </b:Panel>
+                            <b:Panel ui:field="phenotypeAccGroup">
+                                <b:PanelHeader dataToggle="COLLAPSE" dataParent="#menuPanel"
+                                               dataTarget="#phenotypeMenu">
+                                    <b:Tooltip
+                                            title="Access personal and public phenotypes"
+                                            placement="BOTTOM">
+                                        <g:HTMLPanel addStyleNames="{style.header_section}">
+                                            <div class="{style.icon_header}">
+                                                <i class="e_icon-feather"/>
+                                            </div>
+                                            <span>Phenotypes</span>
+                                        </g:HTMLPanel>
+                                    </b:Tooltip>
+                                </b:PanelHeader>
+                                <b:PanelCollapse b:id="phenotypeMenu">
+                                    <b:ListGroup>
+                                        <b:ListGroupItem>
+                                            <g:InlineHyperlink text="Overview"
+                                                               targetHistoryToken="{nameTokens.getPhenotypeoverview}"></g:InlineHyperlink>
+                                        </b:ListGroupItem>
+                                    </b:ListGroup>
+                                </b:PanelCollapse>
+                            </b:Panel>
+                            <b:Panel ui:field="studyAccGroup">
+                                <b:PanelHeader dataToggle="COLLAPSE" dataParent="#menuPanel" dataTarget="#studyMenu">
+                                    <b:Tooltip
+                                            title="Access personal and public GWAS analyses"
+                                            placement="BOTTOM">
+                                        <g:HTMLPanel addStyleNames="{style.header_section}">
+                                            <div class="{style.icon_header}">
+                                                <i class="e_icon-monitor"/>
+                                            </div>
+                                            <span>Analysis</span>
+                                        </g:HTMLPanel>
+                                    </b:Tooltip>
+                                </b:PanelHeader>
+                                <b:PanelCollapse b:id="studyMenu">
+                                    <b:ListGroup>
+                                        <b:ListGroupItem>
+                                            <g:InlineHyperlink text="Overview"
+                                                               targetHistoryToken="{nameTokens.getStudyoverview}"></g:InlineHyperlink>
+                                        </b:ListGroupItem>
+                                    </b:ListGroup>
+                                </b:PanelCollapse>
+                            </b:Panel>
+                            <b:Panel ui:field="ontologiesAccGroup">
+                                <b:PanelHeader dataToggle="COLLAPSE" dataParent="#menuPanel" dataTarget="#ontologyMenu">
+                                    <b:Tooltip
+                                            title="Access various ontologies (trait, environment)"
+                                            placement="BOTTOM">
+                                        <g:HTMLPanel addStyleNames="{style.header_section}">
+                                            <div class="{style.icon_header}">
+                                                <i class="e_icon-flow-tree"/>
+                                            </div>
+                                            <span>Ontologies</span>
+                                        </g:HTMLPanel>
+                                    </b:Tooltip>
+                                </b:PanelHeader>
+                                <b:PanelCollapse b:id="ontologyMenu">
+                                    <b:ListGroup>
+                                        <b:ListGroupItem>
+                                            <g:InlineHyperlink text="Trait"
+                                                               ui:field="traitOntologyLink"></g:InlineHyperlink>
+                                        </b:ListGroupItem>
+                                        <b:ListGroupItem>
+                                            <g:InlineHyperlink text="Environment"
+                                                               ui:field="environOntologyLink"></g:InlineHyperlink>
+                                        </b:ListGroupItem>
+                                    </b:ListGroup>
+                                </b:PanelCollapse>
+                            </b:Panel>
+                            <b:Panel ui:field="publicationsAccGroup">
+                                <b:PanelHeader dataToggle="COLLAPSE" dataParent="#menuPanel"
+                                               dataTarget="#publicationMenu">
+                                    <b:Tooltip
+                                            title="Shows publications and related experiments and phenotypes"
+                                            placement="BOTTOM">
+                                        <g:HTMLPanel addStyleNames="{style.header_section}">
+                                            <div class="{style.icon_header}">
+                                                <i class="e_icon-book-open"/>
+                                            </div>
+                                            <span>Publications</span>
+                                        </g:HTMLPanel>
+                                    </b:Tooltip>
+                                </b:PanelHeader>
+                                <b:PanelCollapse b:id="publicationMenu">
+                                    <b:ListGroup>
+                                        <b:ListGroupItem>
+                                            <g:InlineHyperlink text="Overview"
+                                                               targetHistoryToken="{nameTokens.getPublications}"></g:InlineHyperlink>
+                                        </b:ListGroupItem>
+                                    </b:ListGroup>
+                                </b:PanelCollapse>
+                            </b:Panel>
+                            <b:Panel ui:field="metaAnalysisAccGroup">
+                                <b:PanelHeader dataToggle="COLLAPSE" dataParent="#menuPanel"
+                                               dataTarget="#metaanalysisMenu">
+                                    <b:Tooltip
+                                            title="Meta-analysis allows to view relation between genes and phenotypes"
+                                            placement="BOTTOM">
+                                        <g:HTMLPanel addStyleNames="{style.header_section}">
+                                            <div class="{style.icon_header}">
+                                                <i class="e_icon-network"/>
+                                            </div>
+                                            <span>Meta-analysis</span>
+                                        </g:HTMLPanel>
+                                    </b:Tooltip>
+                                </b:PanelHeader>
+                                <b:PanelCollapse b:id="metaanalysisMenu">
+                                    <b:ListGroup>
 
-                                </b:customTrigger>
-                                <base:UnorderedList addStyleNames="{style.submenu_container}">
-                                    <base:ListItem addStyleNames="{style.submenu_item}">
-                                        <g:InlineHyperlink text="Overview"
-                                                           targetHistoryToken="{nameTokens.getExperiments}"></g:InlineHyperlink>
-                                    </base:ListItem>
-                                </base:UnorderedList>
+                                        <b:ListGroupItem>
+                                            <g:InlineHyperlink text="Top-results"
+                                                               targetHistoryToken="{nameTokens.getMetaAnalysisTopResults}"></g:InlineHyperlink>
+                                        </b:ListGroupItem>
+                                        <b:ListGroupItem>
+                                            <g:InlineHyperlink text="Genes"
+                                                               targetHistoryToken="{nameTokens.getMetaAnalysisGenes}"></g:InlineHyperlink>
+                                        </b:ListGroupItem>
+                                        <b:ListGroupItem>
+                                            <g:InlineHyperlink text="Candidate Genes"
+                                                               targetHistoryToken="{nameTokens.getCandidateGeneList}"></g:InlineHyperlink>
+                                        </b:ListGroupItem>
+                                    </b:ListGroup>
+                                </b:PanelCollapse>
+                            </b:Panel>
+                            <b:Panel ui:field="toolsAccGroup">
+                                <b:PanelHeader dataToggle="COLLAPSE" dataParent="#menuPanel" dataTarget="#toolsMenu">
+                                    <b:Tooltip
+                                            title="Various tools for visualization"
+                                            placement="BOTTOM">
+                                        <g:HTMLPanel addStyleNames="{style.header_section}">
+                                            <div class="{style.icon_header}">
+                                                <i class="e_icon-tools"/>
+                                            </div>
+                                            <span>Tools</span>
+                                        </g:HTMLPanel>
+                                    </b:Tooltip>
+                                </b:PanelHeader>
+                                <b:PanelCollapse b:id="toolsMenu">
+                                    <b:ListGroup>
 
-                            </b:AccordionGroup>
-                            <b:AccordionGroup ui:field="phenotypeAccGroup">
-                                <b:customTrigger>
-                                    <g:SimplePanel>
-                                        <b:Tooltip text="Access personal and public phenotypes" placement="BOTTOM">
-                                            <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">
-                                                    <i class="e_icon-feather"/>
-                                                </div>
-                                                <span>Phenotypes</span>
-                                            </g:HTMLPanel>
-                                        </b:Tooltip>
-                                    </g:SimplePanel>
-                                </b:customTrigger>
-                                <base:UnorderedList addStyleNames="{style.submenu_container}">
-                                    <base:ListItem addStyleNames="{style.submenu_item}">
-                                        <g:InlineHyperlink text="Overview"
-                                                           targetHistoryToken="{nameTokens.getPhenotypeoverview}"></g:InlineHyperlink>
-                                    </base:ListItem>
-                                </base:UnorderedList>
-                            </b:AccordionGroup>
-                            <b:AccordionGroup ui:field="studyAccGroup">
-                                <b:customTrigger>
-                                    <g:SimplePanel>
-                                        <b:Tooltip text="Access personal and public GWAS analyses" placement="BOTTOM">
-                                            <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">
-                                                    <i class="e_icon-monitor"/>
-                                                </div>
-                                                <span>Analysis</span>
-                                            </g:HTMLPanel>
-                                        </b:Tooltip>
-                                    </g:SimplePanel>
-                                </b:customTrigger>
-                                <base:UnorderedList addStyleNames="{style.submenu_container}">
-                                    <base:ListItem addStyleNames="{style.submenu_item}">
-                                        <g:InlineHyperlink text="Overview"
-                                                           targetHistoryToken="{nameTokens.getStudyoverview}"></g:InlineHyperlink>
-                                    </base:ListItem>
-                                </base:UnorderedList>
-                            </b:AccordionGroup>
-                            <b:AccordionGroup ui:field="ontologiesAccGroup">
-                                <b:customTrigger>
-                                    <g:SimplePanel>
-                                        <b:Tooltip text="Access various ontologies (trait, environment)"
-                                                   placement="BOTTOM">
-                                            <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">
-                                                    <i class="e_icon-flow-tree"/>
-                                                </div>
-                                                <span>Ontologies</span>
-                                            </g:HTMLPanel>
-                                        </b:Tooltip>
-                                    </g:SimplePanel>
-                                </b:customTrigger>
-                                <base:UnorderedList addStyleNames="{style.submenu_container}">
-                                    <base:ListItem addStyleNames="{style.submenu_item}">
-                                        <g:InlineHyperlink text="Trait"
-                                                           ui:field="traitOntologyLink"></g:InlineHyperlink>
-                                    </base:ListItem>
-                                    <base:ListItem addStyleNames="{style.submenu_item}">
-                                        <g:InlineHyperlink text="Environment"
-                                                           ui:field="environOntologyLink"></g:InlineHyperlink>
-                                    </base:ListItem>
-                                </base:UnorderedList>
-                            </b:AccordionGroup>
-                            <b:AccordionGroup ui:field="publicationsAccGroup">
-                                <b:customTrigger>
-                                    <g:SimplePanel>
-                                        <b:Tooltip text="Shows publications and related experiments and phenotypes"
-                                                   placement="BOTTOM">
-                                            <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">
-                                                    <i class="e_icon-book-open"/>
-                                                </div>
-                                                <span>Publications</span>
-                                            </g:HTMLPanel>
-                                        </b:Tooltip>
-                                    </g:SimplePanel>
-                                </b:customTrigger>
-                                <base:UnorderedList addStyleNames="{style.submenu_container}">
-                                    <base:ListItem addStyleNames="{style.submenu_item}">
-                                        <g:InlineHyperlink text="Overview"
-                                                           targetHistoryToken="{nameTokens.getPublications}"></g:InlineHyperlink>
-                                    </base:ListItem>
-                                </base:UnorderedList>
-                            </b:AccordionGroup>
-                            <b:AccordionGroup ui:field="metaAnalysisAccGroup">
-                                <b:customTrigger>
-                                    <g:SimplePanel>
-                                        <b:Tooltip
-                                                text="Meta-analysis allows to view relation between genes and phenotypes"
-                                                placement="BOTTOM">
-                                            <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">
-                                                    <i class="e_icon-network"/>
-                                                </div>
-                                                <span>Meta-analysis</span>
-                                            </g:HTMLPanel>
-                                        </b:Tooltip>
-                                    </g:SimplePanel>
-                                </b:customTrigger>
-                                <base:UnorderedList addStyleNames="{style.submenu_container}">
-                                    <base:ListItem addStyleNames="{style.submenu_item}">
-                                        <g:InlineHyperlink text="Top-results"
-                                                           targetHistoryToken="{nameTokens.getMetaAnalysisTopResults}"></g:InlineHyperlink>
-                                    </base:ListItem>
-                                    <base:ListItem addStyleNames="{style.submenu_item}">
-                                        <g:InlineHyperlink text="Genes"
-                                                           targetHistoryToken="{nameTokens.getMetaAnalysisGenes}"></g:InlineHyperlink>
-                                    </base:ListItem>
-                                    <base:ListItem addStyleNames="{style.submenu_item}">
-                                        <g:InlineHyperlink text="Candidate Genes"
-                                                           targetHistoryToken="{nameTokens.getCandidateGeneList}"></g:InlineHyperlink>
-                                    </base:ListItem>
-                                </base:UnorderedList>
-                            </b:AccordionGroup>
-
-                            <b:AccordionGroup ui:field="toolsAccGroup">
-                                <b:customTrigger>
-                                    <g:SimplePanel>
-                                        <b:Tooltip text="Various tools for visualization" placement="BOTTOM">
-                                            <g:HTMLPanel addStyleNames="{style.header_section}">
-                                                <div class="{style.icon_header}">
-                                                    <i class="e_icon-tools"/>
-                                                </div>
-                                                <span>Tools</span>
-                                            </g:HTMLPanel>
-                                        </b:Tooltip>
-                                    </g:SimplePanel>
-                                </b:customTrigger>
-                                <base:UnorderedList addStyleNames="{style.submenu_container}">
-                                    <base:ListItem addStyleNames="{style.submenu_item}">
-                                        <g:InlineHyperlink text="GWAS Viewer"
-                                                           targetHistoryToken="{nameTokens.getGWASViewer}"></g:InlineHyperlink>
-                                    </base:ListItem>
-                                </base:UnorderedList>
-                            </b:AccordionGroup>
-                        </b:Accordion>
+                                        <b:ListGroupItem>
+                                            <g:InlineHyperlink text="GWAS Viewer"
+                                                               targetHistoryToken="{nameTokens.getGWASViewer}"></g:InlineHyperlink>
+                                        </b:ListGroupItem>
+                                    </b:ListGroup>
+                                </b:PanelCollapse>
+                            </b:Panel>
+                        </b:PanelGroup>
                     </g:layer>
                 </g:LayoutPanel>
 

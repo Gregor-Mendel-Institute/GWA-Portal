@@ -4,7 +4,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -12,20 +12,24 @@
     <ui:style>
 
         .uploadBtn {
-            margin-top: 10px;
-            margin-right: 5px;
-            float: right;
+            margin-top: 26px;
         }
 
     </ui:style>
 
     <g:LayoutPanel>
         <g:layer top="0" height="5em">
-            <g:FlowPanel>
-                <b:Button ui:field="uploadPhenotypeBtn" icon="PLUS_SIGN" text="Upload"
-                          addStyleNames="{style.uploadBtn}" type="DANGER" enabled="true"/>
-                <g:SimplePanel ui:field="facetContainer"/>
-            </g:FlowPanel>
+            <g:HTMLPanel>
+                <div class="row">
+                    <div class="col-xs-10">
+                        <g:SimplePanel ui:field="facetContainer"/>
+                    </div>
+                    <div class="col-xs-2">
+                        <b:Button ui:field="uploadPhenotypeBtn" icon="PLUS" text="Upload"
+                                  addStyleNames="{style.uploadBtn}" type="DANGER" enabled="true"/>
+                    </div>
+                </div>
+            </g:HTMLPanel>
         </g:layer>
         <g:layer top="5em" left="0.5em" right="0" bottom="30px">
             <c:DataGrid ui:field="dataGrid"/>

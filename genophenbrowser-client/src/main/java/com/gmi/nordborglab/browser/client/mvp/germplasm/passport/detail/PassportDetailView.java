@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.germplasm.passport.detail;
 
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.gmi.nordborglab.browser.client.editors.PassportDisplayEditor;
 import com.gmi.nordborglab.browser.client.mvp.diversity.experiment.detail.ExperimentDetailPresenter.State;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
@@ -55,6 +54,8 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.Icon;
+import org.gwtbootstrap3.client.ui.RadioButton;
 
 public class PassportDetailView extends ViewImpl implements
         PassportDetailPresenter.MyView {
@@ -85,7 +86,7 @@ public class PassportDetailView extends ViewImpl implements
     @UiField
     PassportDisplayEditor passportDisplayEditor;
     @UiField
-    Button edit;
+    Icon edit;
     @UiField
     SimpleLayoutPanel mapContainer;
     @UiField
@@ -99,13 +100,13 @@ public class PassportDetailView extends ViewImpl implements
     @UiField
     SimpleLayoutPanel statsChartContainer;
     @UiField
-    Button traitOBtn;
+    RadioButton traitOBtn;
     @UiField
-    Button envOBtn;
+    RadioButton envOBtn;
     @UiField
-    Button statisticTypeBtn;
+    RadioButton statisticTypeBtn;
     @UiField
-    Button unitOfMeasureBtn;
+    RadioButton unitOfMeasureBtn;
     @UiField
     LayoutPanel container;
 

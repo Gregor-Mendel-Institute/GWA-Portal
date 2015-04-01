@@ -1,7 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.profile;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonGroup;
 import com.gmi.nordborglab.browser.client.mvp.diversity.experiment.phenotypes.PhenotypeListDataGridColumns;
 import com.gmi.nordborglab.browser.client.mvp.diversity.experiments.ExperimentListDataGridColumns;
 import com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.studies.StudyListDataGridColumns;
@@ -38,6 +36,7 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvide
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.RadioButton;
 
 import java.util.Date;
 import java.util.List;
@@ -69,13 +68,13 @@ public class ProfileView extends ViewWithUiHandlers<ProfileUiHandlers> implement
     @UiField
     SimpleLayoutPanel pagerContainer;
     @UiField
-    Button studyTypeBtn;
+    RadioButton studyTypeBtn;
     @UiField
-    Button phenotypeBtn;
+    RadioButton phenotypeBtn;
     @UiField
-    Button analysisBtn;
+    RadioButton analysisBtn;
     @UiField
-    ButtonGroup typeBtnGroup;
+    org.gwtbootstrap3.client.ui.ButtonGroup typeBtnGroup;
     @UiField
     Element typeIcon;
     @UiField

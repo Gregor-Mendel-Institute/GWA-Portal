@@ -1,7 +1,5 @@
 package com.gmi.nordborglab.browser.client.ui.card;
 
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.events.SelectTransformationEvent;
 import com.gmi.nordborglab.browser.client.resources.CardRendererResources;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
@@ -24,6 +22,7 @@ import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.visualizations.corechart.Options;
 import com.google.web.bindery.event.shared.EventBus;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,7 +57,7 @@ public class TransformationCard extends Composite implements RequiresResize {
     HeadingElement titleLb;
 
     @UiField
-    Icon selectIcon;
+    org.gwtbootstrap3.client.ui.Icon selectIcon;
 
     @UiField
     FocusPanel focusPanel;
@@ -140,13 +139,13 @@ public class TransformationCard extends Composite implements RequiresResize {
             card.addClassName(cardRen.style().card_selected());
             selectIcon.removeStyleName(cardRen.style().empty_ok());
             selectIcon.addStyleName(cardRen.style().ok());
-            selectIcon.setType(IconType.OK);
+            selectIcon.setType(IconType.CHECK);
 
         } else {
             card.removeClassName(cardRen.style().card_selected());
             selectIcon.removeStyleName(cardRen.style().ok());
             selectIcon.addStyleName(cardRen.style().empty_ok());
-            selectIcon.setType(IconType.OK_CIRCLE);
+            selectIcon.setType(IconType.CHECK_CIRCLE);
         }
 
     }

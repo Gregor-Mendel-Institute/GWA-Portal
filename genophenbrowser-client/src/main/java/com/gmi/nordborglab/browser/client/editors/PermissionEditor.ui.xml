@@ -2,22 +2,25 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
         >
 
     <ui:style>
 
     </ui:style>
-    <b:FluidContainer>
-        <b:FluidRow>
-            <b:Column size="12" height="230px">
-                <c:CellTable ui:field="dataGrid" width="100%"/>
-            </b:Column>
-        </b:FluidRow>
-        <b:FluidRow>
-            <b:Column size="12">
-                <g:CheckBox ui:field="isEntriesInheriting" text="Inherit permissions from higher levels"/>
-            </b:Column>
-        </b:FluidRow>
-    </b:FluidContainer>
+    <g:HTMLPanel>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12" style="heigh;230px;">
+                    <c:CellTable ui:field="dataGrid" width="100%"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-offset-5 col-xs-7">
+                    <b:CheckBox ui:field="isEntriesInheriting" text="Inherit permissions from higher levels"
+                                visible="false"/>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
 </ui:UiBinder> 

@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.diversity.meta.genes;
 
 import com.gmi.nordborglab.browser.client.events.FilterModifiedEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
+import com.gmi.nordborglab.browser.client.manager.SearchManager;
 import com.gmi.nordborglab.browser.client.mvp.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.client.mvp.widgets.filter.DropDownFilterItemPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.widgets.filter.FilterItemPresenterWidget;
@@ -9,14 +10,11 @@ import com.gmi.nordborglab.browser.client.mvp.widgets.filter.FilterPresenterWidg
 import com.gmi.nordborglab.browser.client.mvp.widgets.filter.TypeaheadFilterItemPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
-import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle;
 import com.gmi.nordborglab.browser.shared.dto.FilterItem;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FilterItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SearchFacetPageProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProtocolProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
@@ -26,7 +24,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
@@ -45,8 +42,6 @@ import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import javax.annotation.Nullable;
 import javax.inject.Provider;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -87,6 +82,7 @@ public class MetaAnalysisGenePresenter extends
     private final FilterPresenterWidget filterPresenterWidget;
     private List<FilterItemProxy> filterItems;
     private MetaAnalysisRequest ctx;
+    private final SearchManager searchManager;
 
     public static final Object TYPE_FilterContent = new Object();
 
@@ -123,12 +119,14 @@ public class MetaAnalysisGenePresenter extends
                                      final FilterPresenterWidget filterPresenterWidget,
                                      final Provider<DropDownFilterItemPresenterWidget> dropDownFilterProvider,
                                      final Provider<TypeaheadFilterItemPresenterWidget> typeaheadFilterProvider,
-                                     final CurrentUser currentUser) {
+                                     final CurrentUser currentUser,
+                                     final SearchManager searchManager) {
         super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         getView().setUiHandlers(this);
         this.rf = rf;
         this.filterPresenterWidget = filterPresenterWidget;
         this.placeManager = placeManager;
+        this.searchManager = searchManager;
 
         DropDownFilterItemPresenterWidget methodFilterWidget = dropDownFilterProvider.get();
         methodFilterWidget.setFilterType(ConstEnums.FILTERS.METHOD);
@@ -188,28 +186,14 @@ public class MetaAnalysisGenePresenter extends
 
 
     @Override
-    public void onSearchForGene(final SuggestOracle.Request request, final SuggestOracle.Callback callback) {
-        rf.searchRequest().searchGeneByTerm(request.getQuery()).fire(new Receiver<SearchFacetPageProxy>() {
-
-            @Override
-            public void onSuccess(SearchFacetPageProxy response) {
-                SuggestOracle.Response searchResponse = new SuggestOracle.Response();
-                Collection<SuggestOracle.Suggestion> suggestions = new ArrayList<SuggestOracle.Suggestion>();
-                if (response != null) {
-                    for (SearchItemProxy searchItem : response.getContents()) {
-                        suggestions.add(new SearchSuggestOracle.SearchSuggestion(searchItem, response));
-                    }
-                }
-                searchResponse.setSuggestions(suggestions);
-                callback.onSuggestionsReady(request, searchResponse);
-            }
-        });
+    public void onSearchForGene(final String request, final SearchManager.SearchCallback callback) {
+        searchManager.searchGeneByTerm(request, callback);
     }
 
     @Override
-    public void onSelectGene(SuggestOracle.Suggestion suggestion) {
+    public void onSelectGene(String gene) {
         PlaceRequest.Builder request = new PlaceRequest.Builder(placeManager.getCurrentPlaceRequest());
-        placeManager.revealPlace(request.with("id", suggestion.getReplacementString()).build());
+        placeManager.revealPlace(request.with("id", gene).build());
     }
 
 

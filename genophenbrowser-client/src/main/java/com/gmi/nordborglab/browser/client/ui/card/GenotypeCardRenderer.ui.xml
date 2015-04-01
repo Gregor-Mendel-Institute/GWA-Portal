@@ -31,7 +31,7 @@
             <p class="{cardRen.style.sub_title}">
             <ui:text from="{producer}"/>
             </p>
-            <ul class="unstyled">
+            <ul class="list-unstyled">
                 <li>
                     <span class="{cardRen.style.stats_icon} {style.stats_icon}">
                     <i class="e_icon-tag"/>
@@ -56,7 +56,7 @@
                 </span>
             </p>
             <p>
-                <i class="pull-right {cardRen.style.empty_ok} icon-ok-circle {cardRes.cellListStyle.selectedCard}"/>
+                <i class="pull-right {cardRen.style.empty_ok} fa fa-check-circle-o {cardRes.cellListStyle.selectedCard}"/>
             </p>
         </div>
     </div>

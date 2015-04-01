@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.meta.candidategenelist.detail;
 
-import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.studies.StudyListDataGridColumns;
 import com.gmi.nordborglab.browser.client.ui.cells.BarCell;
 import com.gmi.nordborglab.browser.client.ui.cells.LabelTypeCell;
@@ -37,6 +36,7 @@ import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.constants.LabelType;
 
 import java.util.List;
 
@@ -141,7 +141,7 @@ public interface CandidateGeneListEnrichmentDataGridColumns {
                             .put("Finished", LabelType.SUCCESS)
                             .put("Running", LabelType.WARNING)
                             .put("Waiting", LabelType.DEFAULT)
-                            .put("Error", LabelType.IMPORTANT).build()
+                            .put("Error", LabelType.DANGER).build()
             );
         }
 

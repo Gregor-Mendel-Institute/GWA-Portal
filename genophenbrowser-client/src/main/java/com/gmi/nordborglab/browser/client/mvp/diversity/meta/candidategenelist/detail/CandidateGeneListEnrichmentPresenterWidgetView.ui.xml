@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
         >
 
     <ui:style>
@@ -15,7 +15,7 @@
     <g:LayoutPanel>
         <g:layer top="5px" left="0" right="0" height="5em">
             <g:FlowPanel>
-                <b:Button ui:field="runBtn" icon="PLUS_SIGN" text="Run"
+                <b:Button ui:field="runBtn" icon="PLUS" text="Run"
                           addStyleNames="{style.addBtn}" type="DANGER" enabled="false"/>
                 <g:SimplePanel ui:field="facetContainer"/>
             </g:FlowPanel>

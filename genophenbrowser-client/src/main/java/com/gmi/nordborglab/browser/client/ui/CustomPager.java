@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.ui;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.TextBox;
+import com.google.common.collect.ImmutableSet;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -12,11 +11,13 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.AbstractPager;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasRows;
 import com.google.gwt.view.client.Range;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 public class CustomPager extends AbstractPager {
 
@@ -27,31 +28,32 @@ public class CustomPager extends AbstractPager {
 	}
 
 	@UiField
-	TextBox page;
-	@UiField
-	ListBox pageSize;
-	@UiField
+    TextBox page;
+    @UiField
+    ListBox pageSize;
+    @UiField
 	Label label;
-	@UiField Anchor previousPage;
-	@UiField Anchor nextPage;
+    @UiField
+    Button previousPage;
+    @UiField
+    Button nextPage;
+    protected ImmutableSet<String> pageSizes = ImmutableSet.of("15", "25", "50", "100", "250", "500");
 
 
 	public CustomPager() {
 		initWidget(uiBinder.createAndBindUi(this));
-		pageSize.addItem("15");
-		pageSize.addItem("25");
-		pageSize.addItem("50");
-		pageSize.addItem("100");
-		pageSize.addItem("250");
-		pageSize.addItem("500");
-        setRangeLimited(false);
-	}
+        for (String size : pageSizes) {
+            pageSize.addItem(size);
+        }
+        setRangeLimited(true);
+    }
 
 	@Override
 	protected void onRangeOrRowCountChanged() {
 		HasRows display = getDisplay();
-        this.pageSize.setSelectedValue(String.valueOf(display.getVisibleRange().getLength()));
-	    label.setText(createText());
+
+        this.pageSize.setSelectedIndex(pageSizes.asList().indexOf(String.valueOf(display.getVisibleRange().getLength())));
+        label.setText(createText());
 	    // Update the prev and first buttons.
 	    setPreviousPageEnabled(!hasPreviousPage());
 
@@ -110,21 +112,9 @@ public class CustomPager extends AbstractPager {
 	
 	private void setPreviousPageEnabled(boolean disabled) {
 		previousPage.setEnabled(!disabled);
-		/*
-		if (disabled)
-			previousPage.addStyleName("disabled");
-		else 
-			previousPage.removeStyleName("disabled");
-			*/
 	}
 	
 	private void setNextPageEnabled(boolean disabled) {
 		nextPage.setEnabled(!disabled);
-		return;
-		/*if (disabled)
-			nextPage.addStyleName("disabled");
-		else 
-			nextPage.removeStyleName("disabled");
-			*/
 	}
 }

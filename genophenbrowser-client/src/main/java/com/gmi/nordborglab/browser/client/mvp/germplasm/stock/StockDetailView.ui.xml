@@ -3,7 +3,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -11,20 +11,12 @@
     <ui:with field="mainRes"
              type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
     <ui:style>
-        .container {
-            padding: 19px 19px;
-        }
 
         .actionRow {
             color: #005C9C;
             font-size: 15px;
             text-align: center;
             float: right;
-        }
-
-        .buttontoolbar {
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
         }
     </ui:style>
     <g:DockLayoutPanel unit="EM">
@@ -36,11 +28,11 @@
                 <g:layer top="0px" height="35px" left="0" right="0">
                     <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
                         <div class="{style.actionRow}">
-                            <b:ButtonToolbar addStyleNames="{style.buttontoolbar}">
-                                <b:ButtonGroup>
-                                    <b:Button ui:field="edit" icon="EDIT" size="SMALL" type="PRIMARY" text="Edit"/>
-                                </b:ButtonGroup>
-                            </b:ButtonToolbar>
+                            <div class="{mainRes.style.actionIcon}">
+                                <b:Tooltip placement="BOTTOM" title="Edit stock">
+                                    <b:Icon type="EDIT" ui:field="edit"/>
+                                </b:Tooltip>
+                            </div>
                         </div>
                     </g:HTMLPanel>
                 </g:layer>

@@ -1,12 +1,12 @@
 package com.gmi.nordborglab.browser.client.mvp.genotype.snpviewer;
 
+import com.gmi.nordborglab.browser.client.manager.SearchManager;
 import com.gmi.nordborglab.browser.client.mvp.widgets.snps.SNPDetailPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsManager;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.testutils.PresenterTestBase;
 import com.gmi.nordborglab.browser.client.testutils.PresenterTestModule;
-import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AppDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
@@ -25,7 +25,6 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.inject.Inject;
@@ -38,14 +37,16 @@ import org.jukito.TestSingleton;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -114,6 +115,9 @@ public class SNPViewerPresenterTest extends PresenterTestBase {
     @Inject
     SNPInfoPageProxy snpInfoPage;
 
+    @Captor
+    ArgumentCaptor<Collection<SearchItemProxy>> captor;
+
 
     private final PlaceRequest currentEmtpyPlace = new PlaceRequest.Builder().nameToken(NameTokens.snpviewer).build();
     private final PlaceRequest currentPlaceWithGenotype = new PlaceRequest.Builder().nameToken(NameTokens.snpviewer).with("genotype", "1").build();
@@ -122,6 +126,7 @@ public class SNPViewerPresenterTest extends PresenterTestBase {
 
     @Before
     public void setup() {
+        MockitoAnnotations.initMocks(this);
         mockAppData();
         given(view.getSNPSDisplay()).willReturn(snpsDisplay);
         given(snpsDisplay.getVisibleRange()).willReturn(new Range(0, 10));
@@ -179,11 +184,10 @@ public class SNPViewerPresenterTest extends PresenterTestBase {
     @Test
     public void test_PlaceChangeAfterNonNullPhenotype() {
         SearchItemProxy searchItem = mock(SearchItemProxy.class);
-        SearchSuggestOracle.SearchSuggestion suggestion = new SearchSuggestOracle.SearchSuggestion(searchItem, null);
         given(searchItem.getId()).willReturn("1");
         given(placeManager.getCurrentPlaceRequest()).willReturn(currentEmtpyPlace);
         PlaceRequest newRequest = new PlaceRequest.Builder(currentEmtpyPlace).with("phenotype", "1").build();
-        presenter.onSelectPhenotype(suggestion);
+        presenter.onSelectPhenotype(searchItem);
         verify(placeManager).revealPlace(newRequest);
     }
 
@@ -253,14 +257,15 @@ public class SNPViewerPresenterTest extends PresenterTestBase {
         Request<SearchFacetPageProxy> rfRequest = mock(Request.class);
         final SearchFacetPageProxy searchResult = mock(SearchFacetPageProxy.class);
         SearchItemProxy searchItem = mock(SearchItemProxy.class);
-        SuggestOracle.Callback callback = mock(SuggestOracle.Callback.class);
-        ArgumentCaptor<SuggestOracle.Response> responseCaptor = ArgumentCaptor.forClass(SuggestOracle.Response.class);
+
+        SearchManager.SearchCallback callback = mock(SearchManager.SearchCallback.class);
         List<SearchItemProxy> items = Lists.newArrayList(searchItem);
         given(searchResult.getContents()).willReturn(items);
+        given(searchResult.getTotal()).willReturn(1L);
+        given(searchResult.getCategory()).willReturn(SearchItemProxy.SUB_CATEGORY.PHENOTYPE);
         given(rf.searchRequest()).willReturn(searchRequest);
         given(searchRequest.searchByFilter(any(String.class), any(ConstEnums.FILTERS.class))).willReturn(rfRequest);
-        SuggestOracle.Request request = new SuggestOracle.Request("test");
-        willDoNothing().given(callback).onSuggestionsReady(eq(request), responseCaptor.capture());
+        willDoNothing().given(callback).onSearchReturned(captor.capture(), eq(SearchItemProxy.SUB_CATEGORY.PHENOTYPE), eq(1L));
 
         doAnswer(new Answer<Void>() {
 
@@ -273,16 +278,14 @@ public class SNPViewerPresenterTest extends PresenterTestBase {
             }
         }).when(rfRequest).fire(any(Receiver.class));
 
-        presenter.onSearchPhenotype(request, callback);
+        presenter.onSearchPhenotype("test", callback);
 
         verify(searchRequest).searchByFilter("test", ConstEnums.FILTERS.PHENOTYPE);
         verify(rfRequest).fire(any(Receiver.class));
-        verify(callback).onSuggestionsReady(eq(request), any(SuggestOracle.Response.class));
-        SuggestOracle.Response response = responseCaptor.getValue();
-        assertThat(response.getSuggestions().size(), is(1));
-        SuggestOracle.Suggestion suggestion = Iterables.get(response.getSuggestions(), 0);
-        assertThat(suggestion, instanceOf(SearchSuggestOracle.SearchSuggestion.class));
-        SearchSuggestOracle.SearchSuggestion searchSuggestion = (SearchSuggestOracle.SearchSuggestion) suggestion;
+        verify(callback).onSearchReturned(any(Collection.class), eq(SearchItemProxy.SUB_CATEGORY.PHENOTYPE), eq(1L));
+        Collection<SearchItemProxy> response = captor.getValue();
+        assertThat(response.size(), is(1));
+        SearchItemProxy suggestion = Iterables.get(response, 0);
     }
 
     @Test

@@ -67,6 +67,8 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
         void showPermissionPanel(boolean show);
 
         void setGWAResultId(Long id);
+
+        void showDeletePopup(GWASResultProxy object);
     }
 
     @ProxyCodeSplit
@@ -253,14 +255,17 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
 
     @Override
     public void onDelete(GWASResultProxy object) {
-        if (Window.confirm("Do you really want to delete the record")) {
-            gwasDataManager.delete(new Receiver<List<GWASResultProxy>>() {
-                @Override
-                public void onSuccess(List<GWASResultProxy> response) {
-                    getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
-                }
-            }, object);
-        }
+        getView().showDeletePopup(object);
+    }
+
+    @Override
+    public void onConfirmDelete(GWASResultProxy object) {
+        gwasDataManager.delete(new Receiver<List<GWASResultProxy>>() {
+            @Override
+            public void onSuccess(List<GWASResultProxy> response) {
+                getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
+            }
+        }, object);
     }
 
     @Override

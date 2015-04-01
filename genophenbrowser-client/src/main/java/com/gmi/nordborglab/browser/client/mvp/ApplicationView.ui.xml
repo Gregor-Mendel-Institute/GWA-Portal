@@ -393,7 +393,7 @@
                     </div>
                 </div>
                 <div class="{style.notification_bar}">
-                    <div ui:field="notificationBarElement" class="alert alert-error"
+                    <div ui:field="notificationBarElement" class="alert alert-danger"
                          style="-webkit-transition: all 0s ease 0s; transition: all 0s ease 0s;opacity:0;">
                         <a class="close" id="notification_close">×</a>
                         <span>

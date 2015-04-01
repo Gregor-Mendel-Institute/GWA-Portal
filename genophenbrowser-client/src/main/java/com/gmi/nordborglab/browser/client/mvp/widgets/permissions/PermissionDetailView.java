@@ -1,9 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.permissions;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonToolbar;
-import com.github.gwtbootstrap.client.ui.FluidRow;
-import com.github.gwtbootstrap.client.ui.TextBox;
+
 import com.gmi.nordborglab.browser.client.editors.PermissionEditor;
 import com.gmi.nordborglab.browser.client.ui.cells.PermissionSelectionCell;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
@@ -12,11 +9,14 @@ import com.gmi.nordborglab.browser.shared.proxy.CustomAclProxy;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.CellWidget;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
@@ -24,6 +24,8 @@ import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.watopi.chosen.client.ChosenOptions;
 import com.watopi.chosen.client.event.ChosenChangeEvent;
 import com.watopi.chosen.client.gwt.ChosenListBox;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,13 +43,13 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
     @UiField
     TextBox shareUrlTb;
     @UiField
-    FluidRow addUserPanel;
+    DivElement addUserPanel;
     @UiField
-    FluidRow changeNotificationPanel;
+    DivElement changeNotificationPanel;
     @UiField
-    FluidRow donePanel;
+    DivElement donePanel;
     @UiField
-    ButtonToolbar addUserBtnPanel;
+    FlowPanel addUserBtnPanel;
     @UiField
     Button addUserBtn;
     @UiField
@@ -76,7 +78,7 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
                                 final PermissionEditDriver permissionEditDriver,
                                 final PermissionEditor permissionEditor, final PermissionSelectionCell permissionSelectionCell
     ) {
-        this.newPermissionDd = new CellWidget<AccessControlEntryProxy>(permissionSelectionCell);
+        this.newPermissionDd = new CellWidget<>(permissionSelectionCell);
         this.permissionEditor = permissionEditor;
         ChosenOptions options = new ChosenOptions();
         options.setSingleBackstrokeDelete(true);
@@ -110,7 +112,7 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
             }
         });
         addUserBtnPanel.setVisible(false);
-        changeNotificationPanel.setVisible(false);
+        changeNotificationPanel.getStyle().setDisplay(Style.Display.NONE);
 
     }
 
@@ -160,9 +162,9 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
 
     @Override
     public void showModifiedNotificaitonPanel(boolean dirty) {
-        changeNotificationPanel.setVisible(dirty);
-        donePanel.setVisible(!dirty);
-        addUserPanel.setVisible(!dirty);
+        changeNotificationPanel.getStyle().setDisplay(dirty ? Style.Display.BLOCK : Style.Display.NONE);
+        donePanel.getStyle().setDisplay(dirty ? Style.Display.NONE : Style.Display.BLOCK);
+        addUserPanel.getStyle().setDisplay(dirty ? Style.Display.NONE : Style.Display.BLOCK);
     }
 
     @Override

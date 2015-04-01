@@ -1,7 +1,5 @@
 package com.gmi.nordborglab.browser.client.ui.card;
 
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.resources.CardRendererResources;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.google.gwt.core.client.GWT;
@@ -17,6 +15,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import org.gwtbootstrap3.client.ui.Icon;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -107,13 +107,13 @@ public class ExperimentCard extends Composite {
             card.addClassName(cardRen.style().card_selected());
             selectIcon.removeStyleName(cardRen.style().empty_ok());
             selectIcon.addStyleName(cardRen.style().ok());
-            selectIcon.setType(IconType.OK);
+            selectIcon.setType(IconType.CHECK);
 
         } else {
             card.removeClassName(cardRen.style().card_selected());
             selectIcon.removeStyleName(cardRen.style().ok());
             selectIcon.addStyleName(cardRen.style().empty_ok());
-            selectIcon.setType(IconType.OK_CIRCLE);
+            selectIcon.setType(IconType.CHECK_CIRCLE);
         }
 
     }

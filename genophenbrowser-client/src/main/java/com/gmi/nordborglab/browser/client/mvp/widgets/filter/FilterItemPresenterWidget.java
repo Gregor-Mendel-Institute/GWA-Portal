@@ -1,11 +1,11 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.filter;
 
 import com.gmi.nordborglab.browser.client.events.FilterAddedEvent;
+import com.gmi.nordborglab.browser.client.manager.SearchManager;
 import com.gmi.nordborglab.browser.shared.dto.FilterItem;
 import com.gmi.nordborglab.browser.shared.dto.FilterItemValue;
 import com.gmi.nordborglab.browser.shared.proxy.FilterItemValueProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
-import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.PresenterWidget;
@@ -93,7 +93,7 @@ public abstract class FilterItemPresenterWidget<C extends FilterItemPresenterWid
     }
 
     @Override
-    public void onSearchByQuery(SuggestOracle.Request request, SuggestOracle.Callback callback) {
+    public void onSearchByQuery(String request, final SearchManager.SearchCallback callback) {
 
     }
 

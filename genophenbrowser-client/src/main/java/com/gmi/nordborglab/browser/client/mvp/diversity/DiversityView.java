@@ -2,10 +2,6 @@ package com.gmi.nordborglab.browser.client.mvp.diversity;
 
 import com.eemi.gwt.tour.client.GwtTour;
 import com.eemi.gwt.tour.client.Tour;
-import com.github.gwtbootstrap.client.ui.AccordionGroup;
-import com.github.gwtbootstrap.client.ui.base.DivWidget;
-import com.github.gwtbootstrap.client.ui.base.ListItem;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.google.common.collect.ImmutableMap;
 import com.google.gwt.resources.client.CssResource;
@@ -23,6 +19,10 @@ import com.google.inject.name.Named;
 import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.ListGroup;
+import org.gwtbootstrap3.client.ui.ListGroupItem;
+import org.gwtbootstrap3.client.ui.Panel;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
 
 import java.util.Map.Entry;
 
@@ -43,26 +43,26 @@ public class DiversityView extends ViewImpl implements
     @UiField
     MyStyle style;
     @UiField
-    AccordionGroup experimentAccGroup;
+    Panel experimentAccGroup;
     @UiField
-    AccordionGroup phenotypeAccGroup;
+    Panel phenotypeAccGroup;
     @UiField
-    AccordionGroup studyAccGroup;
+    Panel studyAccGroup;
     @UiField
-    AccordionGroup ontologiesAccGroup;
+    Panel ontologiesAccGroup;
     @UiField
-    AccordionGroup toolsAccGroup;
+    Panel toolsAccGroup;
     @UiField
     SimpleLayoutPanel searchContainer;
     @UiField
-    AccordionGroup publicationsAccGroup;
+    Panel publicationsAccGroup;
     @UiField
     InlineHyperlink traitOntologyLink;
     @UiField
     InlineHyperlink environOntologyLink;
     @UiField
-    AccordionGroup metaAnalysisAccGroup;
-    private ImmutableMap<MENU_ITEM, AccordionGroup> menuItems;
+    Panel metaAnalysisAccGroup;
+    private ImmutableMap<MENU_ITEM, Panel> menuItems;
     private MENU_ITEM isOpenMenuItem;
     private final Tour welcomeTour;
 
@@ -85,7 +85,7 @@ public class DiversityView extends ViewImpl implements
         // for Tour
         experimentAccGroup.getElement().setId("experimentAccGroup");
         titleLabel.getElement().setId("breadcrumb");
-        menuItems = ImmutableMap.<MENU_ITEM, AccordionGroup>builder()
+        menuItems = ImmutableMap.<MENU_ITEM, Panel>builder()
                 .put(MENU_ITEM.EXPERIMENT, experimentAccGroup)
                 .put(MENU_ITEM.PHENOTYPE, phenotypeAccGroup)
                 .put(MENU_ITEM.STUDY, studyAccGroup)
@@ -160,16 +160,17 @@ public class DiversityView extends ViewImpl implements
 
     @Override
     public void setActiveMenuItem(MENU_ITEM menuItem, PlaceRequest request) {
-        for (Entry<MENU_ITEM, AccordionGroup> entry : menuItems.entrySet()) {
-            AccordionGroup accordionGroup = entry.getValue();
+        for (Entry<MENU_ITEM, Panel> entry : menuItems.entrySet()) {
+            Panel accordionGroup = entry.getValue();
             Widget header = accordionGroup.getWidget(0);
             header.removeStyleName(style.header_section_active());
             setActiveSubMenuItem(accordionGroup, null);
+            PanelCollapse collapse = (PanelCollapse) accordionGroup.getWidget(1);
             if (entry.getKey() == menuItem) {
                 header.addStyleName(style.header_section_active());
                 setActiveSubMenuItem(accordionGroup, request);
                 if (isOpenMenuItem != menuItem) {
-                    accordionGroup.show();
+                    collapse.setIn(true);
                     isOpenMenuItem = menuItem;
                 }
             }
@@ -187,13 +188,13 @@ public class DiversityView extends ViewImpl implements
         }
     }
 
-    private void setActiveSubMenuItem(AccordionGroup accordionGroup, PlaceRequest request) {
+    private void setActiveSubMenuItem(Panel accordionGroup, PlaceRequest request) {
         try {
-            DivWidget innerBody = (DivWidget) ((DivWidget) accordionGroup.getWidget(1)).getWidget(0);
-            UnorderedList ul = (UnorderedList) innerBody.getWidget(0);
+
+            ListGroup ul = (ListGroup) ((PanelCollapse) accordionGroup.getWidget(1)).getWidget(0);
             for (int i = 0; i < ul.getWidgetCount(); i++) {
-                ListItem li = (ListItem) ul.getWidget(i);
-                InlineHyperlink link = (InlineHyperlink) li.getWidget(0);
+                ListGroupItem li = (ListGroupItem) ul.getWidget(i);
+                InlineHyperlink link = (InlineHyperlink) li.getWidget(1);
                 if (request != null && request.matchesNameToken(link.getTargetHistoryToken())) {
                     link.addStyleName(style.subitem_active());
                 } else {

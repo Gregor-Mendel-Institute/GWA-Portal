@@ -1,19 +1,10 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.study.detail;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Divider;
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.ModalFooter;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.constants.BackdropType;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.gmi.nordborglab.browser.client.editors.StudyDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.StudyEditEditor;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.CircularProgressBar;
-import com.gmi.nordborglab.browser.client.ui.EnableDropdownButton;
 import com.gmi.nordborglab.browser.client.ui.PlotDownloadPopup;
 import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
@@ -37,9 +28,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -52,6 +43,15 @@ import com.google.gwt.visualization.client.visualizations.corechart.PieChart.Pie
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.Anchor;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.extras.bootbox.client.Bootbox;
+import org.gwtbootstrap3.extras.bootbox.client.callback.AlertCallback;
 
 import java.util.Map;
 
@@ -98,10 +98,10 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     private ResizeableMotionChart motionChart;
     private GeoChart geoChart = new GeoChart();
     private PieChart pieChart;
-    private Modal gwasUploadPopup = new Modal(true);
+    private Modal gwasUploadPopup = new Modal();
     private Modal plotsPopup = new Modal();
-    private Modal editPopup = new Modal(true);
-    private Modal deletePopup = new Modal(true);
+    private Modal editPopup = new Modal();
+    private Bootbox.Dialog deletePopup = Bootbox.Dialog.create();
     private PlotDownloadPopup plotsPanel = new PlotDownloadPopup(PlotDownloadPopup.PLOT_TYPE.STUDY);
 
     @UiField(provided = true)
@@ -120,37 +120,33 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     @UiField
     HTMLPanel motionChartBtnContainer;
     @UiField
-    Icon edit;
+    Anchor edit;
     @UiField
-    Icon delete;
+    Anchor delete;
     @UiField(provided = true)
     MainResources mainRes;
     @UiField
-    NavLink uploadBtn;
+    AnchorListItem uploadBtn;
     @UiField
-    NavLink startBtn;
+    AnchorListItem startBtn;
 
     @UiField
-    com.google.gwt.user.client.ui.Label modifiedLb;
+    Label modifiedLb;
     @UiField
-    com.google.gwt.user.client.ui.Label createdLb;
+    Label createdLb;
     @UiField
-    com.google.gwt.user.client.ui.Label taskLb;
-
-    /*@UiField
-    NavPills actionDd;
-    */
+    Label taskLb;
 
     @UiField
     CircularProgressBar jobProgress;
     @UiField
-    EnableDropdownButton jobNABtn;
+    Button jobNABtn;
     @UiField
-    EnableDropdownButton jobERRORBtn;
+    Button jobERRORBtn;
     @UiField
-    EnableDropdownButton jobFinishedBtn;
+    Button jobFinishedBtn;
     @UiField
-    Button jobWaitingBtn;
+    org.gwtbootstrap3.client.ui.Button jobWaitingBtn;
     @UiField
     HTMLPanel gwasJobContainer;
     @UiField
@@ -158,17 +154,21 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     @UiField
     LayoutPanel topLeftPanel;
     @UiField
-    NavLink navLinkPvalCSV;
+    AnchorListItem navLinkPvalCSV;
     @UiField
-    NavLink navLinkPvalHDF5;
+    AnchorListItem navLinkPvalHDF5;
     @UiField
-    NavLink navLinkPvalJSON;
+    AnchorListItem navLinkPvalJSON;
     @UiField
-    Divider downloadDivider;
+    org.gwtbootstrap3.client.ui.Divider downloadDivider;
     @UiField
-    NavLink navLinkPhenCSV;
+    AnchorListItem navLinkPhenCSV;
     @UiField
-    NavLink navLinkPhenJSON;
+    AnchorListItem navLinkPhenJSON;
+    @UiField
+    HTMLPanel topRightPanel;
+    @UiField
+    HTMLPanel lowerPanel;
 
 
     @Inject
@@ -177,12 +177,13 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         this.mainRes = mainRes;
         this.studyDisplayEditor = studyDisplayEditor;
         widget = binder.createAndBindUi(this);
+
         this.displayDriver = displayDriver;
         this.displayDriver.initialize(studyDisplayEditor);
         this.editDriver = editDriver;
         this.editDriver.initialize(studyEditEditor);
-        editPopup.setBackdrop(BackdropType.STATIC);
-        editPopup.setCloseVisible(true);
+
+
         editPopup.setTitle("Edit analysis");
         Button cancelEditBtn = new Button("Cancel", new ClickHandler() {
             @Override
@@ -198,35 +199,36 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
             }
         });
         saveEditBtn.setType(ButtonType.PRIMARY);
-        plotsPopup.add(plotsPanel);
-        plotsPopup.setTitle("Download GWAS plots");
-        ModalFooter footer = new ModalFooter(cancelEditBtn, saveEditBtn);
-        editPopup.add(studyEditEditor);
+        ModalFooter footer = new ModalFooter();
+        footer.add(cancelEditBtn);
+        footer.add(saveEditBtn);
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(studyEditEditor);
+        editPopup.add(modalBody);
         editPopup.add(footer);
+        gwasUploadPopup.setTitle("Upload GWAS result");
 
-        deletePopup.setBackdrop(BackdropType.STATIC);
-        deletePopup.setCloseVisible(true);
-        deletePopup.add(new HTML("<h4>Do you really want to delete the analysis?</h4>"));
-        Button cancelDeleteBtn = new Button("Cancel", new ClickHandler() {
+        plotsPopup.setTitle("Download GWAS plots");
+        modalBody = new ModalBody();
+        modalBody.add(plotsPanel);
+        plotsPopup.add(modalBody);
+
+
+        deletePopup.setTitle("Delete analysis");
+        deletePopup.setMessage("Do you really want to delete the analysis?");
+        deletePopup.addButton("Cancel", ButtonType.DEFAULT.getCssName());
+        deletePopup.addButton("Delete", ButtonType.DANGER.getCssName(), new AlertCallback() {
             @Override
-            public void onClick(ClickEvent event) {
-                deletePopup.hide();
-            }
-        });
-        cancelDeleteBtn.setType(ButtonType.DEFAULT);
-        Button deleteBtn = new Button("Delete", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
+            public void callback() {
                 getUiHandlers().onConfirmDelete();
             }
         });
-        deleteBtn.setType(ButtonType.DANGER);
-        deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
-
         gwasJobContainer.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         gwasJobContainer.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         actionBarPanel.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        topRightPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        lowerPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
 
 
         Map<Range<Integer>, String> colorRanges = ImmutableMap.<Range<Integer>, String>builder()
@@ -307,7 +309,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
                 jobTask = "Click on N/A to start";
             }
             jobNABtn.setVisible(true);
-            jobNABtn.setEnable(hasPermission);
+            jobNABtn.setEnabled(hasPermission);
         } else {
             jobTask = job.getTask();
             progress = job.getProgress();
@@ -315,7 +317,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
             //jobStatusLb.setText(job.getStatus());
             if (job.getStatus().equalsIgnoreCase("Finished")) {
                 jobFinishedBtn.setVisible(true);
-                jobFinishedBtn.setEnable(hasPermission);
+                jobFinishedBtn.setEnabled(hasPermission);
             } else if (job.getStatus().equalsIgnoreCase("Waiting")) {
                 jobWaitingBtn.setVisible(true);
                 jobWaitingBtn.setText("Waiting");
@@ -327,7 +329,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
                 jobWaitingBtn.setText("Running");
             } else if (job.getStatus().equalsIgnoreCase("Error")) {
                 jobERRORBtn.setVisible(true);
-                jobERRORBtn.setEnable(hasPermission);
+                jobERRORBtn.setEnabled(hasPermission);
                 jobProgress.setHasError(true);
             }
             Long currentTimeMillis = System.currentTimeMillis();
@@ -507,8 +509,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     @UiHandler("uploadBtn")
     public void onClickUploadBtn(ClickEvent e) {
         getUiHandlers().onClickUpload();
-        gwasUploadPopup.setMaxHeigth(widget.getOffsetHeight() + "px");
-        gwasUploadPopup.setWidth(widget.getOffsetWidth());
+        gwasUploadPopup.setWidth(widget.getOffsetWidth() + "px");
         gwasUploadPopup.show();
     }
 
@@ -537,7 +538,9 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     @Override
     public void setInSlot(Object slot, IsWidget content) {
         if (slot == StudyDetailPresenter.TYPE_SetGWASUploadContent) {
-            gwasUploadPopup.add(content);
+            ModalBody modalBody = new ModalBody();
+            modalBody.add(content);
+            gwasUploadPopup.add(modalBody);
         } else {
             super.setInSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
         }
@@ -553,10 +556,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 
     @Override
     public void showDeletePopup(boolean show) {
-        if (show)
-            deletePopup.show();
-        else
-            deletePopup.hide();
+        Bootbox.dialog(deletePopup);
     }
 
     @Override

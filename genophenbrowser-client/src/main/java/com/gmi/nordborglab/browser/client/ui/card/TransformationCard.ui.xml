@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
 
     <ui:with type="com.gmi.nordborglab.browser.client.resources.CardRendererResources" field="cardRen"></ui:with>
 
@@ -39,7 +39,7 @@
                     <p>
                         <b>Shapiro-wilk score:</b>
                         <span ui:field="shapiroScoreLb"/>
-                        <b:Icon type="OK" addStyleNames="pull-right {cardRen.style.empty_ok}" ui:field="selectIcon"/>
+                        <b:Icon type="CHECK" addStyleNames="pull-right {cardRen.style.empty_ok}" ui:field="selectIcon"/>
                     </p>
                 </div>
             </div>

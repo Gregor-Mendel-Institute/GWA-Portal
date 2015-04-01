@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.ui.card;
 
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
+
 import com.gmi.nordborglab.browser.client.events.SelectMethodEvent;
 import com.gmi.nordborglab.browser.client.resources.CardRendererResources;
 import com.gmi.nordborglab.browser.client.util.DateUtils;
@@ -19,6 +18,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.web.bindery.event.shared.EventBus;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,7 +34,7 @@ public class MethodCard extends Composite {
     private static MethodCardUiBinder ourUiBinder = GWT.create(MethodCardUiBinder.class);
 
     @UiField
-    Icon selectIcon;
+    org.gwtbootstrap3.client.ui.Icon selectIcon;
     @UiField
     HeadingElement title;
     @UiField
@@ -94,13 +94,13 @@ public class MethodCard extends Composite {
             card.addClassName(cardRen.style().card_selected());
             selectIcon.removeStyleName(cardRen.style().empty_ok());
             selectIcon.addStyleName(cardRen.style().ok());
-            selectIcon.setType(IconType.OK);
+            selectIcon.setType(IconType.CHECK);
 
         } else {
             card.removeClassName(cardRen.style().card_selected());
             selectIcon.removeStyleName(cardRen.style().ok());
             selectIcon.addStyleName(cardRen.style().empty_ok());
-            selectIcon.setType(IconType.OK_CIRCLE);
+            selectIcon.setType(IconType.CHECK_CIRCLE);
         }
     }
 

@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.ui;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
+
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
@@ -17,6 +16,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,11 +56,11 @@ public class WizardPanel extends ResizeComposite {
     @UiField
     DeckLayoutPanel pageContainer;
     @UiField
-    Button nextBtn;
+    org.gwtbootstrap3.client.ui.Button nextBtn;
     @UiField
-    Button previousBtn;
+    org.gwtbootstrap3.client.ui.Button previousBtn;
     @UiField
-    Button cancelBtn;
+    org.gwtbootstrap3.client.ui.Button cancelBtn;
     @UiField
     HTMLPanel indicator;
     @UiField

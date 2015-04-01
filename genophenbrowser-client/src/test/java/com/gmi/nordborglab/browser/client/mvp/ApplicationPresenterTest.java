@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp;
 
-import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.mvp.ApplicationPresenter.MENU;
 import com.gmi.nordborglab.browser.client.testutils.PresenterTestBase;
@@ -10,6 +9,7 @@ import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.vm.AutoBeanFactorySource;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.constants.AlertType;
 import org.junit.Before;
 import org.junit.Test;
 

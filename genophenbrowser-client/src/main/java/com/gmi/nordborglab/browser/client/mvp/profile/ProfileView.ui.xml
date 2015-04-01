@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
         >
 
     <ui:style>
@@ -146,16 +146,16 @@
                 <div class="{style.header}">
                     <h3>Profile
                         <span style="font-size: 20px;float: right;margin-right: 10px;">
-                            <a ui:field="editLink" class="btn btn-success">
-                                <i class="icon-edit"></i>
+                            <a ui:field="editLink" class="btn btn-success" href="#" role="button">
+                                <i class="fa fa-pencil-square-o"></i>
                                 Edit this user
                             </a>
                         </span>
                     </h3>
                 </div>
                 <div class="container-fluid">
-                    <div class="row-fluid">
-                        <div class="span5" style="margin-bottom:20px;">
+                    <div class="row">
+                        <div class="col-md-5" style="margin-bottom:20px;">
                             <div class="{style.avatar_container}">
                                 <div class="{style.avatar_img}">
                                     <img class="img-circle" ui:field="avatarImg"/>
@@ -167,9 +167,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="span7">
-                            <div class="row-fluid">
-                                <div class="span4">
+                        <div class="col-md-7">
+                            <div class="row">
+                                <div class="col-sm-4">
                                     <div class="{style.box}">
                                         <span class="{style.stats_item_icon} {style.bred}">
                                             <i class="e_icon-thermometer"/>
@@ -181,7 +181,7 @@
                                         <span class="{style.stats_item_value}" ui:field="studyCountLb"/>
                                     </div>
                                 </div>
-                                <div class="span4">
+                                <div class="col-sm-4">
                                     <div class="{style.box}">
                                         <span class="{style.stats_item_icon} {style.green}">
                                             <i class="e_icon-feather"/>
@@ -193,7 +193,7 @@
                                         <span class="{style.stats_item_value}" ui:field="phenotypeCountLb"/>
                                     </div>
                                 </div>
-                                <div class="span4">
+                                <div class="col-sm-4">
                                     <div class="{style.box}">
                                         <span class="{style.stats_item_icon} {style.yellow}">
                                             <i class="e_icon-monitor"/>
@@ -208,19 +208,22 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row-fluid">
-                        <div class="span12">
+                    <div class="row">
+                        <div class="col-sm-12">
                             <div class="{style.widget}" id="charts">
                                 <div class="{style.widget_header}">
                                     <i class="e_icon-thermometer" ui:field="typeIcon"/>
                                     <h2>
                                         <span ui:field="typeLb"/>
                                     </h2>
-                                    <b:ButtonGroup ui:field="typeBtnGroup" toggle="radio"
+                                    <b:ButtonGroup ui:field="typeBtnGroup" dataToggle="BUTTONS"
                                                    addStyleNames="pull-right">
-                                        <b:Button ui:field="studyTypeBtn" size="SMALL">Studies</b:Button>
-                                        <b:Button ui:field="phenotypeBtn" size="SMALL">Phenotypes</b:Button>
-                                        <b:Button ui:field="analysisBtn" size="SMALL">Analyses</b:Button>
+                                        <b:RadioButton name="typeBtn" ui:field="studyTypeBtn" size="SMALL">Studies
+                                        </b:RadioButton>
+                                        <b:RadioButton name="typeBtn" ui:field="phenotypeBtn" size="SMALL">Phenotypes
+                                        </b:RadioButton>
+                                        <b:RadioButton name="typeBtn" ui:field="analysisBtn" size="SMALL">Analyses
+                                        </b:RadioButton>
                                     </b:ButtonGroup>
                                 </div>
                                 <hr></hr>

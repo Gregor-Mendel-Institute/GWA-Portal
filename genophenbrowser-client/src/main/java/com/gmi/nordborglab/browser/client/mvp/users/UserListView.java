@@ -22,6 +22,7 @@ import com.google.gwt.view.client.HasData;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
+import org.gwtbootstrap3.client.ui.Pagination;
 
 import java.util.Date;
 
@@ -44,19 +45,22 @@ public class UserListView extends ViewWithUiHandlers<UserListUiHandler> implemen
     private final Widget widget;
     private final PlaceManager placeManager;
     private final AvatarNameCell avatarNameCell;
-    @UiField
-    NumberedPager pager;
+    private final NumberedPager pager;
+
     @UiField
     SimplePanel facetContainer;
+    @UiField
+    Pagination pagination;
 
 
     @Inject
     public UserListView(final Binder binder, final PlaceManager placeManager, final CustomDataGridResources dataGridResources,
                         final AvatarNameCell avatarNameCell) {
         this.avatarNameCell = avatarNameCell;
-        table = new DataGrid<AppUserProxy>(15, dataGridResources);
+        table = new DataGrid<>(15, dataGridResources);
         widget = binder.createAndBindUi(this);
         initDataGrid();
+        pager = new NumberedPager(pagination);
         pager.setDisplay(table);
         this.placeManager = placeManager;
     }
@@ -120,4 +124,6 @@ public class UserListView extends ViewWithUiHandlers<UserListUiHandler> implemen
     public HasData<AppUserProxy> getDisplay() {
         return table;
     }
+
+
 }

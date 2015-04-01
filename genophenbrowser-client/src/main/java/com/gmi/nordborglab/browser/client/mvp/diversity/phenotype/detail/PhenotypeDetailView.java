@@ -1,15 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.detail;
 
 import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.ModalFooter;
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.github.gwtbootstrap.client.ui.NavPills;
-import com.github.gwtbootstrap.client.ui.base.IconAnchor;
-import com.github.gwtbootstrap.client.ui.constants.BackdropType;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeEditEditor;
 import com.gmi.nordborglab.browser.client.manager.OntologyManager;
@@ -35,7 +26,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
@@ -48,6 +38,16 @@ import com.google.gwt.visualization.client.visualizations.corechart.PieChart.Pie
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.Anchor;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
+import org.gwtbootstrap3.extras.bootbox.client.Bootbox;
+import org.gwtbootstrap3.extras.bootbox.client.callback.AlertCallback;
 
 import java.util.Collection;
 import java.util.List;
@@ -84,21 +84,25 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     @UiField
     HTMLPanel motionChartBtnContainer;
     @UiField
-    Icon edit;
+    Anchor edit;
     @UiField
-    Icon delete;
+    Anchor delete;
     @UiField(provided = true)
     MainResources mainRes;
     @UiField
-    NavPills statisticTypePills;
+    org.gwtbootstrap3.client.ui.NavPills statisticTypePills;
     @UiField
     LayoutPanel container;
     @UiField
-    NavLink navLinkPhenCSV;
+    AnchorListItem navLinkPhenCSV;
     @UiField
-    NavLink navLinkPhenJSON;
+    AnchorListItem navLinkPhenJSON;
     @UiField
     HTMLPanel actionBarPanel;
+    @UiField
+    HTMLPanel topRightPanel;
+    @UiField
+    HTMLPanel lowerPanel;
     protected DataTable histogramData;
     protected DataTable phenotypeExplorerData;
     protected DataTable geoChartData;
@@ -115,17 +119,17 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     private final PhenotypeEditDriver editDriver;
     private boolean layoutScheduled = false;
     private boolean showBlank = true;
-    private Modal editPopup = new Modal(true);
-    private Modal deletePopup = new Modal(true);
-    private ImmutableBiMap<StatisticTypeProxy, NavLink> statisticTypeLinks;
+    private Modal editPopup = new Modal();
+    private Bootbox.Dialog deletePopup = Bootbox.Dialog.create();
+    private ImmutableBiMap<StatisticTypeProxy, AnchorListItem> statisticTypeLinks;
 
     ClickHandler statisticTypeClickhandler = new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-            IconAnchor source = (IconAnchor) event.getSource();
-            if (source.getParent() instanceof NavLink) {
-                NavLink link = (NavLink) source.getParent();
-                if (link.isDisabled())
+            Anchor source = (Anchor) event.getSource();
+            if (source.getParent() instanceof AnchorListItem) {
+                AnchorListItem link = (AnchorListItem) source.getParent();
+                if (!link.isEnabled())
                     return;
                 resetStatisticTypeLinkActive();
                 link.setActive(true);
@@ -155,8 +159,8 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         this.displayDriver.initialize(phenotypeDisplayEditor);
         this.editDriver.initialize(phenotypeEditEditor);
         phenotypeEditEditor.setOntologyManager(ontologyManager);
-        editPopup.setBackdrop(BackdropType.STATIC);
-        editPopup.setCloseVisible(true);
+        editPopup.setDataBackdrop(ModalBackdrop.STATIC);
+        editPopup.setClosable(true);
         editPopup.setTitle("Edit phenotype");
         Button cancelEditBtn = new Button("Cancel", new ClickHandler() {
             @Override
@@ -172,30 +176,28 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
             }
         });
         saveEditBtn.setType(ButtonType.PRIMARY);
-        ModalFooter footer = new ModalFooter(cancelEditBtn, saveEditBtn);
-        editPopup.add(phenotypeEditEditor);
+        ModalFooter footer = new ModalFooter();
+        footer.add(cancelEditBtn);
+        footer.add(saveEditBtn);
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(phenotypeEditEditor);
+        editPopup.add(modalBody);
         editPopup.add(footer);
 
-        deletePopup.setBackdrop(BackdropType.STATIC);
-        deletePopup.setCloseVisible(true);
-        deletePopup.add(new HTML("<h4>Do you really want to delete the phenotype?</h4>"));
-        Button cancelDeleteBtn = new Button("Cancel", new ClickHandler() {
+        deletePopup.setTitle("Delete phenotype");
+        deletePopup.setMessage("Do you really want to delete the phenotype?");
+        deletePopup.addButton("Cancel", ButtonType.DEFAULT.getCssName());
+        deletePopup.addButton("Delete", ButtonType.DANGER.getCssName(), new AlertCallback() {
             @Override
-            public void onClick(ClickEvent event) {
-                deletePopup.hide();
-            }
-        });
-        cancelDeleteBtn.setType(ButtonType.DEFAULT);
-        Button deleteBtn = new Button("Delete", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
+            public void callback() {
                 getUiHandlers().onConfirmDelete();
             }
         });
-        deleteBtn.setType(ButtonType.DANGER);
-        deletePopup.add(new ModalFooter(cancelDeleteBtn, deleteBtn));
+
         actionBarPanel.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        topRightPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        lowerPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         edit.addDomHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -211,16 +213,16 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     }
 
     private void resetStatisticTypeLinkActive() {
-        for (NavLink link : statisticTypeLinks.values()) {
+        for (AnchorListItem link : statisticTypeLinks.values()) {
             link.setActive(false);
         }
     }
 
     private void resetStatisticTypeLinks() {
-        for (Map.Entry<StatisticTypeProxy, NavLink> entrySet : statisticTypeLinks.entrySet()) {
-            NavLink link = entrySet.getValue();
+        for (Map.Entry<StatisticTypeProxy, AnchorListItem> entrySet : statisticTypeLinks.entrySet()) {
+            AnchorListItem link = entrySet.getValue();
             StatisticTypeProxy statisticType = entrySet.getKey();
-            link.setDisabled(true);
+            link.setEnabled(false);
             link.setText(statisticType.getStatType());
             link.setActive(false);
         }
@@ -229,12 +231,12 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     @Override
     public void setAvailableStatisticTypes(List<StatisticTypeProxy> statisticTypes) {
         statisticTypePills.clear();
-        ImmutableBiMap.Builder builder = ImmutableBiMap.<StatisticTypeProxy, NavLink>builder();
+        ImmutableBiMap.Builder builder = ImmutableBiMap.<StatisticTypeProxy, AnchorListItem>builder();
         for (StatisticTypeProxy statisticType : statisticTypes) {
             if (statisticType == null)
                 continue;
-            NavLink link = new NavLink(statisticType.getStatType());
-            link.setDisabled(true);
+            AnchorListItem link = new AnchorListItem(statisticType.getStatType());
+            link.setEnabled(false);
             link.addClickHandler(statisticTypeClickhandler);
             builder.put(statisticType, link);
             statisticTypePills.add(link);
@@ -249,10 +251,10 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
             return;
         for (int i = 0; i < statisticTypes.size(); i++) {
             StatisticTypeProxy statisticType = statisticTypes.get(i);
-            NavLink link = statisticTypeLinks.get(statisticType);
+            AnchorListItem link = statisticTypeLinks.get(statisticType);
             if (link != null) {
                 link.setText(statisticType.getStatType() + " [" + statisticType.getNumberOfTraits() + "]");
-                link.setDisabled(false);
+                link.setEnabled(true);
             }
         }
         if (statisticTypes.size() == 1) {
@@ -483,9 +485,6 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 
     @Override
     public void showDeletePopup(boolean show) {
-        if (show)
-            deletePopup.show();
-        else
-            deletePopup.hide();
+        Bootbox.dialog(deletePopup);
     }
 }

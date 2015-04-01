@@ -1,9 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.germplasm;
 
-import com.github.gwtbootstrap.client.ui.Accordion;
-import com.github.gwtbootstrap.client.ui.AccordionGroup;
-import com.github.gwtbootstrap.client.ui.base.ListItem;
-import com.github.gwtbootstrap.client.ui.base.UnorderedList;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
@@ -24,10 +20,17 @@ import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.ListGroup;
+import org.gwtbootstrap3.client.ui.ListGroupItem;
+import org.gwtbootstrap3.client.ui.Panel;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.PanelGroup;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.constants.Toggle;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+
 
 public class GermplasmView extends ViewImpl implements
         GermplasmPresenter.MyView {
@@ -40,13 +43,7 @@ public class GermplasmView extends ViewImpl implements
     public interface MyStyle extends CssResource {
         String header_section();
 
-        String accordion_group_top();
-
         String header_section_active();
-
-        String subitem_list();
-
-        String subitem();
 
         String subitem_active();
 
@@ -73,9 +70,12 @@ public class GermplasmView extends ViewImpl implements
     private MainResources mainRes;
 
     private final PlaceManager placeManager;
-    private Accordion accordion = null;
-    private Map<Long, AccordionGroup> accordionGroups = new HashMap<Long, AccordionGroup>();
-    private Map<Long, UnorderedList> subMenuItems = new HashMap<Long, UnorderedList>();
+    private PanelGroup accordion = null;
+    private Map<Long, Panel> accordionGroups = new HashMap<>();
+    private Map<Long, ListGroup> subMenuItems = new HashMap<Long, ListGroup>();
+
+    private final static String PANEL_ID = "germplasmmenu";
+
 
     @Inject
     public GermplasmView(final Binder binder, final PlaceManager placeManager,
@@ -147,19 +147,31 @@ public class GermplasmView extends ViewImpl implements
     public void initMenu(ImmutableList<TaxonomyProxy> taxonomies) {
         if (menuInitialized)
             return;
+
         accordionGroups.clear();
         subMenuItems.clear();
         InlineHyperlink subItem = null;
-        ListItem li = null;
+        ListGroupItem li = null;
+        ListGroup ul = null;
         PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.taxonomy);
         PlaceRequest.Builder requestPassports = new PlaceRequest.Builder().nameToken(NameTokens.passports);
-        accordion = new Accordion();
+        accordion = new PanelGroup();
+        accordion.setId(PANEL_ID);
         int i = 0;
         for (TaxonomyProxy taxonomy : taxonomies) {
+            String COLLAPSE_ID = "taxonomy_" + taxonomy.getId();
             request.with("id", taxonomy.getId().toString());
             requestPassports.with("id", taxonomy.getId().toString());
-            AccordionGroup menuItem = new AccordionGroup();
+
+            Panel menuItem = new Panel();
             accordionGroups.put(taxonomy.getId(), menuItem);
+
+            PanelHeader panelHeader = new PanelHeader();
+            panelHeader.setDataParent("#" + PANEL_ID);
+            panelHeader.setDataTarget("#" + COLLAPSE_ID);
+            panelHeader.setDataToggle(Toggle.COLLAPSE);
+            menuItem.add(panelHeader);
+
             HTMLPanel header = new HTMLPanel("");
             header.setStylePrimaryName(style.header_section());
             Label icon = new Label();
@@ -167,56 +179,55 @@ public class GermplasmView extends ViewImpl implements
             icon.addStyleName(style.icon());
             InlineLabel l = new InlineLabel();
             l.setText(taxonomy.getGenus() + " " + taxonomy.getSpecies());
-            // Label l = new Label();
-            // l.setStylePrimaryName(style.header_section());
             header.add(icon);
             header.add(l);
+            panelHeader.add(header);
 
+            PanelCollapse panelCollapse = new PanelCollapse();
+            panelCollapse.setId(COLLAPSE_ID);
             if (i == 0) {
-                if (taxonomies.size() > 1)
-                    menuItem.addStyleName(style.accordion_group_top());
-                menuItem.setDefaultOpen(true);
+                panelCollapse.setIn(true);
             }
-            menuItem.addCustomTrigger(header);
-            UnorderedList ul = new UnorderedList();
+            menuItem.add(panelCollapse);
+            ul = new ListGroup();
             subMenuItems.put(taxonomy.getId(), ul);
-            ul.setStyleName(style.subitem_list());
             subItem = new InlineHyperlink();
-            subItem.setStylePrimaryName(style.subitem());
             subItem.setText("Overview");
             subItem.setTargetHistoryToken(placeManager
                     .buildHistoryToken(request.build()));
-            li = new ListItem(subItem);
+            li = new ListGroupItem();
+            li.add(subItem);
             ul.add(li);
 
             subItem = new InlineHyperlink();
-            subItem.setStylePrimaryName(style.subitem());
             subItem.setText("All Accessions");
             requestPassports.with("alleleAssayId", "0");
             subItem.setTargetHistoryToken(placeManager
                     .buildHistoryToken(requestPassports.build()));
-            subItem.getElement().setAttribute("alleleAssayId", "0");
-            li = new ListItem(subItem);
+            li = new ListGroupItem();
+            li.getElement().setAttribute("alleleAssayId", "0");
+            li.add(subItem);
             ul.add(li);
 
             if (taxonomy.getAlleleAssays() != null) {
                 for (AlleleAssayProxy alleleAssay : taxonomy.getAlleleAssays()) {
+                    li = new ListGroupItem();
+                    li.getElement().setAttribute("alleleAssayId",
+                            alleleAssay.getId().toString());
                     subItem = new InlineHyperlink();
-                    subItem.setStylePrimaryName(style.subitem());
                     subItem.setText(alleleAssay.getName());
                     subItem.setTargetHistoryToken(placeManager
                             .buildHistoryToken(requestPassports.with(
                                     "alleleAssayId", alleleAssay.getId()
                                             .toString()
                             ).build()));
-                    subItem.getElement().setAttribute("alleleAssayId",
-                            alleleAssay.getId().toString());
                     requestPassports.with("alleleAssayId", alleleAssay.getId()
                             .toString());
-                    ul.add(new ListItem(subItem));
+                    li.add(subItem);
+                    ul.add(li);
                 }
             }
-            menuItem.add(ul);
+            panelCollapse.add(ul);
             accordion.add(menuItem);
             i = i + 1;
         }
@@ -224,9 +235,10 @@ public class GermplasmView extends ViewImpl implements
         menuInitialized = true;
     }
 
+
     @Override
     public void setActiveMenuItem(Long selectedTaxonomyId, Long alleleAssayId) {
-        for (Entry<Long, AccordionGroup> group : accordionGroups.entrySet()) {
+        for (Map.Entry<Long, Panel> group : accordionGroups.entrySet()) {
             Widget header = group.getValue().getWidget(0);
             header.removeStyleName(style.header_section_active());
             if (selectedTaxonomyId != null) {
@@ -236,10 +248,10 @@ public class GermplasmView extends ViewImpl implements
             }
         }
 
-        for (Entry<Long, UnorderedList> listEntry : subMenuItems.entrySet()) {
-            UnorderedList list = listEntry.getValue();
+        for (Map.Entry<Long, ListGroup> listEntry : subMenuItems.entrySet()) {
+            ListGroup list = listEntry.getValue();
             for (int i = 0; i < list.getWidgetCount(); i++) {
-                ListItem item = (ListItem) list.getWidget(i);
+                ListGroupItem item = (ListGroupItem) list.getWidget(i);
                 item.removeStyleName(style.subitem_active());
                 if (selectedTaxonomyId != null
                         && selectedTaxonomyId == listEntry.getKey()) {
@@ -248,7 +260,7 @@ public class GermplasmView extends ViewImpl implements
                     } else if (i > 0
                             && alleleAssayId != null
                             && alleleAssayId == Long.parseLong(item
-                            .getWidget(0).getElement()
+                            .getElement()
                             .getAttribute("alleleAssayId"))) {
                         item.addStyleName(style.subitem_active());
                     }

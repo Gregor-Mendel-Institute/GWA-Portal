@@ -1,7 +1,6 @@
 package com.gmi.nordborglab.browser.client.editors;
 
-import com.gmi.nordborglab.browser.client.ui.ValidationValueBoxEditorDecorator;
-import com.gmi.nordborglab.browser.client.ui.ValidationValueListEditorDecorator;
+
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProtocolProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
@@ -11,11 +10,12 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.ValueListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.google.web.bindery.requestfactory.gwt.ui.client.ProxyRenderer;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.ValueListBox;
 
 import java.util.List;
 
@@ -29,22 +29,18 @@ public class StudyCreateEditor extends Composite implements Editor<StudyProxy> {
     }
 
     @UiField
-    ValidationValueBoxEditorDecorator<String> name;
+    TextBox name;
     @UiField
-    ValidationValueBoxEditorDecorator<String> producer;
-    @UiField
-    ValidationValueListEditorDecorator<StudyProtocolProxy> protocol;
-    @Ignore
-    private ValueListBox<StudyProtocolProxy> protocolListBox;
-    @Ignore
-    private ValueListBox<AlleleAssayProxy> genotypeListBox;
+    TextBox producer;
+    @UiField(provided = true)
+    ValueListBox<StudyProtocolProxy> protocol;
     @Path("alleleAssay")
-    @UiField
-    ValidationValueListEditorDecorator<AlleleAssayProxy> genotype;
+    @UiField(provided = true)
+    ValueListBox<AlleleAssayProxy> genotype;
 
 
     public StudyCreateEditor() {
-        protocolListBox = new ValueListBox<StudyProtocolProxy>(new ProxyRenderer<StudyProtocolProxy>(null) {
+        protocol = new ValueListBox<>(new ProxyRenderer<StudyProtocolProxy>(null) {
 
             @Override
             public String render(StudyProtocolProxy object) {
@@ -52,7 +48,7 @@ public class StudyCreateEditor extends Composite implements Editor<StudyProxy> {
             }
 
         }, new EntityProxyKeyProvider<StudyProtocolProxy>());
-        genotypeListBox = new ValueListBox<AlleleAssayProxy>(new ProxyRenderer<AlleleAssayProxy>(null) {
+        genotype = new ValueListBox<>(new ProxyRenderer<AlleleAssayProxy>(null) {
 
             @Override
             public String render(AlleleAssayProxy object) {
@@ -60,17 +56,15 @@ public class StudyCreateEditor extends Composite implements Editor<StudyProxy> {
             }
         }, new EntityProxyKeyProvider<AlleleAssayProxy>());
         initWidget(uiBinder.createAndBindUi(this));
-        protocol.setValueListBox(protocolListBox);
-        genotype.setValueListBox(genotypeListBox);
     }
 
     public void setAcceptableValues(List<StudyProtocolProxy> protocolValues, List<AlleleAssayProxy> genotypeValues) {
-        protocolListBox.setAcceptableValues(protocolValues);
-        genotypeListBox.setAcceptableValues(genotypeValues);
+        protocol.setAcceptableValues(protocolValues);
+        genotype.setAcceptableValues(genotypeValues);
     }
 
     public HandlerRegistration addGenotypeChangeHandler(ValueChangeHandler<AlleleAssayProxy> handler) {
-        return genotypeListBox.addValueChangeHandler(handler);
+        return genotype.addValueChangeHandler(handler);
     }
 
 }

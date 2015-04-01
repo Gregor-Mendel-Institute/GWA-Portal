@@ -1,29 +1,29 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.search;
 
-import com.github.gwtbootstrap.client.ui.base.TextBox;
 import com.gmi.nordborglab.browser.client.ui.SearchSuggestDisplay;
 import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle;
 import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle.SearchSuggestion;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.InputGroupAddon;
+import org.gwtbootstrap3.client.ui.SuggestBox;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 public class SearchView extends ViewWithUiHandlers<SearchUiHandlers> implements SearchPresenter.MyView {
 
     private final Widget widget;
     private int minCharSize = 3;
     @UiField(provided = true)
-    SuggestBox suggestBox;
+    org.gwtbootstrap3.client.ui.SuggestBox suggestBox;
     @UiField
-    HTMLPanel loadingIndicator;
+    InputGroupAddon loadingIndicator;
 
     public interface Binder extends UiBinder<Widget, SearchView> {
     }
@@ -70,6 +70,8 @@ public class SearchView extends ViewWithUiHandlers<SearchUiHandlers> implements 
 
     @Override
     public void setLoadingIndicatorVisible(boolean visible) {
-        loadingIndicator.getElement().getStyle().setVisibility(visible ? Style.Visibility.VISIBLE : Style.Visibility.HIDDEN);
+        loadingIndicator.setColor(visible ? "GREEN" : null);
+        loadingIndicator.setIcon(visible ? IconType.SPINNER : IconType.SEARCH);
+        loadingIndicator.setIconSpin(visible);
     }
 }

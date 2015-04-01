@@ -26,44 +26,14 @@
             padding-top: 5px;
         }
 
-        .accordion_group_top {
-            border-top: 1px solid #CCC !important;
-        }
-
-        @external .accordion-group;
-        .accordion-group {
-            border: 1px solid #CCC;
-            border-top: 0;
-            -webkit-border-radius: 0px;
-            border-radius: 0px;
-            border-right: 0px;
-            border-left: 0px;
-            margin-bottom: 0px !important;
-        }
-
-        @external .accordion-toggle;
-        .accordion-toggle {
-            padding: 0 !important;
-        }
-
-        @external .accordion-inner;
-        .accordion-inner {
-            padding: 0 !important;
-            border-top: 1px solid #ccc !important;
-        }
-
-        @external .accordion-heading;
-        .accordion-heading {
-            border-left: 4px solid transparent;
-        }
-
         .header_section {
+            box-sizing: content-box;
             width: 100%;
             line-height: 24px;
             height: 24px;
             background-color: #F9F9F9;
             display: inline-block;
-            padding: 10px 0px;
+            padding: 10px 0;
             cursor: pointer;
             outline: 0;
             zoom: 1;
@@ -72,12 +42,7 @@
             -moz-transition: all 130ms ease-in-out;
             -webkit-transition: all 130ms ease-in-out;
             transition: all 130ms ease-in-out;
-            /*border-bottom: 1px solid #CCC;*/
             text-decoration: none;
-        }
-
-        .header_section_top {
-            border-top: 1px solid #CCC;
         }
 
         .header_section:hover {
@@ -87,28 +52,7 @@
         }
 
         .header_section_active {
-            border-left: 4px solid #35AA47;
-        }
-
-        .subitem_list {
-            padding: 0 8px 2px 40px;
-            margin: 0;
-        }
-
-        .subitem_list li {
-            list-style: none;
-            margin-top: 4px;
-            font-size: 13px;
-            padding: 6px 0 6px 8px;
-        }
-
-        .subitem {
-            cursor: pointer;
-            color: #444 !important;
-        }
-
-        .subitem_active {
-            font-weight: bold;
+            border-left: 4px solid #35AA47 !important;
         }
 
         .icon {
@@ -116,6 +60,54 @@
             margin-right: 10px;
             margin-left: 6px;
         }
+
+        @external panel-default;
+        .panel-default {
+            border: 1px solid #CCC;
+            border-top: 0;
+            -webkit-border-radius: 0px;
+            border-radius: 0px;
+            border-right: 0px;
+            border-left: 0px;
+            margin-bottom: 0px !important;
+            border-radius: 0px !important;
+        }
+
+        @external panel;
+        .panel + .panel {
+            margin-top: 0px !important;
+        }
+
+        .panel:first-child {
+            border-top: 1px solid #CCC !important;
+        }
+
+        @external panel-heading;
+        .panel-default > .panel-heading {
+            padding: 0 !important;
+            border-left: 4px solid transparent;
+            border-color: transparent;
+            border-radius: 0px;
+        }
+
+        @external list-group;
+        .list-group {
+            padding: 0 8px 0px 33px;
+        }
+
+        @external list-group-item;
+        .list-group-item {
+            font-size: 13px;
+        }
+
+        .list-group-item a {
+            color: #444 !important;
+            cursor: pointer;
+        }
+        .subitem_active {
+            font-weight: bold;
+        }
+
     </ui:style>
     <g:DockLayoutPanel unit="EM">
         <g:west size="17.923">

@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
-             xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
         >
 
     <ui:style>
@@ -10,9 +10,6 @@
             border-bottom: 1px solid #dde2e9;
             padding-left: 10px;
             margin-bottom: 10px;
-        }
-        .pager {
-            padding-right: 50px;
         }
     </ui:style>
 
@@ -31,8 +28,8 @@
                     <c:DataGrid ui:field="table"/>
                 </g:layer>
                 <g:layer bottom="0" left="0.5em" right="0" height="100px">
-                    <g:FlowPanel addStyleNames="{style.pager}">
-                        <gui:NumberedPager ui:field="pager" alignment="RIGHT"/>
+                    <g:FlowPanel addStyleNames="text-center">
+                        <b:Pagination ui:field="pagination"/>
                     </g:FlowPanel>
                 </g:layer>
             </g:LayoutPanel>

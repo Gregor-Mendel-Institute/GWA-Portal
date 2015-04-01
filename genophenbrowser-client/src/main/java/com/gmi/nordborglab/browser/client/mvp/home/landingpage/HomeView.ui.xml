@@ -2,10 +2,9 @@
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              xmlns:gchart='urn:import:com.googlecode.gwt.charts.client.corechart'
-             xmlns:base="urn:import:com.github.gwtbootstrap.client.ui.base"
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -63,11 +62,12 @@
         }
 
         .stats_table td {
-            padding: 18px 0;
-            border: none;
-            border-bottom: 1px dotted #CCC;
-            padding-top: 13px;
-            padding-bottom: 13px;
+            padding: 18px 0 !important;
+            border: none !important;
+            border-bottom: 1px dotted #CCC !important;
+            padding-top: 13px !important;
+            padding-bottom: 13px !important;
+            vertical-align: middle !important;
         }
 
         .stats_table .value {
@@ -90,8 +90,8 @@
         <g:ScrollPanel>
             <g:HTMLPanel addStyleNames="{style.container}">
                 <div class="container-fluid">
-                    <div class="row-fluid">
-                        <div class="span4">
+                    <div class="row">
+                        <div class="col-md-4">
                             <div class="page-header">
                                 <h1 style="color:#669923;">Welcome to GWA-Portal
                                     <small>Resource for phenotypes and GWAS studies</small>
@@ -111,9 +111,9 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="span8">
-                            <ul class="thumbnails">
-                                <li class="span4">
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-4">
                                     <div class="thumbnail" id="browsePhenotypes">
                                         <!--<div class="{style.card}">-->
                                         <g:Image addStyleNames="{style.card_pic2}" resource="{mainRes.photo}"/>
@@ -126,7 +126,7 @@
                                             </p>
                                             <p>
                                                 <span class="btn btn-primary">
-                                                    <i class="icon-search"/>
+                                                    <i class="fa fa-search"/>
                                                     <g:InlineHyperlink addStyleNames="{style.link}"
                                                                        targetHistoryToken="{nameTokens.getExperiments}">
                                                         Browse
@@ -138,8 +138,8 @@
                                         </div>
                                         <!--</div>-->
                                     </div>
-                                </li>
-                                <li class="span4">
+                                </div>
+                                <div class="col-md-4">
                                     <div class="thumbnail" id="createGWAS">
                                         <!--<div class="{style.card}">-->
                                         <g:Image addStyleNames="{style.card_pic2}" resource="{mainRes.file_add}"/>
@@ -152,17 +152,16 @@
                                             </p>
                                             <p>
                                                 <!--<p class="{style.card_caption}"> -->
-                                                <base:IconAnchor addStyleNames="btn btn-primary {style.link}"
-                                                                 icon="FILE"
-                                                                 ui:field="wizardLink">Create
-                                                </base:IconAnchor>
+                                                <b:Anchor icon="FILE" iconPosition="LEFT"
+                                                          addStyleNames="btn btn-primary {style.link}"
+                                                          ui:field="wizardLink" text="Create"/>
                                                 <!--</p>-->
                                             </p>
                                         </div>
                                         <!--</div>-->
                                     </div>
-                                </li>
-                                <li class="span4">
+                                </div>
+                                <div class="col-md-4">
                                     <div class="thumbnail" id="GWAPP">
                                         <g:Image addStyleNames="{style.card_pic2}" resource="{mainRes.cloud}"/>
                                         <div class="caption">
@@ -175,22 +174,22 @@
                                                 <a class="btn btn-primary {style.link}"
                                                    href="http://gwapp.gmi.oeaw.ac.at"
                                                    target="_blank">
-                                                    <i class="icon-cloud"/>
+                                                    <i class="fa fa-cloud"/>
                                                     Open
                                                 </a>
                                                 <img src="" style="display:none" ui:field="gwappCookieImg"></img>
                                             </p>
                                         </div>
                                     </div>
-                                </li>
-                            </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="row-fluid">
-                        <div class="span4">
+                    <div class="row">
+                        <div class="col-md-4">
                             <div class="{style.widget}" id="news">
                                 <div class="{style.widget_header}">
-                                    <i class="icon-list-alt"/>
+                                    <i class="fa fa-list-alt"/>
                                     <h2>Recent News</h2>
                                 </div>
                                 <hr></hr>
@@ -200,12 +199,12 @@
                             </div>
                         </div>
 
-                        <div class="span8">
-                            <div class="fluid-row">
-                                <div class="span3">
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-3">
                                     <div class="{style.widget}" id="quickstats">
                                         <div class="{style.widget_header}">
-                                            <i class="icon-bar-chart"/>
+                                            <i class="fa fa-bar-chart"/>
                                             <h2>Quick Stats</h2>
                                         </div>
                                         <hr></hr>
@@ -284,27 +283,40 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="span9">
+                                <div class="col-md-9">
                                     <div class="{style.widget}" id="charts">
                                         <div class="{style.widget_header}">
-                                            <i class="icon-signal"/>
+                                            <i class="fa fa-signal"/>
                                             <h2>Public
                                                 <span ui:field="chartTypeLb"/>
                                             </h2>
-                                            <b:ButtonGroup ui:field="typeBtnGroup" toggle="radio"
+                                            <b:ButtonGroup dataToggle="BUTTONS" name="typeBtn"
                                                            addStyleNames="pull-right">
-                                                <b:Button ui:field="studyTypeBtn" size="SMALL">Studies</b:Button>
-                                                <b:Button ui:field="phenotypeBtn" size="SMALL">Phenotypes</b:Button>
-                                                <b:Button ui:field="analysisBtn" size="SMALL">Analyses</b:Button>
+                                                <b:RadioButton name="typeBtn" active="true" ui:field="studyTypeBtn"
+                                                               size="SMALL">Studies
+                                                </b:RadioButton>
+                                                <b:RadioButton name="typeBtn" ui:field="phenotypeBtn" size="SMALL">
+                                                    Phenotypes
+                                                </b:RadioButton>
+                                                <b:RadioButton name="typeBtn" ui:field="analysisBtn" size="SMALL">
+                                                    Analyses
+                                                </b:RadioButton>
                                             </b:ButtonGroup>
                                         </div>
                                         <hr></hr>
                                         <div class="{style.widget_content}">
                                             <div class="clearfix">
-                                                <b:ButtonGroup toggle="radio" addStyleNames="pull-right">
-                                                    <b:Button ui:field="weekBtn" size="SMALL">Weeks</b:Button>
-                                                    <b:Button ui:field="monthBtn" size="SMALL">Months</b:Button>
-                                                    <b:Button ui:field="yearBtn" size="SMALL">Years</b:Button>
+                                                <b:ButtonGroup dataToggle="BUTTONS" name="dateBtn"
+                                                               addStyleNames="pull-right">
+                                                    <b:RadioButton name="dateBtn" active="true" ui:field="weekBtn"
+                                                                   size="SMALL">Weeks
+                                                    </b:RadioButton>
+                                                    <b:RadioButton name="dateBtn" ui:field="monthBtn" size="SMALL">
+                                                        Months
+                                                    </b:RadioButton>
+                                                    <b:RadioButton name="dateBtn" ui:field="yearBtn" size="SMALL">
+                                                        Years
+                                                    </b:RadioButton>
                                                 </b:ButtonGroup>
                                             </div>
                                             <div>

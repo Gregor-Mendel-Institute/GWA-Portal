@@ -17,6 +17,8 @@ public interface GWASViewerUiHandlers extends UiHandlers {
 
     void onDelete(GWASResultProxy object);
 
+    void onConfirmDelete(GWASResultProxy object);
+
     void cancelEdits();
 
     void saveEdits();

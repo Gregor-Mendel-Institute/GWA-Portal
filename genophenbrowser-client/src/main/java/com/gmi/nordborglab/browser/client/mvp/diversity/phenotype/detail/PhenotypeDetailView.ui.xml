@@ -3,8 +3,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
-             xmlns:gui="urn:import:com.gmi.nordborglab.browser.client.ui"
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -22,9 +21,14 @@
             float: right;
         }
 
+
         .statisticTypeContainer {
-            margin-top: 2px;
             float: left;
+        }
+
+        .navPills > li > a {
+            padding-top: 0;
+            padding-bottom: 0;
         }
 
     </ui:style>
@@ -37,23 +41,26 @@
                             <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="actionBarPanel">
                                 <div class="{style.actionRow}">
                                     <div class="{mainRes.style.actionIcon}">
-                                        <b:Tooltip placement="BOTTOM" text="Click to display download options">
-                                            <gui:IconDropdown icon="DOWNLOAD_ALT">
-                                                <b:NavLink text="Phenotype (CSV)"
-                                                           ui:field="navLinkPhenCSV"></b:NavLink>
-                                                <b:NavLink text="Phenotype (JSON)" target="_BLANK"
-                                                           ui:field="navLinkPhenJSON"></b:NavLink>
-                                            </gui:IconDropdown>
+                                        <b:Tooltip placement="BOTTOM" title="Click to display download options">
+                                            <b:DropDown>
+                                                <b:Anchor icon="DOWNLOAD" dataToggle="DROPDOWN"></b:Anchor>
+                                                <b:DropDownMenu>
+                                                    <b:AnchorListItem ui:field="navLinkPhenCSV">Phenotype (CSV)
+                                                    </b:AnchorListItem>
+                                                    <b:AnchorListItem ui:field="navLinkPhenJSON">Phenotype (JSON)
+                                                    </b:AnchorListItem>
+                                                </b:DropDownMenu>
+                                            </b:DropDown>
                                         </b:Tooltip>
                                     </div>
                                     <div class="{mainRes.style.actionIcon}">
-                                        <b:Tooltip placement="BOTTOM" text="Delete phenotype">
-                                            <b:Icon type="TRASH" ui:field="delete"/>
+                                        <b:Tooltip placement="BOTTOM" title="Delete phenotype">
+                                            <b:Anchor icon="TRASH" ui:field="delete"/>
                                         </b:Tooltip>
                                     </div>
                                     <div class="{mainRes.style.actionIcon}">
-                                        <b:Tooltip placement="BOTTOM" text="Edit phenotype">
-                                            <b:Icon type="EDIT" iconSize="LARGE" ui:field="edit"/>
+                                        <b:Tooltip placement="BOTTOM" title="Edit phenotype">
+                                            <b:Anchor icon="EDIT" ui:field="edit"/>
                                         </b:Tooltip>
                                     </div>
                                 </div>
@@ -72,21 +79,23 @@
                 <g:center>
                     <g:LayoutPanel>
                         <g:layer top="5px" height="40px" left="5px" right="0">
-                            <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                            <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="topRightPanel">
                                 <div class="{style.statisticTypeContainer}">
-                                    <b:NavPills ui:field="statisticTypePills"/>
+                                    <b:NavPills ui:field="statisticTypePills" addStyleNames="{style.navPills}"/>
                                 </div>
                                 <div class="{mainRes.style.chartIconContainer}">
                                     <g:HTMLPanel ui:field="geoChartBtnContainer"
                                                  addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
-                                        <b:Tooltip text="Shows the geographic distribution on a map">
+                                        <b:Tooltip title="Shows the geographic distribution on a map"
+                                                   placement="BOTTOM">
                                             <g:Button ui:field="geoChartBtn"
                                                       addStyleNames="{mainRes.style.earth} {mainRes.style.iconItem}"/>
                                         </b:Tooltip>
                                     </g:HTMLPanel>
                                     <g:HTMLPanel ui:field="pieChartBtnContainer"
                                                  addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
-                                        <b:Tooltip text="Shows the geographic distribution as a piechart">
+                                        <b:Tooltip title="Shows the geographic distribution as a piechart"
+                                                   placement="BOTTOM">
                                             <g:Button ui:field="pieChartBtn"
                                                       addStyleNames="{mainRes.style.piechart} {mainRes.style.iconItem}"/>
                                         </b:Tooltip>
@@ -104,18 +113,18 @@
         <g:layer top="29em" bottom="0">
             <g:LayoutPanel>
                 <g:layer top="0" height="40px" left="0" right="0">
-                    <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                    <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="lowerPanel">
                         <div class="{mainRes.style.chartIconContainer}">
                             <g:HTMLPanel ui:field="columnChartBtnContainer"
                                          addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
-                                <b:Tooltip text="Shows the phenotype distrubtion as a histogram">
+                                <b:Tooltip title="Shows the phenotype distrubtion as a histogram" placement="BOTTOM">
                                     <g:Button ui:field="columnChartBtn"
                                               addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}"/>
                                 </b:Tooltip>
                             </g:HTMLPanel>
                             <g:HTMLPanel ui:field="motionChartBtnContainer"
                                          addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
-                                <b:Tooltip text="Shows the phenotype values in a motionchart">
+                                <b:Tooltip title="Shows the phenotype values in a motionchart" placement="BOTTOM">
                                     <g:Button ui:field="motionChartBtn"
                                               addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}"/>
                                 </b:Tooltip>

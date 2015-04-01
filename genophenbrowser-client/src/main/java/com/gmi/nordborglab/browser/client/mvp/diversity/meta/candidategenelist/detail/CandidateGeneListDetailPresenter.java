@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.meta.candidategenelist.detail;
 
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.FacetSearchChangeEvent;
 import com.gmi.nordborglab.browser.client.events.LoadCandidateGeneListEvent;
@@ -8,19 +7,17 @@ import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.PermissionDoneEvent;
 import com.gmi.nordborglab.browser.client.gin.ClientModule;
 import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
+import com.gmi.nordborglab.browser.client.manager.SearchManager;
 import com.gmi.nordborglab.browser.client.mvp.diversity.DiversityPresenter;
 import com.gmi.nordborglab.browser.client.mvp.diversity.meta.candidategenelist.list.CandidateGeneListView;
 import com.gmi.nordborglab.browser.client.mvp.widgets.facets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.mvp.widgets.permissions.PermissionDetailPresenter;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
-import com.gmi.nordborglab.browser.client.ui.SearchSuggestOracle;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GenePageProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SearchFacetPageProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.MetaAnalysisRequest;
@@ -33,7 +30,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
@@ -52,11 +48,10 @@ import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -155,7 +150,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
             .put(ConstEnums.GENE_FILTER.PSEUDO.name(), "Pseudo")
             .put(ConstEnums.GENE_FILTER.TRANSPOSON.name(), "Transposon").build();
     private final FacetSearchPresenterWidget facetSearchPresenterWidget;
-
+    private final SearchManager searchManager;
 
     private final AsyncDataProvider<GeneProxy> genesDataProvider = new AsyncDataProvider<GeneProxy>() {
         @Override
@@ -173,7 +168,8 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                                             final CustomRequestFactory rf, final PlaceManager placeManager,
                                             final CurrentUser currentUser,
                                             final ClientModule.AssistedInjectionFactory factory,
-                                            final FacetSearchPresenterWidget facetSearchPresenterWidget) {
+                                            final FacetSearchPresenterWidget facetSearchPresenterWidget,
+                                            final SearchManager searchManager) {
         super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
         filter2Annotation = new ImmutableBiMap.Builder<ConstEnums.GENE_FILTER, List<String>>()
                 .put(ConstEnums.GENE_FILTER.PROTEIN, Lists.newArrayList("gene"))
@@ -181,6 +177,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                 .put(ConstEnums.GENE_FILTER.PSEUDO, Lists.newArrayList("pseudogene")).build();
         this.permissionDetailPresenter = permissionDetailPresenter;
         this.facetSearchPresenterWidget = facetSearchPresenterWidget;
+        this.searchManager = searchManager;
         // Required because otherwise conflicts with the url parameter of the facet widget inside of the enrichments tab
         facetSearchPresenterWidget.setDefaultFilterParam("gene_filter");
         facetSearchPresenterWidget.setDefaultQueryParam("gene_query");
@@ -326,27 +323,13 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     }
 
     @Override
-    public void onSearchForGene(final SuggestOracle.Request request, final SuggestOracle.Callback callback) {
-        rf.searchRequest().searchGeneByTerm(request.getQuery()).fire(new Receiver<SearchFacetPageProxy>() {
-
-            @Override
-            public void onSuccess(SearchFacetPageProxy response) {
-                SuggestOracle.Response searchResponse = new SuggestOracle.Response();
-                Collection<SuggestOracle.Suggestion> suggestions = new ArrayList<SuggestOracle.Suggestion>();
-                if (response != null) {
-                    for (SearchItemProxy searchItem : response.getContents()) {
-                        suggestions.add(new SearchSuggestOracle.SearchSuggestion(searchItem, response));
-                    }
-                }
-                searchResponse.setSuggestions(suggestions);
-                callback.onSuggestionsReady(request, searchResponse);
-            }
-        });
+    public void onSearchForGene(final String request, final SearchManager.SearchCallback callback) {
+        searchManager.searchGeneByTerm(request, callback);
     }
 
     @Override
-    public void onSelectGene(SuggestOracle.Suggestion suggestion) {
-        geneId = suggestion.getReplacementString();
+    public void onSelectGene(String gene) {
+        this.geneId = gene;
     }
 
     @Override

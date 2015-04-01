@@ -45,7 +45,7 @@ public class PhenotypeUploadDataCardRenderer {
         String numberOfObsUnits = "0";
         String status = "All values valid";
         String statusStyle = "alert-success";
-        String statusIconStyle = "icon-ok-circle";
+        String statusIconStyle = "fa fa-check-circle-o";
         String nameTxt = phenotype.getTraitUom().getLocalTraitName();
         // required otherwise appendEscaped throws error
         if (nameTxt == null)
@@ -70,12 +70,12 @@ public class PhenotypeUploadDataCardRenderer {
         numberOfObsUnits = String.valueOf(phenotype.getValueCount());
         if (phenotype.getErrorCount() > 0) {
             status = phenotype.getErrorCount() + " values have errors";
-            statusIconStyle = "icon-warning-sign";
+            statusIconStyle = "fa fa-exclamation-triangle";
             statusStyle = "alert-warning";
         } else if (phenotype.getConstraintViolation()) {
             status = "Some information are wrong or missing";
-            statusIconStyle = "icon-error-sign";
-            statusStyle = "alert-error";
+            statusIconStyle = "fa fa-exclamation-triangle";
+            statusStyle = "alert-danger";
         }
         // asString() required because of https://groups.google.com/forum/#!topic/google-web-toolkit/snEC1ZiQJT8
         uiRenderer.render(sb, name, traitOntology, unitType, numberOfObsUnits, status, statusStyle, statusIconStyle);
