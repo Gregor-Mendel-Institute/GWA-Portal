@@ -22,7 +22,7 @@
         <org.springframework.social.google>1.0.0.RELEASE</org.springframework.social.google>
         <!-- required because smile is not part of io.spring.platform -->
         <com.fasterxml.jackson.dataformat.smile>2.4.4</com.fasterxml.jackson.dataformat.smile>
-        <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
+        <postgresql.version>9.4-1201-jdbc41</postgresql.version>
         <jhdf5.version>13.06.3-SNAPSHOT</jhdf5.version>
         <jstl.version>1.2</jstl.version>
         <esapi.version>2.1.0</esapi.version>
@@ -223,7 +223,7 @@
             <artifactId>javax.el-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
@@ -627,7 +627,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>postgresql</groupId>
+                <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
             </dependency>
