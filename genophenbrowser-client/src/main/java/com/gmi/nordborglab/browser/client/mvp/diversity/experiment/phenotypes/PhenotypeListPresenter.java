@@ -183,6 +183,13 @@ public class PhenotypeListPresenter
                 experimentManager.findOne(new Receiver<ExperimentProxy>() {
 
                     @Override
+                    public void onFailure(ServerFailure error) {
+                        getProxy().manualRevealFailed();
+                        placeManager.revealPlace(new PlaceRequest.Builder()
+                                .nameToken(NameTokens.experiments).build());
+                    }
+
+                    @Override
                     public void onSuccess(ExperimentProxy response) {
                         experiment = response;
                         fireLoadExperimentEvent = true;
@@ -204,7 +211,7 @@ public class PhenotypeListPresenter
                     getProxy().manualReveal(PhenotypeListPresenter.this);
                 }
             }, getView().getDisplay().getVisibleRange());
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             getProxy().manualRevealFailed();
             placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.experiments).build());
         }
@@ -234,7 +241,9 @@ public class PhenotypeListPresenter
     }
 
     protected void checkPermissionAndUpdateView() {
-        int permission = currentUser.getPermissionMask(experiment.getUserPermission());
+        int permission = 0;
+        if (experiment != null)
+            permission = currentUser.getPermissionMask(experiment.getUserPermission());
         boolean showAdd = (((permission & AccessControlEntryProxy.EDIT) == AccessControlEntryProxy.EDIT) ||
                 ((permission & AccessControlEntryProxy.ADMINISTRATION) == AccessControlEntryProxy.ADMINISTRATION));
         getView().showUploadBtn(showAdd);
