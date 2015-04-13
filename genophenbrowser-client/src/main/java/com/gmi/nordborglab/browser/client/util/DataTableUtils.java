@@ -11,7 +11,6 @@ import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multimaps;
@@ -181,13 +180,13 @@ public class DataTableUtils {
         return histogramData;
     }
 
-    public static com.googlecode.gwt.charts.client.DataTable createPhenotypeHistogramTable2(ImmutableListMultimap<String, Double> histogram) {
+    public static com.googlecode.gwt.charts.client.DataTable createPhenotypeHistogramTable2(Map<String, Double> histogram) {
         com.googlecode.gwt.charts.client.DataTable histogramData = com.googlecode.gwt.charts.client.DataTable.create();
         NumberFormat numberFormat = NumberFormat.getDecimalFormat().overrideFractionDigits(2);
         histogramData.addColumn(ColumnType.STRING, "Accession");
         histogramData.addColumn(ColumnType.NUMBER, "Phenotype");
         histogramData.addRows(histogram.size());
-        for (Map.Entry<String, Double> entry : histogram.entries()) {
+        for (Map.Entry<String, Double> entry : histogram.entrySet()) {
             int i = histogramData.addRow();
             histogramData.setValue(i, 0, entry.getKey());
             histogramData.setValue(i, 1, entry.getValue());

@@ -40,6 +40,10 @@
         .phenotypeDetailContainer {
             min-height: 800px;
 
+        }
+
+        .phenotypepager {
+            margin-left: 40px;
         }</ui:style>
     <g:DeckLayoutPanel animationDuration="100">
         <g:ScrollPanel ui:field="phenotypeUploadPanel">
@@ -47,9 +51,17 @@
         </g:ScrollPanel>
         <g:DockLayoutPanel ui:field="resultPanel" unit="EM">
             <g:west size="21">
-                <g:ScrollPanel>
-                    <c:CellList ui:field="phenotypeList" addStyleNames="{style.phenotypelist}"></c:CellList>
-                </g:ScrollPanel>
+                <g:LayoutPanel>
+                    <g:layer top="0" bottom="50px">
+                        <g:ScrollPanel>
+                            <c:CellList ui:field="phenotypeList" addStyleNames="{style.phenotypelist}"></c:CellList>
+                        </g:ScrollPanel>
+                    </g:layer>
+                    <g:layer bottom="0" height="50px">
+                        <c:SimplePager location="CENTER" ui:field="phenotypeListPager"
+                                       addStyleNames="{style.phenotypepager}"/>
+                    </g:layer>
+                </g:LayoutPanel>
             </g:west>
             <g:center>
                 <g:LayoutPanel>
