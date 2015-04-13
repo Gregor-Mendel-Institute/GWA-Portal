@@ -1,6 +1,11 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.upload;
 
+import com.gmi.nordborglab.browser.shared.proxy.SampleDataProxy;
+import com.google.common.collect.Multiset;
 import com.gwtplatform.mvp.client.UiHandlers;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,4 +29,12 @@ public interface PhenotypeUploadWizardUiHandlers extends UiHandlers {
     void updatePhenotypeData();
 
     void deselectPhenotypeCard();
+
+    Collection<SampleDataProxy> getExplorerData();
+
+    Multiset<String> getGeoChartdata();
+
+    Map<String, Double> getHistogramData();
+
+    void updateTable();
 }

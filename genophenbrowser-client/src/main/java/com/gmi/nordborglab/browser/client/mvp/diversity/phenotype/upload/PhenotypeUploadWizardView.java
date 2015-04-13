@@ -26,17 +26,12 @@ import com.gmi.nordborglab.browser.shared.proxy.ExperimentUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeUploadDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SampleDataProxy;
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multiset;
+import com.google.common.collect.Sets;
 import com.google.common.primitives.Booleans;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.NumberCell;
@@ -69,6 +64,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.Header;
+import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -88,6 +84,7 @@ import com.googlecode.gwt.charts.client.geochart.GeoChart;
 import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtsupercsv.cellprocessor.Optional;
 import org.gwtsupercsv.cellprocessor.ParseDouble;
 import org.gwtsupercsv.cellprocessor.ParseInt;
 import org.gwtsupercsv.cellprocessor.constraint.NotNull;
@@ -96,11 +93,10 @@ import org.gwtsupercsv.io.CsvListReader;
 import org.gwtsupercsv.io.ICsvListReader;
 import org.gwtsupercsv.prefs.CsvPreference;
 
-import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Created with IntelliJ IDEA.
@@ -160,7 +156,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
                 cellValueProcessors[0] = new SupressException(new ParseInt());
                 cellHeaderProcessors[0] = new SupressException(new NotNull());
                 for (int i = 1; i < cellValueProcessors.length; i++) {
-                    cellValueProcessors[i] = new SupressException(new ParseDouble());
+                    cellValueProcessors[i] = new SupressException(new Optional(new ParseDouble()));
                     cellHeaderProcessors[i] = new SupressException(new NotNull());
                 }
                 if (header.size() == 0) {
@@ -316,7 +312,6 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     };
 
 
-    private final Widget widget;
     private boolean layoutScheduled = false;
 
     @UiField(provided = true)
@@ -393,6 +388,9 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     HTMLPanel experimentEditorContainer;
     @UiField
     LayoutPanel summaryTableContainer;
+    @UiField
+    SimplePager phenotypeListPager;
+
 
     private final ChangeHandler changeHandler = new ChangeHandler() {
         @Override
@@ -424,6 +422,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     private DataTable explorerData;
     private com.googlecode.gwt.charts.client.DataTable geoChartData;
     private com.googlecode.gwt.charts.client.DataTable histogramData;
+    private int index;
 
     private static enum CHART_TYPE {
         TABLE, HISTOGRAM, GEOCHART, MAP, EXPLORER
@@ -452,8 +451,10 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         summaryDataGrid = new DataGrid<>(50, dataGridResources);
         initDataGrid();
         this.phenotypeListEditor = new PhenotypeUploadDataListEditor(ontologyManager, currentUser.getAppData().getUnitOfMeasureList(), changeHandler);
-        phenotypeList = new CellList<>(phenotypeUploadDataCard, cardCellListResources);
-        widget = binder.createAndBindUi(this);
+        phenotypeList = new CellList<>(phenotypeUploadDataCard, cardCellListResources, PhenotypeUploadWizardPresenterWidget.phenotypeUploadKey);
+        initWidget(binder.createAndBindUi(this));
+        phenotypeListPager.setPageSize(25);
+        phenotypeListPager.setDisplay(phenotypeList);
         vizContainer.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         vizContainer.getElement().getFirstChildElement().getNextSiblingElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
 
@@ -622,10 +623,6 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     }
 
 
-    @Override
-    public Widget asWidget() {
-        return widget;
-    }
 
     @Override
     public void setErrorCount(int totalCount, int count) {
@@ -659,6 +656,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     public void showPhenotypeDetailPanel(int index) {
         if (index < 0)
             return;
+        this.index = index;
         valueColumn.setHeaderIx(index);
         ((BooleanColumn) phenotypeValuesDataGrid.getColumn(0)).setPhenotypeIdx(index);
         contentContainer.showWidget(1);
@@ -681,56 +679,30 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         fileUploadWidget.resetUploadForm();
     }
 
-    @Override
-    public void setGeoChartData(Multiset<String> geochartData) {
-        this.geoChartData = DataTableUtils.createPhenotypeGeoChartTable2(geochartData);
-    }
 
-    @Override
-    public void setPhenotypExplorerData(ImmutableSet<SampleDataProxy> data, int index) {
-        this.explorerData = DataTableUtils.createSampleDataTable(data, index);
-    }
-
-    private void initMarkers(FluentIterable<SampleDataProxy> data) {
+    private void initMarkers(Collection<SampleDataProxy> data) {
         clearMarkers();
-        Set<SampleDataProxy> uniqueSet = new TreeSet<SampleDataProxy>(new Comparator<SampleDataProxy>() {
-
-            @Override
-            public int compare(SampleDataProxy o1, SampleDataProxy o2) {
-                if (o1.getPassportId() != null && o2.getPassportId() != null) {
-                    if (o1.getPassportId().equals(o2.getPassportId()))
-                        return 0;
+        Set<Long> passportSet = Sets.newHashSet();
+        ImmutableSet.Builder<Marker> markers = ImmutableSet.builder();
+        for (SampleDataProxy sample : data) {
+            if (!sample.isIdKnown() || passportSet.contains(sample.getPassportId()) ||
+                    (sample.getLatitude() == null || sample.getLongitude() == null))
+                continue;
+            MarkerOptions options = MarkerOptions.newInstance();
+            final Marker marker = Marker.newInstance(options);
+            LatLng position = LatLng.newInstance(sample.getLatitude(), sample.getLongitude());
+            marker.setPosition(position);
+            marker.setTitle(sample.getAccessionName() + " (" + sample.getPassportId() + ")");
+            marker.setMap(mapWidget);
+            handlerRegistrations.add(marker.addClickHandler(new ClickMapHandler() {
+                @Override
+                public void onEvent(ClickMapEvent event) {
+                    drawInfoWindow(marker, event.getMouseEvent());
                 }
-                return 1;
-            }
-        });
-        uniqueSet.addAll(data.filter(new Predicate<SampleDataProxy>() {
-            @Override
-            public boolean apply(@Nullable SampleDataProxy input) {
-                return input.isIdKnown();
-            }
-        }).toList());
-        markers = ImmutableSet.copyOf(FluentIterable.from(uniqueSet).transform(new Function<SampleDataProxy, Marker>() {
-            @Nullable
-            @Override
-            public Marker apply(@Nullable SampleDataProxy input) {
-                if (input.getLatitude() == null || input.getLongitude() == null)
-                    return null;
-                MarkerOptions options = MarkerOptions.newInstance();
-                final Marker marker = Marker.newInstance(options);
-                LatLng position = LatLng.newInstance(input.getLatitude(), input.getLongitude());
-                marker.setPosition(position);
-                marker.setTitle(input.getAccessionName() + " (" + input.getPassportId() + ")");
-                marker.setMap(mapWidget);
-                handlerRegistrations.add(marker.addClickHandler(new ClickMapHandler() {
-                    @Override
-                    public void onEvent(ClickMapEvent event) {
-                        drawInfoWindow(marker, event.getMouseEvent());
-                    }
-                }));
-                return marker;
-            }
-        }).filter(Predicates.notNull()));
+            }));
+            markers.add(marker);
+
+        }
 
     }
 
@@ -759,11 +731,6 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     }
 
 
-    @Override
-    public void setHistogramChartData(ImmutableListMultimap<String, Double> data) {
-        this.histogramData = DataTableUtils.createPhenotypeHistogramTable2(data);
-
-    }
 
     @Override
     public void scheduledLayout() {
@@ -773,10 +740,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         }
     }
 
-    @Override
-    public void setMapData(FluentIterable<SampleDataProxy> data) {
-        initMarkers(data);
-    }
+
 
     private void forceLayout() {
         if (!asWidget().isAttached() || !asWidget().isVisible())
@@ -852,27 +816,49 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         showPanel();
     }
 
+
+    @Override
+    public void resetChartData() {
+        explorerData = null;
+        histogramData = null;
+        geoChartData = null;
+        clearMarkers();
+    }
+
     private void showPanel() {
         chartContainer.clear();
         switch (activeChartType) {
             case TABLE:
                 chartContainer.add(phenotypeValuesDataGrid);
+                getUiHandlers().updateTable();
                 break;
             case EXPLORER:
+                if (explorerData == null) {
+                    explorerData = DataTableUtils.createSampleDataTable(getUiHandlers().getExplorerData(), index);
+                }
                 motionChart = new ResizeableMotionChart(explorerData,
                         createMotionChartOptions());
                 chartContainer.add(motionChart);
                 break;
             case HISTOGRAM:
                 chartContainer.add(histogramChart);
+                if (histogramData == null) {
+                    histogramData = DataTableUtils.createPhenotypeHistogramTable2(getUiHandlers().getHistogramData());
+                }
                 histogramChart.draw(histogramData, DataTableUtils.getDefaultPhenotypeHistogramOptions2());
                 break;
             case GEOCHART:
                 chartContainer.add(geoChart);
+                if (geoChartData == null) {
+                    geoChartData = DataTableUtils.createPhenotypeGeoChartTable2(getUiHandlers().getGeoChartdata());
+                }
                 geoChart.draw(geoChartData, createGeoChart());
                 break;
             case MAP:
                 chartContainer.add(mapWidget);
+                if (markers == null) {
+                    initMarkers(getUiHandlers().getExplorerData());
+                }
                 mapWidget.triggerResize();
                 break;
 
