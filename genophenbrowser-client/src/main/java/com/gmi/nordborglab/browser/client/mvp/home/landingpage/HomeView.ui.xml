@@ -287,15 +287,16 @@
                                     <div class="{style.widget}" id="charts">
                                         <div class="{style.widget_header}">
                                             <i class="fa fa-signal"/>
-                                            <h2>Public
+                                            <h2>New
                                                 <span ui:field="chartTypeLb"/>
                                             </h2>
                                             <b:ButtonGroup dataToggle="BUTTONS" name="typeBtn"
                                                            addStyleNames="pull-right">
-                                                <b:RadioButton name="typeBtn" active="true" ui:field="studyTypeBtn"
+                                                <b:RadioButton name="typeBtn" ui:field="studyTypeBtn"
                                                                size="SMALL">Studies
                                                 </b:RadioButton>
-                                                <b:RadioButton name="typeBtn" ui:field="phenotypeBtn" size="SMALL">
+                                                <b:RadioButton name="typeBtn" active="true" ui:field="phenotypeBtn"
+                                                               size="SMALL">
                                                     Phenotypes
                                                 </b:RadioButton>
                                                 <b:RadioButton name="typeBtn" ui:field="analysisBtn" size="SMALL">
@@ -308,10 +309,11 @@
                                             <div class="clearfix">
                                                 <b:ButtonGroup dataToggle="BUTTONS" name="dateBtn"
                                                                addStyleNames="pull-right">
-                                                    <b:RadioButton name="dateBtn" active="true" ui:field="weekBtn"
+                                                    <b:RadioButton name="dateBtn" ui:field="weekBtn"
                                                                    size="SMALL">Weeks
                                                     </b:RadioButton>
-                                                    <b:RadioButton name="dateBtn" ui:field="monthBtn" size="SMALL">
+                                                    <b:RadioButton active="true" name="dateBtn" ui:field="monthBtn"
+                                                                   size="SMALL">
                                                         Months
                                                     </b:RadioButton>
                                                     <b:RadioButton name="dateBtn" ui:field="yearBtn" size="SMALL">
