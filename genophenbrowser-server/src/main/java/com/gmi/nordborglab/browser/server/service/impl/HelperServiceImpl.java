@@ -71,6 +71,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
@@ -538,9 +539,8 @@ public class HelperServiceImpl implements HelperService {
     @Override
     public List<DateStatHistogramFacet> findRecentTraitHistogram(DateStatHistogramProxy.INTERVAL interval) {
         List<DateStatHistogramFacet> histogram = Lists.newArrayList();
-        DateHistogramBuilder aggregation = AggregationBuilders.dateHistogram("recent").field("published").interval(convertInterval(interval));
-        FilterBuilder filter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
-
+        DateHistogramBuilder aggregation = AggregationBuilders.dateHistogram("recent").field("created").interval(convertInterval(interval));
+        FilterBuilder filter = FilterBuilders.rangeFilter("created").gt("2013-07-01").lte("now");
         MultiSearchRequestBuilder requestBuilder = client.prepareMultiSearch();
 
         // experiments
