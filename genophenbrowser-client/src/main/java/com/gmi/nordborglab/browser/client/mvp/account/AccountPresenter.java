@@ -20,7 +20,7 @@ import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
-import com.gwtplatform.mvp.client.annotations.ProxyStandard;
+import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.UseGatekeeper;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
@@ -44,7 +44,7 @@ public class AccountPresenter extends Presenter<AccountPresenter.MyView, Account
         void setActiveAvatarSource(AppUserProxy.AVATAR_SOURCE source);
     }
 
-    @ProxyStandard
+    @ProxyCodeSplit
     @NameToken(NameTokens.account)
     @UseGatekeeper(IsLoggedInGatekeeper.class)
     public interface MyProxy extends ProxyPlace<AccountPresenter> {
