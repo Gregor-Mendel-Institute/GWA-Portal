@@ -325,6 +325,11 @@
                 <configuration>
                     <moduleName>${gwt.module}</moduleName>
                     <moduleShortName>browser</moduleShortName>
+                    <compilerArgs>
+                        <param>-XfragmentCount</param>
+                        <param>20</param>
+                        <!--<param>-compileReport</param>-->
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
