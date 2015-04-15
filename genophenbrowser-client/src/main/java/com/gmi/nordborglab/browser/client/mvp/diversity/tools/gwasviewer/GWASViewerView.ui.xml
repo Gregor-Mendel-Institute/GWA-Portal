@@ -23,8 +23,9 @@
     <g:LayoutPanel>
         <g:layer top="5px" height="40px">
             <b:NavTabs ui:field="tabPanel">
-                <b:TabListItem active="true" ui:field="gwasListTab" text="Existing GWAS plots"></b:TabListItem>
-                <b:TabListItem ui:field="gwasUploadTab" text="Upload GWAS plot"></b:TabListItem>
+                <b:TabListItem active="true" ui:field="gwasListTab" text="Existing GWAS plots"
+                               dataTarget="#test"></b:TabListItem>
+                <b:TabListItem ui:field="gwasUploadTab" text="Upload GWAS plot" dataTarget="#test"></b:TabListItem>
             </b:NavTabs>
         </g:layer>
         <g:layer top="45px" bottom="0">
