@@ -338,10 +338,10 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         switch (panel) {
             case PLOTS:
             case LIST:
-                gwasListTab.showTab();
+                gwasListTab.showTab(false);
                 break;
             case UPLOAD:
-                gwasUploadTab.showTab();
+                gwasUploadTab.showTab(false);
                 break;
         }
         updatePanelVisibility();
@@ -352,9 +352,9 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         gwasUploadTab.setActive(false);
         switch (activePanel) {
             case PLOTS:
+                isPlotsDisplayed = true;
                 tabPaneContainer.showWidget(gwasPlotContainer);
                 gwasListTab.setActive(true);
-                isPlotsDisplayed = true;
                 break;
             case LIST:
                 tabPaneContainer.showWidget(gwasListPanel);
