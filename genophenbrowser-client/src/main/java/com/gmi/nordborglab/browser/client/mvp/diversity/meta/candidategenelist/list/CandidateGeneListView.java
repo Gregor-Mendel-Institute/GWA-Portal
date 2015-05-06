@@ -42,6 +42,7 @@ import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.ModalFooter;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
@@ -141,7 +142,6 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
                 getUiHandlers().onCancel();
             }
         });
-
         cancelEditBtn.setType(ButtonType.DEFAULT);
         Button saveEditBtn = new Button("Save", new ClickHandler() {
             @Override
@@ -153,7 +153,9 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
         ModalFooter footer = new ModalFooter();
         footer.add(cancelEditBtn);
         footer.add(saveEditBtn);
-        editPopup.add(candidateGeneListEditor);
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(candidateGeneListEditor);
+        editPopup.add(modalBody);
         editPopup.add(footer);
     }
 
