@@ -78,6 +78,7 @@ public class MethodCard extends Composite {
         typeLabel.setInnerText(studyProtocol.getType());
         typeLabel.removeClassName("label-success");
         typeLabel.removeClassName("label-info");
+        typeLabel.removeClassName("label-warning");
         // show 2 digits when over 1 hour otherwise only 1
         runTimeDuration.setInnerText(DateUtils.formatTimeElapsedSinceMillisecond(runtime, runtime > 3600000 ? 2 : 1));
         if (studyProtocol.getType().equals("MIXED")) {
@@ -85,7 +86,7 @@ public class MethodCard extends Composite {
         } else if (studyProtocol.getType().equals("LINEAR")) {
             typeLabel.addClassName("label-info");
         } else {
-
+            typeLabel.addClassName("label-warning");
         }
     }
 
