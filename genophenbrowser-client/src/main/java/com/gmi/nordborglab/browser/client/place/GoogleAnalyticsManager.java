@@ -75,7 +75,7 @@ public class GoogleAnalyticsManager {
         String user = "annonymous";
         if (currentUser.isLoggedIn()) {
             user = String.valueOf(currentUser.getUserId());
-            if (currentUser.isLoggedIn()) {
+            if (currentUser.isAdmin()) {
                 user += " (Admin)";
             }
         }
