@@ -340,21 +340,21 @@ public class DataTableUtils {
         dataTable.addColumn(ColumnType.NUMBER, null);
         dataTable.addColumn(ColumnType.NUMBER, null);
         Set<String> alleles = groupedByAllele.keySet();
-        Map<String, String[]> stats = new HashMap<>();
+        Map<String, Double[]> stats = new HashMap<>();
         NumberFormat df = NumberFormat.getDecimalFormat();
         df.overrideFractionDigits(4);
         for (String allele : alleles) {
             ImmutableList<SNPAllele> orderedSNPAlleles = snpOrdering.immutableSortedCopy(groupedByAllele.get(allele));
-            String[] stat = new String[4];
+            Double[] stat = new Double[4];
             int size = orderedSNPAlleles.size();
             if (orderedSNPAlleles.get(0).getPhenotype() != null)
-                stat[0] = df.format(Double.valueOf(orderedSNPAlleles.get(0).getPhenotype()));
+                stat[0] = Double.valueOf(orderedSNPAlleles.get(0).getPhenotype());
             if (orderedSNPAlleles.get((int) Math.round(size * 25 / 100)).getPhenotype() != null)
-                stat[1] = df.format(Double.valueOf(orderedSNPAlleles.get((int) Math.round(size * 25 / 100)).getPhenotype()));
+                stat[1] = Double.valueOf(orderedSNPAlleles.get((int) Math.round(size * 25 / 100)).getPhenotype());
             if (orderedSNPAlleles.get((int) Math.round(size * 75 / 100)).getPhenotype() != null)
-                stat[2] = df.format(Double.valueOf(orderedSNPAlleles.get((int) Math.round(size * 75 / 100)).getPhenotype()));
+                stat[2] = Double.valueOf(orderedSNPAlleles.get((int) Math.round(size * 75 / 100)).getPhenotype());
             if (orderedSNPAlleles.get(orderedSNPAlleles.size() - 1).getPhenotype() != null)
-                stat[3] = df.format(Double.valueOf(orderedSNPAlleles.get(orderedSNPAlleles.size() - 1).getPhenotype()));
+                stat[3] = Double.valueOf(orderedSNPAlleles.get(orderedSNPAlleles.size() - 1).getPhenotype());
             stats.put(allele, stat);
         }
         int i = 0;
@@ -362,7 +362,7 @@ public class DataTableUtils {
             dataTable.addRow();
             int startix = i * 4;
             //dataTable.setValue(i,0,allele);
-            String[] value = stats.get(allele);
+            Double[] value = stats.get(allele);
             if (value != null) {
                 dataTable.setValue(i, startix + 1, value[0]);
                 dataTable.setValue(i, startix + 2, value[1]);
