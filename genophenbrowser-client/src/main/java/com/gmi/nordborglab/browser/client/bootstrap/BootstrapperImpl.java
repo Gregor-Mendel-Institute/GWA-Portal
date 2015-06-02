@@ -66,8 +66,18 @@ public class BootstrapperImpl implements Bootstrapper {
                 if (e instanceof SessionTimeOutException) {
                     currentUser.setAppUser(null);
                     eventBus.fireEvent(new UserChangeEvent(null));
-                    DisplayNotificationEvent.fireWarning(eventBus, "Authentication error", "Your session timed out. Log In again");
+                    DisplayNotificationEvent.fireWarning(eventBus, "Authentication error", "Your session timed out. Log In again.");
                     return;
+                } else {
+                    // TODO share exception between client and server
+                    if (e.getMessage().equals("Exception caught: Server Error: Access is denied")) {
+                        if (currentUser.isLoggedIn()) {
+                            currentUser.setAppUser(null);
+                            eventBus.fireEvent(new UserChangeEvent(null));
+                            DisplayNotificationEvent.fireWarning(eventBus, "Authentication error", "Your session timed out. Log In again.");
+                            return;
+                        }
+                    }
                 }
                 Logger logger = Logger.getLogger("uncaught");
                 logger.log(Level.SEVERE, "Uncaught Exception" + e.getMessage(), e);
