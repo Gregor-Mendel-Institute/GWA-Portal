@@ -4,6 +4,7 @@ import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichmen
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListEnrichmentRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyJobRepository;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,8 @@ public class CronJobs {
     @Resource
     private CandidateGeneListEnrichmentRepository candidateGeneListEnrichmentRepository;
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SubmitAnalysisTask.class);
+
 
     @Scheduled(fixedDelay = 60000)
     @Transactional(readOnly = false)
@@ -38,8 +41,7 @@ public class CronJobs {
                 submitAnalysisTask.submitGWASJob(studyJob);
             }
         } catch (Exception e) {
-            //TODO send an email.
-            String test = "test";
+            logger.error("Failed to submit GWAS analysis task",e);
         }
     }
 
@@ -55,8 +57,7 @@ public class CronJobs {
                 }
             }
         } catch (Exception e) {
-            //TODO send an email.
-            String test = "test";
+            logger.error("Failed to submit check GWAS job task",e);
         }
     }
 
@@ -70,11 +71,10 @@ public class CronJobs {
                 submitAnalysisTask.submitCanidateGeneListEnrichment(enrichment);
             }
         } catch (Exception e) {
-            //TODO send an email.
-            String test = "test";
+            logger.error("Failed to submit candidate gene lsit enrichment analysis task",e);
         }
     }
-/*
+
     @Scheduled(cron = "* 0 0  * * *")
     @Transactional(readOnly = true)
     public synchronized void checkMetaAnalysis() {
@@ -84,9 +84,8 @@ public class CronJobs {
                 submitAnalysisTask.checkAndSubmitMetaAnalysis(studyJob);
             }
         } catch (Exception e) {
-            //TODO send an email.
-            String test = "test";
+            logger.error("Failed to check meta-analysis to index top snps",e);
         }
     }
-            */
+
 }

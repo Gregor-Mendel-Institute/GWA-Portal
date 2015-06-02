@@ -31,62 +31,109 @@
          "properties":{
             "chr":{
                "type":"string",
-               "index":"not_analyzed"
+              "index": "not_analyzed",
+              "fielddata": {
+                "format": "doc_values"
+              }
             },
             "position":{
-               "type":"integer"
+              "type": "integer",
+              "fielddata": {
+                "format": "doc_values"
+              }
             },
             "ref": {
               "type":"string",
-               "index":"not_analyzed"
-	    },
+              "index": "not_analyzed",
+              "fielddata": {
+                "format": "doc_values"
+              }
+            },
             "lyr":{
                "type":"string",
-               "index":"not_analyzed"
+              "index": "not_analyzed",
+              "fielddata": {
+                "format": "doc_values"
+              }
             },
             "alt":{
                "type":"string",
-               "index":"not_analyzed"
+              "index": "not_analyzed",
+              "fielddata": {
+                "format": "doc_values"
+              }
             },
             "annotation":{
                "type":"string",
-               "index":"not_analyzed"
+              "index": "not_analyzed",
+              "fielddata": {
+                "format": "doc_values"
+              }
             },
             "inGene":{
-               "type":"boolean"
+              "type": "boolean",
+              "fielddata": {
+                "format": "doc_values"
+              }
             },
            "annotations": {
                "type":"nested",
                "properties": {
                  "effect": {
                    "type": "string",
-                   "index": "not_analyzed"
+                   "index": "not_analyzed",
+                   "fielddata": {
+                     "format": "doc_values"
+                   }
                  },
                  "impact": {
                    "type": "string",
-                   "index": "not_analyzed"
+                   "index": "not_analyzed",
+                   "fielddata": {
+                     "format": "doc_values"
+                   }
                  },
                  "function": {
                    "type": "string",
-                   "index": "not_analyzed"
+                   "index": "not_analyzed",
+                   "fielddata": {
+                     "format": "doc_values"
+                   }
                  },
                  "codon_change": {
                    "type": "string",
-                   "index": "not_analyzed"
+                   "index": "not_analyzed",
+                   "fielddata": {
+                     "format": "doc_values"
+                   }
                  },
                  "amino_acid_change": {
                    "type": "string",
-                   "index": "not_analyzed"
+                   "index": "not_analyzed",
+                   "fielddata": {
+                     "format": "doc_values"
+                   }
                  },
                  "gene_name": {
                    "type": "string",
-                   "index": "not_analyzed"
+                   "index": "not_analyzed",
+                   "fielddata": {
+                     "format": "doc_values"
+                   }
                  },
                  "transcript_id": {
                    "type": "string",
-                   "index": "not_analyzed"
+                   "index": "not_analyzed",
+                   "fielddata": {
+                     "format": "doc_values"
+                   }
                  },
-                 "rank": {"type": "integer"}
+                 "rank": {
+                   "type": "integer",
+                   "fielddata": {
+                     "format": "doc_values"
+                   }
+                 }
                }
             }
          }
@@ -109,41 +156,77 @@
             },
             "annotation":{
                "type":"string",
-               "index":"not_analyzed"
+              "index": "not_analyzed",
+              "fielddata": {
+                "format": "doc_values"
+              }
             },
             "chr":{
                "type":"string",
-               "index":"not_analyzed"
+              "index": "not_analyzed",
+              "fielddata": {
+                "format": "doc_values"
+              }
             },
             "start_pos":{
-               "type":"integer"
+              "type": "integer",
+              "fielddata": {
+                "format": "doc_values"
+              }
             },
             "end_pos":{
-               "type":"integer"
+              "type": "integer",
+              "fielddata": {
+                "format": "doc_values"
+              }
             },
             "strand":{
-               "type":"boolean"
+              "type": "boolean",
+              "fielddata": {
+                "format": "doc_values"
+              }
             },
             "isoforms":{
                "type":"nested",
                "properties":{
                   "name":{
                      "type":"string",
-                     "index":"not_analyzed"
+                    "index": "not_analyzed",
+                    "fielddata": {
+                      "format": "doc_values"
+                    }
                   },
                   "start_pos":{
-                     "type":"integer"
+                    "type": "integer",
+                    "fielddata": {
+                      "format": "doc_values"
+                    }
                   },
-                  "RNA_type":{"type":"string","index":"not_analyzed"},
+                 "RNA_type": {
+                   "type": "string",
+                   "index": "not_analyzed",
+                   "fielddata": {
+                     "format": "doc_values"
+                   }
+                 },
                   "end_pos":{
-                     "type":"integer"
+                    "type": "integer",
+                    "fielddata": {
+                      "format": "doc_values"
+                    }
                   },
                   "annotation":{
                      "type":"string",
-                     "index":"not_analyzed"
+                    "index": "not_analyzed",
+                    "fielddata": {
+                      "format": "doc_values"
+                    }
                   },
                   "strand":{
-                     "type":"boolean"
+                    "type": "boolean",
+                    "fielddata": {
+                      "format": "doc_values"
+                    }
                   },
                   "description":{
                      "type":"string"
@@ -158,22 +241,39 @@
                      "type":"nested",
                      "properties":{
                         "start_pos":{
-                           "type":"integer"
+                          "type": "integer",
+                          "fielddata": {
+                            "format": "doc_values"
+                          }
                         },
                         "end_pos":{
-                           "type":"integer"
+                          "type": "integer",
+                          "fielddata": {
+                            "format": "doc_values"
+                          }
                         }
                      }
                   },
                   "cds":{
                      "type":"nested",
                      "properties":{
-                        "frame":{"type":"integer"},
+                       "frame": {
+                         "type": "integer",
+                         "fielddata": {
+                           "format": "doc_values"
+                         }
+                       },
                         "start_pos":{
-                           "type":"integer"
+                          "type": "integer",
+                          "fielddata": {
+                            "format": "doc_values"
+                          }
                         },
                         "end_pos":{
-                           "type":"integer"
+                          "type": "integer",
+                          "fielddata": {
+                            "format": "doc_values"
+                          }
                         }
                      }
                   },
@@ -181,10 +281,16 @@
                      "type":"object",
                      "properties":{
                         "start_pos":{
-                           "type":"integer"
+                          "type": "integer",
+                          "fielddata": {
+                            "format": "doc_values"
+                          }
                         },
                         "end_pos":{
-                           "type":"integer"
+                          "type": "integer",
+                          "fielddata": {
+                            "format": "doc_values"
+                          }
                         }
                      }
                   },
@@ -192,10 +298,16 @@
                      "type":"object",
                      "properties":{
                         "start_pos":{
-                           "type":"integer"
+                          "type": "integer",
+                          "fielddata": {
+                            "format": "doc_values"
+                          }
                         },
                         "end_pos":{
-                           "type":"integer"
+                          "type": "integer",
+                          "fielddata": {
+                            "format": "doc_values"
+                          }
                         }
                      }
                   }
@@ -205,10 +317,16 @@
                "type":"nested",
                "properties":{
                   "start_pos":{
-                     "type":"integer"
+                    "type": "integer",
+                    "fielddata": {
+                      "format": "doc_values"
+                    }
                   },
                   "end_pos":{
-                     "type":"integer"
+                    "type": "integer",
+                    "fielddata": {
+                      "format": "doc_values"
+                    }
                   }
                }
             },
@@ -217,7 +335,10 @@
                "properties":{
                   "relation":{
                      "type":"string",
-                     "index":"not_analyzed"
+                    "index": "not_analyzed",
+                    "fielddata": {
+                      "format": "doc_values"
+                    }
                   },
 	          "exact":{
                      "type":"string"

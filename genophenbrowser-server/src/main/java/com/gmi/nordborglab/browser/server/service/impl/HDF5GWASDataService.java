@@ -99,8 +99,6 @@ public class HDF5GWASDataService implements GWASDataService {
     @Resource
     protected EsIndexer esIndexer;
 
-    protected GWASReader gwasReader;
-
     private static final ImmutableSet<String> SUPPORTED_PLOT_FORMATS = ImmutableSet.of("png", "pdf");
     private static final ImmutableSet<String> SUPPORTED_CHROMOSOMES = ImmutableSet.of("chr1", "chr2", "chr3", "chr4", "chr5");
 
@@ -109,7 +107,6 @@ public class HDF5GWASDataService implements GWASDataService {
 
     @Override
     public GWASData getGWASDataByStudyId(Long studyId, Double limit,boolean addAnnotation) {
-        TraitUom trait = traitUomRepository.findByStudyId(studyId);
         GWASReader gwasReader = new HDF5GWASReader(GWAS_STUDY_FOLDER);
         GWASData gwasData = gwasReader.readAll(studyId + ".hdf5", limit);
         gwasData.sortByPosition();
@@ -120,8 +117,12 @@ public class HDF5GWASDataService implements GWASDataService {
     }
 
     @Override
+    public GWASData getGWASDataByStudyIdForIndexer(long studyId) {
+        return getGWASDataByStudyId(studyId,1000D,true);
+    }
+
+    @Override
     public SNPGWASInfo getSNPGWASInfoByStudyId(Long studyId, Integer chromosome, Integer position) {
-        TraitUom trait = traitUomRepository.findByStudyId(studyId);
         GWASReader gwasReader = new HDF5GWASReader(GWAS_STUDY_FOLDER);
         return gwasReader.readSingle(studyId + ".hdf5", chromosome, position);
     }
@@ -133,7 +134,6 @@ public class HDF5GWASDataService implements GWASDataService {
 
     @Override
     public GWASData getGWASDataByViewerId(Long gwasResultId) {
-        GWASResult gwasResult = gwasResultRepository.findOne(gwasResultId);
         GWASReader gwasReader = new HDF5GWASReader(GWAS_VIEWER_FOLDER);
         GWASData gwasData = gwasReader.readAll(gwasResultId + ".hdf5", 2500D);
         gwasData.sortByPosition();

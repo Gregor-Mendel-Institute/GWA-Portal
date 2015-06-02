@@ -2,6 +2,9 @@ package com.gmi.nordborglab.browser.server.domain.germplasm;
 
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.observation.ObsUnit;
+import com.gmi.nordborglab.browser.server.es.ESDocument;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -13,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +27,9 @@ import java.util.Set;
 @Table(name = "div_stock", schema = "germplasm")
 @AttributeOverride(name = "id", column = @Column(name = "div_stock_id"))
 @SequenceGenerator(name = "idSequence", sequenceName = "germplasm.div_stock_div_stock_id_seq", allocationSize = 1)
-public class Stock extends BaseEntity {
+public class Stock extends BaseEntity implements ESDocument {
+
+    public static final String ES_TYPE = "stock";
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "div_generation_id")
@@ -115,5 +121,48 @@ public class Stock extends BaseEntity {
 
     public void setPedigreeData(String pedigreeData) {
         this.pedigreeData = pedigreeData;
+    }
+
+    @Override
+    public XContentBuilder getXContent(XContentBuilder builder) throws IOException {
+        if (builder == null)
+            builder = XContentFactory.jsonBuilder();
+        builder.startObject()
+                .field("seed_lot", getSeedLot())
+                .field("div_passport_id", getPassport().getId())
+                .field("div_taxonomy_id", getPassport().getTaxonomy().getId())
+                .field("comment", getComments())
+                .field("stock_source", getStockSource());
+        if (getGeneration() != null) {
+            builder.startObject("generation")
+                    .field("icis_id", getGeneration().getIcisId())
+                    .field("selfing_number", getGeneration().getSelfingNumber())
+                    .field("sibbing_number", getGeneration().getSibbingNumber())
+                    .field("comments", getGeneration().getComments())
+                    .endObject();
+        }
+        return builder;
+    }
+
+    @Override
+    public String getEsType() {
+        return ES_TYPE;
+    }
+
+    @Override
+    public String getEsId() {
+        if (getId() != null)
+            return getId().toString();
+        return null;
+    }
+
+    @Override
+    public String getRouting() {
+        return getPassport().getTaxonomy().getId().toString();
+    }
+
+    @Override
+    public String getParentId() {
+        return getPassport().getId().toString();
     }
 }

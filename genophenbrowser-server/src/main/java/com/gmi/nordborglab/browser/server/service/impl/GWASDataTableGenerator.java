@@ -136,7 +136,7 @@ public class GWASDataTableGenerator implements DataTableGenerator {
         return table;
     }
 
-    private static String getAnnotationFromEffect(String effect) {
+    public static String getAnnotationFromEffect(String effect) {
         if (effect == null)
             return null;
         switch (effect) {

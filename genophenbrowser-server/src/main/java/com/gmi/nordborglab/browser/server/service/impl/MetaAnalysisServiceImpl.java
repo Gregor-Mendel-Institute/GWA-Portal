@@ -146,6 +146,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
     public MetaSNPAnalysisPage findAllAnalysisForRegion(int startPos, int endPos, String chr, int start, int size, List<FilterItem> filterItems) {
         List<MetaSNPAnalysis> metaSNPAnalysises = Lists.newArrayList();
         // GET all studyids
+        // TODO remove this check
         SearchRequestBuilder builder = client.prepareSearch(esAclManager.getIndex());
         BoolFilterBuilder filter = FilterBuilders.boolFilter().must(
                 FilterBuilders.hasChildFilter("meta_analysis_snps", FilterBuilders.boolFilter().
@@ -521,7 +522,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         } else {
             builder.setQuery(QueryBuilders.constantScoreQuery(filter));
         }
-        builder.setSize(size).setFrom(start).addSort("score", SortOrder.DESC).addFields("position", "mac", "maf", "chr", "score", "overFDR", "studyid", "_parent", "gene.name", "annotation", "inGene", "_parent").setTypes("meta_analysis_snps");
+        builder.setSize(size).setFrom(start).addSort("score", SortOrder.DESC).addFields("position", "mac", "maf", "chr", "score", "overFDR", "studyid", "_parent", "annotations.gene_name", "annotation", "inGene", "_parent").setTypes("meta_analysis_snps");
         SearchResponse response = builder.execute().actionGet();
 
         for (SearchHit searchHit : response.getHits()) {
@@ -544,8 +545,8 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                     annotationString = fields.get("annotation").getValue();
                 }
                 info.setAnnotations(convertOldAnnotationTonewFormat(annotationString));
-                if (fields.containsKey("gene.name")) {
-                    info.setGene((String) fields.get("gene.name").getValue());
+                if (fields.containsKey("annotations.gene_name")) {
+                    info.setGene((String) fields.get("annotations.gene_name").getValue());
 
                 }
                 MetaSNPAnalysis.Builder metaAnalysisBuilder = new MetaSNPAnalysis.Builder()
@@ -1070,7 +1071,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         return page.getContents();
     }
 
-
+    //TODO switch to use ESIndexer Class
     private void indexCandidateGeneListEnrichments(List<CandidateGeneListEnrichment> candidateGeneListEnrichments) {
         BulkRequestBuilder bulkRequest = client.prepareBulk();
         //necesarry to improve performance

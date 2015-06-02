@@ -193,6 +193,7 @@ public class Experiment extends SecureEntity {
             builder.startArray("publication");
             for (Publication publication : this.getPublications()) {
                 publication.getXContent(builder);
+                builder.endObject();
             }
             builder.endArray();
         }
