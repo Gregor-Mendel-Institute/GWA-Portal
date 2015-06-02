@@ -35,7 +35,9 @@ public class SearchManager extends RequestFactoryManager<SearchRequest> {
         getContext().searchGeneByTerm(query).fire(new Receiver<SearchFacetPageProxy>() {
             @Override
             public void onSuccess(SearchFacetPageProxy response) {
-                callback.onSearchReturned(getSearchItemsFromResponse(response), response.getCategory(), response.getTotal());
+                if (response != null) {
+                    callback.onSearchReturned(getSearchItemsFromResponse(response), response.getCategory(), response.getTotal());
+                }
             }
         });
     }
@@ -44,15 +46,19 @@ public class SearchManager extends RequestFactoryManager<SearchRequest> {
         getContext().searchByFilter(request, filter).fire(new Receiver<SearchFacetPageProxy>() {
             @Override
             public void onSuccess(SearchFacetPageProxy response) {
-                callback.onSearchReturned(getSearchItemsFromResponse(response), response.getCategory(), response.getTotal());
+                if (response != null) {
+                    callback.onSearchReturned(getSearchItemsFromResponse(response), response.getCategory(), response.getTotal());
+                }
             }
         });
     }
 
     private Collection<SearchItemProxy> getSearchItemsFromResponse(SearchFacetPageProxy response) {
         Collection<SearchItemProxy> suggestions = Lists.newArrayList();
-        for (SearchItemProxy searchItem : response.getContents()) {
-            suggestions.add(searchItem);
+        if (response != null) {
+            for (SearchItemProxy searchItem : response.getContents()) {
+                suggestions.add(searchItem);
+            }
         }
         return suggestions;
     }
