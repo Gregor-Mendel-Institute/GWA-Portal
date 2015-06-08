@@ -42,13 +42,13 @@ def _updateDocument(elasticsearch_host,document,index,type,id):
     else: 
         raise Exception(str(req.text)) 
 
-def _bulkIndexDocuments(elasticsearch_host,documents,type):
+def _bulkIndexDocuments(elasticsearch_host,documents,type,idKey='position'):
     url = '%s/_bulk' % elasticsearch_host
     payload = ''
     for document in documents:
-        bulk_index = index % document["chr"]
+        bulk_index = index % document["chr"].lower()
         #parent_routing_suffix = '"_parent":"%s"' % document['gene'][0]['name'] if 'gene' in document else '"_routing":"%s"' % document['position']
-        action = '{"index":{"_index":"%s","_type":"%s","_id":"%s"}}\n' % (bulk_index,type,document['position'])
+        action = '{"index":{"_index":"%s","_type":"%s","_id":"%s"}}\n' % (bulk_index,type,document[idKey])
         data = json.dumps(document,encoding='cp1252')+'\n'
         payload = payload + action + data
     req = requests.put(url,data=payload)
@@ -62,16 +62,25 @@ def _indexGenes(elasticsearch_host,gene_annotation_file):
         return
     genes = cPickle.load(open(gene_annotation_file,'r'))
     failed_genes = []
-    for id,gene in genes.iteritems():
-        document = _getDocumentFromGene(gene)
-        try:
-            retval = _indexDocument(elasticsearch_host,document,index % document['chr'],'gene',document['name'])
-            if retval is None:
-                raise Exception(str(retval))    
-        except Exception, err:
-            failed_genes.append({'name':gene['name'],'error':str(err)})
-            raise err
+    documents = []
+    bulk_ix = 1
+    try:
+        for id,gene in genes.iteritems():
+            document = _getDocumentFromGene(gene)
+            documents.append(document)
+            if len(documents) == bulk_index_count:
+                status = _bulkIndexDocuments(elasticsearch_host,documents,'gene',idKey='name') 
+                documents = []
+                for document_status in status['items']: 
+                    if "index" not in document_status or document_status['index']['status'] not in [200,201,202]:
+                         failed_genes.append({'name':"%s" % document_status})
+                print "%s Genes indexed\n" % (bulk_ix * bulk_index_count)
+                bulk_ix += 1
+    except Exception,err:
+        pdb.set_trace()
+        raise err
     return failed_genes
+
 
 def _getDocumentFromGene(gene):
     document = {'chr':gene['chromosome'],'start_pos':int(gene['start_pos']),'end_pos':int(gene['end_pos']),'name':gene['name'],'annotation':gene['gene_type'],'strand':1 if gene['strand'] == '+' else 0}
