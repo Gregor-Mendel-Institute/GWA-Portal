@@ -1,19 +1,24 @@
 package com.gmi.nordborglab.browser.server.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gmi.nordborglab.browser.server.data.GWASData;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichment;
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
 import com.gmi.nordborglab.browser.server.errai.ClientComService;
+import com.gmi.nordborglab.browser.server.es.EsIndexer;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListEnrichmentRepository;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyJobRepository;
 import com.gmi.nordborglab.browser.server.repository.UserNotificationRepository;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
+import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
 import com.google.common.collect.Lists;
+import ncsa.hdf.hdf5lib.exceptions.HDF5FileNotFoundException;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.count.CountRequestBuilder;
 import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.client.Client;
@@ -32,6 +37,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -67,10 +73,16 @@ public class SubmitAnalysisTask {
     private MetaAnalysisService metaAnalysisService;
 
     @Resource
+    private GWASDataService gwasDataService;
+
+    @Resource
     private Client client;
 
     @Resource
     private AmqpTemplate amqpTemplate;
+
+    @Resource
+    protected EsIndexer esIndexer;
 
     @Resource
     private EsAclManager esAclManager;
@@ -135,7 +147,7 @@ public class SubmitAnalysisTask {
                         studyJob.setStatus("FINISHED");
                         studyJob.setTask("Finished on Worker");
                         studyJob.setProgress(100);
-                        //submitAnalysisForTopSNPs(studyJob.getStudy());
+                        indexTopSNPs(studyJob.getStudy());
                         break;
                     case "PROGRESS":
                         studyJob.setTask("Running on the Worker");
@@ -265,7 +277,8 @@ public class SubmitAnalysisTask {
                 .setTypes("meta_analysis_snps").setQuery(QueryBuilders.termQuery("studyid", job.getStudy().getId()));
         CountResponse response = request.execute().actionGet();
         if (response.getCount() == 0) {
-            submitAnalysisForTopSNPs(job.getStudy());
+            //submitAnalysisForTopSNPs(job.getStudy());
+            indexTopSNPs(job.getStudy());
         }
     }
 
@@ -458,6 +471,19 @@ public class SubmitAnalysisTask {
         args.add(traitUom.getExperiment().getId());
         CeleryTask task = new CeleryTask(UUID.randomUUID().toString(), GWAS_TOP_SNPS_TASK, args);
         //submitCeleryTask(task);
+    }
+
+    private void indexTopSNPs(Study study) {
+        GWASData gwasData;
+        try {
+            gwasData = gwasDataService.getGWASDataByStudyIdForIndexer(study.getId());
+            esIndexer.indexMetaAnalysisSnps(gwasData,study.getId(),study.getPhenotype().getExperiment().getId().toString(),false);
+        } catch (HDF5FileNotFoundException e) {
+            logger.warn("HDF5 File not found. Skipping");
+        }
+        catch (IOException ex) {
+            logger.error("Failed to index top snps", ex);
+        }
     }
 
     private static String getBadgeFromStatus(String status) {

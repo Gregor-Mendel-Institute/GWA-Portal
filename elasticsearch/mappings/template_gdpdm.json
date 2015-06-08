@@ -1,1140 +1,1517 @@
 {
-    "template": "gdpdm*",
-    "settings": {
-        "analysis": {
-            "filter": {
-                "ngrams": {
-                    "side": "front",
-                    "min_gram": 2,
-                    "max_gram": 255,
-                    "type": "edgeNGram"
-                }
-            },
-            "analyzer": {
-                "my_ngram": {
-                    "filter": [
-                        "standard",
-                        "lowercase",
-                        "ngrams"
-                    ],
-                    "type": "custom",
-                    "tokenizer": "standard"
-                }
+   "template": "gdpdm*",
+   "settings": {
+      "analysis": {
+         "filter": {
+            "ngrams": {
+               "side": "front",
+               "min_gram": 2,
+               "max_gram": 255,
+               "type": "edgeNGram"
             }
-        }
-    },
-    "mappings": {
-        "_default_": {
-            "dynamic": "strict"
-        },
-        "experiment": {
-            "_routing": {
-                "required": true,
-                "path": "id"
-            },
-            "properties": {
-                "id": {
-                    "type": "long"
-                },
-                "name": {
-                    "type": "multi_field",
-                    "fields": {
-                        "name": {
-                            "type": "string",
-                            "boost": 2
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 1.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "design": {
-                    "type": "string"
-                },
-                "originator": {
-                    "type": "string"
-                },
-                "comments": {
-                    "type": "string"
-                },
-                "publication": {
-                    "type": "nested",
-                    "properties": {
-                        "doi": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "volume": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "url": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "issue": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "page": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "journal": {
-                            "type": "string"
-                        },
-                        "title": {
-                            "type": "string"
-                        },
-                        "author": {
-                            "type": "string"
-                        },
-                        "pubdate": {
-                            "type": "date"
-                        }
-                    }
-                },
-                "published": {
-                    "type": "date"
-                },
-                "created": {
-                    "type": "date"
-                },
-                "modified": {
-                    "type": "date"
-                },
-                "acl": {
-                    "type": "nested",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "permissions": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        }
-                    }
-                },
-                "owner": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "sid": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "name": {
-                            "type": "multi_field",
-                            "fields": {
-                                "name": {
-                                    "type": "string"
-                                },
-                                "partial": {
-                                    "type": "string",
-                                    "index_analyzer": "my_ngram"
-                                }
-                            }
-                        }
-                    }
-                }
+         },
+         "analyzer": {
+            "my_ngram": {
+               "filter": [
+                  "standard",
+                  "lowercase",
+                  "ngrams"
+               ],
+               "type": "custom",
+               "tokenizer": "standard"
             }
-        },
-        "phenotype": {
-            "_parent": {
-                "type": "experiment"
-            },
-            "_routing": {
-                "required": true,
-                "path": "experiment.id"
-            },
-            "properties": {
-                "local_trait_name": {
-                    "type": "multi_field",
-                    "fields": {
-                        "local_trait_name": {
-                            "type": "string",
-                            "boost": 2
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 1.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "trait_protocol": {
-                    "type": "string"
-                },
-                "to_accession": {
-                    "type": "object",
-                    "properties": {
-                        "term_id": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "term_name": {
-                            "type": "multi_field",
-                            "fields": {
-                                "term_name": {
-                                    "type": "string"
-                                },
-                                "raw": {
-                                    "type": "string",
-                                    "index": "not_analyzed"
-                                }
-                            }
-                        },
-                        "term_definition": {
-                            "type": "string"
-                        },
-                        "term_comment": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "eo_accession": {
-                    "type": "object",
-                    "properties": {
-                        "term_id": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "term_name": {
-                            "type": "multi_field",
-                            "fields": {
-                                "term_name": {
-                                    "type": "string"
-                                },
-                                "raw": {
-                                    "type": "string",
-                                    "index": "not_analyzed"
-                                }
-                            }
-                        },
-                        "term_definition": {
-                            "type": "string"
-                        },
-                        "term_comment": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "div_unit_of_measure": {
-                    "type": "object",
-                    "properties": {
-                        "unit_type": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        }
-                    }
-                },
-                "published": {
-                    "type": "date"
-                },
-                "created": {
-                    "type": "date"
-                },
-                "modified": {
-                    "type": "date"
-                },
-                "experiment": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "id": {
-                            "type": "integer"
-                        }
-                    }
-                },
-                "acl": {
-                    "type": "nested",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "permissions": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        }
-                    }
-                },
-                "owner": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "sid": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "name": {
-                            "type": "multi_field",
-                            "fields": {
-                                "name": {
-                                    "type": "string"
-                                },
-                                "partial": {
-                                    "type": "string",
-                                    "index_analyzer": "my_ngram"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "study": {
-            "_parent": {
-                "type": "phenotype"
-            },
-            "_routing": {
-                "required": true,
-                "path": "experiment.id"
-            },
-            "properties": {
-                "name": {
-                    "type": "multi_field",
-                    "fields": {
-                        "name": {
-                            "type": "string",
-                            "boost": 2
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 1.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "producer": {
-                    "type": "string"
-                },
-                "study_date": {
-                    "type": "date"
-                },
-                "protocol": {
-                    "type": "object",
-                    "properties": {
-                        "analysis_method": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        }
-                    }
-                },
-                "published": {
-                    "type": "date"
-                },
-                "created": {
-                    "type": "date"
-                },
-                "modified": {
-                    "type": "date"
-                },
-                "experiment": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "id": {
-                            "type": "integer"
-                        }
-                    }
-                },
-                "phenotype": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "id": {
-                            "type": "integer"
-                        }
-                    }
-                },
-                "acl": {
-                    "type": "nested",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "permissions": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        }
-                    }
-                },
-                "owner": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "sid": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "name": {
-                            "type": "multi_field",
-                            "fields": {
-                                "name": {
-                                    "type": "string"
-                                },
-                                "partial": {
-                                    "type": "string",
-                                    "index_analyzer": "my_ngram"
-                                }
-                            }
-                        }
-                    }
-                },
-                "allele_assay": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "name": {
-                            "type": "string",
-                            "boost": 1.5,
-                            "index": "not_analyzed"
-                        },
-                        "producer": {
-                            "type": "string"
-                        },
-                        "comments": {
-                            "type": "string"
-                        },
-                        "assay_date": {
-                            "type": "date"
-                        },
-                        "scoring_tech_type": {
-                            "type": "object",
-                            "properties": {
-                                "scoring_tech_group": {
-                                    "type": "string",
-                                    "index": "not_analyzed"
-                                },
-                                "scoring_tech_type": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "meta_analysis_snps": {
-            "_parent": {
-                "type": "study"
-            },
-            "_routing": {
-                "required": true
-            },
-            "properties": {
-                "chr": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "position": {
-                    "type": "integer"
-                },
-                "score": {
-                    "type": "float"
-                },
-                "maf": {
-                    "type": "float"
-                },
-                "mac": {
-                    "type": "integer"
-                },
-                "studyid": {
-                    "type": "long"
-                },
-                "overFDR": {
-                    "type": "boolean"
-                },
-                "annotation": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "inGene": {
-                    "type": "boolean"
-                },
-                "gene": {
-                    "type": "nested",
-                    "properties": {
-                        "name": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "annotation": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "strand": {
-                            "type": "boolean"
-                        },
-                        "gene_region": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "translation_type": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        }
-                    }
-                }
-            }
-        },
-        "publication": {
-            "properties": {
-                "title": {
-                    "type": "multi_field",
-                    "fields": {
-                        "title": {
-                            "type": "string",
-                            "boost": 2
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 1.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "doi": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "volume": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "url": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "issue": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "page": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "journal": {
-                    "type": "string"
-                },
-                "author": {
-                    "type": "string"
-                },
-                "pubdate": {
-                    "type": "date"
-                }
-            }
-        },
-        "user": {
-            "properties": {
-                "username": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "firstname": {
-                    "type": "multi_field",
-                    "fields": {
-                        "name": {
-                            "type": "string",
-                            "boost": 2
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 1.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "lastname": {
-                    "type": "multi_field",
-                    "fields": {
-                        "name": {
-                            "type": "string",
-                            "boost": 2
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 1.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "email": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "authorities": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "registrationdate": {
-                    "type": "date"
-                }
-            }
-        },
-        "taxonomy": {
-            "properties": {
-                "genus": {
-                    "type": "multi_field",
-                    "fields": {
-                        "genus": {
-                            "type": "string",
-                            "boost": 1.5
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 1.2,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "species": {
-                    "type": "multi_field",
-                    "fields": {
-                        "species": {
-                            "type": "string",
-                            "boost": 3
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 2.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "subspecies": {
-                    "type": "multi_field",
-                    "fields": {
-                        "subspecies": {
-                            "type": "string",
-                            "boost": 4
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 3.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "subtaxa": {
-                    "type": "multi_field",
-                    "fields": {
-                        "subtaxa": {
-                            "type": "string",
-                            "boost": 4
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 3.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "race": {
-                    "type": "string"
-                },
-                "population": {
-                    "type": "string"
-                },
-                "common_name": {
-                    "type": "multi_field",
-                    "fields": {
-                        "common_name": {
-                            "type": "string",
-                            "boost": 2
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 1.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "term_accession": {
-                    "type": "string"
-                },
-                "comments": {
-                    "type": "string"
-                }
-            }
-        },
-        "passport": {
-            "_parent": {
-                "type": "taxonomy"
-            },
-            "properties": {
-                "accename": {
-                    "type": "multi_field",
-                    "fields": {
-                        "accename": {
-                            "type": "string",
-                            "boost": 2
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 1.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "accenumb": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "comments": {
-                    "type": "string"
-                },
-                "sampstat": {
-                    "type": "object",
-                    "properties": {
-                        "germplasm_type": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "collecting": {
-                    "type": "object",
-                    "properties": {
-                        "collector": {
-                            "type": "string"
-                        },
-                        "collnumb": {
-                            "type": "string"
-                        },
-                        "collsrc": {
-                            "type": "string"
-                        },
-                        "collcode": {
-                            "type": "string"
-                        },
-                        "col_date": {
-                            "type": "date"
-                        },
-                        "locality": {
-                            "type": "object",
-                            "properties": {
-                                "locality_name": {
-                                    "type": "string",
-                                    "index": "not_analyzed"
-                                },
-                                "elevation": {
-                                    "type": "integer"
-                                },
-                                "city": {
-                                    "type": "string",
-                                    "index": "not_analyzed"
-                                },
-                                "country": {
-                                    "type": "string",
-                                    "index": "not_analyzed"
-                                },
-                                "origcty": {
-                                    "type": "string",
-                                    "index": "not_analyzed"
-                                },
-                                "location": {
-                                    "type": "geo_point",
-                                    "lat_lon": true
-                                },
-                                "state_province": {
-                                    "type": "string"
-                                },
-                                "lo_accession": {
-                                    "type": "string",
-                                    "index": "not_analyzed"
-                                }
-                            }
-                        }
-                    }
-                },
-                "allele_assay": {
-                    "type": "nested",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "name": {
-                            "type": "string",
-                            "boost": 1.5,
-                            "index": "not_analyzed"
-                        },
-                        "producer": {
-                            "type": "string"
-                        },
-                        "comments": {
-                            "type": "string"
-                        },
-                        "assay_date": {
-                            "type": "date"
-                        },
-                        "scoring_tech_type": {
-                            "type": "object",
-                            "properties": {
-                                "scoring_tech_group": {
-                                    "type": "string",
-                                    "index": "not_analyzed"
-                                },
-                                "scoring_tech_type": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                },
-                "div_taxonomy_id": {
-                    "type": "integer",
-                    "index": "not_analyzed"
-                }
-            }
-        },
-        "stock": {
-            "_parent": {
-                "type": "passport"
-            },
-            "properties": {
-                "seed_lot": {
-                    "type": "string",
-                    "indx": "not_analyzed"
-                },
-                "stock_source": {
-                    "type": "string"
-                },
-                "comment": {
-                    "type": "string"
-                },
-                "generation": {
-                    "type": "object",
-                    "properties": {
-                        "comments": {
-                            "type": "string",
-                            "boost": 1.5
-                        },
-                        "icis_id": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "selfing_number": {
-                            "type": "integer"
-                        },
-                        "sibbing_number": {
-                            "type": "integer"
-                        }
-                    }
-                },
-                "div_passport_id": {
-                    "type": "integer",
-                    "index": "not_analyzed"
-                },
-                "div_taxonomy_id": {
-                    "type": "integer",
-                    "index": "not_analyzed"
-                }
-            }
-        },
-        "candidate_gene_list_enrichment": {
-            "_parent": {
-                "type": "study"
-            },
-            "_routing": {
-                "required": true,
-                "path": "experiment_.id"
-            },
-            "properties": {
-                "study_": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "id": {
-                            "type": "integer"
-                        }
-                    }
-                },
-                "experiment_": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "id": {
-                            "type": "integer"
-                        }
-                    }
-                },
-                "phenotype_": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "id": {
-                            "type": "integer"
-                        }
-                    }
-                },
-                "candidate_gene_list_acl": {
-                    "type": "nested",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "permissions": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        }
-                    }
-                },
-                "candidategenelist": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "id": {
-                            "type": "integer"
-                        }
-                    }
-                },
-                "progress": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "created": {
-                    "type": "date"
-                },
-                "modified": {
-                    "type": "date"
-                },
-                "pvalue": {
-                    "type": "double"
-                },
-                "windowsize": {
-                    "type": "integer"
-                },
-                "top_snps_count": {
-                    "type": "integer"
-                },
-                "permutationcount": {
-                    "type": "integer"
-                }
-            }
-        },
-        "candidate_gene_list": {
-            "properties": {
-                "name": {
-                    "type": "multi_field",
-                    "fields": {
-                        "name": {
-                            "type": "string",
-                            "boost": 2
-                        },
-                        "partial": {
-                            "type": "string",
-                            "boost": 1.5,
-                            "index_analyzer": "my_ngram"
-                        }
-                    }
-                },
-                "description": {
-                    "type": "string"
-                },
-                "published": {
-                    "type": "date"
-                },
-                "created": {
-                    "type": "date"
-                },
-                "modified": {
-                    "type": "date"
-                },
-                "acl": {
-                    "type": "nested",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "permissions": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        }
-                    }
-                },
-                "owner": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "sid": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "name": {
-                            "type": "multi_field",
-                            "fields": {
-                                "name": {
-                                    "type": "string"
-                                },
-                                "partial": {
-                                    "type": "string",
-                                    "index_analyzer": "my_ngram"
-                                }
-                            }
-                        }
-                    }
-                },
-                "genes": {
-                    "type": "nested",
-                    "properties": {
-                        "name": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "symbol": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "synonyms": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "annotation": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "chr": {
-                            "type": "string",
-                            "index": "not_analyzed"
-                        },
-                        "start_pos": {
-                            "type": "integer"
-                        },
-                        "end_pos": {
-                            "type": "integer"
-                        },
-                        "strand": {
-                            "type": "boolean"
-                        },
-                        "description": {
-                            "type": "string"
-                        },
-                        "short_description": {
-                            "type": "string"
-                        },
-                        "curator_summary": {
-                            "type": "string"
-                        },
-                        "GO": {
-                            "type": "nested",
-                            "properties": {
-                                "relation": {
-                                    "type": "string",
-                                    "index": "not_analyzed"
-                                },
-                                "exact": {
-                                    "type": "string"
-                                },
-                                "narrow": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
+         }
+      }
+   },
+   "mappings": {
+      "_default_": {
+         "dynamic": "strict"
+      },
       "gwasviewer": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "boost": 2,
-            "fields": {
-              "partial": {
-                "type": "string",
-                "boost": 1.5,
-                "index_analyzer": "my_ngram"
-              }
-            }
-          },
-          "type": {
-            "type": "string"
-          },
-          "comments": {
-            "type": "string"
-          },
-          "maxscore": {
-            "type": "double"
-          },
-          "numberofsnps": {
-            "type": "long"
-          },
-          "published": {
-            "type": "date"
-          },
-          "created": {
-            "type": "date"
-          },
-          "modified": {
-            "type": "date"
-          },
-          "acl": {
-            "type": "nested",
-            "properties": {
-              "id": {
-                "type": "integer"
-              },
-              "permissions": {
-                "type": "string",
-                "index": "not_analyzed"
-              }
-            }
-          },
-          "owner": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "integer"
-              },
-              "sid": {
-                "type": "string",
-                "index": "not_analyzed"
-              },
-              "name": {
-                "type": "string",
-                "fields": {
+         "properties": {
+            "name": {
+               "type": "string",
+               "boost": 2,
+               "fields": {
                   "partial": {
-                    "type": "string",
-                    "index_analyzer": "my_ngram"
+                     "type": "string",
+                     "boost": 1.5,
+                     "index_analyzer": "my_ngram"
                   }
-                }
-              }
+               }
+            },
+            "type": {
+               "type": "string"
+            },
+            "comments": {
+               "type": "string"
+            },
+            "maxscore": {
+               "type": "double",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "numberofsnps": {
+               "type": "long",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "published": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "created": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "modified": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "acl": {
+               "type": "nested",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "permissions": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "owner": {
+               "type": "object",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "sid": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "name": {
+                     "type": "string",
+                     "fields": {
+                        "partial": {
+                           "type": "string",
+                           "index_analyzer": "my_ngram"
+                        }
+                     }
+                  }
+               }
             }
-          }
-        }
-        }
-    }
+         }
+      },
+      "experiment": {
+         "_routing": {
+            "required": true,
+            "path": "id"
+         },
+         "properties": {
+            "id": {
+               "type": "long",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "name": {
+               "type": "multi_field",
+               "fields": {
+                  "name": {
+                     "type": "string",
+                     "boost": 2
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 1.5,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "design": {
+               "type": "string"
+            },
+            "originator": {
+               "type": "string"
+            },
+            "comments": {
+               "type": "string"
+            },
+            "publication": {
+               "type": "nested",
+               "properties": {
+                  "doi": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "volume": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "url": {
+                     "type": "string",
+                     "index": "not_analyzed"
+                  },
+                  "issue": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "page": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "journal": {
+                     "type": "string"
+                  },
+                  "title": {
+                     "type": "string"
+                  },
+                  "author": {
+                     "type": "string"
+                  },
+                  "pubdate": {
+                     "type": "date",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "published": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "created": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "modified": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "acl": {
+               "type": "nested",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "permissions": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "owner": {
+               "type": "object",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "sid": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "name": {
+                     "type": "multi_field",
+                     "fields": {
+                        "name": {
+                           "type": "string"
+                        },
+                        "partial": {
+                           "type": "string",
+                           "index_analyzer": "my_ngram"
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "phenotype": {
+         "_parent": {
+            "type": "experiment"
+         },
+         "_routing": {
+            "required": true,
+            "path": "experiment.id"
+         },
+         "properties": {
+            "local_trait_name": {
+               "type": "multi_field",
+               "fields": {
+                  "local_trait_name": {
+                     "type": "string",
+                     "boost": 2
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 1.5,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "trait_protocol": {
+               "type": "string"
+            },
+            "to_accession": {
+               "type": "object",
+               "properties": {
+                  "term_id": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "term_name": {
+                     "type": "multi_field",
+                     "fields": {
+                        "term_name": {
+                           "type": "string"
+                        },
+                        "raw": {
+                           "type": "string",
+                           "index": "not_analyzed",
+                           "fielddata": {
+                              "format": "doc_values"
+                           }
+                        }
+                     }
+                  },
+                  "term_definition": {
+                     "type": "string"
+                  },
+                  "term_comment": {
+                     "type": "string"
+                  }
+               }
+            },
+            "eo_accession": {
+               "type": "object",
+               "properties": {
+                  "term_id": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "term_name": {
+                     "type": "multi_field",
+                     "fields": {
+                        "term_name": {
+                           "type": "string"
+                        },
+                        "raw": {
+                           "type": "string",
+                           "index": "not_analyzed",
+                           "fielddata": {
+                              "format": "doc_values"
+                           }
+                        }
+                     }
+                  },
+                  "term_definition": {
+                     "type": "string"
+                  },
+                  "term_comment": {
+                     "type": "string"
+                  }
+               }
+            },
+            "div_unit_of_measure": {
+               "type": "object",
+               "properties": {
+                  "unit_type": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "published": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "created": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "modified": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "experiment": {
+               "type": "object",
+               "properties": {
+                  "name": {
+                     "type": "string"
+                  },
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "acl": {
+               "type": "nested",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "permissions": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "owner": {
+               "type": "object",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "sid": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "name": {
+                     "type": "multi_field",
+                     "fields": {
+                        "name": {
+                           "type": "string"
+                        },
+                        "partial": {
+                           "type": "string",
+                           "index_analyzer": "my_ngram"
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "study": {
+         "_parent": {
+            "type": "phenotype"
+         },
+         "_routing": {
+            "required": true,
+            "path": "experiment.id"
+         },
+         "properties": {
+            "name": {
+               "type": "multi_field",
+               "fields": {
+                  "name": {
+                     "type": "string",
+                     "boost": 2
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 1.5,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "producer": {
+               "type": "string"
+            },
+            "study_date": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "protocol": {
+               "type": "object",
+               "properties": {
+                  "analysis_method": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "published": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "created": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "modified": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "experiment": {
+               "type": "object",
+               "properties": {
+                  "name": {
+                     "type": "string"
+                  },
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "phenotype": {
+               "type": "object",
+               "properties": {
+                  "name": {
+                     "type": "string"
+                  },
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "acl": {
+               "type": "nested",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "permissions": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "owner": {
+               "type": "object",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "sid": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "name": {
+                     "type": "multi_field",
+                     "fields": {
+                        "name": {
+                           "type": "string"
+                        },
+                        "partial": {
+                           "type": "string",
+                           "index_analyzer": "my_ngram"
+                        }
+                     }
+                  }
+               }
+            },
+            "allele_assay": {
+               "type": "object",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "name": {
+                     "type": "string",
+                     "boost": 1.5,
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "producer": {
+                     "type": "string"
+                  },
+                  "comments": {
+                     "type": "string"
+                  },
+                  "assay_date": {
+                     "type": "date"
+                  },
+                  "scoring_tech_type": {
+                     "type": "object",
+                     "properties": {
+                        "scoring_tech_group": {
+                           "type": "string",
+                           "index": "not_analyzed",
+                           "fielddata": {
+                              "format": "doc_values"
+                           }
+                        },
+                        "scoring_tech_type": {
+                           "type": "string"
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "candidate_gene_list": {
+         "properties": {
+            "name": {
+               "type": "multi_field",
+               "fields": {
+                  "name": {
+                     "type": "string",
+                     "boost": 2
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 1.5,
+                     "index_analyzer": "my_ngram"
+                  }
+            }
+            },
+            "description": {
+               "type": "string"
+            },
+            "published": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+            }
+            },
+            "created": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+            }
+            },
+            "modified": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "acl": {
+               "type": "nested",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "permissions": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "owner": {
+               "type": "object",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "sid": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "name": {
+                     "type": "multi_field",
+                     "fields": {
+                        "name": {
+                           "type": "string"
+                        },
+                        "partial": {
+                           "type": "string",
+                           "index_analyzer": "my_ngram"
+                        }
+                     }
+                  }
+               }
+            },
+            "genes": {
+               "type": "nested",
+               "properties": {
+                  "name": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "symbol": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "synonyms": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "annotation": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "chr": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "start_pos": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "end_pos": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "strand": {
+                     "type": "boolean",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "description": {
+                     "type": "string"
+                  },
+                  "short_description": {
+                     "type": "string"
+                  },
+                  "curator_summary": {
+                     "type": "string"
+                  },
+                  "GO": {
+                     "type": "nested",
+                     "properties": {
+                        "relation": {
+                           "type": "string",
+                           "index": "not_analyzed",
+                           "fielddata": {
+                              "format": "doc_values"
+                        }
+                        },
+                        "exact": {
+                           "type": "string"
+                        },
+                        "narrow": {
+                           "type": "string"
+                        }
+                     }
+                  }
+            }
+            }
+         }
+      },
+      "publication": {
+         "properties": {
+            "title": {
+               "type": "multi_field",
+               "fields": {
+                  "title": {
+                     "type": "string",
+                     "boost": 2
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 1.5,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "doi": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "volume": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "url": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "issue": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "page": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "journal": {
+               "type": "string"
+            },
+            "author": {
+               "type": "string"
+            },
+            "pubdate": {
+               "type": "date"
+            }
+         }
+      },
+      "user": {
+         "properties": {
+            "username": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "enabled": {
+               "type": "boolean",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "firstname": {
+               "type": "multi_field",
+               "fields": {
+                  "name": {
+                     "type": "string",
+                     "boost": 2
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 1.5,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "lastname": {
+               "type": "multi_field",
+               "fields": {
+                  "name": {
+                     "type": "string",
+                     "boost": 2
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 1.5,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "email": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "authorities": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "registrationdate": {
+               "type": "date"
+            }
+         }
+      },
+      "taxonomy": {
+         "properties": {
+            "genus": {
+               "type": "multi_field",
+               "fields": {
+                  "genus": {
+                     "type": "string",
+                     "boost": 1.5
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 1.2,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "species": {
+               "type": "multi_field",
+               "fields": {
+                  "species": {
+                     "type": "string",
+                     "boost": 3
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 2.5,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "subspecies": {
+               "type": "multi_field",
+               "fields": {
+                  "subspecies": {
+                     "type": "string",
+                     "boost": 4
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 3.5,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "subtaxa": {
+               "type": "multi_field",
+               "fields": {
+                  "subtaxa": {
+                     "type": "string",
+                     "boost": 4
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 3.5,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "race": {
+               "type": "string"
+            },
+            "population": {
+               "type": "string"
+            },
+            "common_name": {
+               "type": "multi_field",
+               "fields": {
+                  "common_name": {
+                     "type": "string",
+                     "boost": 2
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 1.5,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "term_accession": {
+               "type": "string"
+            },
+            "comments": {
+               "type": "string"
+            }
+         }
+      },
+      "passport": {
+         "_parent": {
+            "type": "taxonomy"
+         },
+         "properties": {
+            "accename": {
+               "type": "multi_field",
+               "fields": {
+                  "accename": {
+                     "type": "string",
+                     "boost": 2
+                  },
+                  "partial": {
+                     "type": "string",
+                     "boost": 1.5,
+                     "index_analyzer": "my_ngram"
+                  }
+               }
+            },
+            "accenumb": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "comments": {
+               "type": "string"
+            },
+            "sampstat": {
+               "type": "object",
+               "properties": {
+                  "germplasm_type": {
+                     "type": "string"
+                  }
+               }
+            },
+            "collecting": {
+               "type": "object",
+               "properties": {
+                  "collector": {
+                     "type": "string"
+                  },
+                  "collnumb": {
+                     "type": "string"
+                  },
+                  "collsrc": {
+                     "type": "string"
+                  },
+                  "collcode": {
+                     "type": "string"
+                  },
+                  "col_date": {
+                     "type": "date"
+                  },
+                  "locality": {
+                     "type": "object",
+                     "properties": {
+                        "locality_name": {
+                           "type": "string",
+                           "index": "not_analyzed",
+                           "fielddata": {
+                              "format": "doc_values"
+                        }
+                        },
+                        "elevation": {
+                           "type": "integer",
+                           "fielddata": {
+                              "format": "doc_values"
+                        }
+                        },
+                        "city": {
+                           "type": "string",
+                           "index": "not_analyzed",
+                           "fielddata": {
+                              "format": "doc_values"
+                        }
+                        },
+                        "country": {
+                           "type": "string",
+                           "index": "not_analyzed",
+                           "fielddata": {
+                              "format": "doc_values"
+                        }
+                        },
+                        "origcty": {
+                           "type": "string",
+                           "index": "not_analyzed",
+                           "fielddata": {
+                              "format": "doc_values"
+                        }
+                        },
+                        "location": {
+                           "type": "geo_point",
+                           "lat_lon": true
+                        },
+                        "state_province": {
+                           "type": "string"
+                        },
+                        "lo_accession": {
+                           "type": "string",
+                           "index": "not_analyzed",
+                           "fielddata": {
+                              "format": "doc_values"
+                           }
+                        }
+                     }
+                  }
+            }
+            },
+            "allele_assay": {
+               "type": "nested",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "name": {
+                     "type": "string",
+                     "boost": 1.5,
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "producer": {
+                     "type": "string"
+                  },
+                  "comments": {
+                     "type": "string"
+                  },
+                  "assay_date": {
+                     "type": "date"
+                  },
+                  "scoring_tech_type": {
+                     "type": "object",
+                     "properties": {
+                        "scoring_tech_group": {
+                           "type": "string",
+                           "index": "not_analyzed",
+                           "fielddata": {
+                              "format": "doc_values"
+                        }
+                        },
+                        "scoring_tech_type": {
+                           "type": "string"
+                        }
+                     }
+                  }
+            }
+            },
+            "div_taxonomy_id": {
+               "type": "integer",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+            }
+            }
+         }
+      },
+      "stock": {
+         "_parent": {
+            "type": "passport"
+         },
+         "properties": {
+            "seed_lot": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+            }
+            },
+            "stock_source": {
+               "type": "string"
+            },
+            "comment": {
+               "type": "string"
+            },
+            "generation": {
+               "type": "object",
+               "properties": {
+                  "comments": {
+                     "type": "string",
+                     "boost": 1.5
+                  },
+                  "icis_id": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                  }
+                  },
+                  "selfing_number": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "sibbing_number": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+            }
+            },
+            "div_passport_id": {
+               "type": "integer",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "div_taxonomy_id": {
+               "type": "integer",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            }
+         }
+      },
+      "candidate_gene_list_enrichment": {
+         "_parent": {
+            "type": "study"
+         },
+         "_routing": {
+            "required": true,
+            "path": "experiment_.id"
+         },
+         "properties": {
+            "study_": {
+               "type": "object",
+               "properties": {
+                  "name": {
+                     "type": "string"
+                  },
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "experiment_": {
+               "type": "object",
+               "properties": {
+                  "name": {
+                     "type": "string"
+                  },
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "phenotype_": {
+               "type": "object",
+               "properties": {
+                  "name": {
+                     "type": "string"
+                  },
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "candidate_gene_list_acl": {
+               "type": "nested",
+               "properties": {
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "permissions": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "candidategenelist": {
+               "type": "object",
+               "properties": {
+                  "name": {
+                     "type": "string"
+                  },
+                  "id": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            },
+            "progress": {
+               "type": "integer",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "status": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "created": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "modified": {
+               "type": "date",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "pvalue": {
+               "type": "double",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "windowsize": {
+               "type": "integer",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "top_snps_count": {
+               "type": "integer",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "permutationcount": {
+               "type": "integer",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            }
+         }
+      },
+      "meta_analysis_snps": {
+         "_parent": {
+            "type": "study"
+         },
+         "_routing": {
+            "required": true
+         },
+         "properties": {
+            "chr": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "position": {
+               "type": "integer",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "score": {
+               "type": "float",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "maf": {
+               "type": "float",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "mac": {
+               "type": "integer",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "studyid": {
+               "type": "long",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "overFDR": {
+               "type": "boolean",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "annotation": {
+               "type": "string",
+               "index": "not_analyzed",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "inGene": {
+               "type": "boolean",
+               "fielddata": {
+                  "format": "doc_values"
+               }
+            },
+            "annotations": {
+               "type": "nested",
+               "properties": {
+                  "effect": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "impact": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "function": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "codon_change": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "amino_acid_change": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "gene_name": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "transcript_id": {
+                     "type": "string",
+                     "index": "not_analyzed",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  },
+                  "rank": {
+                     "type": "integer",
+                     "fielddata": {
+                        "format": "doc_values"
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
 }
-

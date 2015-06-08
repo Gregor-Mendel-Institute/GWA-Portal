@@ -149,10 +149,9 @@ public class Publication extends BaseEntity implements ESDocument {
                 .field("page", this.getPage())
                 .field("pubdate", this.getPubDate())
                 .field("issue", this.getIssue())
-                .field("volune", this.getVolume())
+                .field("volume", this.getVolume())
                 .field("url", this.getURL())
-                .field("doi", this.getURL())
-                .endObject();
+                .field("doi", this.getURL());
         return builder;
     }
 

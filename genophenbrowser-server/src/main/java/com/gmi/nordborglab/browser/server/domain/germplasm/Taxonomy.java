@@ -3,6 +3,9 @@ package com.gmi.nordborglab.browser.server.domain.germplasm;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
+import com.gmi.nordborglab.browser.server.es.ESDocument;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -13,6 +16,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +24,9 @@ import java.util.List;
 @Table(name = "div_taxonomy", schema = "germplasm")
 @AttributeOverride(name = "id", column = @Column(name = "div_taxonomy_id"))
 @SequenceGenerator(name = "idSequence", sequenceName = "germplasm.div_taxonomy_div_taxonomy_id_seq", allocationSize = 1)
-public class Taxonomy extends BaseEntity {
+public class Taxonomy extends BaseEntity implements ESDocument {
+
+    public static final String ES_TYPE = "taxonomy";
 
     @NotNull
     private String genus;
@@ -138,5 +144,43 @@ public class Taxonomy extends BaseEntity {
 
     public void setStats(List<AppStat> stats) {
         this.stats = stats;
+    }
+
+    @Override
+    public XContentBuilder getXContent(XContentBuilder builder) throws IOException {
+        if (builder == null)
+            builder = XContentFactory.jsonBuilder();
+        builder.startObject()
+                .field("term_accession", getTermAccession())
+                .field("species", getSpecies())
+                .field("subtaxa", getSubtaxa())
+                .field("subspecies", getSubspecies())
+                .field("common_name", getCommonName())
+                .field("genus", getGenus())
+                .field("race", getRace())
+                .field("population", getPopulation());
+        return builder;
+    }
+
+    @Override
+    public String getEsType() {
+        return ES_TYPE;
+    }
+
+    @Override
+    public String getEsId() {
+        if (getId() != null)
+            return getId().toString();
+        return null;
+    }
+
+    @Override
+    public String getRouting() {
+        return getId().toString();
+    }
+
+    @Override
+    public String getParentId() {
+        return null;
     }
 }

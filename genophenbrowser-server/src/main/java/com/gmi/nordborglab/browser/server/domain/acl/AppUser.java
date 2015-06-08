@@ -4,10 +4,13 @@ package com.gmi.nordborglab.browser.server.domain.acl;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
+import com.gmi.nordborglab.browser.server.es.ESDocument;
 import com.gmi.nordborglab.browser.server.validation.PasswordsEqual;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.elasticsearch.common.joda.time.DateTime;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -22,6 +25,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -31,8 +35,9 @@ import java.util.List;
 @AttributeOverride(name = "id", column = @Column(name = "id"))
 @SequenceGenerator(name = "idSequence", sequenceName = "acl.users_id_seq", allocationSize = 1)
 @PasswordsEqual
-public class AppUser extends BaseEntity {
+public class AppUser extends BaseEntity implements ESDocument {
 
+    public static final String ES_TYPE = "user";
 
     @Column(unique = true)
     @Email
@@ -317,5 +322,48 @@ public class AppUser extends BaseEntity {
 
     public void setOpenididentifier(String openididentifier) {
         this.openididentifier = openididentifier;
+    }
+
+    @Override
+    public XContentBuilder getXContent(XContentBuilder builder) throws IOException {
+        if (builder == null)
+            builder = XContentFactory.jsonBuilder();
+        builder.startObject()
+                .field("enabled", isEnabled())
+                .field("username", getUsername())
+                .field("registrationdate", getRegistrationdate())
+                .field("email", getEmail())
+                .field("lastname", getLastname())
+                .field("firstname", getFirstname());
+        if (getAuthorities() != null && getAuthorities().size() > 0) {
+            builder.startArray("authorities");
+            for (Authority authority : getAuthorities()) {
+                builder.value(authority.getAuthority());
+            }
+            builder.endArray();
+        }
+        return builder;
+    }
+
+    @Override
+    public String getEsType() {
+        return ES_TYPE;
+    }
+
+    @Override
+    public String getEsId() {
+        if (getId() != null)
+            return getId().toString();
+        return null;
+    }
+
+    @Override
+    public String getRouting() {
+        return null;
+    }
+
+    @Override
+    public String getParentId() {
+        return null;
     }
 }

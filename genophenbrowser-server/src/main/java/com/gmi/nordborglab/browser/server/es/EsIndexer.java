@@ -1,8 +1,13 @@
 package com.gmi.nordborglab.browser.server.es;
 
+import com.gmi.nordborglab.browser.server.data.ChrGWAData;
+import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnotation;
+import com.gmi.nordborglab.browser.server.data.annotation.SNPInfo;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
+import com.gmi.nordborglab.browser.server.service.impl.GWASDataTableGenerator;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
@@ -100,5 +105,62 @@ public class EsIndexer {
         request.execute();
     }
 
+    public BulkResponse indexMetaAnalysisSnps(GWASData gwasData, Long studyId,String routing,boolean isBlocking) throws IOException {
+        BulkRequestBuilder bulkRequest = esClient.prepareBulk();
+        BulkResponse bulkResponse = null;
+        for (ChrGWAData chrGWAData : gwasData.getChrGWASData().values()) {
+            for (int i = 0; i < chrGWAData.getPositions().length; i++) {
+                Character chr = chrGWAData.getChr().charAt(3);
+                XContentBuilder builder = XContentFactory.jsonBuilder();
+                builder.startObject()
+                        .field("studyid", studyId)
+                        .field("chr", chr)
+                        .field("score", chrGWAData.getPvalues()[i])
+                        .field("overFDR", chrGWAData.getPvalues()[i] > gwasData.getBonferroniScore())
+                        .field("position", chrGWAData.getPositions()[i]);
+                if (chrGWAData.getMacs() != null) {
+                    builder.field("mac", chrGWAData.getMacs()[i]);
+                }
+                if (chrGWAData.getMafs() != null) {
+                    builder.field("maf", chrGWAData.getMafs()[i]);
+                }
+                SNPInfo snpInfo = chrGWAData.getSNPInfos().get(i);
+                Boolean inGene = snpInfo.isInGene();
 
+                if (snpInfo.getAnnotations() != null && snpInfo.getAnnotations().size() > 0) {
+                    builder.field("annotation", GWASDataTableGenerator.getAnnotationFromEffect(snpInfo.getAnnotations().get(0).getEffect()));
+                    builder.startArray("annotations");
+                    for (SNPAnnotation annotation : snpInfo.getAnnotations()) {
+                        builder.startObject()
+                                .field("gene_name", annotation.getGene())
+                                .field("transcript_id", annotation.getTrascript())
+                                .field("effect", annotation.getEffect())
+                                .field("function", annotation.getFunction())
+                                .field("impact", annotation.getImpact())
+                                .field("codon_change", annotation.getCodonChange())
+                                .field("rank", annotation.getRank())
+                                .field("amino_acid_change", annotation.getAminoAcidChange())
+                                .endObject();
+                    }
+                    builder.endArray();
+                }
+
+                builder.field("inGene", inGene)
+                        .endObject();
+                String id = String.format("%s_%s_%s", studyId, chr, chrGWAData.getPositions()[i]);
+                IndexRequestBuilder request = esClient.prepareIndex(esAclManager.getIndex(), "meta_analysis_snps", id)
+                        .setSource(builder)
+                        .setRouting(routing)
+                        .setParent(studyId.toString());
+                bulkRequest.add(request);
+            }
+        }
+        if (isBlocking) {
+            bulkResponse = bulkRequest.execute().actionGet();
+        }
+        else {
+            bulkRequest.execute();
+        }
+        return bulkResponse;
+    }
 }

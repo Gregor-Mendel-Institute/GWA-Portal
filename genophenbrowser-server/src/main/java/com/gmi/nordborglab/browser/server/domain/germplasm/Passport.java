@@ -4,10 +4,14 @@ import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.cdv.Source;
 import com.gmi.nordborglab.browser.server.domain.genotype.Allele;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
+import com.gmi.nordborglab.browser.server.domain.observation.Locality;
+import com.gmi.nordborglab.browser.server.es.ESDocument;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 import com.mysema.query.annotations.QueryInit;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -21,6 +25,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,7 +38,9 @@ import java.util.Set;
 @AttributeOverride(name = "id", column = @Column(name = "div_passport_id"))
 @SequenceGenerator(name = "idSequence", sequenceName = "germplasm.div_passport_div_passport_id_seq", allocationSize = 1)
 @BatchSize(size = 100)
-public class Passport extends BaseEntity {
+public class Passport extends BaseEntity implements ESDocument {
+
+    public static final String ES_TYPE = "passport";
 
     @ManyToOne()
     @JoinColumn(name = "div_taxonomy_id")
@@ -154,4 +161,84 @@ public class Passport extends BaseEntity {
         return alleleAssays;
     }
 
+    @Override
+    public XContentBuilder getXContent(XContentBuilder builder) throws IOException {
+        if (builder == null)
+            builder = XContentFactory.jsonBuilder();
+        builder.startObject()
+                .field("accename", this.getAccename())
+                .field("accenumb", this.getAccenumb())
+                .field("div_taxonomy_id", this.getTaxonomy().getId())
+                .field("comments", this.getComments());
+        if (this.getSampstat() != null) {
+            builder.startObject("sampstat")
+                    .field("germplasm_type", sampstat.getGermplasmType()).endObject();
+        }
+        if (this.getAlleleAssays() != null && getAlleleAssays().size() > 0) {
+            builder.startArray("allele_assay");
+            for (AlleleAssay alleleAssay : getAlleleAssays()) {
+                builder.startObject();
+                alleleAssay.getXContent(builder);
+                builder.endObject();
+            }
+            builder.endArray();
+        }
+
+        if (this.getCollection() != null) {
+            builder.startObject("collecting");
+            addCollection(builder, this.getCollection());
+            builder.endObject();
+        }
+        return builder;
+    }
+
+
+    private static void addCollection(XContentBuilder builder, AccessionCollection collection) throws IOException {
+        builder.field("collector", collection.getCollector())
+                .field("collcode", collection.getCollCode())
+                        // fix col_date to date
+                        //.field("col_date", (String)null)
+                .field("collnum", collection.getCollNumb())
+                .field("collsrc", collection.getCollSrc());
+        if (collection.getLocality() != null) {
+            builder.startObject("locality");
+            addLocality(builder, collection.getLocality());
+            builder.endObject();
+        }
+    }
+
+    private static void addLocality(XContentBuilder builder, Locality locality) throws IOException {
+        builder.field("state_provence", locality.getStateProvince())
+                .field("origcty", locality.getOrigcty())
+                .field("lo_accession", locality.getLoAccession())
+                .field("elevation", locality.getElevation())
+                .field("locality_name", locality.getLocalityName())
+                .field("country", locality.getCountry())
+                .field("city", locality.getCity());
+        if (locality.getLatitude() != null && locality.getLongitude() != null) {
+            builder.field("location", locality.getLatitude() + "," + locality.getLongitude());
+        }
+    }
+
+    @Override
+    public String getEsType() {
+        return ES_TYPE;
+    }
+
+    @Override
+    public String getEsId() {
+        if (getId() != null)
+            return getId().toString();
+        return null;
+    }
+
+    @Override
+    public String getRouting() {
+        return getTaxonomy().getId().toString();
+    }
+
+    @Override
+    public String getParentId() {
+        return getTaxonomy().getId().toString();
+    }
 }

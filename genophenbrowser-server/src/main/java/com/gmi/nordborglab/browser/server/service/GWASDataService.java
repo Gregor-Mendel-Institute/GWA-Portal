@@ -21,6 +21,8 @@ public interface GWASDataService {
     @PreAuthorize("hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
     public GWASData getGWASDataByStudyId(Long studyId, Double limit, boolean addAnnotation);
 
+    public GWASData getGWASDataByStudyIdForIndexer(long studyId);
+
     @PreAuthorize("hasPermission(#studyId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
     public SNPGWASInfo getSNPGWASInfoByStudyId(Long studyId, Integer chromosome, Integer position);
 
