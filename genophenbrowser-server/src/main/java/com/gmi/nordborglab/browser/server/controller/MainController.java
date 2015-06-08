@@ -20,7 +20,7 @@ public class MainController {
     @Value("${JBROWSE.url}")
     private String jbrowseUrl;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method =  {RequestMethod.GET, RequestMethod.HEAD})
     public ModelAndView index() {
         ModelAndView result = new ModelAndView("index");
         result.addObject("appData", helperService.getAppData());
