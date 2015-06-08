@@ -186,7 +186,7 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
             String chr = "chr" + matcher.group(1);
             GetRequestBuilder builder = client.prepareGet(String.format(INDEX_PREFIX, chr), "gene", id).setFields("name", "chr", "start_pos", "end_pos", "annotation", "strand").setFetchSource("isoforms", null);
             GetResponse response = builder.execute().actionGet();
-            if (response != null) {
+            if (response != null && response.isExists()) {
                 //TODO fix long int boolean stuff
                 gene = new Gene(Long.valueOf((Integer) response.getField("start_pos").getValue()), Long.valueOf((Integer) response.getField("end_pos").getValue()), ((Boolean) response.getField("strand").getValue() ? 1 : 0), (String) response.getField("name").getValue(), null);
                 gene.setAnnotation((String) response.getField("annotation").getValue());
@@ -269,6 +269,9 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
         Integer chr = null;
         if (geneMatcher.matches()) {
             Gene gene = getGeneById(region);
+            if (gene == null) {
+                throw new RuntimeException("Gene not found in index");
+            }
             start = (int) gene.getStart();
             end = (int) gene.getEnd();
             chr = Integer.valueOf(gene.getChr());

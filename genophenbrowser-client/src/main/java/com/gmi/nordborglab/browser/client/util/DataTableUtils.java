@@ -364,10 +364,11 @@ public class DataTableUtils {
             //dataTable.setValue(i,0,allele);
             Double[] value = stats.get(allele);
             if (value != null) {
-                dataTable.setValue(i, startix + 1, value[0]);
-                dataTable.setValue(i, startix + 2, value[1]);
-                dataTable.setValue(i, startix + 3, value[2]);
-                dataTable.setValue(i, startix + 4, value[3]);
+                for (int j = 1; j <= 4; j++) {
+                    if (value[j - 1] != null) {
+                        dataTable.setValue(i, startix + j, value[j - 1]);
+                    }
+                }
             }
             i = i + 1;
         }
