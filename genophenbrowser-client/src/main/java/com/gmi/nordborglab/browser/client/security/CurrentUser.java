@@ -205,6 +205,8 @@ public class CurrentUser {
 
 
     public void updateNotificationCheckDate() {
+        if (!isLoggedIn())
+            return;
         Date date = new Date();
         MessageBuilder.createMessage("UpdateCheckNotificationDateService")
                 .signalling()
