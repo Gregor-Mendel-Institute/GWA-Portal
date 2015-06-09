@@ -821,7 +821,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
             case HISTOGRAM:
                 if (phenotypeChartContainer.getWidget() == null) {
                     ResizeableColumnChart columnChart = new ResizeableColumnChart(phenotypeHistogramData, createColumnChart());
-                    phenotypeChartContainer.add(columnChart);
+                    phenotypeChartContainer.setWidget(columnChart);
                 } else {
                     ResizeableColumnChart columnChart = (ResizeableColumnChart) phenotypeChartContainer.getWidget();
                     columnChart.draw2(phenotypeHistogramData, createColumnChart());
@@ -829,12 +829,13 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
                 break;
             case GEOCHART:
                 GeoChart geoChart = new GeoChart();
-                phenotypeChartContainer.add(geoChart);
+                phenotypeChartContainer.setWidget(geoChart);
                 geoChart.draw(phenotypeGeoChartData, createGeoChartOptions());
+                break;
             case EXPLORER:
                 //TODO causes exception
                 ResizeableMotionChart motionChart = new ResizeableMotionChart(phenotypeExplorerData, createMotionChartOptions());
-                phenotypeChartContainer.add(motionChart);
+                phenotypeChartContainer.setWidget(motionChart);
                 break;
         }
     }
