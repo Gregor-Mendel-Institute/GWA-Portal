@@ -18,7 +18,6 @@ import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
 import com.google.common.collect.Lists;
 import ncsa.hdf.hdf5lib.exceptions.HDF5FileNotFoundException;
-import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.count.CountRequestBuilder;
 import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.client.Client;
@@ -437,7 +436,7 @@ public class SubmitAnalysisTask {
                     studyJob.setStatus("Finished");
                     studyJob.setTask("Finished on HPC cluster");
                     studyJob.setProgress(100);
-                    submitAnalysisForTopSNPs(studyJob.getStudy());
+                    indexTopSNPs(studyJob.getStudy());
                 } else if ("Pending".equalsIgnoreCase(status)) {
                     studyJob.setStatus("Pending");
                     studyJob.setTask("Queued on the HPC");
