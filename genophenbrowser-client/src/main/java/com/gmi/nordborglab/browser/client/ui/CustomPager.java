@@ -96,6 +96,11 @@ public class CustomPager extends AbstractPager {
 				.getSelectedIndex())));
 	}
 
+	public void setPageControlDisabled(boolean disabled) {
+		setPreviousPageEnabled(disabled || !hasPreviousPage());
+		setNextPageEnabled(disabled || !hasNextPage());
+	}
+
 	protected String createText() {
 		NumberFormat formatter = NumberFormat.getFormat("#,###");
 		HasRows display = getDisplay();

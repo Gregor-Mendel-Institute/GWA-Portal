@@ -68,6 +68,8 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
         void resetSelection(List<STATS> statses);
 
         HasData<MetaSNPAnalysisProxy> getDisplay();
+
+        void setPagingDisabled(boolean disabled);
     }
 
     @ProxyCodeSplit
@@ -91,6 +93,7 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
     private AsyncDataProvider<MetaSNPAnalysisProxy> dataProvider = new AsyncDataProvider<MetaSNPAnalysisProxy>() {
         @Override
         protected void onRangeChanged(HasData<MetaSNPAnalysisProxy> display) {
+            getView().setPagingDisabled(true);
             final Range range = display.getVisibleRange();
             fireEvent(new LoadingIndicatorEvent(true));
             getContext().findTopAnalysis(criteria, filterItems, range.getStart(), range.getLength()).fire(new Receiver<MetaSNPAnalysisPageProxy>() {
@@ -100,12 +103,14 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
                     updateRowCount((int) response.getTotalElements(), true);
                     updateRowData(range.getStart(), response.getContents());
                     ctx = null;
+                    getView().setPagingDisabled(false);
                 }
 
                 @Override
                 public void onFailure(ServerFailure error) {
                     fireEvent(new LoadingIndicatorEvent(false));
                     ctx = null;
+                    getView().setPagingDisabled(false);
                     super.onFailure(error);    //To change body of overridden methods use File | Settings | File Templates.
                 }
             });

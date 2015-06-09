@@ -259,6 +259,11 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
         searchGeneTa.setValue("");
     }
 
+    @Override
+    public void setPagingDisabled(boolean disabled) {
+        pager.setPageControlDisabled(disabled);
+    }
+
 
     @Override
     public void setGeneViewerRegion(String chr, int start, int end, int totalLength) {

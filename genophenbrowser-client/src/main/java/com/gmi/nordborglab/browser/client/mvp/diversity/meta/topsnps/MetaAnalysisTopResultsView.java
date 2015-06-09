@@ -145,7 +145,7 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
     public MetaAnalysisTopResultsView(Binder binder, final PlaceManager placeManger,
                                       final CustomDataGridResources customDataGridResources) {
         this.placeManger = placeManger;
-        dataGrid = new DataGrid<MetaSNPAnalysisProxy>(20, customDataGridResources);
+        dataGrid = new DataGrid<>(25, customDataGridResources);
         stats2DataTable = Maps.newHashMap();
         stats2Selection = Maps.newHashMap();
         greySliceOption.setColor("#eee");
@@ -286,6 +286,11 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
     @Override
     public HasData<MetaSNPAnalysisProxy> getDisplay() {
         return dataGrid;
+    }
+
+    @Override
+    public void setPagingDisabled(boolean disabled) {
+        pager.setPageControlDisabled(disabled);
     }
 
     private void forceLayout() {

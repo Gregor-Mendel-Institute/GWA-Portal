@@ -66,6 +66,8 @@ public class MetaAnalysisGenePresenter extends
         void setGeneRange(Integer leftInterval, Integer rightInterval);
 
         void reset();
+
+        void setPagingDisabled(boolean disabled);
     }
 
     @ProxyCodeSplit
@@ -81,7 +83,7 @@ public class MetaAnalysisGenePresenter extends
     private int rightInterval = DEFAULT_INTERVAL;
     private final FilterPresenterWidget filterPresenterWidget;
     private List<FilterItemProxy> filterItems;
-    private MetaAnalysisRequest ctx;
+    private boolean filterItemChanged = false;
     private final SearchManager searchManager;
 
     public static final Object TYPE_FilterContent = new Object();
@@ -92,21 +94,28 @@ public class MetaAnalysisGenePresenter extends
             if (gene == null) {
                 return;
             }
+            getView().setPagingDisabled(true);
             final Range range = display.getVisibleRange();
             fireEvent(new LoadingIndicatorEvent(true));
-            getContext().findAllAnalysisForRegion((int) gene.getStart() - leftInterval, (int) gene.getEnd() + rightInterval, gene.getChr(), range.getStart(), range.getLength(), filterItems).fire(new Receiver<MetaSNPAnalysisPageProxy>() {
+            MetaAnalysisRequest ctx = getContext();
+            if (filterItemChanged) {
+                filterItems = getProxyFromFilter(filterPresenterWidget.getActiveFilterItems(), ctx);
+                filterItemChanged = false;
+            }
+            ctx.findAllAnalysisForRegion((int) gene.getStart() - leftInterval, (int) gene.getEnd() + rightInterval, gene.getChr(), range.getStart(), range.getLength(), filterItems).fire(new Receiver<MetaSNPAnalysisPageProxy>() {
                 @Override
                 public void onSuccess(MetaSNPAnalysisPageProxy response) {
+                    getView().setPagingDisabled(false);
                     updateRowCount((int) response.getTotalElements(), true);
                     updateRowData(range.getStart(), response.getContents());
-                    ctx = null;
                     fireEvent(new LoadingIndicatorEvent(false));
+
                 }
 
                 @Override
                 public void onFailure(ServerFailure error) {
-                    ctx = null;
                     fireEvent(new LoadingIndicatorEvent(false));
+                    getView().setPagingDisabled(false);
                     super.onFailure(error);    //To change body of overridden methods use File | Settings | File Templates.
                 }
             });
@@ -179,6 +188,7 @@ public class MetaAnalysisGenePresenter extends
         registerHandler(getEventBus().addHandlerToSource(FilterModifiedEvent.TYPE, filterPresenterWidget, new FilterModifiedEvent.Handler() {
             @Override
             public void onFilterModified(FilterModifiedEvent event) {
+                filterItemChanged = true;
                 fetchMetaAnalysisData();
             }
         }));
@@ -225,20 +235,19 @@ public class MetaAnalysisGenePresenter extends
         });
     }
 
-    private List<FilterItemProxy> getProxyFromFilter(List<FilterItem> filterItems) {
+    private List<FilterItemProxy> getProxyFromFilter(List<FilterItem> filterItems, MetaAnalysisRequest ctx) {
         if (filterItems == null) {
             return null;
         }
         List<FilterItemProxy> filterItemProxies = Lists.newArrayList();
         for (FilterItem filterItem : filterItems) {
-            FilterItemProxy filterItemProxy = filterItem.getProxy(getContext());
+            FilterItemProxy filterItemProxy = filterItem.getProxy(ctx);
             filterItemProxies.add(filterItemProxy);
         }
         return filterItemProxies;
     }
 
     private void fetchMetaAnalysisData() {
-        filterItems = getProxyFromFilter(filterPresenterWidget.getActiveFilterItems());
         if (dataProvider.getDataDisplays().contains(getView().getDisplay())) {
             Range range = getView().getDisplay().getVisibleRange();
             getView().getDisplay().setVisibleRangeAndClearData(range, true);
@@ -284,9 +293,6 @@ public class MetaAnalysisGenePresenter extends
     }
 
     private MetaAnalysisRequest getContext() {
-        if (ctx == null) {
-            ctx = rf.metaAnalysisRequest();
-        }
-        return ctx;
+        return rf.metaAnalysisRequest();
     }
 }
