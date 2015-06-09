@@ -208,7 +208,11 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 info.setPosition((Integer) fields.get("position").getValue());
                 info.setChr(chr);
                 String annotationString = null;
-                info.setInGene((Boolean) fields.get("inGene").getValue());
+                // Required because 250k SNPs are not indexed
+                if (fields.containsKey("inGene")) {
+                    info.setInGene((Boolean) fields.get("inGene").getValue());
+                }
+                // Required because 250k SNPs are not indexed
                 if (fields.containsKey("annotation")) {
                     annotationString = fields.get("annotation").getValue();
                 }
