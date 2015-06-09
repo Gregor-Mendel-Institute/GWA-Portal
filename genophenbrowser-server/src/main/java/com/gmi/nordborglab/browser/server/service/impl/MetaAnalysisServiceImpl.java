@@ -211,7 +211,6 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 info.setInGene((Boolean) fields.get("inGene").getValue());
                 if (fields.containsKey("annotation")) {
                     annotationString = fields.get("annotation").getValue();
-
                 }
                 info.setAnnotations(convertOldAnnotationTonewFormat(annotationString));
                 MetaSNPAnalysis.Builder metaAnalysisBuilder = new MetaSNPAnalysis.Builder()
@@ -494,15 +493,17 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
     private List<SNPAnnotation> convertOldAnnotationTonewFormat(String annotationString) {
         List<SNPAnnotation> annotations = Lists.newArrayList();
         SNPAnnotation annotation = null;
-        switch (annotationString) {
-            case "S":
-                annotation = new SNPAnnotation("S");
-                break;
-            case "NS":
-                annotation = new SNPAnnotation("NS");
-                break;
-            default:
-                annotation = new SNPAnnotation("*");
+        if (annotationString != null) {
+            switch (annotationString) {
+                case "S":
+                    annotation = new SNPAnnotation("S");
+                    break;
+                case "NS":
+                    annotation = new SNPAnnotation("NS");
+                    break;
+                default:
+                    annotation = new SNPAnnotation("*");
+            }
         }
         if (annotation != null) {
             annotations.add(annotation);
