@@ -14,6 +14,7 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.protocols.MessageParts;
 import org.jboss.errai.common.client.protocols.Resources;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -32,6 +33,8 @@ public class ClientComService implements MessageCallback {
     private static Multimap<String, String> session2UserMap = ArrayListMultimap.create();
 
     private static RequestDispatcher dispatcher;
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ClientComService.class);
 
     @Inject
     public ClientComService(RequestDispatcher dispatcher) {
@@ -92,8 +95,7 @@ public class ClientComService implements MessageCallback {
 
                         @Override
                         public boolean error(Message o, Throwable throwable) {
-                            throwable.printStackTrace();
-
+                            logger.warn("Error in pushing notfication to the user", throwable);
                             return true;
                         }
                     })
