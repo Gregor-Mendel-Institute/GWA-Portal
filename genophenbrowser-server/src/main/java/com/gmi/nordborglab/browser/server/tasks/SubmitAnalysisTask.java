@@ -146,7 +146,11 @@ public class SubmitAnalysisTask {
                         studyJob.setStatus("FINISHED");
                         studyJob.setTask("Finished on Worker");
                         studyJob.setProgress(100);
-                        indexTopSNPs(studyJob.getStudy());
+                        try {
+                            indexTopSNPs(studyJob.getStudy());
+                        } catch (HDF5FileNotFoundException e) {
+                            logger.warn("HDF5 file to index not found", e);
+                        }
                         break;
                     case "PROGRESS":
                         studyJob.setTask("Running on the Worker");
@@ -166,7 +170,7 @@ public class SubmitAnalysisTask {
             }
             studyJobRepository.save(studyJob);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to update the GWAS job status", e);
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
     }
@@ -213,7 +217,7 @@ public class SubmitAnalysisTask {
             candidateGeneListEnrichmentRepository.save(enrichment);
             indexCandidateGeneListEnrichment(enrichment);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to update the Candidate Gene List enrichment status", e);
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
     }
@@ -329,7 +333,7 @@ public class SubmitAnalysisTask {
             args.add(payload.get("saga_job_id"));
             args.add(payload.get("sge_job_id"));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to retrieve Celery task message for Check job", e);
             throw new RuntimeException(e.getMessage());
             //TODO email
         }
@@ -393,7 +397,7 @@ public class SubmitAnalysisTask {
                 throw new RuntimeException("Can't handle status: " + status);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to update the HPC job id", e);
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
     }
@@ -404,7 +408,7 @@ public class SubmitAnalysisTask {
         try {
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to update the HPC Job task progress", e);
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
     }
@@ -436,7 +440,11 @@ public class SubmitAnalysisTask {
                     studyJob.setStatus("Finished");
                     studyJob.setTask("Finished on HPC cluster");
                     studyJob.setProgress(100);
-                    indexTopSNPs(studyJob.getStudy());
+                    try {
+                        indexTopSNPs(studyJob.getStudy());
+                    } catch (HDF5FileNotFoundException e) {
+                        logger.warn("HDF5 file to index not found", e);
+                    }
                 } else if ("Pending".equalsIgnoreCase(status)) {
                     studyJob.setStatus("Pending");
                     studyJob.setTask("Queued on the HPC");
@@ -458,7 +466,7 @@ public class SubmitAnalysisTask {
             }
             studyJobRepository.save(studyJob);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to update the HPC job status", e);
             throw new AmqpRejectAndDontRequeueException(e.getMessage());
         }
     }
