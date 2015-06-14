@@ -1,10 +1,8 @@
 package com.gmi.nordborglab.browser.server.es;
 
-import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
-import com.gmi.nordborglab.browser.server.data.annotation.SNPAnnotation;
-import com.gmi.nordborglab.browser.server.data.annotation.SNPInfo;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichment;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListEnrichmentRepository;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListRepository;
@@ -20,17 +18,16 @@ import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
-import com.gmi.nordborglab.browser.server.service.impl.GWASDataTableGenerator;
+import com.gmi.nordborglab.jpaontology.repository.TermRepository;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import ncsa.hdf.hdf5lib.exceptions.HDF5FileNotFoundException;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.count.CountRequestBuilder;
 import org.elasticsearch.action.count.CountResponse;
-import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -49,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by uemit.seren on 1/28/15.
@@ -109,7 +107,25 @@ public class EsIndexerApp {
     @Resource
     protected EsAclManager esAclManager;
 
+    @Resource
+    protected TermRepository termRepository;
 
+
+    private Function ontologyFunc = new Function() {
+        @Override
+        public Object apply(Object input) {
+            Preconditions.checkNotNull(input);
+            Preconditions.checkArgument(input instanceof TraitUom);
+            TraitUom traitUom = (TraitUom) input;
+            if (traitUom.getToAccession() != null) {
+                traitUom.setTraitOntologyTerm(termRepository.findByAcc(traitUom.getToAccession()));
+            }
+            if (traitUom.getEoAccession() != null) {
+                traitUom.setEnvironOntologyTerm(termRepository.findByAcc(traitUom.getEoAccession()));
+            }
+            return input;
+        }
+    };
 
     public static void main(String[] args) {
         AbstractApplicationContext context = null;
@@ -129,7 +145,7 @@ public class EsIndexerApp {
     }
 
     @Transactional(readOnly = true)
-    public void index(String[] args) {
+    public <T extends ESDocument> void index(String[] args) {
         Authentication auth =
                 new UsernamePasswordAuthenticationToken("EsIndexerApp", null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -164,7 +180,7 @@ public class EsIndexerApp {
                     indexEntities(experimentRepository);
                     break;
                 case "phenotype":
-                    indexEntities(phenotypeRepository);
+                    indexEntities(phenotypeRepository, Optional.<Function<T, T>>of(ontologyFunc));
                     break;
                 case "study":
                     indexEntities(studyRepository);
@@ -195,14 +211,24 @@ public class EsIndexerApp {
     }
 
 
-    private void indexEntities(JpaRepository<? extends ESDocument, Long> repository) {
+    private <T extends ESDocument> void indexEntities(JpaRepository<T, Long> repository) {
+        indexEntities(repository, Optional.<Function<T, T>>absent());
+    }
+
+    private <T extends ESDocument> void indexEntities(JpaRepository<T, Long> repository, Optional<Function<T, T>> applyFunc) {
         int pageNumber = 0;
         try {
-            Page<? extends ESDocument> resultPage = null;
+            Page<T> resultPage = null;
             long count = repository.count();
             do {
                 resultPage = repository.findAll(new PageRequest(pageNumber, BULK_SIZE));
-                BulkResponse response = esIndexer.bulkIndex(resultPage.getContent());
+                List<T> documents = resultPage.getContent();
+                if (applyFunc.isPresent()) {
+                    for (T document : documents) {
+                        applyFunc.get().apply(document);
+                    }
+                }
+                BulkResponse response = esIndexer.bulkIndex(documents);
                 if (response.hasFailures()) {
                     logger.error(response.buildFailureMessage());
                 }

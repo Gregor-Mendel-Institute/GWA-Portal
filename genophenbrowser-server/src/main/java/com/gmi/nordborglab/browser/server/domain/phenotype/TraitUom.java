@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.server.domain.phenotype;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.jpaontology.model.Term;
+import com.gmi.nordborglab.jpaontology.model.TermDefinition;
 import com.google.common.collect.Iterables;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
@@ -248,9 +249,12 @@ public class TraitUom extends SecureEntity {
 
     private static void addOntologyToBuilder(XContentBuilder builder, Term term) throws IOException {
         builder.field("term_id", term.getAcc())
-                .field("term_definition", term.getTermDefinition().getTermDefinition())
-                .field("term_comment", term.getTermDefinition().getTermComment())
                 .field("term_name", term.getName());
+        TermDefinition termDefinition = term.getTermDefinition();
+        if (termDefinition != null) {
+            builder.field("term_definition", term.getTermDefinition().getTermDefinition())
+                    .field("term_comment", term.getTermDefinition().getTermComment());
+        }
     }
 
     @Override

@@ -315,11 +315,9 @@
                      }
                   },
                   "term_name": {
-                     "type": "multi_field",
+                     "type": "string",
+                     "index": "analyzed",
                      "fields": {
-                        "term_name": {
-                           "type": "string"
-                        },
                         "raw": {
                            "type": "string",
                            "index": "not_analyzed",
@@ -348,11 +346,9 @@
                      }
                   },
                   "term_name": {
-                     "type": "multi_field",
+                     "type": "string",
+                     "index": "analyzed",
                      "fields": {
-                        "term_name": {
-                           "type": "string"
-                        },
                         "raw": {
                            "type": "string",
                            "index": "not_analyzed",
