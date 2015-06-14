@@ -1,8 +1,10 @@
 package com.gmi.nordborglab.browser.server.es;
 
 import com.gmi.nordborglab.browser.server.data.GWASData;
+import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichment;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListEnrichmentRepository;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListRepository;
@@ -16,6 +18,7 @@ import com.gmi.nordborglab.browser.server.repository.TaxonomyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
+import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
@@ -99,6 +102,9 @@ public class EsIndexerApp {
     protected MetaAnalysisService metaAnalysisService;
 
     @Resource
+    protected AnnotationDataService annotationDataService;
+
+    @Resource
     protected UserRepository userRepository;
 
     @Resource
@@ -126,6 +132,25 @@ public class EsIndexerApp {
             return input;
         }
     };
+
+    private Function candidateGeneListFunc = new Function() {
+        @Override
+        public Object apply(Object input) {
+            Preconditions.checkNotNull(input);
+            Preconditions.checkArgument(input instanceof CandidateGeneList);
+            CandidateGeneList candidateGeneList = (CandidateGeneList) input;
+            for (String geneId : candidateGeneList.getGenes()) {
+                Gene gene = annotationDataService.getGeneById(geneId);
+                if (gene != null) {
+                    candidateGeneList.getGenesWithInfo().add(gene);
+                }
+            }
+            return input;
+        }
+    };
+
+
+
 
     public static void main(String[] args) {
         AbstractApplicationContext context = null;
@@ -171,7 +196,7 @@ public class EsIndexerApp {
                     indexEntities(gwasResultRepository);
                     break;
                 case "candidategenelist":
-                    indexEntities(candidateGeneListRepository);
+                    indexEntities(candidateGeneListRepository, Optional.<Function<CandidateGeneList, CandidateGeneList>>of(candidateGeneListFunc));
                     break;
                 case "candidategenelistenrichment":
                     indexEnrichments();
@@ -180,7 +205,7 @@ public class EsIndexerApp {
                     indexEntities(experimentRepository);
                     break;
                 case "phenotype":
-                    indexEntities(phenotypeRepository, Optional.<Function<T, T>>of(ontologyFunc));
+                    indexEntities(phenotypeRepository, Optional.<Function<TraitUom, TraitUom>>of(ontologyFunc));
                     break;
                 case "study":
                     indexEntities(studyRepository);
