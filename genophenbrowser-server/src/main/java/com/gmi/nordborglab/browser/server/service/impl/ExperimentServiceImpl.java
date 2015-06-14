@@ -24,6 +24,7 @@ import com.gmi.nordborglab.browser.server.service.TraitUomService;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
@@ -48,7 +49,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 
-import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -236,9 +236,9 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
         List<Publication> publications = Lists.newArrayList();
         //Neded because ids are not sorted
         Map<Long, Publication> id2Map = Maps.uniqueIndex(publicationRepository.findAll(idsToFetch), new Function<Publication, Long>() {
-            @Nullable
             @Override
-            public Long apply(@Nullable Publication publication) {
+            public Long apply(Publication publication) {
+                Preconditions.checkNotNull(publication);
                 return publication.getId();
             }
         });

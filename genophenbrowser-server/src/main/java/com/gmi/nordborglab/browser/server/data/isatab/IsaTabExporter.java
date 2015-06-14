@@ -15,6 +15,7 @@ import com.gmi.nordborglab.browser.server.security.AclManager;
 import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -166,12 +167,10 @@ public class IsaTabExporter {
         String zipFileName = System.getProperty("java.io.tmpdir") + File.separator + String.format("%s_%s.zip", experiment.getName(), experiment.getId());
         File directory = new File(baseDirectory);
         byte[] buffer = new byte[1024];
-        FileOutputStream fos = null;
-        ZipOutputStream zos = null;
-        try {
-            fos = new FileOutputStream(zipFileName);
-            zos = new ZipOutputStream(fos);
-
+        try (
+                FileOutputStream fos = new FileOutputStream(zipFileName);
+                ZipOutputStream zos = new ZipOutputStream(fos)
+        ) {
             logger.debug("Output to Zip:" + zipFileName);
             for (File file : directory.listFiles()) {
 
@@ -191,30 +190,23 @@ public class IsaTabExporter {
             //remember close it
             zos.close();
         } catch (IOException ex) {
-            ex.printStackTrace();
             logger.error("Failed to zip ISA-TAB folder", ex);
-        } finally {
         }
         return zipFileName;
     }
 
 
     private void saveCsvToFile(String filename, List<String[]> rows) throws IOException {
-        ICsvListWriter listWriter = null;
-        try {
-            listWriter = new CsvListWriter(new FileWriter(filename),
-                    CsvPreference.STANDARD_PREFERENCE);
-
+        try (
+                FileWriter fout = new FileWriter(filename);
+                ICsvListWriter listWriter = new CsvListWriter(fout, CsvPreference.STANDARD_PREFERENCE)
+        ) {
             // write the header
             listWriter.writeHeader(rows.get(0));
 
             // write the customer lists
             for (int i = 1; i < rows.size(); i++) {
                 listWriter.write(rows.get(i));
-            }
-        } finally {
-            if (listWriter != null) {
-                listWriter.close();
             }
         }
     }
@@ -322,6 +314,7 @@ public class IsaTabExporter {
                     throw new RuntimeException("Only 1 Derived Data File is allowed");
             }
         }
+        Preconditions.checkNotNull(isaTabData);
         List<SampleData> samples = Lists.newArrayList();
         for (int i = 0; i < isaTabData.getData().size(); i++) {
             List<String> values = isaTabData.getData().get(i);
@@ -359,11 +352,11 @@ public class IsaTabExporter {
     }
 
     private Map<String, PhenotypeUploadData> parseTraitDefFile(String filename) {
-        ICsvListReader reader = null;
+
         //LinkedHashMap required because we rely on map.values() to be in the right order
         Map<String, PhenotypeUploadData> traitDefLookupMap = Maps.newLinkedHashMap();
-        try {
-            reader = new CsvListReader(new FileReader(filename), CsvPreference.STANDARD_PREFERENCE);
+        try (FileReader fin = new FileReader(filename);
+             ICsvListReader reader = new CsvListReader(fin, CsvPreference.STANDARD_PREFERENCE)) {
             final String[] header = reader.getHeader(true);
             PhenotypeUploadData phenotypeUploadData;
             List<String> traitDefList;
@@ -380,16 +373,17 @@ public class IsaTabExporter {
                 traitDefLookupMap.put(measurementName, phenotypeUploadData);
             }
         } catch (IOException e) {
+            logger.error("Error reading trait definition file", e);
         }
         return traitDefLookupMap;
     }
 
 
     private IsaTabDerivedData parseDerivedDataFile(String filename) {
-        ICsvListReader reader = null;
+
         IsaTabDerivedData isaTabDerivedData = null;
-        try {
-            reader = new CsvListReader(new FileReader(filename), CsvPreference.STANDARD_PREFERENCE);
+        try (FileReader fin = new FileReader(filename);
+             ICsvListReader reader = new CsvListReader(fin, CsvPreference.STANDARD_PREFERENCE)) {
             final String[] header = reader.getHeader(true);
             // regex:
             List<String> phenotypes = Lists.newArrayList();
@@ -413,6 +407,7 @@ public class IsaTabExporter {
             }
             isaTabDerivedData = new IsaTabDerivedData(phenotypes, assays, data);
         } catch (IOException e) {
+            logger.error("Error reading dervived data file", e);
         }
 
         return isaTabDerivedData;
@@ -559,14 +554,16 @@ public class IsaTabExporter {
         final Function<Trait, Long> toStatisticId = new Function<Trait, Long>() {
             @Nullable
             @Override
-            public Long apply(@Nullable Trait input) {
+            public Long apply(Trait input) {
+                Preconditions.checkNotNull(input);
                 return input.getStatisticType().getId();
             }
         };
         return ImmutableMap.copyOf(FluentIterable.from(traitUoms).toMap(new Function<TraitUom, Long>() {
             @Nullable
             @Override
-            public Long apply(@Nullable TraitUom input) {
+            public Long apply(TraitUom input) {
+                Preconditions.checkNotNull(input);
                 return Ordering.natural().onResultOf(toStatisticId).min(input.getTraits()).getStatisticType().getId();
             }
         }));

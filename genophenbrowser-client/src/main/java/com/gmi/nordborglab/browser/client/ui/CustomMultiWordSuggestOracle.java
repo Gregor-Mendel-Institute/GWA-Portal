@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.ui;
 
 import com.gmi.nordborglab.browser.shared.proxy.PermissionPrincipalProxy;
+import com.google.common.base.Preconditions;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
@@ -280,6 +281,8 @@ public class CustomMultiWordSuggestOracle extends SuggestOracle {
             int index = 0;
             // Use real suggestion for assembly.
             MultiWordSuggestion formattedSuggestion = toRealSuggestions.get(candidate);
+            Preconditions.checkNotNull(formattedSuggestion);
+
 
             // Create strong search string.
             SafeHtmlBuilder accum = new SafeHtmlBuilder();

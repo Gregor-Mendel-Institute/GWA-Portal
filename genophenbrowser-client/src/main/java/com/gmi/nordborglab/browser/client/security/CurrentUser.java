@@ -11,6 +11,7 @@ import com.gmi.nordborglab.browser.shared.proxy.GWASRuntimeInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -134,7 +135,8 @@ public class CurrentUser {
     public Set<GWASRuntimeInfoProxy> getRuntimeInfoFromAlleleAssayId(final Long id) {
         return Sets.newHashSet(Iterables.filter(appData.getGWASRuntimeInfoList(), new Predicate<GWASRuntimeInfoProxy>() {
             @Override
-            public boolean apply(@Nullable GWASRuntimeInfoProxy input) {
+            public boolean apply(GWASRuntimeInfoProxy input) {
+                Preconditions.checkNotNull(input);
                 return input.getAlleleAssayId().equals(id);
             }
         }));

@@ -6,6 +6,7 @@ import com.gmi.nordborglab.browser.client.events.FileUploadErrorEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadFinishedEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadStartEvent;
 import com.gmi.nordborglab.browser.client.util.HTML5Helper;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Collections2;
@@ -48,7 +49,6 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Form;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -464,7 +464,8 @@ public class FileUploadWidget extends Composite {
         return Collections2.filter(filesToUpload.values(), new Predicate<FileCheckerResult>() {
 
             @Override
-            public boolean apply(@Nullable FileCheckerResult input) {
+            public boolean apply(FileCheckerResult input) {
+                Preconditions.checkNotNull(input);
                 return input.hasErrors();
             }
         }).size();

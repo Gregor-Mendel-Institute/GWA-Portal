@@ -84,22 +84,21 @@ public class CSVGWASReader implements GWASReader {
     public void isValidGWASFile(File file) throws Exception {
         if (!file.exists())
             throw new Exception("File does not exist");
-        ICsvListReader reader = new CsvListReader(new FileReader(file), CsvPreference.STANDARD_PREFERENCE);
-        try {
+
+        try (
+                FileReader fin = new FileReader(file);
+                ICsvListReader reader = new CsvListReader(fin, CsvPreference.STANDARD_PREFERENCE)) {
             reader.read(headerCellProcessors);
             reader.read(cellProcessors);
         } catch (Exception e) {
             throw e;
-        } finally {
-            if (reader != null)
-                reader.close();
         }
     }
 
     @Override
     public Map<String, ChrGWAData> parseGWASDataFromFile(File originalFile) throws Exception {
-        ICsvListReader reader = new CsvListReader(new FileReader(originalFile), CsvPreference.STANDARD_PREFERENCE);
-        try {
+        try (FileReader fin = new FileReader(originalFile);
+             ICsvListReader reader = new CsvListReader(fin, CsvPreference.STANDARD_PREFERENCE)) {
             Map<String, ChrGWAData> data = Maps.newHashMap();
             reader.getHeader(true);
             List<Object> row = null;
@@ -143,9 +142,6 @@ public class CSVGWASReader implements GWASReader {
             return data;
         } catch (Exception e) {
             throw e;
-        } finally {
-            if (reader != null)
-                reader.close();
         }
     }
 

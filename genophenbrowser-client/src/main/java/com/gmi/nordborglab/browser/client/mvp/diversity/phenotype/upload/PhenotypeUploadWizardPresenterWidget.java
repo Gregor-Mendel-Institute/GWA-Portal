@@ -17,6 +17,7 @@ import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermProxy;
 import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
@@ -275,9 +276,10 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
 
 
         Function<PhenotypeUploadDataProxy, List<String>> getOntologies = new Function<PhenotypeUploadDataProxy, List<String>>() {
-            @Nullable
             @Override
-            public List<String> apply(@Nullable PhenotypeUploadDataProxy input) {
+            public List<String> apply(PhenotypeUploadDataProxy input) {
+                if (input == null)
+                    throw new NullPointerException();
                 return Lists.newArrayList(input.getTraitOntology(), input.getEnvironmentOntology());
             }
         };
@@ -294,9 +296,10 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
                 if (response == null)
                     return;
                 Map<String, TermProxy> ontologyMap = FluentIterable.from(response).uniqueIndex(new Function<TermProxy, String>() {
-                    @Nullable
                     @Override
-                    public String apply(@Nullable TermProxy input) {
+                    public String apply(TermProxy input) {
+                        if (input == null)
+                            throw new NullPointerException();
                         return input.getAcc();
                     }
                 });
@@ -329,7 +332,8 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
     private int countPhenotypesWithErrors() {
         return Iterables.size(Iterables.filter(data.getPhenotypes(), new Predicate<PhenotypeUploadDataProxy>() {
             @Override
-            public boolean apply(@Nullable PhenotypeUploadDataProxy input) {
+            public boolean apply(PhenotypeUploadDataProxy input) {
+                Preconditions.checkNotNull(input);
                 return input.getErrorCount() > 0;
             }
         }));
@@ -492,16 +496,19 @@ public class PhenotypeUploadWizardPresenterWidget extends PresenterWidget<Phenot
 
             Iterable<Integer> phenotypesWithViolations = ImmutableSet.copyOf(Iterables.transform(Iterables.filter(violations, new Predicate<ConstraintViolation<?>>() {
                 @Override
-                public boolean apply(@Nullable ConstraintViolation<?> input) {
+                public boolean apply(ConstraintViolation<?> input) {
+                    Preconditions.checkNotNull(input);
                     return (input.getLeafBean() instanceof PhenotypeProxy);
                 }
             }), new Function<ConstraintViolation<?>, Integer>() {
                 @Nullable
                 @Override
-                public Integer apply(@Nullable final ConstraintViolation<?> constraint) {
+                public Integer apply(final ConstraintViolation<?> constraint) {
+                    Preconditions.checkNotNull(constraint);
                     return Iterables.indexOf(data.getPhenotypes(), new Predicate<PhenotypeUploadDataProxy>() {
                         @Override
-                        public boolean apply(@Nullable PhenotypeUploadDataProxy input) {
+                        public boolean apply(PhenotypeUploadDataProxy input) {
+                            Preconditions.checkNotNull(input);
                             return input.getTraitUom() == constraint.getLeafBean();
                         }
                     });

@@ -467,6 +467,8 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         List<GeneProxy> filteredList = ImmutableList.copyOf(Iterables.filter(genesPage.getContents(), new Predicate<GeneProxy>() {
             @Override
             public boolean apply(@Nullable GeneProxy geneProxy) {
+                if (geneProxy == null)
+                    return false;
                 if (!filter2Annotation.containsKey(filter))
                     return true;
                 boolean found = false;

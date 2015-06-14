@@ -154,9 +154,10 @@ public class AccountPresenter extends Presenter<AccountPresenter.MyView, Account
     public void prepareFromRequest(PlaceRequest placeRequest) {
         super.prepareFromRequest(placeRequest);
         // Check if user is logged in
-        if (!currentUser.isLoggedIn()) {
+        if (!currentUser.isLoggedIn() || currentUser.getAppUser() == null) {
             getProxy().manualRevealFailed();
             placeManager.revealPlace(new PlaceRequest.Builder().nameToken(NameTokens.home).build());
+            return;
         }
         try {
             Long userId = Long.valueOf(placeRequest.getParameter("id",

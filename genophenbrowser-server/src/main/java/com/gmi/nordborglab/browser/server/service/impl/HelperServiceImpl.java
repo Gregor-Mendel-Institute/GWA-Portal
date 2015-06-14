@@ -58,6 +58,7 @@ import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
@@ -367,9 +368,9 @@ public class HelperServiceImpl implements HelperService {
         final Date lastcheckDate = appUser.getNotificationCheckDate();
 
         List<UserNotification> all = FluentIterable.from(Iterables.mergeSorted(ImmutableList.of(notifications, newsNotifications), Ordering.natural().reverse().onResultOf(new Function<UserNotification, Date>() {
-            @Nullable
             @Override
-            public Date apply(@Nullable UserNotification input) {
+            public Date apply(UserNotification input) {
+                Preconditions.checkNotNull(input);
                 return input.getCreateDate();
             }
         }))).limit(limit).transform(new Function<UserNotification, UserNotification>() {
@@ -388,9 +389,9 @@ public class HelperServiceImpl implements HelperService {
     private Iterable<UserNotification> getNewsAsNotificatons(Integer limit) {
         Page<NewsItem> news = newsRepository.findAll(new PageRequest(0, limit, Sort.Direction.DESC, "createDate"));
         return Iterables.transform(news.getContent(), new Function<NewsItem, UserNotification>() {
-            @Nullable
             @Override
-            public UserNotification apply(@Nullable NewsItem input) {
+            public UserNotification apply(NewsItem input) {
+                Preconditions.checkNotNull(input);
                 UserNotification notification = new UserNotification();
                 String profileUrl = "<img class=\"img-circle\" src=\"" + PermissionServiceImpl.GRAVATAR_URL + input.getAuthor().getAvatarHash() + "&s=29\" />";
                 notification.setText(profileUrl + "&nbsp;<span class=\"notificationNews\">News:</span> <a href=\"/#/home\">" + input.getTitle() + "</a>");
@@ -579,7 +580,8 @@ public class HelperServiceImpl implements HelperService {
 
             @Nullable
             @Override
-            public Double apply(@Nullable Trait trait) {
+            public Double apply(Trait trait) {
+                Preconditions.checkNotNull(trait);
                 Double value = null;
                 try {
                     value = Double.parseDouble(trait.getValue());

@@ -191,7 +191,7 @@ public class ApplicationPresenter extends
         if (Iterables.find(userNotificationList, new Predicate<UserNotificationProxy>() {
             @Override
             public boolean apply(@Nullable UserNotificationProxy input) {
-                return !input.isRead();
+                return input != null && !input.isRead();
             }
         }, null) != null) {
             currentUser.updateNotificationCheckDate();

@@ -3,6 +3,7 @@ package com.gmi.nordborglab.browser.client.util;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMultiset;
 
 import javax.annotation.Nullable;
@@ -21,7 +22,8 @@ public class Statistics {
     public static Function<TraitProxy, Double> traitToDouble = new Function<TraitProxy, Double>() {
         @Nullable
         @Override
-        public Double apply(@Nullable TraitProxy input) {
+        public Double apply(TraitProxy input) {
+            Preconditions.checkNotNull(input);
             try {
                 return Double.parseDouble(input.getValue());
             } catch (Exception e) {

@@ -23,6 +23,7 @@ import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.service.CdvRequest;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.BoundType;
@@ -86,7 +87,8 @@ public class StudyWizardPresenter extends
         }
 
         @Override
-        public boolean apply(@Nullable TraitProxy input) {
+        public boolean apply(TraitProxy input) {
+            Preconditions.checkNotNull(input);
             return (query == null || query.length() == 0 || input
                     .getObsUnit().getName().indexOf(query) >= 0);
         }
@@ -101,7 +103,8 @@ public class StudyWizardPresenter extends
         }
 
         @Override
-        public boolean apply(@Nullable TraitProxy input) {
+        public boolean apply(TraitProxy input) {
+            Preconditions.checkNotNull(input);
             if (countriesToFilter == null || countriesToFilter.size() == 0)
                 return true;
             return countriesToFilter.containsKey(input.getObsUnit().getStock().getPassport().getCollection().getLocality().getOrigcty());
@@ -118,7 +121,8 @@ public class StudyWizardPresenter extends
         }
 
         @Override
-        public boolean apply(@Nullable TraitProxy input) {
+        public boolean apply(TraitProxy input) {
+            Preconditions.checkNotNull(input);
             if (typeToFilter == null)
                 return true;
             if (input.getStatisticType() == null)

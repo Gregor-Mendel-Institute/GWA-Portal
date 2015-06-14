@@ -12,6 +12,7 @@ import com.gmi.nordborglab.browser.shared.proxy.SNPGWASInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
@@ -124,7 +125,8 @@ public class SNPDetailPresenterWidget extends PresenterWidget<SNPDetailPresenter
         FluentIterable<Double> phenotypeValues = FluentIterable.from(snpAlleles).transform(new Function<SNPAllele, Double>() {
             @Nullable
             @Override
-            public Double apply(@Nullable SNPAllele input) {
+            public Double apply(SNPAllele input) {
+                Preconditions.checkNotNull(input);
                 Double value = null;
                 try {
                     value = Double.valueOf(input.getPhenotype());
@@ -183,7 +185,8 @@ public class SNPDetailPresenterWidget extends PresenterWidget<SNPDetailPresenter
             Function<TraitProxy, Long> trait2PassportIdFunc = new Function<TraitProxy, Long>() {
                 @Nullable
                 @Override
-                public Long apply(@Nullable TraitProxy input) {
+                public Long apply(TraitProxy input) {
+                    Preconditions.checkNotNull(input);
                     return input.getObsUnit().getStock().getPassport().getId();
                 }
             };

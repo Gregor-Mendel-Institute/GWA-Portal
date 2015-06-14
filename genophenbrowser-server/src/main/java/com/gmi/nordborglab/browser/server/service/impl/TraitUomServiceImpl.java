@@ -31,6 +31,7 @@ import com.gmi.nordborglab.jpaontology.model.Term;
 import com.gmi.nordborglab.jpaontology.model.Term2Term;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -49,7 +50,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 
-import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
@@ -296,9 +296,10 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
             indexTraitUom(traitUom);
         }
         return Lists.newArrayList(Iterables.transform(data, new Function<PhenotypeUploadData, TraitUom>() {
-            @Nullable
             @Override
-            public TraitUom apply(@Nullable PhenotypeUploadData input) {
+            public TraitUom apply(PhenotypeUploadData input) {
+                Preconditions.checkNotNull(input);
+                Preconditions.checkNotNull(input.getTraitUom());
                 return input.getTraitUom();
             }
         }));

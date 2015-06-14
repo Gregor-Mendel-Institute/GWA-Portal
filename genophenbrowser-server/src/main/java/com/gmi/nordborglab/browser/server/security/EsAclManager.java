@@ -6,6 +6,7 @@ import com.gmi.nordborglab.browser.server.repository.AclSidRepository;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.cache.CacheBuilder;
@@ -27,7 +28,6 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -81,9 +81,9 @@ public class EsAclManager {
 
 
     public static Function<AclSid, String> aclSid2String = new Function<AclSid, String>() {
-        @Nullable
         @Override
-        public String apply(@Nullable AclSid aclSid) {
+        public String apply(AclSid aclSid) {
+            Preconditions.checkNotNull(aclSid);
             return aclSid.getId().toString();
         }
     };

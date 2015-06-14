@@ -35,6 +35,7 @@ import com.gmi.nordborglab.browser.shared.dto.FilterItem;
 import com.gmi.nordborglab.browser.shared.dto.FilterItemValue;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
@@ -167,9 +168,9 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         }
         Iterable<Study> studies = studyRepository.findAll(ids);
         Map<Long, Study> studyCache = Maps.uniqueIndex(studies, new Function<Study, Long>() {
-            @Nullable
             @Override
-            public Long apply(@Nullable Study study) {
+            public Long apply(Study study) {
+                Preconditions.checkNotNull(study);
                 return study.getId();
             }
         });
@@ -1045,7 +1046,8 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         }
         Iterable<CandidateGeneListEnrichment> filteredRecords = Iterables.filter(candidateGeneListEnrichments, new Predicate<CandidateGeneListEnrichment>() {
             @Override
-            public boolean apply(@Nullable CandidateGeneListEnrichment candidateGeneListEnrichment) {
+            public boolean apply(CandidateGeneListEnrichment candidateGeneListEnrichment) {
+                Preconditions.checkNotNull(candidateGeneListEnrichment);
                 return candidateGeneListEnrichment.getId() == null;
             }
         });
@@ -1081,9 +1083,9 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         BulkRequestBuilder bulkRequest = client.prepareBulk();
         //necesarry to improve performance
         ImmutableSet<CandidateGeneList> candidateGeneLists = ImmutableSet.copyOf(Iterables.transform(candidateGeneListEnrichments, new Function<CandidateGeneListEnrichment, CandidateGeneList>() {
-            @Nullable
             @Override
-            public CandidateGeneList apply(@Nullable CandidateGeneListEnrichment candidateGeneListEnrichment) {
+            public CandidateGeneList apply(CandidateGeneListEnrichment candidateGeneListEnrichment) {
+                Preconditions.checkNotNull(candidateGeneListEnrichment);
                 return candidateGeneListEnrichment.getCandidateGeneList();
             }
         }));

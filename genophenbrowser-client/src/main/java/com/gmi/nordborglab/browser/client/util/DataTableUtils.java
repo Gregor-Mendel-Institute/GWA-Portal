@@ -10,6 +10,7 @@ import com.gmi.nordborglab.browser.shared.proxy.SampleDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitStatsProxy;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSortedMap;
@@ -41,7 +42,9 @@ public class DataTableUtils {
 
     public static Ordering<SNPAllele> snpOrdering = new Ordering<SNPAllele>() {
         @Override
-        public int compare(@Nullable SNPAllele left, @Nullable SNPAllele right) {
+        public int compare(SNPAllele left, SNPAllele right) {
+            Preconditions.checkNotNull(left);
+            Preconditions.checkNotNull(right);
             Double value1 = 0d;
             Double value2 = 0d;
             try {
@@ -322,7 +325,8 @@ public class DataTableUtils {
         return Multimaps.index(snpAlleles, new Function<SNPAllele, String>() {
             @Nullable
             @Override
-            public String apply(@Nullable SNPAllele snpAllele) {
+            public String apply(SNPAllele snpAllele) {
+                Preconditions.checkNotNull(snpAllele);
                 return snpAllele.getAllele() != null ? snpAllele.getAllele() : "N/A";
             }
         });

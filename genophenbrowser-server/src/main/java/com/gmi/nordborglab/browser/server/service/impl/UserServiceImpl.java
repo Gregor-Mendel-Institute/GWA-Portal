@@ -28,6 +28,7 @@ import com.gmi.nordborglab.browser.server.service.UserService;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
@@ -56,7 +57,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -240,9 +240,9 @@ public class UserServiceImpl implements UserService {
         List<Experiment> experiments = Lists.newArrayList();
         //Neded because ids are not sorted
         Map<Long, Experiment> id2Map = Maps.uniqueIndex(experimentRepository.findAll(idsToFetch), new Function<Experiment, Long>() {
-            @Nullable
             @Override
-            public Long apply(@Nullable Experiment experiment) {
+            public Long apply(Experiment experiment) {
+                Preconditions.checkNotNull(experiment);
                 return experiment.getId();
             }
         });
@@ -273,9 +273,9 @@ public class UserServiceImpl implements UserService {
         //Neded because ids are not sorted
 
         Map<Long, TraitUom> id2Map = Maps.uniqueIndex(traitUomRepository.findAll(idsToFetch), new Function<TraitUom, Long>() {
-            @Nullable
             @Override
-            public Long apply(@Nullable TraitUom trait) {
+            public Long apply(TraitUom trait) {
+                Preconditions.checkNotNull(trait);
                 return trait.getId();
             }
         });
@@ -321,9 +321,9 @@ public class UserServiceImpl implements UserService {
         //Neded because ids are not sorted
 
         Map<Long, Study> id2Map = Maps.uniqueIndex(studyRepository.findAll(idsToFetch), new Function<Study, Long>() {
-            @Nullable
             @Override
-            public Long apply(@Nullable Study study) {
+            public Long apply(Study study) {
+                Preconditions.checkNotNull(study);
                 return study.getId();
             }
         });

@@ -11,6 +11,7 @@ import com.gmi.nordborglab.browser.shared.proxy.SNPGWASInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.SNPAnnotationProxy;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableListMultimap;
@@ -494,7 +495,8 @@ public class SNPDetailPresenterWidgetView
         ImmutableListMultimap<String, SNPAllele> countries = Multimaps.index(snpAlleles, new Function<SNPAllele, String>() {
             @Nullable
             @Override
-            public String apply(@Nullable SNPAllele input) {
+            public String apply(SNPAllele input) {
+                Preconditions.checkNotNull(input);
                 String country = "N/A";
                 if (input.getPassport() != null
                         && input.getPassport().getCollection() != null
@@ -516,7 +518,8 @@ public class SNPDetailPresenterWidgetView
     private void filterChartData() {
         Collection<SNPAllele> filteredAlleles = Collections2.filter(snpAlleles, new Predicate<SNPAllele>() {
             @Override
-            public boolean apply(@Nullable SNPAllele input) {
+            public boolean apply(SNPAllele input) {
+                Preconditions.checkNotNull(input);
                 if (countryFilter.getSelectedIndex() == 0) {
                     return true;
                 }

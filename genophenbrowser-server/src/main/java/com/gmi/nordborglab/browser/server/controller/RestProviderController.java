@@ -30,6 +30,7 @@ import com.gmi.nordborglab.browser.server.service.TraitService;
 import com.gmi.nordborglab.browser.server.service.TraitUomService;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;
@@ -173,7 +174,8 @@ public class RestProviderController {
         ImmutableListMultimap<Long, Trait> grouped = Multimaps.index(traits, new Function<Trait, Long>() {
             @Nullable
             @Override
-            public Long apply(@Nullable Trait input) {
+            public Long apply(Trait input) {
+                Preconditions.checkNotNull(input);
                 return input.getObsUnit().getStock().getPassport().getId();
             }
         });
@@ -192,7 +194,8 @@ public class RestProviderController {
                                     new Function<Trait, Long>() {
                                         @Nullable
                                         @Override
-                                        public Long apply(@Nullable Trait input) {
+                                        public Long apply(Trait input) {
+                                            Preconditions.checkNotNull(input);
                                             return input.getStatisticType().getId();
                                         }
                                     }
@@ -200,7 +203,8 @@ public class RestProviderController {
                             new Function<Trait, String>() {
                                 @Nullable
                                 @Override
-                                public String apply(@Nullable Trait input) {
+                                public String apply(Trait input) {
+                                    Preconditions.checkNotNull(input);
                                     return input.getStatisticType().getStatType();
                                 }
                             }
@@ -208,7 +212,8 @@ public class RestProviderController {
                     new Function<Trait, String>() {
                         @Nullable
                         @Override
-                        public String apply(@Nullable Trait input) {
+                        public String apply(Trait input) {
+                            Preconditions.checkNotNull(input);
                             return input.getValue();
                         }
                     }
@@ -254,7 +259,8 @@ public class RestProviderController {
 
         GWASRuntimeInfo info = Iterables.find(study.getProtocol().getGwasRuntimeInfos(), new Predicate<GWASRuntimeInfo>() {
             @Override
-            public boolean apply(@Nullable GWASRuntimeInfo input) {
+            public boolean apply(GWASRuntimeInfo input) {
+                Preconditions.checkNotNull(input);
                 return input.getAlleleAssay().equals(study.getAlleleAssay());
             }
         });

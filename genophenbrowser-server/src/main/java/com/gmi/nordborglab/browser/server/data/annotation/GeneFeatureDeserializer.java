@@ -38,6 +38,10 @@ public class GeneFeatureDeserializer extends JsonDeserializer<GeneFeature> {
             }
             i = i + 1;
         }
+        if (start == null || end == null)
+            throw new IOException("Start or end could not be deserialized");
+        if (end < start)
+            throw new IOException("Start has to be smaller than End");
         GeneFeature item = new GeneFeature(start, end, strand, type);
         return item;
     }

@@ -353,6 +353,6 @@ public class PassportListPresenter extends
                 return alleleAssayProxy;
             }
         }
-        return null;
+        throw new NullPointerException("No Allele Assay found");
     }
 }

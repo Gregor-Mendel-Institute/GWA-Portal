@@ -19,6 +19,7 @@ import com.gmi.nordborglab.browser.server.repository.PassportRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitUomRepository;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
@@ -346,18 +347,19 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
             int totalAlleles = alleleAssay.getAlleles().size();
             if (passportIds != null) {
                 final ImmutableSet<Long> allelePassportLookup = FluentIterable.from(alleleAssay.getAlleles()).transform(new Function<Allele, Long>() {
-                    @Nullable
                     @Override
-                    public Long apply(@Nullable Allele input) {
+                    public Long apply(Allele input) {
+                        Preconditions.checkNotNull(input);
+                        Preconditions.checkNotNull(input.getPassport());
                         return input.getPassport().getId();
                     }
                 }).toSet();
                 passportIdSet = Sets.newLinkedHashSet(FluentIterable.from(passportIds)
                         .filter(Predicates.in(allelePassportLookup))
                         .transform(new Function<Long, String>() {
-                            @Nullable
                             @Override
-                            public String apply(@Nullable Long input) {
+                            public String apply(Long input) {
+                                Preconditions.checkNotNull(input);
                                 return input.toString();
                             }
                         }));
