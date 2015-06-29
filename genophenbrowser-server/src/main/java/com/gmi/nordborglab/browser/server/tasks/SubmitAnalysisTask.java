@@ -258,6 +258,9 @@ public class SubmitAnalysisTask {
     public void submitCanidateGeneListEnrichment(CandidateGeneListEnrichment enrichment) {
         if (enrichment.getTaskid() != null || enrichment.getStatus() == null)
             return;
+        // only run if the job is finished
+        if (enrichment.getStudy().getJob() != null && !enrichment.getStudy().getJob().getStatus().equalsIgnoreCase("Finished"))
+            return;
         CeleryTask task = null;
         task = getCeleryTaskForEnrichment(enrichment);
         if (task == null)
