@@ -156,11 +156,11 @@ public class IsaTabExporterTest extends BaseTest {
 
     private void checkFileContents(String baseDirectory, int sampleCount, int traitCount) {
         File directory = new File(baseDirectory);
-        File investigationFile = new File(baseDirectory + File.separator + IsaTabExporter.INVESTIGATION_FILE);
-        File studyFile = new File(baseDirectory + File.separator + IsaTabExporter.STUDY_FILE);
-        File assayFile = new File(baseDirectory + File.separator + IsaTabExporter.ASSAY_FILE);
-        File traitDefFile = new File(baseDirectory + File.separator + IsaTabExporter.TRAIT_DEF_FILE);
-        File dervivedFile = new File(baseDirectory + File.separator + IsaTabExporter.DERVIVED_DATA_FILE);
+        File investigationFile = new File(baseDirectory + File.separator + IsaTabExporterImpl.INVESTIGATION_FILE);
+        File studyFile = new File(baseDirectory + File.separator + IsaTabExporterImpl.STUDY_FILE);
+        File assayFile = new File(baseDirectory + File.separator + IsaTabExporterImpl.ASSAY_FILE);
+        File traitDefFile = new File(baseDirectory + File.separator + IsaTabExporterImpl.TRAIT_DEF_FILE);
+        File dervivedFile = new File(baseDirectory + File.separator + IsaTabExporterImpl.DERVIVED_DATA_FILE);
 
         assertThat(directory.exists(), is(true));
         assertThat(investigationFile.exists(), is(true));

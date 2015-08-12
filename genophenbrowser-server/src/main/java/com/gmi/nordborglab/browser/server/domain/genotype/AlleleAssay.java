@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.genotype;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.gmi.nordborglab.browser.server.controller.rest.json.Views;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.util.GWASRuntimeInfo;
@@ -48,10 +50,11 @@ public class AlleleAssay extends SecureEntity {
     @OneToMany(mappedBy = "alleleAssay", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<GWASRuntimeInfo> gwasRuntimeInfos = new HashSet<>();
 
-
+    @JsonView(Views.Public.class)
     private String name;
     private String producer;
     private String comments;
+    @JsonView(Views.Public.class)
     private Date assay_date;
 
     @Transient

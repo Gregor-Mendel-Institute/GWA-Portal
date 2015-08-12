@@ -1,5 +1,8 @@
 package com.gmi.nordborglab.browser.server.domain.phenotype;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.gmi.nordborglab.browser.server.controller.rest.json.Views;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.jpaontology.model.Term;
@@ -38,25 +41,38 @@ public class TraitUom extends SecureEntity {
 
     @ManyToOne()
     @JoinColumn(name = "div_unit_of_measure_id")
+    @JsonView(Views.PhenotypeDetail.class)
     private UnitOfMeasure unitOfMeasure;
 
     @OneToMany(mappedBy = "traitUom", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonIgnore
     private Set<Trait> traits = new HashSet<Trait>();
 
     @NotNull
     @Column(name = "local_trait_name")
+    @JsonView(Views.Public.class)
     private String localTraitName;
+    @JsonView(Views.PhenotypeDetail.class)
     private String trait_protocol;
+
     @Column(name = "to_accession")
+    @JsonView(Views.Public.class)
     private String toAccession;
+
+    @JsonView(Views.Public.class)
     @Column(name = "eo_accession")
     private String eoAccession;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(Views.Public.class)
     private Date modified = new Date();
+
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(Views.Public.class)
     private Date created = new Date();
+
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(Views.Public.class)
     private Date published;
 
     @Transient
@@ -69,9 +85,11 @@ public class TraitUom extends SecureEntity {
     private Long numberOfStudies;
 
     @Transient
+    @JsonView(Views.PhenotypeDetail.class)
     private Term traitOntologyTerm;
 
     @Transient
+    @JsonView(Views.PhenotypeDetail.class)
     private Term environOntologyTerm;
 
     @Transient
@@ -83,7 +101,7 @@ public class TraitUom extends SecureEntity {
     public TraitUom() {
     }
 
-
+    @JsonView(Views.PhenotypeDetail.class)
     public Experiment getExperiment() {
         ///TODO change database schema for more efficient access
         if (experiment == null) {

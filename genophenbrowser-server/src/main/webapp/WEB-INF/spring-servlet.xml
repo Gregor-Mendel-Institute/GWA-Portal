@@ -12,7 +12,6 @@
     <context:annotation-config/>
     <context:component-scan base-package="com.gmi.nordborglab.browser.server.controller.**"/>
 
-
     <mvc:annotation-driven validator="validator" content-negotiation-manager="contentNegotiationManager">
         <mvc:path-matching registered-suffixes-only="true"/>
         <mvc:message-converters register-defaults="true">
@@ -42,6 +41,8 @@
         <mvc:interceptor>
             <mvc:mapping path="/browser/browser.nocache.js"/>
             <mvc:mapping path="/"/>
+            <mvc:mapping path="/api/**"/>
+            <mvc:mapping path="/provider/**"/>
             <mvc:mapping path="/login"/>
             <mvc:mapping path="/forgot-password"/>
             <mvc:mapping path="/reset-password"/>
@@ -55,40 +56,47 @@
     <!-- required because property values are not processed if they are only imported in applicationContext.xml -->
     <!-- http://stackoverflow.com/questions/11890544/spring-value-annotation-in-controller-class-not-evaluating-to-value-inside-pro -->
     <!-- http://stackoverflow.com/questions/3652090/difference-between-applicationcontext-xml-and-spring-servlet-xml-in-spring -->
-    <context:property-placeholder
-            location="file:///${ext.prop.dir}persistence_${spring.profiles.active}.properties,file:///${ext.prop.dir}application_${spring.profiles.active}.properties"/>
+    <beans profile="dev">
+        <context:property-placeholder
+                location="file:///${ext.prop.dir}persistence_dev.properties,file:///${ext.prop.dir}application_dev.properties"/>
+    </beans>
+    <beans profile="prod">
+        <context:property-placeholder
+                location="file:///${ext.prop.dir}persistence_prod.properties,file:///${ext.prop.dir}application_prod.properties"/>
+    </beans>
+    <beans>
 
-    <bean id="multipartResolver"
-          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <bean id="multipartResolver"
+              class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 
-        <!-- one of the properties available; the maximum file size in bytes -->
-        <property name="maxUploadSize" value="1000000000"/>
-    </bean>
+            <!-- one of the properties available; the maximum file size in bytes -->
+            <property name="maxUploadSize" value="1000000000"/>
+        </bean>
 
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
-          p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" p:order="3"/>
+        <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+              p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" p:order="3"/>
 
-    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
-          p:basename="/WEB-INF/resources/messages">
-    </bean>
+        <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+              p:basename="/WEB-INF/resources/messages">
+        </bean>
 
-    <bean id="contentNegotiationManager"
-          class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
-        <property name="favorPathExtension" value="true"/>
-        <property name="ignoreAcceptHeader" value="true"/>
-        <property name="useJaf" value="false"/>
-        <property name="defaultContentType" value="application/json"/>
-        <property name="mediaTypes">
-            <map>
-                <entry key="png" value="image/png"/>
-                <entry key="json" value="application/json"/>
-                <entry key="xls" value="application/vnd.ms-excel"/>
-                <entry key="csv" value="text/csv"/>
-                <entry key="hdf5" value="application/hdf5"/>
-                <entry key="zip" value="application/zip"/>
-            </map>
-        </property>
-    </bean>
-
+        <bean id="contentNegotiationManager"
+              class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+            <property name="favorPathExtension" value="true"/>
+            <property name="ignoreAcceptHeader" value="true"/>
+            <property name="useJaf" value="false"/>
+            <property name="defaultContentType" value="application/json"/>
+            <property name="mediaTypes">
+                <map>
+                    <entry key="png" value="image/png"/>
+                    <entry key="json" value="application/json"/>
+                    <entry key="xls" value="application/vnd.ms-excel"/>
+                    <entry key="csv" value="text/csv"/>
+                    <entry key="hdf5" value="application/hdf5"/>
+                    <entry key="zip" value="application/zip"/>
+                </map>
+            </property>
+        </bean>
+    </beans>
 
 </beans>

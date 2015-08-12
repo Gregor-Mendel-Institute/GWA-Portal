@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.cdv;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.gmi.nordborglab.browser.server.controller.rest.json.Views;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 
 import javax.persistence.AttributeOverride;
@@ -33,8 +35,10 @@ public class Transformation extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "transformation")
     private Set<Study> studies = new HashSet<Study>();
 
+    @JsonView(Views.Public.class)
     private String name;
 
+    @JsonView(Views.Public.class)
     private String description;
 
     public String getName() {

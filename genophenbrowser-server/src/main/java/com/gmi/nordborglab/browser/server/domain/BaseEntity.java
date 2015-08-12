@@ -1,5 +1,8 @@
 package com.gmi.nordborglab.browser.server.domain;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.gmi.nordborglab.browser.server.controller.rest.json.Views;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,6 +17,7 @@ public class BaseEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="idSequence")
 	@Column(unique=true,nullable=false)
+        @JsonView(Views.Public.class)
 	private Long id;
 	
 	@Transient
