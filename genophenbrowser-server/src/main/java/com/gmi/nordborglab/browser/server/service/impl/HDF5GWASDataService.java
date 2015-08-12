@@ -30,6 +30,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import ncsa.hdf.hdf5lib.exceptions.HDF5FileNotFoundException;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
@@ -117,6 +118,7 @@ public class HDF5GWASDataService implements GWASDataService {
     }
 
     @Override
+    @Transactional(noRollbackFor = {IOException.class, HDF5FileNotFoundException.class})
     public GWASData getGWASDataByStudyIdForIndexer(long studyId) {
         return getGWASDataByStudyId(studyId,1000D,true);
     }
