@@ -40,5 +40,8 @@
         <property name="messageConverter" ref="messageConverter"/>
         <property name="concurrentConsumers" value="3"/>
         <property name="maxConcurrentConsumers" value="10"/>
+        <!-- set to avoid requeing of rejected message which can lead to deadlocks -->
+        <!-- TODO better to use https://www.rabbitmq.com/dlx.html -->
+        <property name="defaultRequeueRejected" value="false"/>
     </bean>
 </beans>
