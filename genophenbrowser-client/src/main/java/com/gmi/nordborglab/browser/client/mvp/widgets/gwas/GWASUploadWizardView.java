@@ -44,7 +44,6 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     @UiField
     FileUploadWidget fileUploadWidget;
 
-    private String restURL = "provider/gwas/upload";
     private final List<String> allowedExtensions = Lists.newArrayList("application/x-hdf");
     private static List<String> csvMimeTypes = Lists.newArrayList("text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel");
     private FileUploadWidget.FileChecker fileChecker;
@@ -133,7 +132,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
     }
 
     @Override
-    public void setRestURL(String restUrl) {
+    public void setRestURL(String restURL) {
         fileUploadWidget.setRestURL(restURL);
     }
 
