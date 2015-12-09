@@ -7,12 +7,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Sign In</title>
-    <link rel="icon" type="image/ico" href="/img/favicon.ico"/>
+    <link rel="icon" type="image/ico" href="img/favicon.ico"/>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="<c:url value='/css/login.css'/>"/>
-    <link rel="stylesheet" href="<c:url value='/css/bootstrap-social.min.css'/>"/>
-    <link rel="stylesheet" href="<c:url value='/css/entypo.min.css'/>"/>
+    <link rel="stylesheet" href="<c:url value='css/login.css'/>"/>
+    <link rel="stylesheet" href="<c:url value='css/bootstrap-social.min.css'/>"/>
+    <link rel="stylesheet" href="<c:url value='css/entypo.min.css'/>"/>
 </head>
 
 <body>
@@ -51,7 +51,7 @@
                     </div>
                     <div class="form-group">
                         <div style="display:inline-block;">
-                            <a href="<c:url value='/forgot-password' />">Forgot password?</a>
+                            <a href="<c:url value='forgot-password' />">Forgot password?</a>
                         </div>
                         <div class="checkbox remember_me" style="margin-left:180px;display:inline-block;">
                             <label>
@@ -69,24 +69,24 @@
         </div>
         <div class="sub_container">
             <p>Sign in using an existing 3rd party account:</p>
-            <a class="btn btn-block btn-social btn-lg btn-google-plus" href="<c:url value='/auth/google' />">
+            <a class="btn btn-block btn-social btn-lg btn-google-plus" href="<c:url value='auth/google' />">
                 <i class="fa fa-google"></i> Sign in with Google
             </a>
 
             <p></p>
-            <a class="btn btn-block btn-social btn-lg btn-github" href="<c:url value='/auth/github' />">
+            <a class="btn btn-block btn-social btn-lg btn-github" href="<c:url value='auth/github' />">
                 <i class="fa fa-github"></i> Sign in with Github
             </a>
 
             <p></p>
-            <a class="btn btn-block btn-social btn-lg btn-facebook" href="<c:url value='/auth/facebook' />">
+            <a class="btn btn-block btn-social btn-lg btn-facebook" href="<c:url value='auth/facebook' />">
                 <i class="fa fa-facebook"></i> Sign in with Facebook
             </a>
 
             <p></p>
         </div>
         <div class="sub_container">
-            <div class="form_login_info">Don't have an account? <a href="<c:url value='/registration' />">click here to
+            <div class="form_login_info">Don't have an account? <a href="<c:url value='registration' />">click here to
                 sign up</a></div>
         </div>
     </div>

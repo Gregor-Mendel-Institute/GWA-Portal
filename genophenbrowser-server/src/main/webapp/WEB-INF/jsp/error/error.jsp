@@ -10,10 +10,10 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800">
-    <link rel="icon" type="image/ico" href="/img/favicon.ico"/>
+    <link rel="icon" type="image/ico" href="img/favicon.ico"/>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="<c:url value='/css/entypo.min.css' />"/>
-    <link rel="stylesheet" href="<c:url value='/css/error.css' />"/>
+    <link rel="stylesheet" href="<c:url value='css/entypo.min.css' />"/>
+    <link rel="stylesheet" href="<c:url value='css/error.css' />"/>
     <title>Error</title>
 
 </head>

@@ -24,11 +24,11 @@
 
     <beans profile="dev">
         <context:property-placeholder
-                location="classpath:META-INF/persistence_dev.properties,classpath:META-INF/application_dev.properties,classpath:META-INF/es_dev.properties,classpath:META-INF/amqp_dev.properties,classpath:META-INF/social.properties"/>
+                location="file:///${ext.prop.dir}persistence_dev.properties,file:///${ext.prop.dir}application_dev.properties,file:///${ext.prop.dir}es_dev.properties,file:///${ext.prop.dir}amqp_dev.properties,file:///${ext.prop.dir}social.properties"/>
     </beans>
     <beans profile="prod">
         <context:property-placeholder
-                location="classpath:META-INF/persistence_prod.properties,classpath:META-INF/application_prod.properties,classpath:META-INF/es_prod.properties,classpath:META-INF/amqp_prod.properties,classpath:META-INF/social.properties"/>
+                location="file:///${ext.prop.dir}persistence_prod.properties,file:///${ext.prop.dir}application_prod.properties,file:///${ext.prop.dir}es_prod.properties,file:///${ext.prop.dir}amqp_prod.properties,file:///${ext.prop.dir}social.properties"/>
     </beans>
     <beans>
         <bean id="validator"

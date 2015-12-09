@@ -56,8 +56,8 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
-    <context:property-placeholder
-            location="classpath:META-INF/persistence_${spring.profiles.active}.properties,classpath:META-INF/application_${spring.profiles.active}.properties"/>
+    <!--<context:property-placeholder
+            location="file:///${ext.prop.dir}persistence_${spring.profiles.active}.properties,classpath:file:///${ext.prop.dir}application_${spring.profiles.active}.properties"/>-->
 
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

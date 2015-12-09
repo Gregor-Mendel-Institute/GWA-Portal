@@ -245,6 +245,9 @@ public class EsIndexerApp {
         try {
             Page<T> resultPage = null;
             long count = repository.count();
+            if (count == 0) {
+                return;
+            }
             do {
                 resultPage = repository.findAll(new PageRequest(pageNumber, BULK_SIZE));
                 List<T> documents = resultPage.getContent();
@@ -254,11 +257,12 @@ public class EsIndexerApp {
                     }
                 }
                 BulkResponse response = esIndexer.bulkIndex(documents);
+                logger.info("Indexing " + pageNumber * BULK_SIZE + " of " + count + " indexed");
                 if (response.hasFailures()) {
                     logger.error(response.buildFailureMessage());
                 }
                 pageNumber++;
-                logger.info("Indexing " + pageNumber * BULK_SIZE + " of " + count + " indexed");
+
 
             } while (!resultPage.isLast());
         } catch (IOException e) {

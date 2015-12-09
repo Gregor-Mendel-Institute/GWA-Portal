@@ -11,11 +11,11 @@
 
     <beans profile="dev">
         <util:properties id="esproperties"
-                         location="classpath:META-INF/es_dev.properties"/>
+                         location="file:///${ext.prop.dir}es_dev.properties"/>
     </beans>
     <beans profile="prod">
         <util:properties id="esproperties"
-                         location="classpath:META-INF/es_prod.properties"/>
+                         location="file:///${ext.prop.dir}es_prod.properties"/>
     </beans>
 
     <beans>

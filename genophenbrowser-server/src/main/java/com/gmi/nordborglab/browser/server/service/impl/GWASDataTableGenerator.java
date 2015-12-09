@@ -22,6 +22,7 @@ import com.google.visualization.datasource.query.Query;
 import com.google.visualization.datasource.render.JsonRenderer;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -31,10 +32,14 @@ import java.util.Map;
 @Component
 public class GWASDataTableGenerator implements DataTableGenerator {
 
-    public static enum TYPE {STUDY, GWASVIEWER}
+    public enum TYPE {STUDY, GWASVIEWER}
 
     @Resource
     GWASDataService gwasDataService;
+
+    @org.springframework.beans.factory.annotation.Value("${GENOME.chrlengths}")
+    private String[] chrLengthsString;
+    private List<Integer> chrLengths;
 
     @Override
     public DataTable generateDataTable(Query query, HttpServletRequest request)
@@ -56,8 +61,7 @@ public class GWASDataTableGenerator implements DataTableGenerator {
         GWASData gwasData = getGWASData(request);
         List<String> dataTables = new ArrayList<String>();
         List<String> chromosomes = new ArrayList<String>();
-        ///TODO not hardcoded
-        List<Integer> chrLenghts = ImmutableList.of(30429953, 19701870, 23467451, 18578708, 26992130);
+
         for (Map.Entry<String, ChrGWAData> entry : gwasData.getChrGWASData().entrySet()) {
             String chr = entry.getKey();
             chromosomes.add(chr);
@@ -66,7 +70,7 @@ public class GWASDataTableGenerator implements DataTableGenerator {
             CharSequence json = JsonRenderer.renderDataTable(dataTable, true, false, true);
             dataTables.add(json.toString());
         }
-        gwasDataForClient = new GWASDataForClient(gwasData.getMaxScore(), gwasData.getBonferroniScore(), chromosomes, chrLenghts, dataTables);
+        gwasDataForClient = new GWASDataForClient(gwasData.getMaxScore(), gwasData.getBonferroniScore(), chromosomes, chrLengths, dataTables);
         return gwasDataForClient;
     }
 
@@ -150,6 +154,15 @@ public class GWASDataTableGenerator implements DataTableGenerator {
 
     private static double round(float value) {
         return Math.round(value * 1000.0) / 1000.0;
+    }
+
+    @PostConstruct
+    public void init() {
+        ImmutableList.Builder builder = new ImmutableList.Builder<>();
+        for (String chrLength : chrLengthsString) {
+            builder.add(Integer.parseInt(chrLength));
+        }
+        chrLengths = builder.build();
     }
 
 }
