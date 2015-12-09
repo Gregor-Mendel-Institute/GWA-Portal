@@ -208,7 +208,7 @@ public class Passport extends BaseEntity implements ESDocument {
     }
 
     private static void addLocality(XContentBuilder builder, Locality locality) throws IOException {
-        builder.field("state_provence", locality.getStateProvince())
+        builder.field("state_province", locality.getStateProvince())
                 .field("origcty", locality.getOrigcty())
                 .field("lo_accession", locality.getLoAccession())
                 .field("elevation", locality.getElevation())

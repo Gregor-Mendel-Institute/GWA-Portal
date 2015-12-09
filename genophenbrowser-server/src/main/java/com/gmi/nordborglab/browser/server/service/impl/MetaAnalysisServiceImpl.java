@@ -273,9 +273,9 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         List<ESTermsFacet> terms = Lists.newArrayList();
         for (Range.Bucket rangeEntry : mafAgg.getBuckets()) {
             String range = "";
-            if (rangeEntry.getFrom() == Double.NEGATIVE_INFINITY) {
+            if (new Double(Double.NEGATIVE_INFINITY).equals(rangeEntry.getFrom())) {
                 range = "< " + rangeEntry.getTo().doubleValue() * 100 + "%";
-            } else if (rangeEntry.getTo() == Double.POSITIVE_INFINITY) {
+            } else if (new Double(Double.POSITIVE_INFINITY).equals(rangeEntry.getTo())) {
                 range = "> " + rangeEntry.getFrom().doubleValue() * 100 + "%";
             } else {
                 range = String.format("%s - %s", rangeEntry.getFrom().doubleValue() * 100, rangeEntry.getTo().doubleValue() * 100 + "%");

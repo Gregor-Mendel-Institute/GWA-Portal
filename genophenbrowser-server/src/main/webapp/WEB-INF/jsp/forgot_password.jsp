@@ -7,10 +7,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Password reset</title>
-    <link rel="icon" type="image/ico" href="/img/favicon.ico"/>
+    <link rel="icon" type="image/ico" href="img/favicon.ico"/>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="<c:url value='/css/login.css'/>"/>
-    <link rel="stylesheet" href="<c:url value='/css/entypo.min.css'/>"/>
+    <link rel="stylesheet" href="<c:url value='css/login.css'/>"/>
+    <link rel="stylesheet" href="<c:url value='css/entypo.min.css'/>"/>
     <script type="text/javascript">
         window.onload = function () {
             document.getElementById("email").focus();
@@ -51,10 +51,10 @@
         </div>
         <div class="sub_container" style="text-align:center">
             <div>
-                Already have an account? <a href="<c:url value='/login' />">Sign In</a>
+                Already have an account? <a href="<c:url value='login' />">Sign In</a>
             </div>
             <div>
-                Don't have an account? <a href="<c:url value='/registration' />">Sign Up</a>
+                Don't have an account? <a href="<c:url value='registration' />">Sign Up</a>
             </div>
         </div>
     </div>

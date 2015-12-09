@@ -44,8 +44,8 @@ public class SearchServiceImpl implements SearchService {
 
     //public static String INDEX_NAME;
 
-    public static String ONTOLOGY_INDEX_NAME = "ontologies";
-    public static String[] GENE_INDEX_NAME = {"annot_chr1", "annot_chr2", "annot_chr3", "annot_chr4", "annot_chr5"};
+    public static final String ONTOLOGY_INDEX_NAME = "ontologies";
+    public static final String GENE_INDEX_NAME = "genotype";
 
     @Override
     public List<SearchFacetPage> searchByTerm(String term, CATEGORY category,
@@ -174,7 +174,7 @@ public class SearchServiceImpl implements SearchService {
 
         SearchFacetPage facetPage = null;
         GeneSearchProcessor processor = new GeneSearchProcessor(term);
-        SearchRequestBuilder builder = client.prepareSearch("annot_chr1", "annot_chr2", "annot_chr3", "annot_chr4", "annot_chr5");
+        SearchRequestBuilder builder = client.prepareSearch(GENE_INDEX_NAME);
         builder = processor.getSearchBuilder(builder);
         SearchResponse response = builder.execute().actionGet();
         facetPage = processor.extractSearchFacetPage(response);

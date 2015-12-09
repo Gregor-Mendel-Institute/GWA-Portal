@@ -263,9 +263,12 @@ public class RestProviderController {
                 Preconditions.checkNotNull(input);
                 return input.getAlleleAssay().equals(study.getAlleleAssay());
             }
-        });
+        }, null);
         int sampleSize = study.getTraits().size();
-        long runtime = Math.round(info.getCoefficient1() * Math.pow(sampleSize, 2) + info.getCoefficient2() * sampleSize + info.getCoefficient3());
+        long runtime = 3600;
+        if (info != null) {
+            runtime = Math.round(info.getCoefficient1() * Math.pow(sampleSize, 2) + info.getCoefficient2() * sampleSize + info.getCoefficient3());
+        }
         StudyGWASData data = new StudyGWASData(csvData, study.getProtocol().getAnalysisMethod(), study.getAlleleAssay().getId().intValue(), transformation, runtime);
         return data;
     }

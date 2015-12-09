@@ -7,10 +7,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Sign up</title>
-    <link rel="icon" type="image/ico" href="/img/favicon.ico"/>
+    <link rel="icon" type="image/ico" href="img/favicon.ico"/>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="<c:url value='/css/login.css'/>"/>
-    <link rel="stylesheet" href="<c:url value='/css/entypo.min.css'/>"/>
+    <link rel="stylesheet" href="<c:url value='css/login.css'/>"/>
+    <link rel="stylesheet" href="<c:url value='css/entypo.min.css'/>"/>
     <script type="text/javascript">
         window.onload = function () {
             document.getElementById("firstName").focus();
