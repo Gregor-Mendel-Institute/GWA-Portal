@@ -218,7 +218,7 @@ public class Study extends SecureEntity {
         }
 
         if (this.getAlleleAssay() != null) {
-            builder.startObject("allele_assay");
+            builder.startObject("genotype");
             this.getAlleleAssay().getXContent(builder);
             builder.endObject();
         }

@@ -39,9 +39,6 @@
         <!-- Imports datasource configuration -->
         <import resource="spring-data.xml"/>
 
-        <!-- Imports datasource configuration -->
-        <import resource="spring-elasticsearch.xml"/>
-
         <import resource="spring-amqp.xml"/>
 
         <import resource="spring-mail.xml"/>

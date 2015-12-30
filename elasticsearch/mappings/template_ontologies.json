@@ -40,23 +40,19 @@
          "properties":{  
             "alt_id":{  
                "type":"string",
-               "index":"not_analyzed",
-                "fielddata": {
-                  "format": "doc_values"
-                }
+               "index": "not_analyzed"
             },
             "definition":{  
                "type":"string",
-               "index_analyzer":"url"
+               "analyzer": "url"
             },
             "name":{  
                "type":"string",
-               "boost":2.0,
-               "fields":{  
+               "fields": {
                   "partial":{  
                      "type":"string",
-                     "boost":1.5,
-                     "index_analyzer":"my_ngram"
+                     "analyzer": "my_ngram",
+                     "search_analyzer": "standard"
                   }
                }
             },
@@ -65,17 +61,11 @@
                "properties":{  
                   "term_id":{  
                      "type":"string",
-                     "index":"not_analyzed",
-                    "fielddata": {
-                      "format": "doc_values"
-                    }
+                     "index": "not_analyzed"
                   },
                   "type":{  
                      "type":"string",
-                     "index":"not_analyzed",
-                    "fielddata": {
-                      "format": "doc_values"
-                    }
+                     "index": "not_analyzed"
                   }
                }
             },
@@ -89,33 +79,21 @@
                   },
                   "type":{  
                      "type":"string",
-                     "index":"not_analyzed",
-                    "fielddata": {
-                      "format": "doc_values"
-                    }
+                     "index": "not_analyzed"
                   }
                }
             },
             "term_id":{  
                "type":"string",
-               "index":"not_analyzed",
-                "fielddata": {
-                  "format": "doc_values"
-                }
+               "index": "not_analyzed"
             },
             "type":{  
                "type":"string",
-               "index":"not_analyzed",
-                "fielddata": {
-                  "format": "doc_values"
-                }
+               "index": "not_analyzed"
             },
             "xrefs":{  
                "type":"string",
-               "index":"not_analyzed",
-                "fielddata": {
-                  "format": "doc_values"
-                }
+               "index": "not_analyzed"
             }
          }
       }

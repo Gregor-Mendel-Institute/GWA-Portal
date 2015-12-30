@@ -5,7 +5,6 @@ import com.gmi.nordborglab.browser.server.domain.pages.SearchFacetPage;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
@@ -23,7 +22,7 @@ import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
  */
 public class CandidategenelistSearchProcessor extends TermSearchProcessor {
 
-    public CandidategenelistSearchProcessor(String term, FilterBuilder aclFilter) {
+    public CandidategenelistSearchProcessor(String term, QueryBuilder aclFilter) {
         super(term, aclFilter);
     }
 

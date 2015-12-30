@@ -175,7 +175,7 @@ public class Passport extends BaseEntity implements ESDocument {
                     .field("germplasm_type", sampstat.getGermplasmType()).endObject();
         }
         if (this.getAlleleAssays() != null && getAlleleAssays().size() > 0) {
-            builder.startArray("allele_assay");
+            builder.startArray("genotypes");
             for (AlleleAssay alleleAssay : getAlleleAssays()) {
                 builder.startObject();
                 alleleAssay.getXContent(builder);

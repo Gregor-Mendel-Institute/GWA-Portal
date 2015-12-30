@@ -8,11 +8,11 @@ import com.gmi.nordborglab.browser.server.es.ESDocument;
 import com.gmi.nordborglab.browser.server.validation.PasswordsEqual;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.elasticsearch.common.joda.time.DateTime;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.joda.time.DateTime;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;

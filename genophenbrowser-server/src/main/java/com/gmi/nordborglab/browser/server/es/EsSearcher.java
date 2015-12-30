@@ -9,8 +9,7 @@ import com.google.common.collect.Lists;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -20,6 +19,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -50,22 +50,22 @@ public class EsSearcher {
 
         // filter only the ones We have access to.
 
-        FilterBuilder preFilter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"), noPublic);
+        QueryBuilder preFilter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"), noPublic);
 
         // filter by parentid
         if (parentId != null) {
-            preFilter = FilterBuilders.boolFilter().must(FilterBuilders.termFilter("_parent", parentId)).must(preFilter);
+            preFilter = QueryBuilders.boolQuery().filter(QueryBuilders.termQuery("_parent", parentId)).filter(preFilter);
         }
-        FilterBuilder searchFilter = null;
+        QueryBuilder searchFilter = null;
         org.elasticsearch.index.query.QueryBuilder query = QueryBuilders.matchAllQuery();
         if (searchString != null && !searchString.equalsIgnoreCase("")) {
             query = QueryBuilders.multiMatchQuery(searchString, fields);
         }
-        request.setQuery(QueryBuilders.filteredQuery(query, preFilter));
+        request.setQuery(QueryBuilders.boolQuery().must(query).filter(preFilter));
 
-        FilterBuilder privateFilter = esAclManager.getAclFilterForType(ConstEnums.TABLE_FILTER.PRIVATE);
-        FilterBuilder sharedFilter = esAclManager.getAclFilterForType(ConstEnums.TABLE_FILTER.SHARED);
-        FilterBuilder publicFilter = esAclManager.getAclFilterForType(ConstEnums.TABLE_FILTER.PUBLISHED);
+        QueryBuilder privateFilter = esAclManager.getAclFilterForType(ConstEnums.TABLE_FILTER.PRIVATE);
+        QueryBuilder sharedFilter = esAclManager.getAclFilterForType(ConstEnums.TABLE_FILTER.SHARED);
+        QueryBuilder publicFilter = esAclManager.getAclFilterForType(ConstEnums.TABLE_FILTER.PUBLISHED);
 
         request.addAggregation(AggregationBuilders.filter(ConstEnums.TABLE_FILTER.ALL.name()).filter(preFilter));
         request.addAggregation(AggregationBuilders.filter(ConstEnums.TABLE_FILTER.PRIVATE.name()).filter(privateFilter));
@@ -120,6 +120,11 @@ public class EsSearcher {
         facets.add(new ESFacet(ConstEnums.TABLE_FILTER.SHARED.name(), 0, filter.getDocCount(), 0, null));
         // get annotation
         return facets;
+    }
+
+    @PostConstruct
+    public void addPlugins() {
+
     }
 
 

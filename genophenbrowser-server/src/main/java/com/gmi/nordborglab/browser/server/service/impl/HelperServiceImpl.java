@@ -71,13 +71,14 @@ import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
+import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -494,7 +495,7 @@ public class HelperServiceImpl implements HelperService {
         // user count
         requestBuilder.add(getStatsSearchBuilder().setTypes("user"));
 
-        FilterBuilder filter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
+        QueryBuilder filter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
         //  get studies
         requestBuilder.add(getStatsSearchBuilder().setTypes("experiment").setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter)));
         requestBuilder.add(getStatsSearchBuilder().setTypes("phenotype").setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter)));
@@ -517,22 +518,22 @@ public class HelperServiceImpl implements HelperService {
     }
 
 
-    private DateHistogram.Interval convertInterval(DateStatHistogramProxy.INTERVAL interval) {
+    private DateHistogramInterval convertInterval(DateStatHistogramProxy.INTERVAL interval) {
         switch (interval) {
             case YEAR:
-                return DateHistogram.Interval.YEAR;
+                return DateHistogramInterval.YEAR;
             case MONTH:
-                return DateHistogram.Interval.MONTH;
+                return DateHistogramInterval.MONTH;
             case HOUR:
-                return DateHistogram.Interval.HOUR;
+                return DateHistogramInterval.HOUR;
             case QUARTER:
-                return DateHistogram.Interval.QUARTER;
+                return DateHistogramInterval.QUARTER;
             case WEEK:
-                return DateHistogram.Interval.WEEK;
+                return DateHistogramInterval.WEEK;
             case DAY:
-                return DateHistogram.Interval.DAY;
+                return DateHistogramInterval.DAY;
             case MINUTE:
-                return DateHistogram.Interval.MINUTE;
+                return DateHistogramInterval.MINUTE;
         }
         return null;
     }
@@ -541,7 +542,7 @@ public class HelperServiceImpl implements HelperService {
     public List<DateStatHistogramFacet> findRecentTraitHistogram(DateStatHistogramProxy.INTERVAL interval) {
         List<DateStatHistogramFacet> histogram = Lists.newArrayList();
         DateHistogramBuilder aggregation = AggregationBuilders.dateHistogram("recent").field("created").interval(convertInterval(interval));
-        FilterBuilder filter = FilterBuilders.rangeFilter("created").gt("2013-07-01").lte("now");
+        QueryBuilder filter = QueryBuilders.rangeQuery("created").gt("2013-07-01").lte("now");
         MultiSearchRequestBuilder requestBuilder = client.prepareMultiSearch();
 
         // experiments
@@ -683,10 +684,10 @@ public class HelperServiceImpl implements HelperService {
 
 
     private List<DateStatHistogram> getHistogram(Aggregations aggregations, DateStatHistogramProxy.INTERVAL interval) {
-        DateHistogram searchFacet = aggregations.get("recent");
+        Histogram searchFacet = aggregations.get("recent");
         List<DateStatHistogram> dates = Lists.newArrayList();
-        for (DateHistogram.Bucket termEntry : searchFacet.getBuckets()) {
-            dates.add(new DateStatHistogram(termEntry.getKeyAsDate().toDate(), termEntry.getDocCount(), interval));
+        for (Histogram.Bucket termEntry : searchFacet.getBuckets()) {
+            dates.add(new DateStatHistogram(((DateTime) termEntry.getKey()).toDate(), termEntry.getDocCount(), interval));
         }
         return dates;
     }

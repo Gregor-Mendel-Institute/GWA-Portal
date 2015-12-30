@@ -15,9 +15,9 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
@@ -89,19 +89,20 @@ public class EsAclManager {
     };
 
 
-    public FilterBuilder getAclFilterForPermissions(List<String> permissions,String aclField) {
+    public QueryBuilder getAclFilterForPermissions(List<String> permissions, String aclField) {
          return getAclFilterForPermissions(permissions,aclField,false);
     }
 
-    public FilterBuilder getAclFilterForPermissions(List<String> permissions,boolean noPublic) {
+    public QueryBuilder getAclFilterForPermissions(List<String> permissions, boolean noPublic) {
         return getAclFilterForPermissions(permissions,"acl",false);
     }
 
 
-    public FilterBuilder getAclFilterForPermissions(List<String> permissions) {
+    public QueryBuilder getAclFilterForPermissions(List<String> permissions) {
         return getAclFilterForPermissions(permissions, "acl", false);
     }
-    public FilterBuilder getAclFilterForPermissions(List<String> permissions, String aclField,boolean noPublic) {
+
+    public QueryBuilder getAclFilterForPermissions(List<String> permissions, String aclField, boolean noPublic) {
         FluentIterable<Sid> sids = FluentIterable.from(SecurityUtil.getSids(roleHierarchy));
         // don't include public ones
         if (noPublic)
@@ -109,44 +110,46 @@ public class EsAclManager {
         List<String> stringSids = sids.transform(SecurityUtil.sid2String).toList();
         List<AclSid> aclSids = aclSidRepository.findAllBySidIn(stringSids);
         List<String> aclSidsToCheck = Lists.transform(aclSids, aclSid2String);
-        BoolFilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.nestedFilter(
-                aclField, FilterBuilders.boolFilter().must(
-                        FilterBuilders.boolFilter().must(FilterBuilders.termsFilter(aclField+".id", aclSidsToCheck),
-                                FilterBuilders.termsFilter(aclField+".permissions", permissions)))));
+        BoolQueryBuilder filter = QueryBuilders.boolQuery().filter(QueryBuilders.nestedQuery(
+                aclField, QueryBuilders.boolQuery()
+                        .filter(QueryBuilders.boolQuery().filter(QueryBuilders.termsQuery(aclField + ".id", aclSidsToCheck))
+                                .filter(QueryBuilders.termsQuery(aclField + ".permissions", permissions)))));
         return filter;
     }
 
 
-    public FilterBuilder getAclFilterForType(ConstEnums.TABLE_FILTER filter) {
-        FilterBuilder filterBuilder = null;
+    public QueryBuilder getAclFilterForType(ConstEnums.TABLE_FILTER filter) {
+        QueryBuilder filterBuilder = null;
         Authentication auth = SecurityUtil.getAuthentication();
         Long userAclSid = aclSidCache.getUnchecked(new PrincipalSid(auth));
         switch (filter) {
             case PRIVATE:
                 if (auth.isAuthenticated()) {
-                    filterBuilder = FilterBuilders.boolFilter().must(FilterBuilders.termFilter("owner.id", userAclSid));
+                    filterBuilder = QueryBuilders.boolQuery().filter(QueryBuilders.termQuery("owner.id", userAclSid));
                 }
                 break;
             case SHARED:
                 if (auth.isAuthenticated()) {
-                    filterBuilder = FilterBuilders.boolFilter().must(FilterBuilders.nestedFilter("acl", FilterBuilders.boolFilter().must(
-                            FilterBuilders.boolFilter().must(FilterBuilders.termFilter("acl.id", userAclSid.toString()),
-                                    FilterBuilders.termsFilter("acl.permissions", "read")))))
-                            .mustNot(FilterBuilders.termsFilter("owner.id", userAclSid.toString()));
+                    filterBuilder = QueryBuilders.boolQuery().filter(
+                            QueryBuilders.nestedQuery("acl", QueryBuilders.boolQuery()
+                                    .filter(QueryBuilders.boolQuery().filter(QueryBuilders.termsQuery("acl.id", userAclSid.toString()))
+                                            .filter(QueryBuilders.termsQuery("acl.permissions", "read")))))
+                            .mustNot(QueryBuilders.termsQuery("owner.id", userAclSid.toString()));
                 }
                 break;
             case PUBLISHED:
-                filterBuilder = FilterBuilders.nestedFilter("acl", FilterBuilders.boolFilter().must(
-                        FilterBuilders.boolFilter().must(FilterBuilders.termFilter("acl.id", publicAclSidId),
-                                FilterBuilders.termsFilter("acl.permissions", "read"))));
+                filterBuilder = QueryBuilders.nestedQuery("acl", QueryBuilders.boolQuery()
+                        .filter(QueryBuilders.boolQuery()
+                                .filter(QueryBuilders.termQuery("acl.id", publicAclSidId))
+                                .filter(QueryBuilders.termsQuery("acl.permissions", "read"))));
                 break;
         }
         return filterBuilder;
     }
 
 
-    public FilterBuilder getOwnerFilter(List<Long> ids) {
-        return FilterBuilders.termsFilter("owner.sid", ids);
+    public QueryBuilder getOwnerFilter(List<Long> ids) {
+        return QueryBuilders.termsQuery("owner.sid", ids);
     }
 
 

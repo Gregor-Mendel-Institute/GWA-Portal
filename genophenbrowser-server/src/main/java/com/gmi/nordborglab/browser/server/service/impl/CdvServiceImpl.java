@@ -30,11 +30,10 @@ import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
+import org.elasticsearch.action.deletebyquery.DeleteByQueryAction;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -196,7 +195,7 @@ public class CdvServiceImpl implements CdvService {
 
     @Override
     public StudyPage findAll(Long phenotypeId, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        SearchResponse response = esSearcher.search(filter, phenotypeId, false, new String[]{"name^3.5", "name.partial^1.5", "protocol.analysis_method^3.5", "allele_assay.name^1.5", "allele_assay.producer", "owner.name", "experiment.name", "phenotype.name"}, searchString, Study.ES_TYPE, start, size);
+        SearchResponse response = esSearcher.search(filter, phenotypeId, false, new String[]{"name^3.5", "name.partial^1.5", "protocol.analysis_method^3.5", "genotype.name^1.5", "genotype.producer", "owner.name", "experiment.name", "phenotype.name"}, searchString, Study.ES_TYPE, start, size);
         List<Long> idsToFetch = EsSearcher.getIdsFromResponse(response);
         List<Study> resultsFromDb = studyRepository.findAll(idsToFetch);
         //extract facets
@@ -263,6 +262,7 @@ public class CdvServiceImpl implements CdvService {
         studyRepository.save(study);
         gwasDataService.deleteStudyFile(studyId);
         deleteMetaAnalysisFromIndex(studyId);
+        deleteCandidatGeneEnrichmentFromIndex(study.getId());
         return study;
     }
 
@@ -304,28 +304,23 @@ public class CdvServiceImpl implements CdvService {
         aclManager.deletePermissions(study, true);
         //throw new RuntimeException("Runtimeexception");
         deleteMetaAnalysisFromIndex(studyId);
+        deleteCandidatGeneEnrichmentFromIndex(study.getId());
         deleteFromIndex(study);
     }
 
 
     private void deleteMetaAnalysisFromIndex(Long studyId) {
-        DeleteByQueryRequestBuilder request = client.prepareDeleteByQuery(esAclManager.getIndex())
+        new DeleteByQueryRequestBuilder(client, DeleteByQueryAction.INSTANCE)
+                .setIndices(esAclManager.getIndex())
                 .setTypes("meta_analysis_snps")
-                .setQuery(QueryBuilders.termQuery("studyid", studyId));
-        request.execute();
+                .setQuery(QueryBuilders.termQuery("studyid", studyId)).execute();
     }
 
     private void deleteFromIndex(Study study) {
         esIndexer.delete(study);
-        deleteCandidatGeneEnrichmentFromIndex(study.getId());
     }
 
     private void deleteCandidatGeneEnrichmentFromIndex(Long studyId) {
-        try {
-            QueryBuilder query = QueryBuilders.constantScoreQuery(FilterBuilders.termFilter("study_.id", studyId));
-            client.prepareDeleteByQuery(esAclManager.getIndex()).setTypes("candidate_gene_list_enrichment").setQuery(query).execute();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        new DeleteByQueryRequestBuilder(client, DeleteByQueryAction.INSTANCE).setIndices(esAclManager.getIndex()).setTypes("candidate_gene_list_enrichment").setQuery(QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("study_.id", studyId))).execute();
     }
 }
