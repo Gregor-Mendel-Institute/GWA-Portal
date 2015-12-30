@@ -7,7 +7,6 @@ import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.SUB_CATEGORY;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
@@ -19,7 +18,7 @@ import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 public class PhenotypeSearchProcessor extends TermSearchProcessor {
 
 
-    public PhenotypeSearchProcessor(String term, FilterBuilder aclFilter) {
+    public PhenotypeSearchProcessor(String term, QueryBuilder aclFilter) {
         super(term, aclFilter);
     }
 

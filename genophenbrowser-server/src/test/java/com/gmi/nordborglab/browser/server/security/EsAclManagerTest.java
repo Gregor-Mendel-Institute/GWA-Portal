@@ -6,7 +6,7 @@ import com.google.common.collect.Lists;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -31,7 +31,7 @@ public class EsAclManagerTest extends BaseTest {
     @Test
     public void testGetAclFilter() {
         SecurityUtils.setAnonymousUser();
-        FilterBuilder filter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
+        QueryBuilder filter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
         assertNotNull(filter);
         String filterJson = "";
         XContentBuilder builder = null;

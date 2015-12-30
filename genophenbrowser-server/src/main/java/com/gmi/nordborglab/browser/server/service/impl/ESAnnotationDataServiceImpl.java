@@ -38,8 +38,7 @@ import org.elasticsearch.action.get.MultiGetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -282,11 +281,11 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
             end = Integer.valueOf(regionMatcher.group(3));
 
         }
-        FilterBuilder filter = FilterBuilders.rangeFilter("position").from(start).to(end);
+        QueryBuilder filter = QueryBuilders.rangeQuery("position").from(start).to(end);
         SearchRequestBuilder requestBuilder = client.prepareSearch(String.format(INDEX_PREFIX, "chr" + chr))
                 .addSort("position", SortOrder.ASC)
                 .setSize(size).setFrom(page).addFields("annotation", "inGene", "ref", "alt", "lyr").setFetchSource("annotations", null)
-                .setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter));
+                .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).filter(filter));
 
         // Add aggregation
         requestBuilder.addAggregation(AggregationBuilders.terms("inGene").field("inGene").size(2))
@@ -328,7 +327,7 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
         List<ESTermsFacet> terms = Lists.newArrayList();
         for (Terms.Bucket termEntry : searchFacet.getBuckets()) {
             String term = "intergenic";
-            if (termEntry.getKeyAsText().string().equalsIgnoreCase("T")) {
+            if (termEntry.getKeyAsString().equalsIgnoreCase("T")) {
                 term = "genic";
             }
             terms.add(new ESTermsFacet(term, termEntry.getDocCount()));
@@ -390,7 +389,7 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
         Terms facet = aggregation.get(name);
         List<ESTermsFacet> terms = Lists.newArrayList();
         for (Terms.Bucket termEntry : facet.getBuckets()) {
-            terms.add(new ESTermsFacet(termEntry.getKeyAsText().string(), termEntry.getDocCount()));
+            terms.add(new ESTermsFacet(termEntry.getKeyAsString(), termEntry.getDocCount()));
         }
         return new ESFacet("function", 0, 0, 0, terms);
     }

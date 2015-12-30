@@ -41,9 +41,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -158,8 +156,8 @@ public class UserServiceImpl implements UserService {
 
     private int[] getStats(Long id) {
 
-        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
-                .must(esAclManager.getOwnerFilter(Lists.newArrayList(id)));
+        BoolQueryBuilder searchFilter = QueryBuilders.boolQuery().filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
+                .filter(esAclManager.getOwnerFilter(Lists.newArrayList(id)));
         QueryBuilder query = QueryBuilders.constantScoreQuery(searchFilter);
         int[] stats = new int[3];
         stats[0] = 0;
@@ -229,8 +227,9 @@ public class UserServiceImpl implements UserService {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(start).setTypes("experiment").setNoFields();
 
-        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
-                .must(esAclManager.getOwnerFilter(Lists.newArrayList(userId)));
+        BoolQueryBuilder searchFilter = QueryBuilders.boolQuery()
+                .filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
+                .filter(esAclManager.getOwnerFilter(Lists.newArrayList(userId)));
         request.setQuery(QueryBuilders.constantScoreQuery(searchFilter));
         SearchResponse response = request.execute().actionGet();
         List<Long> idsToFetch = Lists.newArrayList();
@@ -260,8 +259,9 @@ public class UserServiceImpl implements UserService {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(start).setTypes("phenotype").setNoFields();
 
-        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
-                .must(esAclManager.getOwnerFilter(Lists.newArrayList(userId)));
+        BoolQueryBuilder searchFilter = QueryBuilders.boolQuery()
+                .filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
+                .filter(esAclManager.getOwnerFilter(Lists.newArrayList(userId)));
         request.setQuery(QueryBuilders.constantScoreQuery(searchFilter));
 
         SearchResponse response = request.execute().actionGet();
@@ -307,8 +307,8 @@ public class UserServiceImpl implements UserService {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(start).setTypes("study").setNoFields();
 
-        BoolFilterBuilder searchFilter = FilterBuilders.boolFilter().must(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
-                .must(esAclManager.getOwnerFilter(Lists.newArrayList(userId)));
+        BoolQueryBuilder searchFilter = QueryBuilders.boolQuery().filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
+                .filter(esAclManager.getOwnerFilter(Lists.newArrayList(userId)));
         request.setQuery(QueryBuilders.constantScoreQuery(searchFilter));
 
 
@@ -338,16 +338,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AppUserPage findUsers(String searchString, ConstEnums.USER_FILTER filter, int start, int size) {
-        FilterBuilder searchFilter = null;
-        FilterBuilder adminFilter = FilterBuilders.termFilter("authorities", "ROLE_ADMIN");
-        FilterBuilder userFilter = FilterBuilders.termFilter("authorities", "ROLE_USER");
+        QueryBuilder searchFilter = null;
+        QueryBuilder adminFilter = QueryBuilders.termQuery("authorities", "ROLE_ADMIN");
+        QueryBuilder userFilter = QueryBuilders.termQuery("authorities", "ROLE_USER");
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(start).setTypes("user").setNoFields();
 
         if (searchString != null && !searchString.equalsIgnoreCase("")) {
             request.setQuery(multiMatchQuery(searchString, "firstname^3.5", "firstname.partial^1.5", "lastname^3.5", "lastname.partial^1.5", "email"));
         }
-        request.addAggregation(AggregationBuilders.filter(ConstEnums.USER_FILTER.ALL.name()).filter(FilterBuilders.matchAllFilter()));
+        request.addAggregation(AggregationBuilders.filter(ConstEnums.USER_FILTER.ALL.name()).filter(QueryBuilders.matchAllQuery()));
         request.addAggregation(AggregationBuilders.filter(ConstEnums.USER_FILTER.ADMIN.name()).filter(adminFilter));
         request.addAggregation(AggregationBuilders.filter(ConstEnums.USER_FILTER.USER.name()).filter(userFilter));
 

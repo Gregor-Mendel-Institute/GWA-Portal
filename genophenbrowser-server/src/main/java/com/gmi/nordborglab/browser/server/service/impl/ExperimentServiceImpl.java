@@ -33,8 +33,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -266,7 +265,9 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
     private long countAnalysesByExperiment(Long experimentId) {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
-        FilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.hasParentFilter("phenotype", FilterBuilders.termFilter("_parent", experimentId.toString())), esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")));
+        QueryBuilder filter = QueryBuilders.boolQuery()
+                .filter(QueryBuilders.hasParentQuery("phenotype", QueryBuilders.termQuery("_parent", experimentId.toString())))
+                .filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")));
         ConstantScoreQueryBuilder query = QueryBuilders.constantScoreQuery(filter);
         SearchResponse response = request.setTypes("study").setSize(0).setQuery(query).execute().actionGet();
         return response.getHits().getTotalHits();
@@ -274,7 +275,9 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
     private List<ESFacet> getPhenotypeStats(Long experimentId) {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex()).setTypes("phenotype").setSize(0);
-        FilterBuilder filter = FilterBuilders.boolFilter().must(FilterBuilders.termFilter("_parent", experimentId.toString()), esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")));
+        QueryBuilder filter = QueryBuilders.boolQuery()
+                .filter(QueryBuilders.termQuery("_parent", experimentId.toString()))
+                .filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")));
         //TODO change mapping so that term_name is not analyzed
         request.setQuery(QueryBuilders.constantScoreQuery(filter))
                 .addAggregation(AggregationBuilders.terms("TO").field("to_accession.term_name.raw"))
@@ -284,14 +287,14 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
         Terms searchFacet = response.getAggregations().get("TO");
         List<ESTermsFacet> terms = Lists.newArrayList();
         for (Terms.Bucket bucket : searchFacet.getBuckets()) {
-            terms.add(new ESTermsFacet(bucket.getKey(), bucket.getDocCount()));
+            terms.add(new ESTermsFacet(bucket.getKeyAsString(), bucket.getDocCount()));
         }
         facets.add(new ESFacet("TO", 0, terms.size(), 0, terms));
         // TO
         searchFacet = response.getAggregations().get("EO");
         terms = Lists.newArrayList();
         for (Terms.Bucket bucket : searchFacet.getBuckets()) {
-            terms.add(new ESTermsFacet(bucket.getKey(), bucket.getDocCount()));
+            terms.add(new ESTermsFacet(bucket.getKeyAsString(), bucket.getDocCount()));
         }
         facets.add(new ESFacet("EO", 0, terms.size(), 0, terms));
         return facets;

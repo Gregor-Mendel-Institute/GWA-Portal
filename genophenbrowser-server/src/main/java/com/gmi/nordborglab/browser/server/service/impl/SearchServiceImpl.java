@@ -23,7 +23,7 @@ import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +55,7 @@ public class SearchServiceImpl implements SearchService {
         MultiSearchRequestBuilder requestBuilder = client.prepareMultiSearch();
 
         if (category == CATEGORY.DIVERSITY) {
-            FilterBuilder filter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
+            QueryBuilder filter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
 
             ExperimentSearchProcessor experimentProcessor = new ExperimentSearchProcessor(
                     term, filter);
@@ -184,7 +184,7 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public SearchFacetPage searchByFilter(String query, ConstEnums.FILTERS filter) {
         SearchFacetPage searchFacetPage = null;
-        FilterBuilder aclFilter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
+        QueryBuilder aclFilter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"));
         SearchProcessor searchProcessor = getSearchProcessorFromFilter(query, filter, aclFilter);
         if (searchProcessor != null) {
             SearchRequestBuilder request = searchProcessor.getSearchBuilder(client.prepareSearch(esAclManager.getIndex()));
@@ -194,7 +194,7 @@ public class SearchServiceImpl implements SearchService {
         return searchFacetPage;
     }
 
-    private SearchProcessor getSearchProcessorFromFilter(String query, ConstEnums.FILTERS filter, FilterBuilder aclFilter) {
+    private SearchProcessor getSearchProcessorFromFilter(String query, ConstEnums.FILTERS filter, QueryBuilder aclFilter) {
         switch (filter) {
             case STUDY:
                 return new ExperimentSearchProcessor(query, aclFilter);
