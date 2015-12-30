@@ -1,5 +1,15 @@
 {
   "template": "gdpdm*",
+  "warmers" : {
+    "globalsearch" : {
+      "types" : [],
+        "source" : {
+          "query" : {
+             "match_all" : {}
+          }
+        }
+    }
+  },
   "settings": {
     "analysis": {
       "filter": {
