@@ -16,6 +16,7 @@ import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.maps.client.LoadApi;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.MotionChart;
 import com.google.gwt.visualization.client.visualizations.OrgChart;
@@ -104,6 +105,7 @@ public class BootstrapperImpl implements Bootstrapper {
 
             @Override
             protected void handleSuccess() {
+                RootPanel.getBodyElement().addClassName("loaded");
                 placeManager.revealCurrentPlace();
             }
         };
