@@ -56,184 +56,187 @@
             text-align: center;
         }
 
+        .container {
+            min-height: 800px;
+        }
+
     </ui:style>
-    <g:ScrollPanel>
-        <g:LayoutPanel>
-            <g:layer left="0" top="0" height="28em" right="0">
-                <g:LayoutPanel ui:field="topLeftPanel">
-                    <g:layer left="0" top="0" bottom="0" width="26em">
-                        <g:LayoutPanel>
-                            <g:layer top="5px" height="40px" left="0" right="0">
-                                <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="actionBarPanel">
-                                    <div class="{style.actionRow}">
-                                        <div class="{mainRes.style.actionIcon}">
-                                            <b:Tooltip placement="BOTTOM" title="Click to display download options">
-                                                <b:DropDown>
-                                                    <b:Anchor icon="DOWNLOAD" dataToggle="DROPDOWN"></b:Anchor>
-                                                    <b:DropDownMenu>
-                                                        <b:DropDownHeader>Download phenotypes</b:DropDownHeader>
-                                                        <b:AnchorListItem ui:field="navLinkPhenCSV">Phenotype (CSV)
-                                                        </b:AnchorListItem>
-                                                        <b:AnchorListItem ui:field="navLinkPhenJSON">Phenotype (JSON)
-                                                        </b:AnchorListItem>
-                                                        <b:Divider ui:field="downloadDivider"/>
-                                                        <b:DropDownHeader>Download GWAS</b:DropDownHeader>
-                                                        <b:AnchorListItem ui:field="navLinkPvalCSV">GWAS-Pvalues (CSV)
-                                                        </b:AnchorListItem>
-                                                        <b:AnchorListItem ui:field="navLinkPvalHDF5">GWAS-Pvalues
-                                                            (HDF5)
-                                                        </b:AnchorListItem>
-                                                        <b:AnchorListItem ui:field="navLinkPvalJSON">GWAS-Pvalues
-                                                            (JSON)
-                                                        </b:AnchorListItem>
-                                                        <b:Divider/>
-                                                        <b:DropDownHeader>Download Plots</b:DropDownHeader>
-                                                        <b:AnchorListItem ui:field="plotsLink">Download Plots
-                                                        </b:AnchorListItem>
-                                                    </b:DropDownMenu>
-                                                </b:DropDown>
-                                            </b:Tooltip>
-                                        </div>
-                                        <div class="{mainRes.style.actionIcon}">
-                                            <b:Tooltip placement="BOTTOM" title="Delete analysis">
-                                                <b:Anchor icon="TRASH" ui:field="delete"/>
-                                            </b:Tooltip>
-                                        </div>
-                                        <div class="{mainRes.style.actionIcon}">
-                                            <b:Tooltip placement="BOTTOM" title="Edit analysis">
-                                                <b:Anchor icon="EDIT" ui:field="edit"/>
-                                            </b:Tooltip>
-                                        </div>
+    <g:LayoutPanel addStyleNames="{style.container}" ui:field="container">
+        <g:layer left="0" top="0" height="29em" right="0">
+            <g:LayoutPanel ui:field="topLeftPanel">
+                <g:layer left="0" top="0" bottom="0" width="26em">
+                    <g:LayoutPanel>
+                        <g:layer top="5px" height="40px" left="0" right="0">
+                            <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="actionBarPanel">
+                                <div class="{style.actionRow}">
+                                    <div class="{mainRes.style.actionIcon}">
+                                        <b:Tooltip placement="BOTTOM" title="Click to display download options">
+                                            <b:DropDown>
+                                                <b:Anchor icon="DOWNLOAD" dataToggle="DROPDOWN"></b:Anchor>
+                                                <b:DropDownMenu>
+                                                    <b:DropDownHeader>Download phenotypes</b:DropDownHeader>
+                                                    <b:AnchorListItem ui:field="navLinkPhenCSV">Phenotype (CSV)
+                                                    </b:AnchorListItem>
+                                                    <b:AnchorListItem ui:field="navLinkPhenJSON">Phenotype (JSON)
+                                                    </b:AnchorListItem>
+                                                    <b:Divider ui:field="downloadDivider"/>
+                                                    <b:DropDownHeader>Download GWAS</b:DropDownHeader>
+                                                    <b:AnchorListItem ui:field="navLinkPvalCSV">GWAS-Pvalues (CSV)
+                                                    </b:AnchorListItem>
+                                                    <b:AnchorListItem ui:field="navLinkPvalHDF5">GWAS-Pvalues
+                                                        (HDF5)
+                                                    </b:AnchorListItem>
+                                                    <b:AnchorListItem ui:field="navLinkPvalJSON">GWAS-Pvalues
+                                                        (JSON)
+                                                    </b:AnchorListItem>
+                                                    <b:Divider/>
+                                                    <b:DropDownHeader>Download Plots</b:DropDownHeader>
+                                                    <b:AnchorListItem ui:field="plotsLink">Download Plots
+                                                    </b:AnchorListItem>
+                                                </b:DropDownMenu>
+                                            </b:DropDown>
+                                        </b:Tooltip>
+                                    </div>
+                                    <div class="{mainRes.style.actionIcon}">
+                                        <b:Tooltip placement="BOTTOM" title="Delete analysis">
+                                            <b:Anchor icon="TRASH" ui:field="delete"/>
+                                        </b:Tooltip>
+                                    </div>
+                                    <div class="{mainRes.style.actionIcon}">
+                                        <b:Tooltip placement="BOTTOM" title="Edit analysis">
+                                            <b:Anchor icon="EDIT" ui:field="edit"/>
+                                        </b:Tooltip>
+                                    </div>
 
-                                    </div>
-                                </g:HTMLPanel>
-                            </g:layer>
-                            <g:layer top="47px" bottom="0" left="0" right="0">
-                                <g:FlowPanel>
-                                    <ed:StudyDisplayEditor ui:field="studyDisplayEditor"/>
-                                </g:FlowPanel>
-                            </g:layer>
-                        </g:LayoutPanel>
-                    </g:layer>
-                    <g:layer left="27em" width="11em" top="0" bottom="0">
-                        <g:LayoutPanel>
-                            <g:layer top="5px" height="40px" left="0" right="0">
-                                <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
-                                    <div style="text-align:center;">GWAS Status</div>
-                                </g:HTMLPanel>
-                            </g:layer>
-                            <g:layer top="47px" bottom="0" left="0" right="0">
-                                <g:HTMLPanel addStyleNames="{style.gwas_container}" ui:field="gwasJobContainer">
-                                    <div style="margin-top:20px">
-                                        <g:Label ui:field="taskLb" addStyleNames="{style.job_task}"/>
-                                    </div>
-                                    <div style="margin-top:20px;padding-left:21.5px;">
-                                        <gui:CircularProgressBar ui:field="jobProgress" size="100" circleSize="10"
-                                                                 progress="70"/>
-                                    </div>
-                                    <div style="margin-top:20px;margin-left: 25px;">
-                                        <b:DropDown>
-                                            <b:Button ui:field="jobNABtn" text="N/A"
-                                                      addStyleNames="{style.gwas_dropdown}"
-                                                      dataToggle="DROPDOWN"></b:Button>
-                                            <b:DropDownMenu>
-                                                <b:AnchorListItem icon="UPLOAD" ui:field="uploadBtn">Upload
-                                                </b:AnchorListItem>
-                                                <b:AnchorListItem icon="CLOUD" ui:field="startBtn">Run analysis
-                                                </b:AnchorListItem>
-                                            </b:DropDownMenu>
-                                        </b:DropDown>
-                                        <b:DropDown>
-                                            <b:Button ui:field="jobERRORBtn" text="Error" type="DANGER"
-                                                      addStyleNames="{style.gwas_dropdown}"
-                                                      dataToggle="DROPDOWN"></b:Button>
-                                            <b:DropDownMenu>
-                                                <b:AnchorListItem icon="REMOVE" ui:field="deleteJobBtn">Delete
-                                                </b:AnchorListItem>
-                                                <b:AnchorListItem icon="CLOUD" ui:field="rerunJobBtn">Re-run
-                                                </b:AnchorListItem>
-                                            </b:DropDownMenu>
-                                        </b:DropDown>
-                                        <b:DropDown>
-                                            <b:Button ui:field="jobFinishedBtn" text="Finished" type="SUCCESS"
-                                                      addStyleNames="{style.gwas_dropdown}"
-                                                      dataToggle="DROPDOWN"></b:Button>
-                                            <b:DropDownMenu>
-                                                <b:AnchorListItem icon="REMOVE" ui:field="deleteFinishedJobBtn">Delete
-                                                </b:AnchorListItem>
-                                            </b:DropDownMenu>
-                                        </b:DropDown>
-                                        <b:Button active="false" enabled="false" type="WARNING" ui:field="jobWaitingBtn"
-                                                  text="Waiting"/>
-                                    </div>
-                                    <div class="{style.job_dates}">
-                                        <g:Label ui:field="modifiedLb"/>
-                                        <g:Label ui:field="createdLb"/>
-                                    </div>
-                                </g:HTMLPanel>
-                            </g:layer>
-                        </g:LayoutPanel>
-                    </g:layer>
-                    <g:layer left="39em" top="0" bottom="0" right="0">
-                        <g:LayoutPanel>
-                            <g:layer top="5px" height="40px" left="0" right="0">
-                                <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="topRightPanel">
-                                    <div class="{mainRes.style.chartIconContainer}">
-                                        <g:HTMLPanel ui:field="geoChartBtnContainer"
-                                                     addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
-                                            <b:Tooltip title="Shows the geographic distribution on a map"
-                                                       placement="BOTTOM">
-                                                <g:Button ui:field="geoChartBtn"
-                                                          addStyleNames="{mainRes.style.earth} {mainRes.style.iconItem}"/>
-                                            </b:Tooltip>
-                                        </g:HTMLPanel>
-                                        <g:HTMLPanel ui:field="pieChartBtnContainer"
-                                                     addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
-                                            <b:Tooltip title="Shows the geographic distribution as a piechart"
-                                                       placement="BOTTOM">
-                                                <g:Button ui:field="pieChartBtn"
-                                                          addStyleNames="{mainRes.style.piechart} {mainRes.style.iconItem}"/>
-                                            </b:Tooltip>
-                                        </g:HTMLPanel>
-                                    </div>
-                                </g:HTMLPanel>
-                            </g:layer>
-                            <g:layer top="47px" bottom="0" left="0" right="0">
-                                <g:SimpleLayoutPanel ui:field="upperChartContainer"/>
-                            </g:layer>
-                        </g:LayoutPanel>
-                    </g:layer>
-                </g:LayoutPanel>
-            </g:layer>
-            <g:layer top="30em" height="30em" left="0" right="0">
-                <g:LayoutPanel>
-                    <g:layer top="0" height="40px" left="0" right="0">
-                        <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="lowerPanel">
-                            <div class="{mainRes.style.chartIconContainer}">
-                                <g:HTMLPanel ui:field="columnChartBtnContainer"
-                                             addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
-                                    <b:Tooltip title="Shows the phenotype distrubtion as a histogram"
-                                               placement="BOTTOM">
-                                        <g:Button ui:field="columnChartBtn"
-                                                  addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}"/>
-                                    </b:Tooltip>
-                                </g:HTMLPanel>
-                                <g:HTMLPanel ui:field="motionChartBtnContainer"
-                                             addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
-                                    <b:Tooltip title="Shows the phenotype values in a motionchart" placement="BOTTOM">
-                                        <g:Button ui:field="motionChartBtn"
-                                                  addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}"/>
-                                    </b:Tooltip>
-                                </g:HTMLPanel>
-                            </div>
-                        </g:HTMLPanel>
-                    </g:layer>
-                    <g:layer top="40px" bottom="0" left="0" right="0">
-                        <g:SimpleLayoutPanel ui:field="lowerChartContainer"/>
-                    </g:layer>
-                </g:LayoutPanel>
+                                </div>
+                            </g:HTMLPanel>
+                        </g:layer>
+                        <g:layer top="47px" bottom="0" left="0" right="0">
+                            <g:FlowPanel>
+                                <ed:StudyDisplayEditor ui:field="studyDisplayEditor"/>
+                            </g:FlowPanel>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+                <g:layer left="27em" width="11em" top="0" bottom="0">
+                    <g:LayoutPanel>
+                        <g:layer top="5px" height="40px" left="0" right="0">
+                            <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}">
+                                <div style="text-align:center;">GWAS Status</div>
+                            </g:HTMLPanel>
+                        </g:layer>
+                        <g:layer top="47px" bottom="0" left="0" right="0">
+                            <g:HTMLPanel addStyleNames="{style.gwas_container}" ui:field="gwasJobContainer">
+                                <div style="margin-top:20px">
+                                    <g:Label ui:field="taskLb" addStyleNames="{style.job_task}"/>
+                                </div>
+                                <div style="margin-top:20px;padding-left:21.5px;">
+                                    <gui:CircularProgressBar ui:field="jobProgress" size="100" circleSize="10"
+                                                             progress="70"/>
+                                </div>
+                                <div style="margin-top:20px;margin-left: 25px;">
+                                    <b:DropDown>
+                                        <b:Button ui:field="jobNABtn" text="N/A"
+                                                  addStyleNames="{style.gwas_dropdown}"
+                                                  dataToggle="DROPDOWN"></b:Button>
+                                        <b:DropDownMenu>
+                                            <b:AnchorListItem icon="UPLOAD" ui:field="uploadBtn">Upload
+                                            </b:AnchorListItem>
+                                            <b:AnchorListItem icon="CLOUD" ui:field="startBtn">Run analysis
+                                            </b:AnchorListItem>
+                                        </b:DropDownMenu>
+                                    </b:DropDown>
+                                    <b:DropDown>
+                                        <b:Button ui:field="jobERRORBtn" text="Error" type="DANGER"
+                                                  addStyleNames="{style.gwas_dropdown}"
+                                                  dataToggle="DROPDOWN"></b:Button>
+                                        <b:DropDownMenu>
+                                            <b:AnchorListItem icon="REMOVE" ui:field="deleteJobBtn">Delete
+                                            </b:AnchorListItem>
+                                            <b:AnchorListItem icon="CLOUD" ui:field="rerunJobBtn">Re-run
+                                            </b:AnchorListItem>
+                                        </b:DropDownMenu>
+                                    </b:DropDown>
+                                    <b:DropDown>
+                                        <b:Button ui:field="jobFinishedBtn" text="Finished" type="SUCCESS"
+                                                  addStyleNames="{style.gwas_dropdown}"
+                                                  dataToggle="DROPDOWN"></b:Button>
+                                        <b:DropDownMenu>
+                                            <b:AnchorListItem icon="REMOVE" ui:field="deleteFinishedJobBtn">Delete
+                                            </b:AnchorListItem>
+                                        </b:DropDownMenu>
+                                    </b:DropDown>
+                                    <b:Button active="false" enabled="false" type="WARNING" ui:field="jobWaitingBtn"
+                                              text="Waiting"/>
+                                </div>
+                                <div class="{style.job_dates}">
+                                    <g:Label ui:field="modifiedLb"/>
+                                    <g:Label ui:field="createdLb"/>
+                                </div>
+                            </g:HTMLPanel>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+                <g:layer left="39em" top="0" bottom="0" right="0">
+                    <g:LayoutPanel>
+                        <g:layer top="5px" height="40px" left="0" right="0">
+                            <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="topRightPanel">
+                                <div class="{mainRes.style.chartIconContainer}">
+                                    <g:HTMLPanel ui:field="geoChartBtnContainer"
+                                                 addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
+                                        <b:Tooltip title="Shows the geographic distribution on a map"
+                                                   placement="BOTTOM">
+                                            <g:Button ui:field="geoChartBtn"
+                                                      addStyleNames="{mainRes.style.earth} {mainRes.style.iconItem}"/>
+                                        </b:Tooltip>
+                                    </g:HTMLPanel>
+                                    <g:HTMLPanel ui:field="pieChartBtnContainer"
+                                                 addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
+                                        <b:Tooltip title="Shows the geographic distribution as a piechart"
+                                                   placement="BOTTOM">
+                                            <g:Button ui:field="pieChartBtn"
+                                                      addStyleNames="{mainRes.style.piechart} {mainRes.style.iconItem}"/>
+                                        </b:Tooltip>
+                                    </g:HTMLPanel>
+                                </div>
+                            </g:HTMLPanel>
+                        </g:layer>
+                        <g:layer top="47px" bottom="0" left="0" right="0">
+                            <g:SimpleLayoutPanel ui:field="upperChartContainer"/>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:layer>
+            </g:LayoutPanel>
+        </g:layer>
+        <g:layer top="29em" bottom="0" left="0" right="0">
+            <g:LayoutPanel>
+                <g:layer top="0" height="40px" left="0" right="0">
+                    <g:HTMLPanel addStyleNames="{mainRes.style.chartActionRow}" ui:field="lowerPanel">
+                        <div class="{mainRes.style.chartIconContainer}">
+                            <g:HTMLPanel ui:field="columnChartBtnContainer"
+                                         addStyleNames=" {mainRes.style.iconContainer_active}  {mainRes.style.iconContainer}">
+                                <b:Tooltip title="Shows the phenotype distrubtion as a histogram"
+                                           placement="BOTTOM">
+                                    <g:Button ui:field="columnChartBtn"
+                                              addStyleNames="{mainRes.style.columnchart} {mainRes.style.iconItem}"/>
+                                </b:Tooltip>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="motionChartBtnContainer"
+                                         addStyleNames="{mainRes.style.iconContainer_right} {mainRes.style.iconContainer}">
+                                <b:Tooltip title="Shows the phenotype values in a motionchart" placement="BOTTOM">
+                                    <g:Button ui:field="motionChartBtn"
+                                              addStyleNames="{mainRes.style.motionchart} {mainRes.style.iconItem}"/>
+                                </b:Tooltip>
+                            </g:HTMLPanel>
+                        </div>
+                    </g:HTMLPanel>
+                </g:layer>
+                <g:layer top="40px" bottom="0" left="5px" right="0">
+                    <g:SimpleLayoutPanel ui:field="lowerChartContainer"/>
+                </g:layer>
+            </g:LayoutPanel>
 
-            </g:layer>
-        </g:LayoutPanel>
-    </g:ScrollPanel>
+        </g:layer>
+    </g:LayoutPanel>
+
 </ui:UiBinder>
