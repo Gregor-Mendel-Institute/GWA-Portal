@@ -43,7 +43,7 @@ public class TaxonomyServiceImpl implements TaxonomyService {
         List<AppStat> stats = Lists.newArrayList();
 
         // Get accessions
-        long passportCount = taxonomy.getPassports().size();
+        long passportCount = taxonomyRepository.countPassports(taxonomy.getId());
         stats.add(new AppStat(AppStatProxy.STAT.PASSPORT, passportCount));
 
         // Get Stocks
