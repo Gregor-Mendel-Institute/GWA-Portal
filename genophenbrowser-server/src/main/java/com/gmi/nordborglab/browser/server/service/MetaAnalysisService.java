@@ -25,11 +25,11 @@ import java.util.List;
  */
 
 public interface MetaAnalysisService {
-    public MetaSNPAnalysisPage findAllAnalysisForRegion(int startPos, int endPost, String chr, int start, int size, List<FilterItem> filterItems);
+    MetaSNPAnalysisPage findAllAnalysisForRegion(int startPos, int endPost, String chr, int start, int size, List<FilterItem> filterItems);
 
-    public List<ESFacet> findMetaStats(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems);
+    List<ESFacet> findMetaStats(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems);
 
-    public MetaSNPAnalysisPage findTopAnalysis(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems, int start, int size);
+    MetaSNPAnalysisPage findTopAnalysis(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems, int start, int size);
 
     CandidateGeneListPage findCandidateGeneLists(ConstEnums.TABLE_FILTER filter, String searchString, int page, int size);
 
@@ -54,7 +54,7 @@ public interface MetaAnalysisService {
     @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#candidateGeneList,'EDIT') or hasPermission(#candidateGeneList,'ADMINISTRATION'))")
     void removeGeneFromCandidateGeneList(CandidateGeneList candidateGeneList, String geneId);
 
-    @PreAuthorize("hasRole('ROLE_USER') and (hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList','READ'))")
+    @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList','READ')")
     List<Gene> getGenesInCandidateGeneListEnrichment(Long id);
 
     @PreAuthorize("hasPermission(#entity,'READ')")
