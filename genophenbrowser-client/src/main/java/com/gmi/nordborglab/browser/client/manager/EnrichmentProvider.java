@@ -21,7 +21,7 @@ public interface EnrichmentProvider {
 
     void setEntity(SecureEntityProxy study);
 
-    public static enum TYPE {CANDIDATE_GENE_LIST, STUDY, PHENOTYPE, EXPERIMENT;}
+    enum TYPE {CANDIDATE_GENE_LIST, STUDY, PHENOTYPE, EXPERIMENT;}
 
     void fetchData(ConstEnums.ENRICHMENT_FILTER filter, String searchString, int start, int size, Receiver<CandidateGeneListEnrichmentPageProxy> receiver);
 

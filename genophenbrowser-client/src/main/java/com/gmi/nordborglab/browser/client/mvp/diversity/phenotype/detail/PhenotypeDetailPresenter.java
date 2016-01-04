@@ -78,7 +78,7 @@ public class PhenotypeDetailPresenter
 
         void showActionBtns(boolean show);
 
-        void showDeletePopup(boolean show);
+        void showDeletePopup();
 
         void setStatisticTypes(List<StatisticTypeProxy> statisticTypes);
 
@@ -260,7 +260,7 @@ public class PhenotypeDetailPresenter
 
     @Override
     public void onDelete() {
-        getView().showDeletePopup(true);
+        getView().showDeletePopup();
 
     }
 
@@ -273,11 +273,10 @@ public class PhenotypeDetailPresenter
                 fireEvent(new LoadingIndicatorEvent(false));
                 PlaceRequest request = null;
                 if (placeManager.getHierarchyDepth() <= 1) {
-                    request = new PlaceRequest.Builder().nameToken(NameTokens.studyoverview).build();
+                    request = new PlaceRequest.Builder().nameToken(NameTokens.phenotypeoverview).build();
                 } else {
                     request = placeManager.getCurrentPlaceHierarchy().get(placeManager.getHierarchyDepth() - 2);
                 }
-                getView().showDeletePopup(false);
                 phenotype = null;
                 placeManager.revealPlace(request);
             }

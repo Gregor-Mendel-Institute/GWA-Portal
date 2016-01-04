@@ -10,7 +10,7 @@
 
     <!-- EhCache library setup -->
     <!-- shared=true required because otherwise it creates two separate CacheManagers one for spring and one for jpa -->
-    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:shared="true"
+    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:shared="false"
           p:acceptExisting="true"
           p:configLocation="classpath:META-INF/ehcache.xml"/>
 

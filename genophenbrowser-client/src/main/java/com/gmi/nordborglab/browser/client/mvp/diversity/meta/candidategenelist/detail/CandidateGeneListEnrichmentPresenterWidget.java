@@ -11,7 +11,9 @@ import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -25,6 +27,7 @@ import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.PresenterWidget;
 import com.gwtplatform.mvp.client.View;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,7 +105,16 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
         getView().setUiHandlers(this);
         this.dataProvider = dataProvider;
         facetSearchPresenterWidget.setDefaultFilter(ConstEnums.ENRICHMENT_FILTER.FINISHED.name());
-        facetSearchPresenterWidget.initFixedFacets(FACET_MAP);
+        if (dataProvider.getViewType() == EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST) {
+            facetSearchPresenterWidget.initFixedFacets(FACET_MAP);
+        } else {
+            facetSearchPresenterWidget.initFixedFacets(Maps.filterEntries(FACET_MAP, new Predicate<Map.Entry<String, String>>() {
+                @Override
+                public boolean apply(@Nullable Map.Entry<String, String> input) {
+                    return !ConstEnums.ENRICHMENT_FILTER.AVAILABLE.name().equals(input.getKey());
+                }
+            }));
+        }
     }
 
     @Override

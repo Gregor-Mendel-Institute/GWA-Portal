@@ -768,7 +768,8 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 }
             }), Predicates.notNull()));
             return new CandidateGeneListEnrichmentPage(enrichments, new PageRequest(page, size), (enrichments.size() == 0 ? 0 : response.getHits().getTotalHits()), null);
-        } else if (entity instanceof Study) {
+        } //TODO replace with a SQL join query.
+        /*else if (entity instanceof Study) {
             List<String> ids = findCandidateListsCountForStudy(entity.getId());
             SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
             request.setTypes("candidate_gene_list").setNoFields().setSize(size).setFrom(page);
@@ -801,7 +802,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 }
             }), Predicates.notNull()));
             return new CandidateGeneListEnrichmentPage(enrichments, new PageRequest(page, size), (enrichments.size() == 0 ? 0 : response.getHits().getTotalHits()), null);
-        }
+        }*/
         return null;
     }
 
@@ -910,41 +911,12 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         if (entity instanceof CandidateGeneList) {
             filterFacet = aggregations.get(ConstEnums.ENRICHMENT_FILTER.AVAILABLE.name());
             facets.add(new ESFacet(ConstEnums.ENRICHMENT_FILTER.AVAILABLE.name(), 0, filterFacet.getDocCount(), 0, null));
-        } else if (entity instanceof Study) {
-            long count = findAvailableCandidateGeneListEnrichmentsForStudyCount(entity.getId());
-            facets.add(new ESFacet(ConstEnums.ENRICHMENT_FILTER.AVAILABLE.name(), 0, count, 0, null));
         }
         return facets;
     }
 
 
-    private long findAvailableCandidateGeneListEnrichmentsForStudyCount(Long studyId) {
-        List<String> ids = findCandidateListsCountForStudy(studyId);
-        SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
-        request.setTypes("candidate_gene_list").setNoFields().setSize(0);
-        request.setQuery(QueryBuilders.boolQuery()
-                .filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
-                .mustNot(QueryBuilders.idsQuery().addIds(ids.toArray(new String[]{}))));
-        SearchResponse response = request.execute().actionGet();
-        return response.getHits().getTotalHits();
-    }
 
-    private List<String> findCandidateListsCountForStudy(Long studyId) {
-        int count = (int) candidateGeneListEnrichmentsRepository.count();
-        SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
-
-        request.setTypes("candidate_gene_list_enrichment").addField("candidategenelist.id").setSize(count)
-                .setQuery(QueryBuilders.boolQuery()
-                        .filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"), "candidate_gene_list_acl"))
-                        .filter(QueryBuilders.termQuery("study_.id", studyId)));
-        SearchResponse response = request.execute().actionGet();
-        List<String> ids = Lists.newArrayList();
-        for (SearchHit hit : response.getHits()) {
-            Integer id = (Integer) hit.getFields().get("candidategenelist.id").getValue();
-            ids.add(String.valueOf(id));
-        }
-        return ids;
-    }
 
     private QueryBuilder getAclFilterForEnrichment(SecureEntity entity, boolean isInEnrichment) {
         List<String> permissions = Lists.newArrayList("read");

@@ -82,7 +82,7 @@ public class ExperimentDetailPresenter
 
         void showEditPopup(boolean show);
 
-        void showDeletePopup(boolean show);
+        void showDeletePopup();
 
         void showShareBtn(boolean show);
 
@@ -283,7 +283,7 @@ public class ExperimentDetailPresenter
 
     @Override
     public void onDelete() {
-        getView().showDeletePopup(true);
+        getView().showDeletePopup();
     }
 
     @Override
@@ -407,7 +407,6 @@ public class ExperimentDetailPresenter
                 } else {
                     request = placeManager.getCurrentPlaceHierarchy().get(placeManager.getHierarchyDepth() - 2);
                 }
-                getView().showDeletePopup(false);
                 experiment = null;
                 placeManager.revealPlace(request);
             }

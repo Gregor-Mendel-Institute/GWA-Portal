@@ -11,7 +11,7 @@ import java.util.List;
 public interface TaxonomyRepository extends JpaRepository<Taxonomy, Long> {
 
     @Query("SELECT assay from Taxonomy t JOIN t.passports AS p JOIN p.alleles AS a JOIN a.alleleAssay AS assay WHERE t.id = :taxonomyId group by assay")
-    public List<AlleleAssay> findAlleleAssaysForTaxonomy(@Param("taxonomyId") Long taxonomyId);
+    List<AlleleAssay> findAlleleAssaysForTaxonomy(@Param("taxonomyId") Long taxonomyId);
 
     @Query("SELECT s,COUNT(p) from Taxonomy t JOIN t.passports as p JOIN p.sampstat as s WHERE t.id =  :taxonomyId GROUP BY s ORDER BY COUNT(p)")
     List<Object[]> countPassportsPerSampStat(@Param("taxonomyId") Long taxonomyId);
@@ -25,9 +25,13 @@ public interface TaxonomyRepository extends JpaRepository<Taxonomy, Long> {
     @Query("SELECT g.comments,COUNT(s) from Taxonomy t JOIN t.passports as p JOIN p.stocks AS s JOIN s.generation as g  WHERE t.id = :taxonomyId  GROUP BY g.comments ORDER BY COUNT(p)")
     List<Object[]> countStocksPerGeneration(@Param("taxonomyId") Long taxonomyId);
 
+    @Query("SELECT COUNT(p) from Passport p  WHERE p.taxonomy.id=:taxonomyId")
+    long countPassports(@Param("taxonomyId") Long taxonomyId);
+
     @Query("SELECT COUNT(s) FROM Taxonomy t JOIN t.passports as p JOIN p.stocks s WHERE t.id=:taxonomyId")
     long countStocks(@Param("taxonomyId") Long taxonomyId);
 
-    @Query("SELECT COUNT(DISTINCT uom) FROM Taxonomy t JOIN t.passports as p JOIN p.stocks s JOIN s.obsUnits as o JOIN o.traits as tr JOIN tr.traitUom uom WHERE t.id=:taxonomyId")
+    @Query("SELECT COUNT(uom.id) FROM TraitUom uom WHERE uom.id in (SELECT DISTINCT tr.traitUom.id FROM Trait tr JOIN tr.obsUnit o JOIN o.stock s JOIN s.passport p WHERE p.taxonomy.id=:taxonomyId)")
     long countPhenotypes(@Param("taxonomyId") Long taxonomyId);
 }
+

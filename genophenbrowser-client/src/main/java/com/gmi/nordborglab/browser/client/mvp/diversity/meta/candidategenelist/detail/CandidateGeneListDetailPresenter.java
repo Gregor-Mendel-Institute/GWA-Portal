@@ -75,7 +75,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
 
         void showEditPopup(boolean show);
 
-        void showDeletePopup(boolean show);
+        void showDeletePopup();
 
         void setShareTooltip(String toopltipMsg, IconType icon);
 
@@ -356,7 +356,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
 
     @Override
     public void onDelete() {
-        getView().showDeletePopup(true);
+        getView().showDeletePopup();
     }
 
     @Override
@@ -372,7 +372,6 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                 } else {
                     request = placeManager.getCurrentPlaceHierarchy().get(placeManager.getHierarchyDepth() - 2);
                 }
-                getView().showDeletePopup(false);
                 candidateGeneList = null;
                 placeManager.revealPlace(request);
                 //TODO fire event to refresh the list

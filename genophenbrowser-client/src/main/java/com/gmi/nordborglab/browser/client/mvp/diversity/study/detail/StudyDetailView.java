@@ -169,6 +169,8 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     HTMLPanel topRightPanel;
     @UiField
     HTMLPanel lowerPanel;
+    @UiField
+    LayoutPanel container;
 
 
     @Inject
@@ -229,7 +231,6 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         topRightPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         lowerPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
-
 
         Map<Range<Integer>, String> colorRanges = ImmutableMap.<Range<Integer>, String>builder()
                 .put(Range.closedOpen(0, 1), "rgba(0,0,0,0.4)")
@@ -356,6 +357,8 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
             return;
         drawUpperCharts();
         drawLowerCharts();
+        // can't be in costructor because getParentElement() is null
+        container.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.AUTO);
     }
 
 
@@ -555,7 +558,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     }
 
     @Override
-    public void showDeletePopup(boolean show) {
+    public void showDeletePopup() {
         Bootbox.dialog(deletePopup);
     }
 

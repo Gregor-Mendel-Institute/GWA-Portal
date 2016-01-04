@@ -501,7 +501,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     }
 
     @Override
-    public void showDeletePopup(boolean show) {
+    public void showDeletePopup() {
         Bootbox.dialog(deletePopup);
     }
 
