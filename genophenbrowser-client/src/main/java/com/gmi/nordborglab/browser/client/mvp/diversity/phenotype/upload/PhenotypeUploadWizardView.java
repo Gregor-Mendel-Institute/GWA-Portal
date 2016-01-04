@@ -402,7 +402,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     private final PhenotypeUploadDataCardCell phenotypeUploadDataCard;
     private static final String restURL = "/provider/phenotype/upload";
     private static final String restISATABURL = "/provider/isatab/upload";
-    private static final List<String> csvMimeTypes = Lists.newArrayList("text/txt", "text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
+    private static final List<String> csvMimeTypes = Lists.newArrayList("text/plain", "text/txt", "text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
     private final List<String> allowedISAExtensions = Lists.newArrayList("application/zip", "application/x-gzip");
     private List<String> headerColumns = ImmutableList.of("accessionid", "Phenotype1", "Phenotype2", "Phenotype3", "PhenotypeN");
     private List<String> defaultValues = ImmutableList.of("6909", "12.2", "-", "12.23", "12.5");
