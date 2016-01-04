@@ -484,7 +484,7 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     }
 
     @Override
-    public void showDeletePopup(boolean show) {
+    public void showDeletePopup() {
         Bootbox.dialog(deletePopup);
     }
 }

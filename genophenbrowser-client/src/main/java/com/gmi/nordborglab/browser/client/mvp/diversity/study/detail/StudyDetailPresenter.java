@@ -71,7 +71,7 @@ public class StudyDetailPresenter extends
 
         void showEditPopup(boolean show);
 
-        void showDeletePopup(boolean show);
+        void showDeletePopup();
 
         void setStudyId(Long id);
     }
@@ -309,7 +309,7 @@ public class StudyDetailPresenter extends
 
     @Override
     public void onDelete() {
-        getView().showDeletePopup(true);
+        getView().showDeletePopup();
 
     }
 
@@ -355,7 +355,6 @@ public class StudyDetailPresenter extends
                 } else {
                     request = placeManager.getCurrentPlaceHierarchy().get(placeManager.getHierarchyDepth() - 2);
                 }
-                getView().showDeletePopup(false);
                 study = null;
                 placeManager.revealPlace(request);
             }

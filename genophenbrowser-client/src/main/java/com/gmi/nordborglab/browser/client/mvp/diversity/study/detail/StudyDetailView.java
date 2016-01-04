@@ -555,7 +555,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     }
 
     @Override
-    public void showDeletePopup(boolean show) {
+    public void showDeletePopup() {
         Bootbox.dialog(deletePopup);
     }
 
