@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
@@ -53,7 +55,7 @@ public class RegistrationController {
 
     // BindingResult must come after Registration: http://stackoverflow.com/questions/15622098/how-do-i-display-a-user-friendly-error-when-spring-is-unable-to-validate-a-model
     @RequestMapping(method = RequestMethod.POST)
-    public String processForm(@Valid @ModelAttribute(value = "registration") Registration registration, BindingResult result, WebRequest request) {
+    public String processForm(@Valid @ModelAttribute(value = "registration") Registration registration, BindingResult result, WebRequest request, HttpServletRequest servletRequest) {
         verifyBinding(result);
         if (result.hasErrors()) {
             return "registrationform";
@@ -61,8 +63,11 @@ public class RegistrationController {
         try {
             AppUser user = userService.registerUserIfValid(registration, !result.hasErrors());
             providerSignInUtils.doPostSignUp(user.getUsername(), request);
+            servletRequest.login(user.getUsername(), registration.getPassword());
         } catch (DuplicateRegistrationException e) {
             result.rejectValue("email", "not.unique");
+        } catch (ServletException ex) {
+            ex.printStackTrace();
         }
         // because of  http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html#mvc-redirecting
         return "redirect:/";
