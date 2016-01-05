@@ -207,7 +207,7 @@ public class TraitUomServiceImpl extends WebApplicationObjectSupport implements 
 
     @Override
     public TraitUomPage findAll(Long experimentId, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        SearchResponse response = esSearcher.search(filter, experimentId, false, new String[]{"local_trait_name^3.5", "local_trait_name.partial^1.5", "trait_protocol", "to_accession.term_id^3.5", "to_accession.term_name^1.5", "eo_accession.term_id^3.5", "eo_accession.term_name^1.5", "owner.name", "experiment.name"}, searchString, TraitUom.ES_TYPE, start, size);
+        SearchResponse response = esSearcher.search(filter, experimentId, Experiment.ES_TYPE, false, new String[]{"local_trait_name^3.5", "local_trait_name.partial^1.5", "trait_protocol", "to_accession.term_id^3.5", "to_accession.term_name^1.5", "eo_accession.term_id^3.5", "eo_accession.term_name^1.5", "owner.name", "experiment.name"}, searchString, TraitUom.ES_TYPE, start, size);
         List<Long> idsToFetch = EsSearcher.getIdsFromResponse(response);
         List<TraitUom> resultsFromDb = traitUomRepository.findAll(idsToFetch);
         //extract facets

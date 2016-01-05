@@ -172,7 +172,7 @@ public class HDF5GWASDataService implements GWASDataService {
 
     @Override
     public GWASResultPage findAllGWASResults(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        SearchResponse response = esSearcher.search(filter, null, true, new String[]{"name", "name.partial", "comments", "type", "owner.name"}, searchString, "gwasviewer", start, size);
+        SearchResponse response = esSearcher.search(filter, true, new String[]{"name", "name.partial", "comments", "type", "owner.name"}, searchString, "gwasviewer", start, size);
         Iterable<Long> idsToFetch = EsSearcher.getIdsFromResponse(response);
         List<GWASResult> results = gwasResultRepository.findAll(idsToFetch);
         Iterable<GWASResult> gwasResultsFiltered = aclManager.filterByAcl(results, Lists.newArrayList(CustomPermission.READ));

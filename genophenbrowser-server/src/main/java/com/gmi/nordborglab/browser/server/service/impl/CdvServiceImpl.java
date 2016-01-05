@@ -195,7 +195,7 @@ public class CdvServiceImpl implements CdvService {
 
     @Override
     public StudyPage findAll(Long phenotypeId, ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        SearchResponse response = esSearcher.search(filter, phenotypeId, false, new String[]{"name^3.5", "name.partial^1.5", "protocol.analysis_method^3.5", "genotype.name^1.5", "genotype.producer", "owner.name", "experiment.name", "phenotype.name"}, searchString, Study.ES_TYPE, start, size);
+        SearchResponse response = esSearcher.search(filter, phenotypeId, TraitUom.ES_TYPE, false, new String[]{"name^3.5", "name.partial^1.5", "protocol.analysis_method^3.5", "genotype.name^1.5", "genotype.producer", "owner.name", "experiment.name", "phenotype.name"}, searchString, Study.ES_TYPE, start, size);
         List<Long> idsToFetch = EsSearcher.getIdsFromResponse(response);
         List<Study> resultsFromDb = studyRepository.findAll(idsToFetch);
         //extract facets

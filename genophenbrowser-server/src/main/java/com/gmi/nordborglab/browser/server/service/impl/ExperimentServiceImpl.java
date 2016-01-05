@@ -57,6 +57,8 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -169,7 +171,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
 
     @Override
     public ExperimentPage findByAclAndFilter(ConstEnums.TABLE_FILTER filter, String searchString, int page, int size) {
-        SearchResponse response = esSearcher.search(filter, null, false, new String[]{"name^3.5", "name.partial^1.5", "originator", "design", "comments^0.5", "owner.name"}, searchString, Experiment.ES_TYPE, page, size);
+        SearchResponse response = esSearcher.search(filter, false, new String[]{"name^3.5", "name.partial^1.5", "originator", "design", "comments^0.5", "owner.name"}, searchString, Experiment.ES_TYPE, page, size);
         List<Long> idsToFetch = EsSearcher.getIdsFromResponse(response);
         List<Experiment> resultsFromDb = experimentRepository.findAll(idsToFetch);
         //extract facets
@@ -266,7 +268,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
     private long countAnalysesByExperiment(Long experimentId) {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         QueryBuilder filter = QueryBuilders.boolQuery()
-                .filter(QueryBuilders.hasParentQuery("phenotype", QueryBuilders.termQuery("_parent", experimentId.toString())))
+                .filter(termQuery("experiment.id", experimentId))
                 .filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")));
         ConstantScoreQueryBuilder query = QueryBuilders.constantScoreQuery(filter);
         SearchResponse response = request.setTypes("study").setSize(0).setQuery(query).execute().actionGet();
@@ -276,7 +278,7 @@ public class ExperimentServiceImpl extends WebApplicationObjectSupport
     private List<ESFacet> getPhenotypeStats(Long experimentId) {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex()).setTypes("phenotype").setSize(0);
         QueryBuilder filter = QueryBuilders.boolQuery()
-                .filter(QueryBuilders.termQuery("_parent", experimentId.toString()))
+                .filter(termQuery("experiment.id", experimentId))
                 .filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")));
         //TODO change mapping so that term_name is not analyzed
         request.setQuery(QueryBuilders.constantScoreQuery(filter))

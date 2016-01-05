@@ -43,8 +43,11 @@ public class EsSearcher {
         }
     };
 
+    public SearchResponse search(ConstEnums.TABLE_FILTER filter, boolean noPublic, String[] fields, String searchString, String type, int start, int size) {
+        return search(filter, null, null, noPublic, fields, searchString, type, start, size);
+    }
 
-    public SearchResponse search(ConstEnums.TABLE_FILTER filter, Long parentId, boolean noPublic, String[] fields, String searchString, String type, int start, int size) {
+    public SearchResponse search(ConstEnums.TABLE_FILTER filter, Long parentId, String parentType, boolean noPublic, String[] fields, String searchString, String type, int start, int size) {
         SearchRequestBuilder request = esClient.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(start).setTypes(type).setNoFields();
 
@@ -53,8 +56,8 @@ public class EsSearcher {
         QueryBuilder preFilter = esAclManager.getAclFilterForPermissions(Lists.newArrayList("read"), noPublic);
 
         // filter by parentid
-        if (parentId != null) {
-            preFilter = QueryBuilders.boolQuery().filter(QueryBuilders.termQuery("_parent", parentId)).filter(preFilter);
+        if (parentId != null && parentType != null) {
+            preFilter = QueryBuilders.boolQuery().filter(QueryBuilders.hasParentQuery(parentType, QueryBuilders.termQuery("_id", parentId))).filter(preFilter);
         }
         QueryBuilder searchFilter = null;
         org.elasticsearch.index.query.QueryBuilder query = QueryBuilders.matchAllQuery();

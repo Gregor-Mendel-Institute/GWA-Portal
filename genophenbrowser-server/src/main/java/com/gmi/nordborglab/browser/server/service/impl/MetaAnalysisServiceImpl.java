@@ -521,7 +521,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
 
     @Override
     public CandidateGeneListPage findCandidateGeneLists(ConstEnums.TABLE_FILTER filter, String searchString, int page, int size) {
-        SearchResponse response = esSearcher.search(filter, null, false, new String[]{"name^3.5", "name.partial^1.5", "description"}, searchString, CandidateGeneList.ES_TYPE, page, size);
+        SearchResponse response = esSearcher.search(filter, false, new String[]{"name^3.5", "name.partial^1.5", "description"}, searchString, CandidateGeneList.ES_TYPE, page, size);
         List<Long> idsToFetch = EsSearcher.getIdsFromResponse(response);
         List<CandidateGeneList> resultsFromDb = candidateGeneListRepository.findAll(idsToFetch);
         //extract facets
