@@ -56,8 +56,11 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
-    <!--<context:property-placeholder
-            location="file:///${ext.prop.dir}persistence_${spring.profiles.active}.properties,classpath:file:///${ext.prop.dir}application_${spring.profiles.active}.properties"/>-->
+    <!-- required because property values are not processed if they are only imported in applicationContext.xml -->
+    <!-- http://stackoverflow.com/questions/11890544/spring-value-annotation-in-controller-class-not-evaluating-to-value-inside-pro -->
+    <!-- http://stackoverflow.com/questions/3652090/difference-between-applicationcontext-xml-and-spring-servlet-xml-in-spring -->
+    <context:property-placeholder
+            location="file:///${ext.prop.dir}persistence_${spring.profiles.active}.properties,file:///${ext.prop.dir}application_${spring.profiles.active}.properties"/>
 
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

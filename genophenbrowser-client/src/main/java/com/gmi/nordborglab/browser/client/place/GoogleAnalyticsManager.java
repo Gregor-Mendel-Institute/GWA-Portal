@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.place;
 
 import com.arcbees.analytics.shared.Analytics;
+import com.arcbees.analytics.shared.options.CreateOptions;
 import com.arcbees.analytics.shared.options.EventsOptions;
 import com.arcbees.analytics.shared.options.TimingOptions;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
@@ -118,5 +119,9 @@ public class GoogleAnalyticsManager {
         if (label != null)
             timing.userTimingLabel(label);
         timing.contentOptions().documentPath(getURLFromRequest()).go();
+    }
+
+    public CreateOptions create(String gaAccount) {
+        return analytics.create(gaAccount);
     }
 }

@@ -68,7 +68,7 @@ public class ClientModule extends AbstractPresenterModule {
         install(new ClientDispatchModule());
         install(new GinFactoryModuleBuilder().build(AssistedInjectionFactory.class));
         install(new ApplicationModule());
-        install(new AnalyticsModule.Builder("UA-26150757-2").build());
+        install(new AnalyticsModule.Builder("").autoCreate(false).build());
 
         bind(ResourceLoader.class).asEagerSingleton();
         bind(GoogleAnalyticsNavigationTracker.class).asEagerSingleton();

@@ -60,6 +60,7 @@ public class BootstrapperImpl implements Bootstrapper {
 
     @Override
     public void onBootstrap() {
+        analyticsManager.create(getGATrackingId()).go();
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
 
             @Override
@@ -149,16 +150,15 @@ public class BootstrapperImpl implements Bootstrapper {
         analyticsManager.setLoggedIn(currentUser.isLoggedIn());
     }
 
-    private String getAppData() {
-        String appData = null;
+    protected String getGATrackingId() {
         try {
             Dictionary data = Dictionary.getDictionary("appData");
             if (data != null) {
-                appData = data.get("data");
+                return data.get("gaTrackingId");
             }
         } catch (Exception e) {
         }
-        return appData;
+        return null;
     }
 
     protected String getUserData() {
