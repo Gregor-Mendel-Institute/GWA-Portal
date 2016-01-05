@@ -16,6 +16,7 @@ import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.GWASResult;
 import com.gmi.nordborglab.browser.server.domain.util.GWASRuntimeInfo;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListEnrichmentRepository;
+import com.gmi.nordborglab.browser.server.repository.TaxonomyRepository;
 import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeValue;
@@ -48,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
@@ -101,6 +103,9 @@ public class RestProviderController {
 
     @Resource
     private GWASDataService gwasDataService;
+
+    @Resource
+    private TaxonomyRepository taxonomyRepository;
 
     @Resource
     private CandidateGeneListEnrichmentRepository candidateGeneListEnrichmentRepository;
@@ -395,6 +400,12 @@ public class RestProviderController {
         DataTable dataTable = annotationDataService.getGenomeStatData(stats, chr);
         CharSequence json = JsonRenderer.renderDataTable(dataTable, true, false, true);
         return new GenomeStatsDataResultStatus("OK", "", json.toString());
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/taxonomy/{id}/image", produces = MediaType.IMAGE_PNG_VALUE)
+    @ResponseBody
+    byte[] getTaxonomyImage(@PathVariable("id") Long id) {
+        return taxonomyRepository.findOne(id).getImage();
     }
 
 

@@ -8,9 +8,11 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.persistence.AttributeOverride;
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -37,6 +39,9 @@ public class Taxonomy extends BaseEntity implements ESDocument {
     private String subtaxa;
     private String race;
     private String population;
+
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] image;
 
     @Column(name = "common_name")
     private String commonName;
@@ -182,5 +187,13 @@ public class Taxonomy extends BaseEntity implements ESDocument {
     @Override
     public String getParentId() {
         return null;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 }

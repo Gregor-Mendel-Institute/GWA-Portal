@@ -116,12 +116,6 @@ public interface MainResources extends ClientBundle {
     @Source("images/file_add.png")
     ImageResource file_add();
 
-    @Source("images/thaliana.png")
-    ImageResource getThalianaImage();
-
-    @Source("images/lyrata.png")
-    ImageResource getLyrataImage();
-
     @Source("images/cloud.png")
     ImageResource cloud();
 

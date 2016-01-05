@@ -7,7 +7,6 @@ import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -68,13 +67,7 @@ public class TaxonomyOverviewView extends ViewWithUiHandlers<TaxonomyOverviewUiH
             TaxonomyCard taxonomyCard = new TaxonomyCard();
             container.add(taxonomyCard);
             builder.put(taxonomyCard, taxonomy);
-            ImageResource imageRes = null;
-            if (taxonomy.getSpecies().equals("thaliana")) {
-                imageRes = mainRes.getThalianaImage();
-            } else {
-                imageRes = mainRes.getLyrataImage();
-            }
-            taxonomyCard.setTaxonomy(taxonomy, imageRes);
+            taxonomyCard.setTaxonomy(taxonomy);
             taxonomyCard.setClickhandler(taxonomyCardClickHandler);
         }
         cardToProxyMap = builder.build();

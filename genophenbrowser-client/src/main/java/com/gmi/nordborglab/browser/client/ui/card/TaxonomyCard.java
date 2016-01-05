@@ -5,14 +5,15 @@ import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
 import com.google.common.collect.ImmutableMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import java.util.List;
@@ -33,9 +34,8 @@ public class TaxonomyCard extends Composite {
     private static TaxonomyCardUiBinder ourUiBinder = GWT.create(TaxonomyCardUiBinder.class);
 
     private TaxonomyProxy taxonomy;
-    private ImageResource imageRes;
     @UiField
-    Image taxonomyImg;
+    ImageElement taxonomyImg;
     @UiField
     HeadingElement title;
     @UiField
@@ -63,16 +63,16 @@ public class TaxonomyCard extends Composite {
     }
 
 
-    public void setTaxonomy(TaxonomyProxy taxonomy, ImageResource imageRes) {
+    public void setTaxonomy(TaxonomyProxy taxonomy) {
         this.taxonomy = taxonomy;
-        this.imageRes = imageRes;
         updateView();
     }
 
     private void updateView() {
         if (taxonomy != null)
             title.setInnerText(taxonomy.getGenus() + " " + taxonomy.getSpecies());
-        taxonomyImg.setResource(imageRes);
+        SafeUri imageUri = UriUtils.fromString("/provider/taxonomy/" + taxonomy.getId() + "/image.png");
+        taxonomyImg.setSrc(imageUri.asString());
         List<AppStatProxy> stats = taxonomy.getStats();
         if (stats != null) {
             for (AppStatProxy stat : stats) {
