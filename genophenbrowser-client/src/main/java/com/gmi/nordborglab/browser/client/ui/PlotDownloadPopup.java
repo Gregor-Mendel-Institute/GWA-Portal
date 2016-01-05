@@ -125,7 +125,7 @@ public class PlotDownloadPopup extends Composite {
     public String getDownloadUrl() {
         if (id == null)
             return "";
-        String url = "/provider/" + getCurrentRestEndpoint() + "/" + id + "/plots?mac=" + getCurrentMac();
+        String url = GWT.getHostPageBaseURL() + "/provider/" + getCurrentRestEndpoint() + "/" + id + "/plots?mac=" + getCurrentMac();
         FORMAT format = getCurrentFormat();
         if (format != null)
             url += "&format=" + format.name().toLowerCase();

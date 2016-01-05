@@ -258,7 +258,7 @@ public class ClientModule extends AbstractPresenterModule {
         } else {
             cache = new at.gmi.nordborglab.widgets.geneviewer.client.datasource.DefaultCacheImpl();
         }
-        return new JBrowseCacheDataSourceImpl("/provider/genes/", cache);
+        return new JBrowseCacheDataSourceImpl(GWT.getHostPageBaseURL() + "/provider/genes/", cache);
     }
 
     @Provides

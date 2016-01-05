@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Range;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
@@ -564,11 +565,11 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 
     @Override
     public void setStudyId(Long id) {
-        navLinkPvalCSV.setHref("/provider/study/" + id + "/pvalues.csv");
-        navLinkPvalHDF5.setHref("/provider/study/" + id + "/pvalues.hdf5");
-        navLinkPvalJSON.setHref("/provider/study/" + id + "/pvalues.json");
-        navLinkPhenCSV.setHref("/provider/study/" + id + "/phenotypedata.csv");
-        navLinkPhenJSON.setHref("/provider/study/" + id + "/phenotypedata.json");
+        navLinkPvalCSV.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/pvalues.csv");
+        navLinkPvalHDF5.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/pvalues.hdf5");
+        navLinkPvalJSON.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/pvalues.json");
+        navLinkPhenCSV.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/phenotypedata.csv");
+        navLinkPhenJSON.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/phenotypedata.json");
         plotsPanel.setId(id);
     }
 }

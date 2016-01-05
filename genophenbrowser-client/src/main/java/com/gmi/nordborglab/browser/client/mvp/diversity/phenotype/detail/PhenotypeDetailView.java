@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multiset;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
@@ -283,8 +284,8 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 
     @Override
     public void setPhenotypeId(Long id) {
-        navLinkPhenCSV.setHref("/provider/phenotype/" + id + "/phenotypedata.csv");
-        navLinkPhenJSON.setHref("/provider/phenotype/" + id + "/phenotypedata.json");
+        navLinkPhenCSV.setHref(GWT.getHostPageBaseURL() + "/provider/phenotype/" + id + "/phenotypedata.csv");
+        navLinkPhenJSON.setHref(GWT.getHostPageBaseURL() + "/provider/phenotype/" + id + "/phenotypedata.json");
     }
 
     @Override

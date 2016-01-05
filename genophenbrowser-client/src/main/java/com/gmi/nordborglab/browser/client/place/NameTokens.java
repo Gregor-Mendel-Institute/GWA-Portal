@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.place;
 
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.common.collect.ImmutableMap;
+import com.google.gwt.core.client.GWT;
 
 public final class NameTokens {
 
@@ -42,7 +43,7 @@ public final class NameTokens {
     public static final String experimentsEnrichments = "/study/{id}/enrichments";
     public static final String phenotypeEnrichments = "/phenotype/{id}/enrichments";
     public static final String studyEnrichments = "/analysis/{id}/enrichments";
-    public static final String isaTabDownload = "/provider/study/{id}/{name}";
+    public static final String isaTabDownload = GWT.getHostPageBaseURL() + "/provider/study/{id}/{name}";
 
     public static final String snps = "/analysis/{id}/snp/{chr}/{position}";
     public static final ImmutableMap<SearchItemProxy.SUB_CATEGORY, String> subCategory2Token = ImmutableMap.<SearchItemProxy.SUB_CATEGORY, String>builder()

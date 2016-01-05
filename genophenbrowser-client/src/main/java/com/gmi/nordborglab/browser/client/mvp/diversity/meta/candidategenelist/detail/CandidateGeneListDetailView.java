@@ -23,6 +23,7 @@ import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -649,7 +650,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
 
     @Override
     public void setCandidateGeneListId(Long id) {
-        downloadJSONLink.setHref("/provider/candidategenelist/" + id + "/genes.json");
+        downloadJSONLink.setHref(GWT.getHostPageBaseURL() + "/provider/candidategenelist/" + id + "/genes.json");
     }
 
 }

@@ -29,6 +29,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -427,7 +428,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         getView().showActionBtns(currentUser.hasEdit(candidateGeneList));
         getView().showShareBtn(currentUser.hasAdmin(candidateGeneList));
         getView().setEnrichmentCount(enrichmentCount);
-        getView().setUploadActionUrl("/provider/candidategenelist/" + candidateGeneList.getId() + "/upload");
+        getView().setUploadActionUrl(GWT.getHostPageBaseURL() + "/provider/candidategenelist/" + candidateGeneList.getId() + "/upload");
 
         String toolTipText = "Public - Anyone on the Internet can find and access";
         IconType toolTipIcon = IconType.GLOBE;

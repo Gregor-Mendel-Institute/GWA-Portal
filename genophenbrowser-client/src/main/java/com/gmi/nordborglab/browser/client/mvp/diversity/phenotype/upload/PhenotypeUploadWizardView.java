@@ -36,6 +36,7 @@ import com.google.common.primitives.Booleans;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
@@ -400,8 +401,8 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     };
     private final CardCellListResources cardCellListResources;
     private final PhenotypeUploadDataCardCell phenotypeUploadDataCard;
-    private static final String restURL = "/provider/phenotype/upload";
-    private static final String restISATABURL = "/provider/isatab/upload";
+    private static final String restURL = GWT.getHostPageBaseURL() + "/provider/phenotype/upload";
+    private static final String restISATABURL = GWT.getHostPageBaseURL() + "/provider/isatab/upload";
     private static final List<String> csvMimeTypes = Lists.newArrayList("text/plain", "text/txt", "text/csv", "application/csv", "application/excel", "application/vnd.ms-excel", "application/vnd.msexcel", "text/comma-separated-values");
     private final List<String> allowedISAExtensions = Lists.newArrayList("application/zip", "application/x-gzip");
     private List<String> headerColumns = ImmutableList.of("accessionid", "Phenotype1", "Phenotype2", "Phenotype3", "PhenotypeN");

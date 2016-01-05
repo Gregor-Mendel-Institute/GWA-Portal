@@ -71,7 +71,7 @@ public class TaxonomyCard extends Composite {
     private void updateView() {
         if (taxonomy != null)
             title.setInnerText(taxonomy.getGenus() + " " + taxonomy.getSpecies());
-        SafeUri imageUri = UriUtils.fromString("/provider/taxonomy/" + taxonomy.getId() + "/image.png");
+        SafeUri imageUri = UriUtils.fromString(GWT.getHostPageBaseURL() + "/provider/taxonomy/" + taxonomy.getId() + "/image.png");
         taxonomyImg.setSrc(imageUri.asString());
         List<AppStatProxy> stats = taxonomy.getStats();
         if (stats != null) {
