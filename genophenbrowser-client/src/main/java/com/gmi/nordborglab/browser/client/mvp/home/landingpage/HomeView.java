@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.client.mvp.home.landingpage;
 
 import com.eemi.gwt.tour.client.GwtTour;
 import com.eemi.gwt.tour.client.Tour;
+import com.gmi.nordborglab.browser.client.bootstrap.BootstrapperImpl;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.ui.cells.NewsItemCell;
 import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
@@ -12,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -40,6 +42,7 @@ import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import org.gwtbootstrap3.client.ui.Anchor;
+import org.gwtbootstrap3.client.ui.AnchorButton;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.RadioButton;
 
@@ -89,6 +92,8 @@ public class HomeView extends ViewWithUiHandlers<HomeUiHandlers> implements Home
     RadioButton monthBtn;
     @UiField
     RadioButton yearBtn;
+    @UiField
+    AnchorButton contactEmailLink;
 
     private final Tour tour;
     private final PlaceManager placeManager;
@@ -121,6 +126,7 @@ public class HomeView extends ViewWithUiHandlers<HomeUiHandlers> implements Home
             gwappCookieUrl = "http://gwapp.gmi.oeaw.ac.at?datasetkey=" + Cookies.getCookie("GWAS_USER_ID");
         }
         gwappCookieImg.setSrc(gwappCookieUrl);
+        contactEmailLink.setHref(UriUtils.fromString("mailto:" + BootstrapperImpl.getContactEmail()).asString());
     }
 
     @Override

@@ -17,11 +17,15 @@ public class MainController {
     @Value("${GA.trackingid}")
     private String gaTrackingId;
 
+    @Value("${SITE.contactemail}")
+    private String contactEmail;
+
     @RequestMapping(method =  {RequestMethod.GET, RequestMethod.HEAD})
     public ModelAndView index() {
         ModelAndView result = new ModelAndView("index");
         result.addObject("jbrowseUrl", jbrowseUrl);
         result.addObject("gaTrackingId", gaTrackingId);
+        result.addObject("contactEmail", contactEmail);
         return result;
     }
 }

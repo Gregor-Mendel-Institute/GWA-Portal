@@ -80,10 +80,6 @@
             font-size: 13px;
         }
 
-        .link {
-            color: #ffffff !important;
-        }
-
     </ui:style>
 
     <g:SimpleLayoutPanel ui:field="container">
@@ -98,9 +94,9 @@
                                 </h1>
                                 <p>
                                     Users can interactively browse and view public phenotypes.<br/>Logged-in
-                                    users can create studies, upload phenotypes, run GWAS analysis using different
-                                    methods
-                                    on different genotype datasets and share the data with other users.
+                                    users can create studies, upload phenotypes, run GWAS analyses using different
+                                    methods on different genotype datasets and share the data with other users.
+                                    If you have questions or problems don't hesitate to contact us.
                                 </p>
                                 <p>
 
@@ -108,6 +104,8 @@
                                 <p>
                                     <b:Button size="LARGE" type="SUCCESS" icon="PLAY" text="Take a tour"
                                               ui:field="tourBtn"/>
+                                    <b:AnchorButton size="LARGE" type="PRIMARY" icon="AT" text="Contact us"
+                                                    ui:field="contactEmailLink"></b:AnchorButton>
                                 </p>
                             </div>
                         </div>
@@ -125,13 +123,9 @@
                                                 Display studies, phenotypes and GWAS results.
                                             </p>
                                             <p>
-                                                <span class="btn btn-primary">
-                                                    <i class="fa fa-search"/>
-                                                    <g:InlineHyperlink addStyleNames="{style.link}"
-                                                                       targetHistoryToken="{nameTokens.getExperiments}">
-                                                        Browse
-                                                    </g:InlineHyperlink>
-                                                </span>
+                                                <b:AnchorButton type="PRIMARY" icon="SEARCH"
+                                                                targetHistoryToken="{nameTokens.getExperiments}">Browse
+                                                </b:AnchorButton>
                                             </p>
                                             <!--<p class="{style.card_caption}">-->
                                             <!--</p>-->
@@ -153,7 +147,7 @@
                                             <p>
                                                 <!--<p class="{style.card_caption}"> -->
                                                 <b:Anchor icon="FILE" iconPosition="LEFT"
-                                                          addStyleNames="btn btn-primary {style.link}"
+                                                          addStyleNames="btn btn-primary"
                                                           ui:field="wizardLink" text="Create"/>
                                                 <!--</p>-->
                                             </p>
@@ -171,7 +165,7 @@
                                             </p>
                                             <p>
 
-                                                <a class="btn btn-primary {style.link}"
+                                                <a class="btn btn-primary"
                                                    href="http://gwapp.gmi.oeaw.ac.at"
                                                    target="_blank">
                                                     <i class="fa fa-cloud"/>

@@ -150,6 +150,11 @@ public class BootstrapperImpl implements Bootstrapper {
         analyticsManager.setLoggedIn(currentUser.isLoggedIn());
     }
 
+    public static String getContactEmail() {
+        Dictionary data = Dictionary.getDictionary("appData");
+        return data.get("contactEmail");
+    }
+
     protected String getGATrackingId() {
         try {
             Dictionary data = Dictionary.getDictionary("appData");
