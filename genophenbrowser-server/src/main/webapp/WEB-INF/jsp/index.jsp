@@ -15,6 +15,10 @@
     <link rel="stylesheet" href="<c:url value='css/entypo.min.css'/>"/>
     <link rel="stylesheet" href="<c:url value='css/animate.min.css'/>"/>
     <style>
+        /* required because clean.css GWT theme was removed */
+        table td {
+            font-size: small;
+        }
         /* for preloader */
         #loader-wrapper {
             position: fixed;
