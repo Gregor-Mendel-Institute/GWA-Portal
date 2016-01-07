@@ -354,7 +354,12 @@ public class HDF5GWASDataService implements GWASDataService {
         }
         String chrFlag = "";
         String chrNamePart = "";
-        String plotterPrgm = String.format("docker run --rm -v %s:/GWAS_DATA:ro -v %s/PLOT_OUTPUT:/PLOT_OUTPUT pygwas_plotter", gwasFolder, TEMP_FOLDER);
+        //FIXME workaround because mounting gwasFolder directly sometimes causes problems but usually works when mounting the parent folder
+        File folder = new File(gwasFolder).getAbsoluteFile();
+        String parentFolder = folder.getParent();
+        String targetFolder = folder.getName();
+
+        String plotterPrgm = String.format("docker run --rm -v %s:/GWAS_DATA:ro -v %s/PLOT_OUTPUT:/PLOT_OUTPUT pygwas_plotter", parentFolder, TEMP_FOLDER);
         if (chr != null && !chr.isEmpty()) {
             if (!SUPPORTED_CHROMOSOMES.contains(chr)) {
                 throw new RuntimeException(String.format("Chromosome %s invalid", chr));
@@ -363,7 +368,7 @@ public class HDF5GWASDataService implements GWASDataService {
             chrNamePart = String.format("_%s", chr);
         }
         String outputFile = String.format("%s%s_mac%s.%s", name, chrNamePart, minMac, format);
-        String plotterCmd = String.format("%s /GWAS_DATA/%s -m %d -o /PLOT_OUTPUT/%s %s", plotterPrgm, gwasFile, minMac, outputFile, chrFlag);
+        String plotterCmd = String.format("%s /GWAS_DATA/%s/%s -m %d -o /PLOT_OUTPUT/%s %s", plotterPrgm, targetFolder, gwasFile, minMac, outputFile, chrFlag);
         CommandLine cmdLine = CommandLine.parse(plotterCmd);
         DefaultExecutor executor = new DefaultExecutor();
         ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
