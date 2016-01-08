@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
@@ -192,6 +193,17 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
         } catch (Exception ex) {
 
         }
+        dataGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<MetaSNPAnalysisProxy>() {
+
+            @Override
+            public void onCellPreview(
+                    CellPreviewEvent<MetaSNPAnalysisProxy> event) {
+                if ("mouseover".equals(event.getNativeEvent().getType())) {
+                    MetaSNPAnalysisProxy object = event.getValue();
+                    getUiHandlers().onSelectMetaAnalysis(object);
+                }
+            }
+        });
     }
 
     @Override
