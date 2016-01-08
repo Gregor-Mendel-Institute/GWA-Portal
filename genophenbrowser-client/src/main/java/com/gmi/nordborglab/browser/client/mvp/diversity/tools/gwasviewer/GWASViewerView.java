@@ -8,10 +8,11 @@ import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.PlotDownloadPopup;
+import com.gmi.nordborglab.browser.client.ui.cells.AclEntypoIconActionCell;
 import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
-import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
+import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
 import com.google.common.collect.Lists;
@@ -264,34 +265,34 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         }, "Max Score");
 
         List<HasCell<GWASResultProxy, ?>> hasCells = Lists.newArrayList();
-        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("e_icon-pencil", new ActionCell.Delegate<GWASResultProxy>() {
+        hasCells.add(new ActionHasCell(new AclEntypoIconActionCell<>("e_icon-pencil", new ActionCell.Delegate<GWASResultProxy>() {
             @Override
             public void execute(GWASResultProxy object) {
                 getUiHandlers().onEdit(object);
             }
-        }, true)));
+        }, true, AccessControlEntryProxy.EDIT)));
 
-        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("e_icon-key", new ActionCell.Delegate<GWASResultProxy>() {
+        hasCells.add(new ActionHasCell(new AclEntypoIconActionCell<>("e_icon-key", new ActionCell.Delegate<GWASResultProxy>() {
             @Override
             public void execute(GWASResultProxy object) {
                 getUiHandlers().onShowPermissions(object);
             }
-        }, true)));
+        }, true, AccessControlEntryProxy.ADMINISTRATION)));
 
-        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("e_icon-trash", new ActionCell.Delegate<GWASResultProxy>() {
+        hasCells.add(new ActionHasCell(new AclEntypoIconActionCell<>("e_icon-trash", new ActionCell.Delegate<GWASResultProxy>() {
             @Override
             public void execute(GWASResultProxy object) {
                 getUiHandlers().onDelete(object);
             }
-        }, true)));
+        }, true, AccessControlEntryProxy.EDIT)));
 
-        hasCells.add(new ActionHasCell(new EntypoIconActionCell<GWASResultProxy>("e_icon-picture", new ActionCell.Delegate<GWASResultProxy>() {
+        hasCells.add(new ActionHasCell(new AclEntypoIconActionCell<>("e_icon-picture", new ActionCell.Delegate<GWASResultProxy>() {
             @Override
             public void execute(GWASResultProxy object) {
                 plotDownload.setId(object.getId());
                 showPlotDownloadPopup();
             }
-        }, true)));
+        }, true, AccessControlEntryProxy.READ)));
 
         gwasResultDataGrid.addColumn(new IdentityColumn<GWASResultProxy>(new CompositeCell<GWASResultProxy>(hasCells)) {
             @Override

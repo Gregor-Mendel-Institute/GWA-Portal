@@ -30,7 +30,7 @@ public class GWASDataManager extends RequestFactoryManager<GWASDataRequest> {
     }
 
     public void findAllGWASResults(Receiver<GWASResultPageProxy> receiver,ConstEnums.TABLE_FILTER filter, String searchString, int start, int size) {
-        getContext().findAllGWASResults(filter,searchString,start,size).with("contents.ownerUser").fire(receiver);
+        getContext().findAllGWASResults(filter, searchString, start, size).with("contents.ownerUser", "contents.userPermission").fire(receiver);
     }
 
     public void delete(Receiver<List<GWASResultProxy>> receiver, GWASResultProxy object) {
