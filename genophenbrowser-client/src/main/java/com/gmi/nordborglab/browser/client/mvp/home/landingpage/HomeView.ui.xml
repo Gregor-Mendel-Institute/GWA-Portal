@@ -80,6 +80,10 @@
             font-size: 13px;
         }
 
+        .link {
+            color: #ffffff !important;
+        }
+
     </ui:style>
 
     <g:SimpleLayoutPanel ui:field="container">
@@ -105,7 +109,8 @@
                                     <b:Button size="LARGE" type="SUCCESS" icon="PLAY" text="Take a tour"
                                               ui:field="tourBtn"/>
                                     <b:AnchorButton size="LARGE" type="PRIMARY" icon="AT" text="Contact us"
-                                                    ui:field="contactEmailLink"></b:AnchorButton>
+                                                    ui:field="contactEmailLink"
+                                                    addStyleNames="{style.link}"></b:AnchorButton>
                                 </p>
                             </div>
                         </div>
@@ -124,7 +129,8 @@
                                             </p>
                                             <p>
                                                 <b:AnchorButton type="PRIMARY" icon="SEARCH"
-                                                                targetHistoryToken="{nameTokens.getExperiments}">Browse
+                                                                targetHistoryToken="{nameTokens.getExperiments}"
+                                                                addStyleNames="{style.link}">Browse
                                                 </b:AnchorButton>
                                             </p>
                                             <!--<p class="{style.card_caption}">-->
@@ -147,7 +153,7 @@
                                             <p>
                                                 <!--<p class="{style.card_caption}"> -->
                                                 <b:Anchor icon="FILE" iconPosition="LEFT"
-                                                          addStyleNames="btn btn-primary"
+                                                          addStyleNames="btn btn-primary {style.link}"
                                                           ui:field="wizardLink" text="Create"/>
                                                 <!--</p>-->
                                             </p>
@@ -165,7 +171,7 @@
                                             </p>
                                             <p>
 
-                                                <a class="btn btn-primary"
+                                                <a class="btn btn-primary {style.link}"
                                                    href="http://gwapp.gmi.oeaw.ac.at"
                                                    target="_blank">
                                                     <i class="fa fa-cloud"/>

@@ -2,6 +2,7 @@
 <module rename-to='browser'>
     <!-- Inherit the core Web Toolkit stuff.                        -->
     <inherits name='com.google.gwt.user.User'/>
+    <inherits name='com.google.gwt.user.theme.clean.Clean'/>
     <inherits name="com.google.gwt.uibinder.UiBinder"/>
     <inherits name="com.google.gwt.inject.Inject"/>
     <inherits name='com.gwtplatform.mvp.Mvp'/>
