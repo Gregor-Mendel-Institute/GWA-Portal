@@ -94,7 +94,7 @@ public class EsAclManager {
     }
 
     public QueryBuilder getAclFilterForPermissions(List<String> permissions, boolean noPublic) {
-        return getAclFilterForPermissions(permissions,"acl",false);
+        return getAclFilterForPermissions(permissions,"acl",noPublic);
     }
 
 
