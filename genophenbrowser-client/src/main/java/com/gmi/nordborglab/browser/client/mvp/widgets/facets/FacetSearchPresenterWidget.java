@@ -47,7 +47,7 @@ public class FacetSearchPresenterWidget extends PresenterWidget<FacetSearchPrese
     public static final Map<String, String> SHARED_MAP = ImmutableMap.<String, String>builder()
             .put(ConstEnums.TABLE_FILTER.ALL.name(), "All")
             .put(ConstEnums.TABLE_FILTER.PRIVATE.name(), "My items")
-            .put(ConstEnums.TABLE_FILTER.PUBLISHED.name(), "Shared")
+            .put(ConstEnums.TABLE_FILTER.SHARED.name(), "Shared")
             .put(ConstEnums.TABLE_FILTER.RECENT.name(), "Recent")
             .build();
 
