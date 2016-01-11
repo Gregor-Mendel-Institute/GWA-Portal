@@ -52,7 +52,8 @@ import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.ModalFooter;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.extras.bootbox.client.Bootbox;
-import org.gwtbootstrap3.extras.bootbox.client.callback.AlertCallback;
+import org.gwtbootstrap3.extras.bootbox.client.callback.SimpleCallback;
+import org.gwtbootstrap3.extras.bootbox.client.options.DialogOptions;
 
 import java.util.Map;
 
@@ -102,7 +103,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     private Modal gwasUploadPopup = new Modal();
     private Modal plotsPopup = new Modal();
     private Modal editPopup = new Modal();
-    private Bootbox.Dialog deletePopup = Bootbox.Dialog.create();
+    private DialogOptions deleteOptions = DialogOptions.newOptions("Do you really want to delete the analysis?");
     private PlotDownloadPopup plotsPanel = new PlotDownloadPopup(PlotDownloadPopup.PLOT_TYPE.STUDY);
 
     @UiField(provided = true)
@@ -217,10 +218,9 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         plotsPopup.add(modalBody);
 
 
-        deletePopup.setTitle("Delete analysis");
-        deletePopup.setMessage("Do you really want to delete the analysis?");
-        deletePopup.addButton("Cancel", ButtonType.DEFAULT.getCssName());
-        deletePopup.addButton("Delete", ButtonType.DANGER.getCssName(), new AlertCallback() {
+        deleteOptions.setTitle("Delete analysis");
+        deleteOptions.addButton("Cancel", ButtonType.DEFAULT.getCssName());
+        deleteOptions.addButton("Delete", ButtonType.DANGER.getCssName(), new SimpleCallback() {
             @Override
             public void callback() {
                 getUiHandlers().onConfirmDelete();
@@ -560,7 +560,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 
     @Override
     public void showDeletePopup() {
-        Bootbox.dialog(deletePopup);
+        Bootbox.dialog(deleteOptions);
     }
 
     @Override

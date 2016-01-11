@@ -48,7 +48,8 @@ import org.gwtbootstrap3.client.ui.ModalFooter;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
 import org.gwtbootstrap3.extras.bootbox.client.Bootbox;
-import org.gwtbootstrap3.extras.bootbox.client.callback.AlertCallback;
+import org.gwtbootstrap3.extras.bootbox.client.callback.SimpleCallback;
+import org.gwtbootstrap3.extras.bootbox.client.options.DialogOptions;
 
 import java.util.Collection;
 import java.util.List;
@@ -121,7 +122,7 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     private boolean layoutScheduled = false;
     private boolean showBlank = true;
     private Modal editPopup = new Modal();
-    private Bootbox.Dialog deletePopup = Bootbox.Dialog.create();
+    private DialogOptions deleteOptions = DialogOptions.newOptions("Do you rally want to delete the phenotype?");
     private ImmutableBiMap<StatisticTypeProxy, AnchorListItem> statisticTypeLinks;
 
     ClickHandler statisticTypeClickhandler = new ClickHandler() {
@@ -185,10 +186,9 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         editPopup.add(modalBody);
         editPopup.add(footer);
 
-        deletePopup.setTitle("Delete phenotype");
-        deletePopup.setMessage("Do you really want to delete the phenotype?");
-        deletePopup.addButton("Cancel", ButtonType.DEFAULT.getCssName());
-        deletePopup.addButton("Delete", ButtonType.DANGER.getCssName(), new AlertCallback() {
+        deleteOptions.setTitle("Delete phenotype");
+        deleteOptions.addButton("Cancel", ButtonType.DEFAULT.getCssName());
+        deleteOptions.addButton("Delete", ButtonType.DANGER.getCssName(), new SimpleCallback() {
             @Override
             public void callback() {
                 getUiHandlers().onConfirmDelete();
@@ -486,6 +486,6 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
 
     @Override
     public void showDeletePopup() {
-        Bootbox.dialog(deletePopup);
+        Bootbox.dialog(deleteOptions);
     }
 }

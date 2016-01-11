@@ -57,7 +57,8 @@ import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
 import org.gwtbootstrap3.extras.bootbox.client.Bootbox;
-import org.gwtbootstrap3.extras.bootbox.client.callback.AlertCallback;
+import org.gwtbootstrap3.extras.bootbox.client.callback.SimpleCallback;
+import org.gwtbootstrap3.extras.bootbox.client.options.DialogOptions;
 
 import java.util.List;
 
@@ -134,7 +135,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     @UiField
     SimpleLayoutPanel gwasPlots;
 
-    private final class DeleteCallBack implements AlertCallback {
+    private final class DeleteCallBack implements SimpleCallback {
 
         private GWASResultProxy object;
 
@@ -159,7 +160,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     private GWASResultEditEditor gwasEditEditor = new GWASResultEditEditor();
     private Modal editPopUp = new Modal();
     private Modal permissionPopUp = new Modal();
-    private Bootbox.Dialog deletePopup = Bootbox.Dialog.create();
+    private DialogOptions deleteOptions = DialogOptions.newOptions("Do you really want to delete the GWAS result?");
     private final CurrentUser currentUser;
 
     @Inject
@@ -215,9 +216,9 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         // FIXME change once we have information about availabilty of macs
         plotDownload.setMacFilterEnabled(false);
 
-        deletePopup.setTitle("Delete GWAS result");
-        deletePopup.addButton("Cancel");
-        deletePopup.addButton("Delete", ButtonType.DANGER.getCssName(), deleteCallBack);
+        deleteOptions.setTitle("Delete GWAS result");
+        deleteOptions.addButton("Cancel");
+        deleteOptions.addButton("Delete", ButtonType.DANGER.getCssName(), deleteCallBack);
     }
 
     private void initDataGridColumns() {
@@ -412,8 +413,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     @Override
     public void showDeletePopup(GWASResultProxy object) {
         deleteCallBack.setObject(object);
-        deletePopup.setMessage("Do you really want to delete " + object.getName());
-        Bootbox.dialog(deletePopup);
+        Bootbox.dialog(deleteOptions);
     }
 
     private void showPlotDownloadPopup() {

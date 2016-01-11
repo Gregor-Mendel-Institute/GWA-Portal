@@ -57,7 +57,8 @@ import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
 import org.gwtbootstrap3.extras.bootbox.client.Bootbox;
-import org.gwtbootstrap3.extras.bootbox.client.callback.AlertCallback;
+import org.gwtbootstrap3.extras.bootbox.client.callback.SimpleCallback;
+import org.gwtbootstrap3.extras.bootbox.client.options.DialogOptions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -118,7 +119,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         }
     };
     private Modal editPopup = new Modal();
-    private Bootbox.Dialog deletePopup = Bootbox.Dialog.create();
+    private DialogOptions deleteOptions = DialogOptions.newOptions("Do you really want to delete the study?");
 
     private ONTOLOGY_TYPE currentOntologyType = ConstEnums.ONTOLOGY_TYPE.TRAIT;
     private Map<ONTOLOGY_TYPE, DataTable> ontology2Map = new HashMap<ONTOLOGY_TYPE, DataTable>();
@@ -175,10 +176,9 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         editPopup.add(modalBody);
         editPopup.add(footer);
 
-        deletePopup.setTitle("Delete study");
-        deletePopup.setMessage("Do you really want to delete the study?");
-        deletePopup.addButton("Cancel");
-        deletePopup.addButton("Delete", ButtonType.DANGER.getCssName(), new AlertCallback() {
+        deleteOptions.setTitle("Delete study");
+        deleteOptions.addButton("Cancel");
+        deleteOptions.addButton("Delete", ButtonType.DANGER.getCssName(), new SimpleCallback() {
             @Override
             public void callback() {
                 getUiHandlers().onConfirmDelete();
@@ -343,7 +343,7 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
 
     @Override
     public void showDeletePopup() {
-        Bootbox.dialog(deletePopup);
+        Bootbox.dialog(deleteOptions);
     }
 
     @Override

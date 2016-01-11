@@ -66,7 +66,8 @@ import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
 import org.gwtbootstrap3.extras.bootbox.client.Bootbox;
-import org.gwtbootstrap3.extras.bootbox.client.callback.AlertCallback;
+import org.gwtbootstrap3.extras.bootbox.client.callback.SimpleCallback;
+import org.gwtbootstrap3.extras.bootbox.client.options.DialogOptions;
 import org.gwtbootstrap3.extras.typeahead.client.base.Dataset;
 import org.gwtbootstrap3.extras.typeahead.client.base.Suggestion;
 import org.gwtbootstrap3.extras.typeahead.client.base.SuggestionCallback;
@@ -175,7 +176,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     private HandlerRegistration clickhandlerRegistration;
 
     private Modal editPopup = new Modal();
-    private Bootbox.Dialog deletePopup = Bootbox.Dialog.create();
+    private DialogOptions deleteOptions = DialogOptions.newOptions("Do you really want to delete the candidate gene list?");
     private Modal permissionPopUp = new Modal();
 
     private Modal resetEnrichmentPopup = new Modal();
@@ -268,10 +269,9 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         resetEnrichmentPopup.setDataKeyboard(false);
         resetEnrichmentPopup.setClosable(false);
 
-        deletePopup.setTitle("Delete candidate gene List");
-        deletePopup.setMessage("Do you really want to delete the candidate gene list?");
-        deletePopup.addButton("Cancel", ButtonType.DEFAULT.getCssName());
-        deletePopup.addButton("Delete", ButtonType.DANGER.getCssName(), new AlertCallback() {
+        deleteOptions.setTitle("Delete candidate gene List");
+        deleteOptions.addButton("Cancel", ButtonType.DEFAULT.getCssName());
+        deleteOptions.addButton("Delete", ButtonType.DANGER.getCssName(), new SimpleCallback() {
             @Override
             public void callback() {
                 getUiHandlers().onConfirmDelete();
@@ -503,7 +503,7 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
 
     @Override
     public void showDeletePopup() {
-        Bootbox.dialog(deletePopup);
+        Bootbox.dialog(deleteOptions);
     }
 
     @Override
