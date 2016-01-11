@@ -7,6 +7,7 @@ import com.gmi.nordborglab.browser.client.events.FileUploadFinishedEvent;
 import com.gmi.nordborglab.browser.client.events.FileUploadStartEvent;
 import com.gmi.nordborglab.browser.client.ui.fileupload.FileUploadWidget;
 import com.google.common.collect.Lists;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
@@ -133,7 +134,7 @@ public class GWASUploadWizardView extends ViewWithUiHandlers<GWASUploadWizardUiH
 
     @Override
     public void setRestURL(String restURL) {
-        fileUploadWidget.setRestURL(restURL);
+        fileUploadWidget.setRestURL(GWT.getHostPageBaseURL() + restURL);
     }
 
 

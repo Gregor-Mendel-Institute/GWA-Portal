@@ -522,7 +522,7 @@ public class FileUploadWidget extends Composite {
             });
             HTML5Helper.ExtJsFormData formData = HTML5Helper.ExtJsFormData.newExtJsForm();
             formData.append("file", file, file.getName());
-            xhr.open("POST", GWT.getHostPageBaseURL() + restURL);
+            xhr.open("POST", restURL);
             xhr.send(formData);
             currentUploadCount += 1;
         }
