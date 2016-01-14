@@ -192,7 +192,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
     @ContentSlot
     public static final GwtEvent.Type<RevealContentHandler<?>> TYPE_SetPhenotypeUploadContent = new GwtEvent.Type<RevealContentHandler<?>>();
-    public static Object TYPE_SetIsaTabUploadContent = new Object();
+    public static final Object TYPE_SetIsaTabUploadContent = new Object();
 
     private final PlaceManager placeManager;
     private ImmutableSortedMap<Double, Integer> histogram;
@@ -236,12 +236,14 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
         @Override
         public boolean hasNext() {
-            return i < states.size();
+            return (i+1) < states.size();
         }
 
         @Override
         public STATE next() {
-            i = i + 1;
+            if (hasNext()) {
+                i = i + 1;
+            }
             return states.get(i);
         }
 
@@ -252,7 +254,9 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
         @Override
         public STATE previous() {
-            i = i - 1;
+            if (hasPrevious()) {
+                i = i - 1;
+            }
             return states.get(i);
         }
 
@@ -371,7 +375,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                                     return true;
                                 boolean isNotFound = true;
                                 for (AlleleAssayProxy alleleAssay : input.getObsUnit().getStock().getPassport().getAlleleAssays()) {
-                                    if (alleleAssay.getId() == selectedAlleleAssay.getId()) {
+                                    if (alleleAssay.getId().equals(selectedAlleleAssay.getId())) {
                                         isNotFound = false;
                                         break;
                                     }
@@ -397,7 +401,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                                     return false;
                                 boolean isFound = false;
                                 for (AlleleAssayProxy alleleAssay : input.getObsUnit().getStock().getPassport().getAlleleAssays()) {
-                                    if (alleleAssay.getId() == selectedAlleleAssay.getId()) {
+                                    if (alleleAssay.getId().equals(selectedAlleleAssay.getId())) {
                                         isFound = true;
                                         break;
                                     }
