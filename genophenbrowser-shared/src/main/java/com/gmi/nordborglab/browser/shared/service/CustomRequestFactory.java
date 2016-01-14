@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.shared.service;
 
+import com.google.web.bindery.requestfactory.shared.LoggingRequest;
 import com.google.web.bindery.requestfactory.shared.RequestFactory;
 
 public interface CustomRequestFactory extends RequestFactory {
@@ -35,4 +36,6 @@ public interface CustomRequestFactory extends RequestFactory {
     MetaAnalysisRequest metaAnalysisRequest();
 
     UserRequest userRequest();
+
+    LoggingRequest loggingRequest();
 }

@@ -723,6 +723,25 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- required for StackTraceDeobfuscating in remote Logging to work -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <!-- <archiveClasses>true</archiveClasses> -->
+                    <webResources>
+                        <!-- copy sourcemaps to website for debugging -->
+                        <resource>
+                            <directory>${basedir}/../genophenbrowser-client/target/gwt/deploy/browser/symbolMaps
+                            </directory>
+                            <includes>
+                                <include>*.json</include>
+                            </includes>
+                            <targetPath>WEB-INF/classes/symbolMaps</targetPath>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>

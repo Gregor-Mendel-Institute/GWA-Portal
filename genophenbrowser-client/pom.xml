@@ -204,7 +204,7 @@
                 <version>${guice.version}</version>
             </dependency>
             <dependency>
-            <groupId>io.github.gwt-supercsv</groupId>
+                <groupId>io.github.gwt-supercsv</groupId>
                 <artifactId>gwt-supercsv</artifactId>
                 <version>${gwt-supercsv}</version>
             </dependency>
@@ -328,9 +328,36 @@
                     <compilerArgs>
                         <param>-XfragmentCount</param>
                         <param>20</param>
-                        <!--<param>-compileReport</param>-->
+                        <param>-saveSource</param>
+                        <param>-saveSourceOutput</param>
+                        <param>${project.build.directory}/extra</param>
                     </compilerArgs>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source-maps</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}/browser/src
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/extra/browser/src</directory>
+                                </resource>
+                                <resource>
+                                    <directory>${project.build.directory}/gwt/deploy/browser/symbolMaps</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -58,4 +58,9 @@
     <replace-with class="com.gmi.nordborglab.browser.client.validation.ClientValidatorFactory">
         <when-type-is class="javax.validation.ValidatorFactory"/>
     </replace-with>
+
+    <set-property name="compiler.useSourceMaps" value="true"/>
+    <!-- change to localhost for development -->
+    <set-configuration-property name="includeSourceMapUrl"
+                                value="browser/src/__HASH___sourceMap__FRAGMENT__.json"/>
 </module>
