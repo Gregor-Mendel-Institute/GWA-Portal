@@ -25,6 +25,8 @@ import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.event.shared.EventBus;
+import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryLogHandler;
+import com.google.web.bindery.requestfactory.shared.LoggingRequest;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.gwtplatform.mvp.client.Bootstrapper;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
@@ -61,6 +63,13 @@ public class BootstrapperImpl implements Bootstrapper {
     @Override
     public void onBootstrap() {
         analyticsManager.create(getGATrackingId()).go();
+        // Add remote logging handler
+        RequestFactoryLogHandler.LoggingRequestProvider provider = new RequestFactoryLogHandler.LoggingRequestProvider() {
+            public LoggingRequest getLoggingRequest() {
+                return rf.loggingRequest();
+            }
+        };
+        Logger.getLogger("").addHandler(new RequestFactoryLogHandler(provider, Level.WARNING, new ArrayList<String>()));
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
 
             @Override
