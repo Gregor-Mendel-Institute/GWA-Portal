@@ -108,7 +108,7 @@
 
     <servlet>
         <servlet-name>requestFactoryServlet</servlet-name>
-        <servlet-class>com.google.web.bindery.requestfactory.server.RequestFactoryServlet
+        <servlet-class>com.gmi.nordborglab.browser.server.servlet.LoggingAwareRequestFactoryServlet
         </servlet-class>
         <load-on-startup>1</load-on-startup>
         <init-param>
