@@ -112,16 +112,10 @@
         </servlet-class>
         <load-on-startup>1</load-on-startup>
         <init-param>
-            <param-name>symbolMapsUrl</param-name>
+            <param-name>symbolMapsResourcePath</param-name>
             <!-- You'll need to compile with -extras and move the symbolMaps directory
                  to this location if you want stack trace deobfuscation to work -->
-            <!-- use that for local testing when running with mvn jetty:run -->
-            <!--<param-value>target/genophenbrowser-server-1.0-SNAPSHOT/WEB-INF/classes/symbolMaps/</param-value>-->
             <param-value>/WEB-INF/classes/symbolMaps/</param-value>
-        </init-param>
-        <init-param>
-            <param-name>useContextPath</param-name>
-            <param-value>true</param-value>
         </init-param>
     </servlet>
 
