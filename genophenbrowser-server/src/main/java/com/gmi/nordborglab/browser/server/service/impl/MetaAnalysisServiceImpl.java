@@ -769,8 +769,8 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
             }), Predicates.notNull()));
             return new CandidateGeneListEnrichmentPage(enrichments, new PageRequest(page, size), (enrichments.size() == 0 ? 0 : response.getHits().getTotalHits()), null);
         } //TODO replace with a SQL join query.
-        /*else if (entity instanceof Study) {
-            List<String> ids = findCandidateListsCountForStudy(entity.getId());
+        else if (entity instanceof Study) {
+            List<Long> ids = candidateGeneListRepository.findExistingEnrichmentByStudy(entity.getId());
             SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
             request.setTypes("candidate_gene_list").setNoFields().setSize(size).setFrom(page);
             QueryBuilder query = QueryBuilders.matchAllQuery();
@@ -780,7 +780,13 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
             request.setQuery(QueryBuilders.boolQuery()
                     .must(query)
                     .filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
-                    .mustNot(QueryBuilders.idsQuery().addIds(ids.toArray(new String[]{}))));
+                    .mustNot(QueryBuilders.idsQuery().addIds(Lists.transform(ids, new Function<Long, String>() {
+                        @Nullable
+                        @Override
+                        public String apply(@Nullable Long input) {
+                            return String.valueOf(input);
+                        }
+                    }).toArray(new String[]{}))));
             SearchResponse response = request.execute().actionGet();
             Set<Long> idsToFetch = ImmutableSet.copyOf(EsSearcher.getIdsFromResponse(response));
 
@@ -802,7 +808,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 }
             }), Predicates.notNull()));
             return new CandidateGeneListEnrichmentPage(enrichments, new PageRequest(page, size), (enrichments.size() == 0 ? 0 : response.getHits().getTotalHits()), null);
-        }*/
+        }
         return null;
     }
 
@@ -911,10 +917,29 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         if (entity instanceof CandidateGeneList) {
             filterFacet = aggregations.get(ConstEnums.ENRICHMENT_FILTER.AVAILABLE.name());
             facets.add(new ESFacet(ConstEnums.ENRICHMENT_FILTER.AVAILABLE.name(), 0, filterFacet.getDocCount(), 0, null));
+        } else if (entity instanceof Study) {
+            long count = findAvailableCandidateGeneListEnrichmentsForStudyCount(entity.getId());
+            facets.add(new ESFacet(ConstEnums.ENRICHMENT_FILTER.AVAILABLE.name(), 0, count, 0, null));
         }
         return facets;
     }
 
+    private long findAvailableCandidateGeneListEnrichmentsForStudyCount(Long studyId) {
+        List<Long> ids = candidateGeneListRepository.findExistingEnrichmentByStudy(studyId);
+        SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
+        request.setTypes("candidate_gene_list").setNoFields().setSize(0);
+        request.setQuery(QueryBuilders.boolQuery()
+                .filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
+                .mustNot(QueryBuilders.idsQuery().addIds(Lists.transform(ids, new Function<Long, String>() {
+                    @Nullable
+                    @Override
+                    public String apply(@Nullable Long input) {
+                        return String.valueOf(input);
+                    }
+                }).toArray(new String[]{}))));
+        SearchResponse response = request.execute().actionGet();
+        return response.getHits().getTotalHits();
+    }
 
 
 
