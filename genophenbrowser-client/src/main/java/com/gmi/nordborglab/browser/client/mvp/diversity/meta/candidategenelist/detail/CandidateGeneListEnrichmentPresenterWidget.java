@@ -105,7 +105,7 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
         getView().setUiHandlers(this);
         this.dataProvider = dataProvider;
         facetSearchPresenterWidget.setDefaultFilter(ConstEnums.ENRICHMENT_FILTER.FINISHED.name());
-        if (dataProvider.getViewType() == EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST) {
+        if (dataProvider.getViewType() == EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST || dataProvider.getViewType() == EnrichmentProvider.TYPE.STUDY) {
             facetSearchPresenterWidget.initFixedFacets(FACET_MAP);
         } else {
             facetSearchPresenterWidget.initFixedFacets(Maps.filterEntries(FACET_MAP, new Predicate<Map.Entry<String, String>>() {

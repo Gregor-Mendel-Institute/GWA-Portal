@@ -2,6 +2,10 @@ package com.gmi.nordborglab.browser.server.repository;
 
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,5 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface CandidateGeneListRepository extends JpaRepository<CandidateGeneList, Long> {
 
+    @Query("SELECT c.id FROM CandidateGeneList c JOIN c.candidateGeneListEnrichments e where e.study.id=:studyId")
+    List<Long> findExistingEnrichmentByStudy(@Param("studyId") Long studyId);
 
 }
