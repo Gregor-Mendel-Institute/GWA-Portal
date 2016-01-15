@@ -112,7 +112,7 @@
         </servlet-class>
         <load-on-startup>1</load-on-startup>
         <init-param>
-            <param-name>symbolMapsDirectory</param-name>
+            <param-name>symbolMapsUrl</param-name>
             <!-- You'll need to compile with -extras and move the symbolMaps directory
                  to this location if you want stack trace deobfuscation to work -->
             <!-- use that for local testing when running with mvn jetty:run -->
