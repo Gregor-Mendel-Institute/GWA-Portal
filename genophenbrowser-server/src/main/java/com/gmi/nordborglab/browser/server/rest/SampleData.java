@@ -1,9 +1,12 @@
 package com.gmi.nordborglab.browser.server.rest;
 
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
@@ -141,6 +144,22 @@ public class SampleData {
 
     public void setCountryShort(String countryShort) {
         this.countryShort = countryShort;
+    }
+
+    public boolean isEmptySample() {
+        if (this.sourceId == null) {
+            return hasNoValues();
+        }
+        return false;
+    }
+
+    public boolean hasNoValues() {
+        return values == null || Collections2.filter(values, new Predicate<String>() {
+            @Override
+            public boolean apply(@Nullable String s) {
+                return s != null;
+            }
+        }).size() == 0;
     }
 
     // to please the RequestFactory

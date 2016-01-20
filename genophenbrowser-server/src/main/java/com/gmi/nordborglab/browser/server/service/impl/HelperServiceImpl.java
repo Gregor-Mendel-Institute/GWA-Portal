@@ -647,7 +647,6 @@ public class HelperServiceImpl implements HelperService {
                 // add sample
                 SampleData sample = new SampleData(row.get(0) != null ? String.valueOf(row.get(0)) : null);
                 parseAndUpdateAccession(sample);
-                sampleData.add(sample);
                 for (int i = 1; i < header.length; i++) {
                     PhenotypeUploadData phenotype = phenotypes.get(i - 1);
                     boolean parseError = checkCellProcessorForError(valueCellProcessors[i]);
@@ -662,6 +661,9 @@ public class HelperServiceImpl implements HelperService {
                         phenotype.addParseError(j);
                     }
                     sample.addValue(value, parseError);
+                }
+                if (!sample.isEmptySample()) {
+                    sampleData.add(sample);
                 }
                 j++;
             }
