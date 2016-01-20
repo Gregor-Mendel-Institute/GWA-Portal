@@ -26,7 +26,6 @@ public class BooleanIconCell extends AbstractCell<Boolean> {
     }
 
     private static Template template = GWT.create(Template.class);
-    ;
 
 
     @Override

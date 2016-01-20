@@ -38,6 +38,10 @@ public class EntypoIconActionCell<C> extends AbstractCell<C> {
 
     private static Template templates = GWT.create(Template.class);
 
+    public EntypoIconActionCell(final String entypoString) {
+        this(entypoString, null, false);
+    }
+
     public EntypoIconActionCell(String entypoString, ActionCell.Delegate<C> delegate, boolean hasMargin) {
         super("click");
         this.entypoString = entypoString;
@@ -56,7 +60,12 @@ public class EntypoIconActionCell<C> extends AbstractCell<C> {
         if ("click".equals(event.getType())) {
             EventTarget eventTarget = event.getEventTarget();
             if (parent.getFirstChildElement().isOrHasChild(Element.as(eventTarget))) {
-                delegate.execute(value);
+                if (delegate != null) {
+                    delegate.execute(value);
+                }
+                if (valueUpdater != null) {
+                    valueUpdater.update(value);
+                }
             }
         }
     }

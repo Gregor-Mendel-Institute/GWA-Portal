@@ -234,7 +234,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
             }, gwasResultId);
         } else {
             gwasResult = null;
-            //getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(),true);
+            //getView().getFlatDisplay().setVisibleRangeAndClearData(getView().getFlatDisplay().getVisibleRange(),true);
             getProxy().manualReveal(GWASViewerPresenter.this);
         }
     }

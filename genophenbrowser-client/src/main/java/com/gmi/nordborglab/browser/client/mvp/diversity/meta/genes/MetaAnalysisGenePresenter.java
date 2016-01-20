@@ -12,9 +12,10 @@ import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.shared.dto.FilterItem;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AssociationProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FilterItemProxy;
-import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisPageProxy;
-import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProtocolProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
@@ -57,7 +58,9 @@ public class MetaAnalysisGenePresenter extends
     public interface MyView extends View, HasUiHandlers<MetaAnalysisGeneUiHandlers> {
         void setGeneViewerRegion(String chr, int start, int end, int totalLength);
 
-        HasData<MetaSNPAnalysisProxy> getDisplay();
+        HasData<MetaAnalysisProxy> getFlatDisplay();
+
+        HasData<MetaAnalysisProxy> getGroupedDisplay();
 
         void setGeneViewerSelection(long position);
 
@@ -68,6 +71,10 @@ public class MetaAnalysisGenePresenter extends
         void reset();
 
         void setPagingDisabled(boolean disabled);
+
+        void setActiveVisualization(VIZ_TYPE vizType);
+
+        void setMaxAssocCount(int maxAssocCount);
     }
 
     @ProxyCodeSplit
@@ -86,11 +93,27 @@ public class MetaAnalysisGenePresenter extends
     private boolean filterItemChanged = false;
     private final SearchManager searchManager;
 
+    public enum VIZ_TYPE {GROUPED, FLAT, HEATMAP}
+
+    private VIZ_TYPE vizType = VIZ_TYPE.GROUPED;
+
     public static final Object TYPE_FilterContent = new Object();
 
-    private AsyncDataProvider<MetaSNPAnalysisProxy> dataProvider = new AsyncDataProvider<MetaSNPAnalysisProxy>() {
+    private final DataProvider flatDataProvider;
+    private final DataProvider groupedDataProvider;
+
+
+    private class DataProvider extends AsyncDataProvider<MetaAnalysisProxy> {
+
+        private boolean isGrouped;
+
+        private DataProvider(boolean isGrouped) {
+            this.isGrouped = isGrouped;
+        }
+
+
         @Override
-        protected void onRangeChanged(HasData<MetaSNPAnalysisProxy> display) {
+        protected void onRangeChanged(HasData<MetaAnalysisProxy> display) {
             if (gene == null) {
                 return;
             }
@@ -102,10 +125,11 @@ public class MetaAnalysisGenePresenter extends
                 filterItems = getProxyFromFilter(filterPresenterWidget.getActiveFilterItems(), ctx);
                 filterItemChanged = false;
             }
-            ctx.findAllAnalysisForRegion((int) gene.getStart() - leftInterval, (int) gene.getEnd() + rightInterval, gene.getChr(), range.getStart(), range.getLength(), filterItems).fire(new Receiver<MetaSNPAnalysisPageProxy>() {
+            ctx.findAllAnalysisForRegion((int) gene.getStart() - leftInterval, (int) gene.getEnd() + rightInterval, gene.getChr(), range.getStart(), range.getLength(), filterItems, isGrouped).fire(new Receiver<MetaAnalysisPageProxy>() {
                 @Override
-                public void onSuccess(MetaSNPAnalysisPageProxy response) {
+                public void onSuccess(MetaAnalysisPageProxy response) {
                     getView().setPagingDisabled(false);
+                    getView().setMaxAssocCount(response.getMaxAssocCount());
                     updateRowCount((int) response.getTotalElements(), true);
                     updateRowData(range.getStart(), response.getContents());
                     fireEvent(new LoadingIndicatorEvent(false));
@@ -120,7 +144,10 @@ public class MetaAnalysisGenePresenter extends
                 }
             });
         }
-    };
+    }
+
+
+
 
     @Inject
     public MetaAnalysisGenePresenter(EventBus eventBus, MyView view, MyProxy proxy,
@@ -136,7 +163,8 @@ public class MetaAnalysisGenePresenter extends
         this.filterPresenterWidget = filterPresenterWidget;
         this.placeManager = placeManager;
         this.searchManager = searchManager;
-
+        this.flatDataProvider = new DataProvider(false);
+        this.groupedDataProvider = new DataProvider(true);
         DropDownFilterItemPresenterWidget methodFilterWidget = dropDownFilterProvider.get();
         methodFilterWidget.setFilterType(ConstEnums.FILTERS.METHOD);
         methodFilterWidget.setAvailableOptions(Lists.newArrayList(Iterables.filter(Iterables.transform(currentUser.getAppData().getStudyProtocolList(), new Function<StudyProtocolProxy, String[]>() {
@@ -224,8 +252,11 @@ public class MetaAnalysisGenePresenter extends
         rf.annotationDataRequest().getGeneById(geneName).fire(new Receiver<GeneProxy>() {
             @Override
             public void onSuccess(GeneProxy response) {
-                if (dataProvider.getDataDisplays().contains(getView().getDisplay())) {
-                    dataProvider.removeDataDisplay(getView().getDisplay());
+                if (flatDataProvider.getDataDisplays().contains(getView().getFlatDisplay())) {
+                    flatDataProvider.removeDataDisplay(getView().getFlatDisplay());
+                }
+                if (groupedDataProvider.getDataDisplays().contains(getView().getGroupedDisplay())) {
+                    groupedDataProvider.removeDataDisplay(getView().getGroupedDisplay());
                 }
                 fireEvent(new LoadingIndicatorEvent(false));
                 gene = response;
@@ -248,22 +279,26 @@ public class MetaAnalysisGenePresenter extends
     }
 
     private void fetchMetaAnalysisData() {
-        if (dataProvider.getDataDisplays().contains(getView().getDisplay())) {
-            Range range = getView().getDisplay().getVisibleRange();
-            getView().getDisplay().setVisibleRangeAndClearData(range, true);
+        if (vizType == VIZ_TYPE.FLAT) {
+            fetchMetaAnalysisData(flatDataProvider, getView().getFlatDisplay());
         } else {
-            dataProvider.addDataDisplay(getView().getDisplay());
+            fetchMetaAnalysisData(groupedDataProvider, getView().getGroupedDisplay());
+        }
+    }
+
+    private void fetchMetaAnalysisData(DataProvider dataProvider, HasData<MetaAnalysisProxy> display) {
+        if (dataProvider.getDataDisplays().contains(display)) {
+            Range range = display.getVisibleRange();
+            display.setVisibleRangeAndClearData(range, true);
+        } else {
+            dataProvider.addDataDisplay(display);
         }
     }
 
     private void reset() {
         gene = null;
         resetView();
-        getView().getDisplay().setVisibleRangeAndClearData(getView().getDisplay().getVisibleRange(), true);
-        //dataProvider.setList(Lists.<MetaSNPAnalysisProxy>newArrayList());
-        /*if (dataProvider.getDataDisplays().contains(getView().getDisplay())) {
-            dataProvider.removeDataDisplay(getView().getDisplay());
-        } */
+        getView().getFlatDisplay().setVisibleRangeAndClearData(getView().getFlatDisplay().getVisibleRange(), true);
     }
 
     private void resetView() {
@@ -271,8 +306,8 @@ public class MetaAnalysisGenePresenter extends
     }
 
     @Override
-    public void onSelectMetaAnalysis(MetaSNPAnalysisProxy metaAnalysis) {
-        getView().setGeneViewerSelection(metaAnalysis.getSnpInfo().getPosition());
+    public void onSelectMetaAnalysis(MetaAnalysisProxy metaAnalysis) {
+        getView().setGeneViewerSelection(metaAnalysis.getAssociations().get(0).getSnpInfo().getPosition());
     }
 
     @Override
@@ -281,6 +316,21 @@ public class MetaAnalysisGenePresenter extends
         rightInterval = upperLimit * 1000;
         getView().setGeneViewerRegion(gene.getChr(), (int) gene.getStart() - leftInterval, (int) gene.getEnd() + rightInterval, 30000000);
         fetchMetaAnalysisData();
+    }
+
+    @Override
+    public void onSelectVisualization(VIZ_TYPE vizType) {
+        if (this.vizType == vizType)
+            return;
+        this.vizType = vizType;
+        getView().setActiveVisualization(vizType);
+        // RETRIEVE new data
+        fetchMetaAnalysisData();
+    }
+
+    @Override
+    public void onSelectAssociation(AssociationProxy associationProxy) {
+        getView().setGeneViewerSelection(associationProxy.getSnpInfo().getPosition());
     }
 
     private void updateView() {

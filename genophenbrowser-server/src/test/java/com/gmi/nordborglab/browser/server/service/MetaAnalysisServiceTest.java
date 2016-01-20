@@ -1,7 +1,7 @@
 package com.gmi.nordborglab.browser.server.service;
 
-import com.gmi.nordborglab.browser.server.domain.meta.MetaSNPAnalysis;
-import com.gmi.nordborglab.browser.server.domain.pages.MetaSNPAnalysisPage;
+import com.gmi.nordborglab.browser.server.domain.meta.MetaAnalysis;
+import com.gmi.nordborglab.browser.server.domain.pages.MetaAnalysisPage;
 import com.gmi.nordborglab.browser.server.repository.UserRepository;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
@@ -48,11 +48,12 @@ public class MetaAnalysisServiceTest extends BaseTest {
     @Test
     public void findAllAnalysisForRegion() {
         SecurityUtils.setAnonymousUser();
-        MetaSNPAnalysisPage page = service.findAllAnalysisForRegion(9581605, 9604507, "2", 1, 10, null);
+        MetaAnalysisPage page = service.findAllAnalysisForRegion(9581605, 9604507, "2", 1, 10, null, false);
         assertNotNull(page);
         assertEquals(7, page.getNumberOfElements());
-        MetaSNPAnalysis analysis = page.getContents().get(0);
-        assertNotNull(analysis.getSnpInfo());
+        MetaAnalysis analysis = page.getContents().get(0);
+        assertEquals(1, analysis.getAssociations().size());
+        assertNotNull(analysis.getAssociations().get(0).getSnpInfo());
     }
 
 

@@ -1,9 +1,11 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.meta.topsnps;
 
+import com.gmi.nordborglab.browser.client.mvp.diversity.meta.genes.MetaAnalysisGeneView;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
-import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AssociationProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.SNPAnnotationProxy;
 import com.google.gwt.cell.client.NumberCell;
@@ -23,14 +25,14 @@ import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 public interface MetaSNPAnalysisDataGridColumns {
 
 
-    public static class AnalysisColumn extends HyperlinkPlaceManagerColumn<MetaSNPAnalysisProxy> {
+    class AnalysisColumn extends HyperlinkPlaceManagerColumn<MetaAnalysisProxy> {
 
         public AnalysisColumn(PlaceManager placeManager) {
             super(new HyperlinkCell(), placeManager);
         }
 
         @Override
-        public HyperlinkParam getValue(MetaSNPAnalysisProxy object) {
+        public HyperlinkParam getValue(MetaAnalysisProxy object) {
             String name = object.getAnalysis();
             PlaceRequest request = new PlaceRequest.Builder()
                     .nameToken(NameTokens.study)
@@ -40,14 +42,14 @@ public interface MetaSNPAnalysisDataGridColumns {
         }
     }
 
-    public static class PhenotypeColumn extends HyperlinkPlaceManagerColumn<MetaSNPAnalysisProxy> {
+    class PhenotypeColumn extends HyperlinkPlaceManagerColumn<MetaAnalysisProxy> {
 
         public PhenotypeColumn(PlaceManager placeManager) {
             super(new HyperlinkCell(), placeManager);
         }
 
         @Override
-        public HyperlinkParam getValue(MetaSNPAnalysisProxy object) {
+        public HyperlinkParam getValue(MetaAnalysisProxy object) {
             String name = object.getPhenotype();
             PlaceRequest request = new PlaceRequest.Builder()
                     .nameToken(NameTokens.phenotype)
@@ -57,14 +59,14 @@ public interface MetaSNPAnalysisDataGridColumns {
         }
     }
 
-    public static class StudyColumn extends HyperlinkPlaceManagerColumn<MetaSNPAnalysisProxy> {
+    class StudyColumn extends HyperlinkPlaceManagerColumn<MetaAnalysisProxy> {
 
         public StudyColumn(PlaceManager placeManager) {
             super(new HyperlinkCell(), placeManager);
         }
 
         @Override
-        public HyperlinkParam getValue(MetaSNPAnalysisProxy object) {
+        public HyperlinkParam getValue(MetaAnalysisProxy object) {
             String name = object.getStudy();
             PlaceRequest request = new PlaceRequest.Builder()
                     .nameToken(NameTokens.experiment)
@@ -74,39 +76,41 @@ public interface MetaSNPAnalysisDataGridColumns {
         }
     }
 
-    public static class GenotypeColumn extends Column<MetaSNPAnalysisProxy, String> {
+    class GenotypeColumn extends Column<MetaAnalysisProxy, String> {
 
         public GenotypeColumn() {
             super(new TextCell());
         }
 
         @Override
-        public String getValue(MetaSNPAnalysisProxy object) {
+        public String getValue(MetaAnalysisProxy object) {
             return object.getGenotype();
         }
     }
 
-    public static class MethodColumn extends Column<MetaSNPAnalysisProxy, String> {
+    class MethodColumn extends Column<MetaAnalysisProxy, String> {
 
         public MethodColumn() {
             super(new TextCell());
         }
 
         @Override
-        public String getValue(MetaSNPAnalysisProxy object) {
+        public String getValue(MetaAnalysisProxy object) {
             return object.getMethod();
         }
     }
 
-    public static class SNPColumn extends Column<MetaSNPAnalysisProxy, String> {
+    class SNPColumn extends Column<MetaAnalysisProxy, String> {
 
         public SNPColumn() {
             super(new TextCell());
         }
 
         @Override
-        public String getValue(MetaSNPAnalysisProxy object) {
-            SNPInfoProxy snpInfo = object.getSnpInfo();
+        public String getValue(MetaAnalysisProxy object) {
+            if (object.getAssociations().size() == 0)
+                return null;
+            SNPInfoProxy snpInfo = object.getAssociations().get(0).getSnpInfo();
             // TODO adapt to new annotation
             String snpText = String.valueOf(snpInfo.getPosition());
             if (snpInfo.getAnnotations() != null && snpInfo.getAnnotations().size() > 0) {
@@ -118,15 +122,15 @@ public interface MetaSNPAnalysisDataGridColumns {
         }
     }
 
-    public static class GeneColumn extends HyperlinkPlaceManagerColumn<MetaSNPAnalysisProxy> {
+    class GeneColumn extends HyperlinkPlaceManagerColumn<MetaAnalysisProxy> {
 
         public GeneColumn(PlaceManager placeManager) {
             super(new HyperlinkCell(), placeManager);
         }
 
         @Override
-        public HyperlinkParam getValue(MetaSNPAnalysisProxy object) {
-            String gene = object.getSnpInfo().getGene();
+        public HyperlinkParam getValue(MetaAnalysisProxy object) {
+            String gene = object.getAssociations().get(0).getSnpInfo().getGene();
             if (gene == null || gene.isEmpty()) {
                 return null;
             }
@@ -139,40 +143,67 @@ public interface MetaSNPAnalysisDataGridColumns {
         }
     }
 
-    public static class MafColumn extends Column<MetaSNPAnalysisProxy, Number> {
+    class MafColumn extends Column<MetaAnalysisProxy, Number> {
 
         public MafColumn() {
             super(new NumberCell(NumberFormat.getFormat(NumberFormat.getDecimalFormat().getPattern()).overrideFractionDigits(4)));
         }
 
         @Override
-        public Number getValue(MetaSNPAnalysisProxy object) {
-            return object.getMaf();
+        public Number getValue(MetaAnalysisProxy object) {
+            return object.getAssociations().get(0).getMaf();
         }
     }
 
-    public static class MacColumn extends Column<MetaSNPAnalysisProxy, Number> {
+    class MacColumn extends Column<MetaAnalysisProxy, Number> {
 
         public MacColumn() {
             super(new NumberCell(NumberFormat.getFormat(NumberFormat.getDecimalFormat().getPattern()).overrideFractionDigits(0)));
         }
 
         @Override
-        public Number getValue(MetaSNPAnalysisProxy object) {
-            return object.getMac();
+        public Number getValue(MetaAnalysisProxy object) {
+            return object.getAssociations().get(0).getMac();
         }
     }
 
 
-    public static class ChrColumn extends Column<MetaSNPAnalysisProxy, String> {
+    class ChrColumn extends Column<MetaAnalysisProxy, String> {
 
         public ChrColumn() {
             super(new TextCell());
         }
 
         @Override
-        public String getValue(MetaSNPAnalysisProxy object) {
-            return object.getSnpInfo().getChr();
+        public String getValue(MetaAnalysisProxy object) {
+            return object.getAssociations().get(0).getSnpInfo().getChr();
+        }
+    }
+
+
+    class ScoreColumn extends Column<MetaAnalysisProxy, AssociationProxy> {
+
+        public ScoreColumn() {
+            super(new MetaAnalysisGeneView.ScoreCell());
+        }
+
+        @Override
+        public AssociationProxy getValue(MetaAnalysisProxy object) {
+            if (object.getAssociations() != null && object.getAssociations().size() > 0)
+                return object.getAssociations().get(0);
+            return null;
+        }
+    }
+
+    class AssocCountColumn extends Column<MetaAnalysisProxy, Number> {
+
+        public AssocCountColumn() {
+            super(new NumberCell(NumberFormat.getFormat(NumberFormat.getDecimalFormat().getPattern()).overrideFractionDigits(0)));
+        }
+
+        @Override
+        public Number getValue(MetaAnalysisProxy object) {
+            return object.getTotalAssocCount();
         }
     }
 }

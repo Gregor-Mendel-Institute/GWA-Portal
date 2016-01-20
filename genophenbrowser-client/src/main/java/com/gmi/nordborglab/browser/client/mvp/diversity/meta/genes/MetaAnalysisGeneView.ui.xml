@@ -49,7 +49,6 @@
             line-height: 35px;
         }
 
-
         .geneContainer {
             border: solid 1px #ccc;
             padding: 5px;
@@ -67,6 +66,9 @@
             padding-right: 10px;
         }
 
+        .visualizationPanel {
+            float: left !important;
+        }
     </ui:style>
 
     <g:LayoutPanel ui:field="container">
@@ -108,11 +110,56 @@
                         <g:layer top="0" height="100px">
                             <g:SimplePanel ui:field="filterContainer" addStyleNames="{style.filterContainer}"/>
                         </g:layer>
-                        <g:layer top="100px" bottom="30px">
-                            <c:DataGrid ui:field="dataGrid"/>
+                        <g:layer top="100px" height="34px" left="5px" right="0">
+                            <g:HTMLPanel ui:field="visualizationSelectionPanel">
+                                <div class="{mainRes.style.chartIconContainer} {style.visualizationPanel}">
+                                    <b:ButtonGroup>
+                                        <!-- use container="body" because of https://github.com/twbs/bootstrap/issues/5865 -->
+                                        <b:Tooltip title="Groups the associations by study" container="body"
+                                                   placement="BOTTOM">
+                                            <b:Button active="true" icon="INDENT" ui:field="groupedBtn"></b:Button>
+                                        </b:Tooltip>
+                                        <b:Tooltip title="Displays all associations ungrouped/flat" container="body"
+                                                   placement="BOTTOM">
+                                            <b:Button icon="LIST" ui:field="flatBtn"></b:Button>
+                                        </b:Tooltip>
+                                        <b:Tooltip title="Shows a heatmap of the associations (Not impemented yet)"
+                                                   container="body" placement="BOTTOM">
+                                            <b:Button icon="BARCODE" ui:field="heatmapBtn" enabled="false"></b:Button>
+                                        </b:Tooltip>
+                                    </b:ButtonGroup>
+                                </div>
+                            </g:HTMLPanel>
                         </g:layer>
-                        <g:layer bottom="0" height="30px">
-                            <gui:CustomPager ui:field="pager"/>
+                        <g:layer top="134px" bottom="0">
+                            <g:TabLayoutPanel barHeight="0" ui:field="visualizationTabPanel">
+                                <g:tab>
+                                    <g:header></g:header>
+                                    <g:LayoutPanel>
+                                        <g:layer top="0" bottom="30px">
+                                            <c:DataGrid ui:field="groupedDataGrid"/>
+                                        </g:layer>
+                                        <g:layer bottom="0" height="30px">
+                                            <gui:CustomPager ui:field="groupedDataGridPager"/>
+                                        </g:layer>
+                                    </g:LayoutPanel>
+                                </g:tab>
+                                <g:tab>
+                                    <g:header></g:header>
+                                    <g:LayoutPanel>
+                                        <g:layer top="0" bottom="30px">
+                                            <c:DataGrid ui:field="flatDataGrid"/>
+                                        </g:layer>
+                                        <g:layer bottom="0" height="30px">
+                                            <gui:CustomPager ui:field="flatDataGridPager"/>
+                                        </g:layer>
+                                    </g:LayoutPanel>
+                                </g:tab>
+                                <g:tab>
+                                    <g:header></g:header>
+                                    <g:HTMLPanel>Heatmap</g:HTMLPanel>
+                                </g:tab>
+                            </g:TabLayoutPanel>
                         </g:layer>
                     </g:LayoutPanel>
                 </g:layer>

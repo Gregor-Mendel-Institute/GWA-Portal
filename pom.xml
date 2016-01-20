@@ -43,6 +43,7 @@
         <jetty.version>9.2.7.v20150116</jetty.version>
         <errai.version>3.1.2.Final</errai.version>
         <javassist.version>3.19.0-GA</javassist.version>
+        <google.autovalue>1.1</google.autovalue>
 
         <maven.surefire.plugin>2.12.4</maven.surefire.plugin>
         <maven.compiler.plugin>3.1</maven.compiler.plugin>
@@ -95,6 +96,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.google.auto.value</groupId>
+                <artifactId>auto-value</artifactId>
+                <version>${google.autovalue}</version>
+                <scope>provided</scope>
+            </dependency>
             <dependency>
                 <groupId>com.arcbees.analytics</groupId>
                 <artifactId>universal-analytics</artifactId>
@@ -175,6 +182,7 @@
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
+                        <compilerArgument>-proc:none</compilerArgument>
                     </configuration>
                     <dependencies>
                     </dependencies>

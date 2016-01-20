@@ -9,8 +9,8 @@ import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FilterItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GWASResultProxy;
 import com.gmi.nordborglab.browser.shared.proxy.GenePageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisTopResultsCriteriaProxy;
-import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
@@ -33,11 +33,11 @@ import java.util.List;
 @ServiceName(value = "com.gmi.nordborglab.browser.server.service.MetaAnalysisService", locator = "com.gmi.nordborglab.browser.server.service.SpringServiceLocator")
 @ExtraTypes({GWASResultProxy.class, ExperimentProxy.class, PhenotypeProxy.class, StudyProxy.class, CandidateGeneListProxy.class})
 public interface MetaAnalysisRequest extends RequestContext {
-    Request<MetaSNPAnalysisPageProxy> findAllAnalysisForRegion(int startPos, int endPos, String chr, int start, int size, List<FilterItemProxy> filterItems);
+    Request<MetaAnalysisPageProxy> findAllAnalysisForRegion(int startPos, int endPos, String chr, int start, int size, List<FilterItemProxy> filterItems, boolean isGrouped);
 
     Request<List<FacetProxy>> findMetaStats(MetaAnalysisTopResultsCriteriaProxy criteria, List<FilterItemProxy> filterItems);
 
-    Request<MetaSNPAnalysisPageProxy> findTopAnalysis(MetaAnalysisTopResultsCriteriaProxy criteria, List<FilterItemProxy> filterItems, int start, int size);
+    Request<MetaAnalysisPageProxy> findTopAnalysis(MetaAnalysisTopResultsCriteriaProxy criteria, List<FilterItemProxy> filterItems, int start, int size);
 
     Request<CandidateGeneListPageProxy> findCandidateGeneLists(ConstEnums.TABLE_FILTER filter, String searchString, int start, int size);
 
