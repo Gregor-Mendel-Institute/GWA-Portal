@@ -7,7 +7,7 @@ import com.gmi.nordborglab.browser.server.domain.meta.MetaAnalysisTopResultsCrit
 import com.gmi.nordborglab.browser.server.domain.pages.CandidateGeneListEnrichmentPage;
 import com.gmi.nordborglab.browser.server.domain.pages.CandidateGeneListPage;
 import com.gmi.nordborglab.browser.server.domain.pages.GenePage;
-import com.gmi.nordborglab.browser.server.domain.pages.MetaSNPAnalysisPage;
+import com.gmi.nordborglab.browser.server.domain.pages.MetaAnalysisPage;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichment;
 import com.gmi.nordborglab.browser.shared.dto.FilterItem;
@@ -25,11 +25,11 @@ import java.util.List;
  */
 
 public interface MetaAnalysisService {
-    MetaSNPAnalysisPage findAllAnalysisForRegion(int startPos, int endPost, String chr, int start, int size, List<FilterItem> filterItems);
+    MetaAnalysisPage findAllAnalysisForRegion(int startPos, int endPost, String chr, int start, int size, List<FilterItem> filterItems, boolean isGrouped);
 
     List<ESFacet> findMetaStats(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems);
 
-    MetaSNPAnalysisPage findTopAnalysis(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems, int start, int size);
+    MetaAnalysisPage findTopAnalysis(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems, int start, int size);
 
     CandidateGeneListPage findCandidateGeneLists(ConstEnums.TABLE_FILTER filter, String searchString, int page, int size);
 

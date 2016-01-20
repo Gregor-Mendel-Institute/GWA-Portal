@@ -15,9 +15,9 @@ import com.gmi.nordborglab.browser.shared.dto.FilterItem;
 import com.gmi.nordborglab.browser.shared.proxy.AlleleAssayProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FilterItemProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisProxy;
 import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisTopResultsCriteriaProxy;
-import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisPageProxy;
-import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProtocolProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.MetaAnalysisRequest;
@@ -67,7 +67,7 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
 
         void resetSelection(List<STATS> statses);
 
-        HasData<MetaSNPAnalysisProxy> getDisplay();
+        HasData<MetaAnalysisProxy> getDisplay();
 
         void setPagingDisabled(boolean disabled);
     }
@@ -90,15 +90,15 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
     private List<STATS> currentFilters = Lists.newArrayList();
     private final FilterPresenterWidget filterPresenterWidget;
 
-    private AsyncDataProvider<MetaSNPAnalysisProxy> dataProvider = new AsyncDataProvider<MetaSNPAnalysisProxy>() {
+    private AsyncDataProvider<MetaAnalysisProxy> dataProvider = new AsyncDataProvider<MetaAnalysisProxy>() {
         @Override
-        protected void onRangeChanged(HasData<MetaSNPAnalysisProxy> display) {
+        protected void onRangeChanged(HasData<MetaAnalysisProxy> display) {
             getView().setPagingDisabled(true);
             final Range range = display.getVisibleRange();
             fireEvent(new LoadingIndicatorEvent(true));
-            getContext().findTopAnalysis(criteria, filterItems, range.getStart(), range.getLength()).fire(new Receiver<MetaSNPAnalysisPageProxy>() {
+            getContext().findTopAnalysis(criteria, filterItems, range.getStart(), range.getLength()).fire(new Receiver<MetaAnalysisPageProxy>() {
                 @Override
-                public void onSuccess(MetaSNPAnalysisPageProxy response) {
+                public void onSuccess(MetaAnalysisPageProxy response) {
                     fireEvent(new LoadingIndicatorEvent(false));
                     updateRowCount((int) response.getTotalElements(), true);
                     updateRowData(range.getStart(), response.getContents());

@@ -1,9 +1,8 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.meta.topsnps;
 
-import com.gmi.nordborglab.browser.client.mvp.diversity.meta.genes.MetaAnalysisGeneView;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
-import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisProxy;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Maps;
@@ -13,7 +12,6 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
@@ -69,7 +67,7 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
     @UiField
     PieChart annotationPieChart;
     @UiField(provided = true)
-    DataGrid<MetaSNPAnalysisProxy> dataGrid;
+    DataGrid<MetaAnalysisProxy> dataGrid;
     @UiField
     CustomPager pager;
     @UiField
@@ -168,7 +166,7 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.GenotypeColumn(), "Genotype");
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.MethodColumn(), "Method");
         dataGrid.setColumnWidth(4, 80, Style.Unit.PX);
-        dataGrid.addColumn(new IdentityColumn<MetaSNPAnalysisProxy>(new MetaAnalysisGeneView.ScoreCell()), "pVal");
+        dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.ScoreColumn(), "pVal");
         dataGrid.setColumnWidth(5, 60, Style.Unit.PX);
         dataGrid.addColumn(new MetaSNPAnalysisDataGridColumns.MafColumn(), "Maf");
         dataGrid.setColumnWidth(6, 60, Style.Unit.PX);
@@ -284,7 +282,7 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
     }
 
     @Override
-    public HasData<MetaSNPAnalysisProxy> getDisplay() {
+    public HasData<MetaAnalysisProxy> getDisplay() {
         return dataGrid;
     }
 

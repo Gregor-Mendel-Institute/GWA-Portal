@@ -9,13 +9,14 @@ import com.gmi.nordborglab.browser.server.data.es.ESTermsFacet;
 import com.gmi.nordborglab.browser.server.domain.DomainFunctions;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.meta.Association;
+import com.gmi.nordborglab.browser.server.domain.meta.MetaAnalysis;
 import com.gmi.nordborglab.browser.server.domain.meta.MetaAnalysisTopResultsCriteria;
-import com.gmi.nordborglab.browser.server.domain.meta.MetaSNPAnalysis;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.pages.CandidateGeneListEnrichmentPage;
 import com.gmi.nordborglab.browser.server.domain.pages.CandidateGeneListPage;
 import com.gmi.nordborglab.browser.server.domain.pages.GenePage;
-import com.gmi.nordborglab.browser.server.domain.pages.MetaSNPAnalysisPage;
+import com.gmi.nordborglab.browser.server.domain.pages.MetaAnalysisPage;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList;
 import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichment;
@@ -60,8 +61,12 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.elasticsearch.index.query.support.QueryInnerHitBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
@@ -71,6 +76,8 @@ import org.elasticsearch.search.aggregations.bucket.range.Range;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.acls.domain.CumulativePermission;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
@@ -90,6 +97,7 @@ import java.util.Set;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.hasChildQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
@@ -142,9 +150,22 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
     @Resource
     protected CandidateGeneListEnrichmentRepository candidateGeneListEnrichmentsRepository;
 
+    private static Logger logger = LoggerFactory.getLogger(MetaAnalysisService.class);
+
+    // MAX  number of top assocs for grouped analysis
+    private final static int TOP_ASSOC_SIZE = 20;
+
     @Override
-    public MetaSNPAnalysisPage findAllAnalysisForRegion(int startPos, int endPos, String chr, int start, int size, List<FilterItem> filterItems) {
-        List<MetaSNPAnalysis> metaSNPAnalysises = Lists.newArrayList();
+    public MetaAnalysisPage findAllAnalysisForRegion(int startPos, int endPos, String chr, int start, int size, List<FilterItem> filterItems, boolean isGrouped) {
+        if (!isGrouped) {
+            return findFlatAnalysisForRegion(startPos, endPos, chr, start, size, filterItems);
+        }
+        return findGroupedAnalysisForRegion(startPos, endPos, chr, start, size, filterItems);
+    }
+
+
+    private MetaAnalysisPage findFlatAnalysisForRegion(int startPos, int endPos, String chr, int start, int size, List<FilterItem> filterItems) {
+        List<MetaAnalysis> metaAnalyses = Lists.newArrayList();
         // GET  all SNPs
         SearchRequestBuilder builder = client.prepareSearch(esAclManager.getIndex());
         BoolQueryBuilder filter = QueryBuilders.boolQuery()
@@ -168,43 +189,114 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 }
                 //TODO Optimize by fetching all studies in one query
                 Study study = studyRepository.findOne(studyId);
-                SNPInfo info = new SNPInfo();
-                info.setPosition((Integer) fields.get("position").getValue());
-                info.setChr(chr);
-                String annotationString = null;
-                // Required because 250k SNPs are not indexed
-                if (fields.containsKey("inGene")) {
-                    info.setInGene((Boolean) fields.get("inGene").getValue());
-                }
-                // Required because 250k SNPs are not indexed
-                if (fields.containsKey("annotation")) {
-                    annotationString = fields.get("annotation").getValue();
-                }
-                info.setAnnotations(convertOldAnnotationTonewFormat(annotationString));
-                MetaSNPAnalysis.Builder metaAnalysisBuilder = new MetaSNPAnalysis.Builder()
+                MetaAnalysis.Builder metaAnalysisBuilder = MetaAnalysis.builder()
                         .setAnalysisId(studyId)
-                        .setSnpAnnotation(info)
-                        .setpValue((Double) fields.get("score").getValue())
                         .setAnalysis(study.getName())
                         .setPhenotype(study.getPhenotype().getLocalTraitName())
                         .setStudy(study.getPhenotype().getExperiment().getName())
                         .setMethod(study.getProtocol().getAnalysisMethod())
                         .setGenotype(study.getAlleleAssay().getName())
-                        .setOverFDR((Boolean) fields.get("overFDR").getValue())
                         .setPhenotypeId(study.getPhenotype().getId())
-                        .setStudyId(study.getPhenotype().getExperiment().getId());
-                if (fields.containsKey("mac")) {
-                    metaAnalysisBuilder.setMac((Integer) fields.get("mac").getValue());
-                }
-                if (fields.containsKey("maf")) {
-                    metaAnalysisBuilder.setMaf((Double) fields.get("maf").getValue());
-                }
-                metaSNPAnalysises.add(metaAnalysisBuilder.build());
+                        .setStudyId(study.getPhenotype().getExperiment().getId())
+                        .setAssociations(ImmutableList.of(getAssociation(fields, false, chr)));
+
+                metaAnalyses.add(metaAnalysisBuilder.build());
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn("Failed to retrieve associations in a region", e);
             }
         }
-        return new MetaSNPAnalysisPage(metaSNPAnalysises, new PageRequest(start / size, size), response.getHits().getTotalHits());
+        return new MetaAnalysisPage(metaAnalyses, new PageRequest(start / size, size), response.getHits().getTotalHits());
+    }
+
+    private MetaAnalysisPage findGroupedAnalysisForRegion(int startPos, int endPos, String chr, int start, int size, List<FilterItem> filterItems) {
+
+        List<MetaAnalysis> metaAnalyses = Lists.newArrayList();
+        // GET  all SNPs
+        SearchRequestBuilder builder = client.prepareSearch(esAclManager.getIndex());
+
+        BoolQueryBuilder regionFilter = boolQuery()
+                .must(QueryBuilders.rangeQuery("position").from(startPos).to(endPos))
+                .must(QueryBuilders.termQuery("chr", chr));
+
+        //TODO support this
+        QueryBuilder filterItemFilter = getFilterFromFilterItems(filterItems);
+        if (filterItemFilter != null) {
+            regionFilter.filter(filterItemFilter);
+        }
+
+        FunctionScoreQueryBuilder scoreQuery = QueryBuilders.functionScoreQuery(regionFilter, ScoreFunctionBuilders.fieldValueFactorFunction("score"));
+        BoolQueryBuilder query = boolQuery()
+                .filter(esAclManager.getAclFilterForPermissions(Lists.newArrayList("read")))
+                .must(hasChildQuery("meta_analysis_snps", scoreQuery).scoreMode("avg")
+                        .innerHit(new QueryInnerHitBuilder().setSize(TOP_ASSOC_SIZE)
+                                .field("chr").field("position").field("annotation")
+                                .field("annotation.gene_name").field("score").field("overFDR").field("mac").field("maf")));
+        builder.setSize(size).setFrom(start).setTypes("study").setQuery(query).addFields("name", "phenotype.id", "phenotype.name", "experiment.id", "experiment.name", "protocol.analysis_method", "genotype.name");
+
+        SearchResponse response = builder.execute().actionGet();
+        for (SearchHit searchHit : response.getHits()) {
+            try {
+                Map<String, SearchHitField> fields = searchHit.getFields();
+                MetaAnalysis.Builder metaAnalysisBuilder = MetaAnalysis.builder()
+                        .setAnalysisId(Long.valueOf(searchHit.getId()))
+                        .setAnalysis((String) fields.get("name").getValue())
+                        .setPhenotype((String) fields.get("phenotype.name").getValue())
+                        .setStudy((String) fields.get("experiment.name").getValue())
+                        .setMethod((String) fields.get("protocol.analysis_method").getValue())
+                        .setGenotype((String) fields.get("genotype.name").getValue())
+                        .setPhenotypeId(Long.valueOf((Integer) fields.get("phenotype.id").getValue()))
+                        .setStudyId(Long.valueOf((Integer) fields.get("experiment.id").getValue()))
+                        .setTotalAssocCount(searchHit.getInnerHits().get("meta_analysis_snps").getTotalHits())
+                        .setAssociations(ImmutableList.copyOf(getAssociations(searchHit.getInnerHits().get("meta_analysis_snps"))));
+                metaAnalyses.add(metaAnalysisBuilder.build());
+            } catch (Exception e) {
+                logger.warn("Failed to retrieve associations in a region", e);
+            }
+        }
+        return new MetaAnalysisPage(metaAnalyses, new PageRequest(start / size, size), response.getHits().getTotalHits(), TOP_ASSOC_SIZE);
+    }
+
+
+    private Association getAssociation(Map<String, SearchHitField> fields, boolean fetchGene, String chr) {
+        SNPInfo info = new SNPInfo();
+        info.setPosition((Integer) fields.get("position").getValue());
+        if (chr == null) {
+            info.setChr((String) fields.get("chr").getValue());
+        }
+        String annotationString = null;
+        // Required because 250k SNPs are not indexed
+        if (fields.containsKey("inGene")) {
+            info.setInGene((Boolean) fields.get("inGene").getValue());
+        }
+        // Required because 250k SNPs are not indexed
+        if (fields.containsKey("annotation")) {
+            annotationString = fields.get("annotation").getValue();
+        }
+
+        info.setAnnotations(convertOldAnnotationTonewFormat(annotationString));
+        if (fetchGene && fields.containsKey("annotations.gene_name")) {
+            info.setGene((String) fields.get("annotations.gene_name").getValue());
+
+        }
+        Association.Builder associationBuilder = Association.builder()
+                .setSnpInfo(info)
+                .setPValue((Double) fields.get("score").getValue())
+                .setOverFDR((Boolean) fields.get("overFDR").getValue());
+        if (fields.containsKey("mac")) {
+            associationBuilder.setMac((Integer) fields.get("mac").getValue());
+        }
+        if (fields.containsKey("maf")) {
+            associationBuilder.setMaf((Double) fields.get("maf").getValue());
+        }
+        return associationBuilder.build();
+    }
+
+    private List<Association> getAssociations(SearchHits hits) {
+        List<Association> associations = Lists.newArrayList();
+        for (SearchHit hit : hits) {
+            associations.add(getAssociation(hit.getFields(), false, null));
+        }
+        return associations;
     }
 
 
@@ -340,23 +432,23 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
             case METHOD:
                 itemFilterBuilder = QueryBuilders.boolQuery();
                 for (FilterItemValue value : filterItem.getValues()) {
-                    itemFilterBuilder.should(QueryBuilders.hasParentQuery("study", QueryBuilders.termQuery("protocol.analysis_method", value.getText())));
+                    itemFilterBuilder.should(getQueryBuilder(QueryBuilders.termQuery("protocol.analysis_method", value.getText()), "study"));
                 }
                 break;
             case GENOTYPE:
                 itemFilterBuilder = QueryBuilders.boolQuery();
                 for (FilterItemValue value : filterItem.getValues()) {
-                    itemFilterBuilder.should(QueryBuilders.hasParentQuery("study", QueryBuilders.termQuery("genotype.name", value.getText())));
+                    itemFilterBuilder.should(getQueryBuilder(QueryBuilders.termQuery("genotype.name", value.getText()), "study"));
                 }
                 break;
             case STUDY:
                 itemFilterBuilder = QueryBuilders.boolQuery();
                 for (FilterItemValue value : filterItem.getValues()) {
                     if (value.getValue() != null) {
-                        itemFilterBuilder.should(QueryBuilders.hasParentQuery("study", QueryBuilders.termQuery("experiment.id", value.getValue())));
+                        itemFilterBuilder.should(getQueryBuilder(QueryBuilders.termQuery("experiment.id", value.getValue()), "study"));
                     } else {
-                        itemFilterBuilder.should(QueryBuilders.hasParentQuery("study", QueryBuilders.hasParentQuery("phenotype",
-                                QueryBuilders.hasParentQuery("experiment", QueryBuilders.matchQuery("name", value.getText())))));
+                        itemFilterBuilder.should(getQueryBuilder(QueryBuilders.hasParentQuery("phenotype",
+                                QueryBuilders.hasParentQuery("experiment", QueryBuilders.matchQuery("name", value.getText()))), "study"));
                         //TODO can't access experiment.name in study because it is not re-indexed when name changes in experiment
                         //itemFilterBuilder.should(QueryBuilders.hasParentQuery("study", QueryBuilders.matchQuery("experiment.name", value.getText())));
                     }
@@ -366,10 +458,10 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 itemFilterBuilder = QueryBuilders.boolQuery();
                 for (FilterItemValue value : filterItem.getValues()) {
                     if (value.getValue() != null) {
-                        itemFilterBuilder.should(QueryBuilders.hasParentQuery("study", QueryBuilders.termQuery("phenotype.id", value.getValue())));
+                        itemFilterBuilder.should(getQueryBuilder(QueryBuilders.termQuery("phenotype.id", value.getValue()), "study"));
                     } else {
 
-                        itemFilterBuilder.should(QueryBuilders.hasParentQuery("study", QueryBuilders.hasParentQuery("phenotype", QueryBuilders.matchQuery("local_trait_name", value.getText()))));
+                        itemFilterBuilder.should(getQueryBuilder(QueryBuilders.hasParentQuery("phenotype", QueryBuilders.matchQuery("local_trait_name", value.getText())), "study"));
                         //TODO can't access phenotype.name in study because it is not re-indexed when name changes in phenotype
                         //itemFilterBuilder.should(QueryBuilders.hasParentQuery("study",QueryBuilders.matchQuery("phenotype.name", value.getText())));
                     }
@@ -381,7 +473,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                     if (value.getValue() != null) {
                         itemFilterBuilder.should(QueryBuilders.termQuery("studyid", value.getValue()));
                     } else {
-                        itemFilterBuilder.should(QueryBuilders.hasParentQuery("study", QueryBuilders.termQuery("name", value.getText())));
+                        itemFilterBuilder.should(getQueryBuilder(QueryBuilders.termQuery("name", value.getText()), "study"));
                     }
                 }
                 break;
@@ -412,6 +504,13 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         }
 
         return itemFilterBuilder;
+    }
+
+    private QueryBuilder getQueryBuilder(QueryBuilder filter, String parentType) {
+        if (parentType != null) {
+            return QueryBuilders.hasParentQuery(parentType, filter);
+        }
+        return filter;
     }
 
     //TODO optimize because getChr() of Gene does substr
@@ -456,8 +555,8 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
 
 
     @Override
-    public MetaSNPAnalysisPage findTopAnalysis(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems, int start, int size) {
-        List<MetaSNPAnalysis> metaSNPAnalysises = Lists.newArrayList();
+    public MetaAnalysisPage findTopAnalysis(MetaAnalysisTopResultsCriteria criteria, List<FilterItem> filterItems, int start, int size) {
+        List<MetaAnalysis> metaAnalyses = Lists.newArrayList();
         SearchRequestBuilder builder = client.prepareSearch(esAclManager.getIndex());
 
         QueryBuilder filter = getFilterFromCriteria(criteria, filterItems);
@@ -479,44 +578,22 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                     studyId = Long.parseLong((String) fields.get("_parent").getValue());
                 }
                 Study study = studyRepository.findOne(studyId);
-                SNPInfo info = new SNPInfo();
-                info.setPosition((Integer) fields.get("position").getValue());
-                info.setChr((String) fields.get("chr").getValue());
-                String annotationString = null;
-                //FIXME Change to new annotation format
-                info.setInGene((Boolean) fields.get("inGene").getValue());
-                if (fields.containsKey("annotation")) {
-                    annotationString = fields.get("annotation").getValue();
-                }
-                info.setAnnotations(convertOldAnnotationTonewFormat(annotationString));
-                if (fields.containsKey("annotations.gene_name")) {
-                    info.setGene((String) fields.get("annotations.gene_name").getValue());
-
-                }
-                MetaSNPAnalysis.Builder metaAnalysisBuilder = new MetaSNPAnalysis.Builder()
+                MetaAnalysis.Builder metaAnalysisBuilder = MetaAnalysis.builder()
                         .setAnalysisId(studyId)
-                        .setSnpAnnotation(info)
-                        .setpValue((Double) fields.get("score").getValue())
                         .setAnalysis(study.getName())
                         .setPhenotype(study.getPhenotype().getLocalTraitName())
                         .setStudy(study.getPhenotype().getExperiment().getName())
                         .setMethod(study.getProtocol().getAnalysisMethod())
                         .setGenotype(study.getAlleleAssay().getName())
-                        .setOverFDR((Boolean) fields.get("overFDR").getValue())
                         .setPhenotypeId(study.getPhenotype().getId())
-                        .setStudyId(study.getPhenotype().getExperiment().getId());
-                if (fields.containsKey("mac")) {
-                    metaAnalysisBuilder.setMac((Integer) fields.get("mac").getValue());
-                }
-                if (fields.containsKey("maf")) {
-                    metaAnalysisBuilder.setMaf((Double) fields.get("maf").getValue());
-                }
-                metaSNPAnalysises.add(metaAnalysisBuilder.build());
+                        .setStudyId(study.getPhenotype().getExperiment().getId())
+                        .setAssociations(ImmutableList.of(getAssociation(fields, true, null)));
+                metaAnalyses.add(metaAnalysisBuilder.build());
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn("Failed to retrieve top associations", e);
             }
         }
-        return new MetaSNPAnalysisPage(metaSNPAnalysises, new PageRequest(start / size, size), response.getHits().getTotalHits());
+        return new MetaAnalysisPage(metaAnalyses, new PageRequest(start / size, size), response.getHits().getTotalHits(), 0);
     }
 
     @Override
@@ -557,7 +634,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         try {
             esIndexer.index(candidateGeneList);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Failed to index candidate gene list", e);
         }
     }
 
@@ -1083,7 +1160,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
             builder.endObject();
             return builder;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Failed to create index document for candidate gene list enrichment", e);
         }
         return null;
     }

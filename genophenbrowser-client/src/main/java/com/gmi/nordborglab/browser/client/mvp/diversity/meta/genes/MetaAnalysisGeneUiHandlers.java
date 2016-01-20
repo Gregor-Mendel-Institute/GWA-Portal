@@ -1,7 +1,8 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.meta.genes;
 
 import com.gmi.nordborglab.browser.client.manager.SearchManager;
-import com.gmi.nordborglab.browser.shared.proxy.MetaSNPAnalysisProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AssociationProxy;
+import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisProxy;
 import com.gwtplatform.mvp.client.UiHandlers;
 
 /**
@@ -17,7 +18,12 @@ public interface MetaAnalysisGeneUiHandlers extends UiHandlers {
 
     void onSelectGene(String gene);
 
-    void onSelectMetaAnalysis(MetaSNPAnalysisProxy metaAnalysis);
+    void onSelectMetaAnalysis(MetaAnalysisProxy metaAnalysis);
 
     void onChangeRange(int lowerLimit, int upperLimit);
+
+    void onSelectVisualization(MetaAnalysisGenePresenter.VIZ_TYPE vizType);
+
+    void onSelectAssociation(AssociationProxy associationProxy);
+
 }
