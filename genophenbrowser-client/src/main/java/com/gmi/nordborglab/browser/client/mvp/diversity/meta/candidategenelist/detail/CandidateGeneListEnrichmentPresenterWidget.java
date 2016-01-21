@@ -144,6 +144,8 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
                 if (filter == ConstEnums.ENRICHMENT_FILTER.AVAILABLE && (dataProvider.getViewType() != EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST && dataProvider.getViewType() != EnrichmentProvider.TYPE.STUDY)) {
                     return;
                 }
+                final ConstEnums.ENRICHMENT_FILTER currentFilter = ConstEnums.ENRICHMENT_FILTER.valueOf(facetSearchPresenterWidget.getFilter());
+                getView().displayType(currentFilter);
                 if (event.isSearchStringChanged()) {
                     updateFacets = true;
                 }
@@ -170,7 +172,6 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
                 }
                 display.setRowCount((int) candidateGeneListEnrichments.getTotalElements(), true);
                 display.setRowData(display.getVisibleRange().getStart(), candidateGeneListEnrichments.getContents());
-                getView().displayType(currentFilter);
                 if (currentFilter == ConstEnums.ENRICHMENT_FILTER.AVAILABLE) {
                     getView().getCheckBoxState().setTotalCount((int) candidateGeneListEnrichments.getTotalElements());
                 }
@@ -197,6 +198,11 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
 
 
     private void refreshView() {
+        HasData<CandidateGeneListEnrichmentProxy> display = getDisplay();
+        if (display != null) {
+            display.setVisibleRangeAndClearData(display.getVisibleRange(), true);
+        }
+        getView().enableRunBtn(getSelectedRecords().size() > 0);
         if (updateFacets) {
             dataProvider.findEnrichmentStats(facetSearchPresenterWidget.getSearchString(), new Receiver<List<FacetProxy>>() {
                 @Override
@@ -206,11 +212,6 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
             });
 
         }
-        HasData<CandidateGeneListEnrichmentProxy> display = getDisplay();
-        if (display != null) {
-            display.setVisibleRangeAndClearData(display.getVisibleRange(), true);
-        }
-        getView().enableRunBtn(getSelectedRecords().size() > 0);
     }
 
 
