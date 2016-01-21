@@ -632,7 +632,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
 
     private void indexCandidateGeneList(CandidateGeneList candidateGeneList) {
         try {
-            esIndexer.index(candidateGeneList);
+            esIndexer.index(candidateGeneList, true);
         } catch (IOException e) {
             logger.error("Failed to index candidate gene list", e);
         }
@@ -670,8 +670,15 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         List<Gene> genes = Lists.newArrayList();
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(page).setTypes("candidate_gene_list").setFetchSource("genes", null);
-        request.setQuery(QueryBuilders.constantScoreQuery(QueryBuilders.idsQuery().addIds(candidateGeneList.getId().toString())));
+        QueryBuilder idQuery = QueryBuilders.idsQuery().addIds(candidateGeneList.getId().toString());
 
+        if (searchString != null) {
+            QueryInnerHitBuilder queryInnerHitBuilder = new QueryInnerHitBuilder().setSize(1)
+                    .setFetchSource(true);
+            request.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.nestedQuery("genes", QueryBuilders.termQuery("genes.name", searchString)).innerHit(queryInnerHitBuilder)).filter(idQuery));
+        } else {
+            request.setQuery(QueryBuilders.constantScoreQuery(idQuery));
+        }
         NestedBuilder aggrs = AggregationBuilders.nested("genes").path("genes");
         aggrs.subAggregation(AggregationBuilders.terms("annotation").field("genes.annotation").size(5))
                 .subAggregation(AggregationBuilders.terms("chr").field("genes.chr").size(5))
@@ -681,7 +688,11 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         SearchResponse response = request.execute().actionGet();
         if (response.getHits().getTotalHits() > 0) {
             SearchHit hit = response.getHits().getAt(0);
-            genes = extractGeneInfos(hit);
+            if (searchString == null) {
+                genes = extractGeneInfos(hit);
+            } else {
+                genes = Lists.newArrayList(extractGeneInfo(hit.getInnerHits().get("genes").getAt(0).getSource()));
+            }
         }
         List<ESFacet> statsFacets = Lists.newArrayList();
         List<ESTermsFacet> terms = Lists.newArrayList();
@@ -799,7 +810,6 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         List<Gene> genes = getGeneInfos(list);
         return genes;
     }
-
 
     private boolean isCandidateGeneListInStudy(Study study, CandidateGeneList candidateGeneList) {
         for (CandidateGeneListEnrichment enrichment : study.getCandidateGeneListEnrichments()) {
@@ -1001,6 +1011,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         return facets;
     }
 
+
     private long findAvailableCandidateGeneListEnrichmentsForStudyCount(Long studyId) {
         List<Long> ids = candidateGeneListRepository.findExistingEnrichmentByStudy(studyId);
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
@@ -1018,8 +1029,6 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         return response.getHits().getTotalHits();
     }
 
-
-
     private QueryBuilder getAclFilterForEnrichment(SecureEntity entity, boolean isInEnrichment) {
         List<String> permissions = Lists.newArrayList("read");
         QueryBuilder studyAclFilter = esAclManager.getAclFilterForPermissions(permissions);
@@ -1033,6 +1042,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         }
         return aclFilter;
     }
+
 
     private QueryBuilder getEntityFilterForEnrichment(SecureEntity entity) {
         QueryBuilder typeFilter = null;
@@ -1123,6 +1133,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         BulkResponse bulkResponse = bulkRequest.execute().actionGet();
     }
 
+
     public void indexCandidateGeneListEnrichment(CandidateGeneListEnrichment enrichment) {
         indexCandidateGeneListEnrichments(Lists.newArrayList(enrichment));
     }
@@ -1179,30 +1190,36 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 .execute();
     }
 
+    private Gene extractGeneInfo(Map<String, Object> field) {
+        Gene gene = new Gene((long) (Integer) field.get("start_pos"), (long) (Integer) field.get("end_pos"), (Integer) field.get("strand"), (String) field.get("name"), null);
+        gene.setAnnotation((String) field.get("annotation"));
+        gene.setCuratorSummary((String) field.get("curator_summary"));
+        gene.setSynonyms((List<String>) field.get("synonyms"));
+        gene.setDescription((String) field.get("desdeletecription"));
+        gene.setShortDescription((String) field.get("short_description"));
+        if (field.containsKey("GO")) {
+            List<Object> goTerms = (List<Object>) field.get("GO");
+            for (Object goTermItem : goTerms) {
+                Map<String, Object> goTermFields = (Map<String, Object>) goTermItem;
+                gene.getGoTerms().add(new GoTerm((String) goTermFields.get("relation"), (String) goTermFields.get("exact"), (String) goTermFields.get("narrow")));
+            }
+        }
+        return gene;
+    }
+
     private List<Gene> extractGeneInfos(SearchHit hit) {
         List<Gene> genes = Lists.newArrayList();
         final Map<String, Object> source = hit.getSource();
         if (source != null && !source.isEmpty()) {
             List<Map<String, Object>> items = (List<Map<String, Object>>) source.get("genes");
             for (Map<String, Object> field : items) {
-                Gene gene = new Gene((long) (Integer) field.get("start_pos"), (long) (Integer) field.get("end_pos"), (Integer) field.get("strand"), (String) field.get("name"), null);
-                gene.setAnnotation((String) field.get("annotation"));
-                gene.setCuratorSummary((String) field.get("curator_summary"));
-                gene.setSynonyms((List<String>) field.get("synonyms"));
-                gene.setDescription((String) field.get("desdeletecription"));
-                gene.setShortDescription((String) field.get("short_description"));
-                if (field.containsKey("GO")) {
-                    List<Object> goTerms = (List<Object>) field.get("GO");
-                    for (Object goTermItem : goTerms) {
-                        Map<String, Object> goTermFields = (Map<String, Object>) goTermItem;
-                        gene.getGoTerms().add(new GoTerm((String) goTermFields.get("relation"), (String) goTermFields.get("exact"), (String) goTermFields.get("narrow")));
-                    }
-                }
-                genes.add(gene);
+
+                genes.add(extractGeneInfo(field));
             }
         }
         return genes;
     }
+
 
     private List<Gene> getGeneInfos(CandidateGeneList candidateGeneList) {
         List<Gene> genes = Lists.newArrayList();

@@ -226,7 +226,6 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                 getView().getGenesDisplay().setVisibleRangeAndClearData(getView().getGenesDisplay().getVisibleRange(), true);
             }
         }));
-
     }
 
     @Override
@@ -245,8 +244,11 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                     fireEvent(new LoadingIndicatorEvent(false));
                     genesPage = response;
                     statsFacets = genesPage.getStatsFacets();
+                    //FIXME workaround until facetSearchPresenterWidget properly supports counts
+                    facetSearchPresenterWidget.initFixedFacets(FACET_MAP);
                     facetSearchPresenterWidget.displayFacets(genesPage.getFacets());
                     displayStats();
+                    getView().enableAddBtn(genesPage.getContents().size() == 0 && geneId != null);
                     filterAndDisplayGenes(newGeneProxy);
                 }
             };
@@ -266,17 +268,8 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         getView().refreshStats();
     }
 
-   /*private void displayGenes(GenePageProxy genePage, HasData<GeneProxy> display) {
-        fireEvent(new LoadingIndicatorEvent(false));
-        genesDataProvider.updateRowCount((int) genePage.getTotalElements(), true);
-        genesDataProvider.updateRowData(display.getVisibleRange().getStart(), genePage.getContent());
-        facets = genePage.getFacets();
-        getView().displayFacets(facets);
-    }*/
-
     @Override
     public void prepareFromRequest(PlaceRequest placeRequest) {
-
         super.prepareFromRequest(placeRequest);
         LoadingIndicatorEvent.fire(this, true);
         try {
@@ -331,6 +324,8 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     @Override
     public void onSelectGene(String gene) {
         this.geneId = gene;
+        genesPage = null;
+        getView().getGenesDisplay().setVisibleRangeAndClearData(getView().getGenesDisplay().getVisibleRange(), true);
     }
 
     @Override
@@ -339,6 +334,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
             @Override
             public void onSuccess(GeneProxy response) {
                 genesPage = null;
+                geneId = null;
                 resetEnrichmentCountAndUpdateView();
                 requestGenes(getView().getGenesDisplay(), response);
                 getView().getSearchBox().setText("");
@@ -481,7 +477,6 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                 return found;
             }
         }));
-        Iterable<List<GeneProxy>> partionedList = Iterables.partition(filteredList, range.getLength());
         genesDataProvider.updateRowCount(filteredList.size(), true);
         genesDataProvider.updateRowData(range.getStart(), filteredList);
         if (newGeneProxy != null) {

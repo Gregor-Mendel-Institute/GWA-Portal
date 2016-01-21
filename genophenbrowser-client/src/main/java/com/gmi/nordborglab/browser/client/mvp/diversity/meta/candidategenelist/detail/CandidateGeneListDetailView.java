@@ -531,6 +531,13 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
         (new PhaseAnimation.DataGridPhaseAnimation<GeneProxy>(genesDataGrid, gene, geneProvidesKey)).run();
     }
 
+    @UiHandler("searchGeneTa")
+    public void onChangeSearchBox(ChangeEvent e) {
+        if (searchGeneTa.getText().isEmpty()) {
+            getUiHandlers().onSelectGene(null);
+        }
+    }
+
     @Override
     public HasText getSearchBox() {
         return searchGeneTa;

@@ -49,8 +49,29 @@ public class EsIndexer {
     }
 
     public <T extends ESDocument> void index(T document) throws IOException {
+        index(document, false);
+    }
+
+    public <T extends ESDocument> void index(T document, boolean synchronous) throws IOException {
         IndexRequestBuilder request = getIndexRequest(document);
-        request.execute();
+
+        if (synchronous) {
+            request.execute().actionGet();
+            refresh();
+        } else {
+            request.execute();
+        }
+    }
+
+    public void refresh() {
+        refresh(null);
+    }
+
+    public void refresh(String... indices) {
+        if (indices == null) {
+            indices = new String[]{esAclManager.getIndex()};
+        }
+        esClient.admin().indices().prepareRefresh(indices).execute().actionGet();
     }
 
     public <T extends ESDocument> void delete(T document) {
