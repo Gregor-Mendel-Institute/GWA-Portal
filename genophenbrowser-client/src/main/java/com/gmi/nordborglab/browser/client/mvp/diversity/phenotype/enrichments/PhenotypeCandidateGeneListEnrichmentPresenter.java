@@ -4,13 +4,13 @@ import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.LoadPhenotypeEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.gin.ClientModule;
-import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
 import com.gmi.nordborglab.browser.client.manager.PhenotypeManager;
 import com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.PhenotypeDetailTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.widgets.enrichment.CandidateGeneListEnrichmentPresenter;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -55,7 +55,7 @@ public class PhenotypeCandidateGeneListEnrichmentPresenter extends CandidateGene
                                                          final ClientModule.AssistedInjectionFactory factory,
                                                          final PhenotypeManager phenotypeManager
     ) {
-        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(EnrichmentProvider.TYPE.PHENOTYPE), PhenotypeDetailTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(ConstEnums.ENRICHMENT_TYPE.PHENOTYPE), PhenotypeDetailTabPresenter.TYPE_SetTabContent);
         this.phenotypeManager = phenotypeManager;
     }
 
@@ -67,8 +67,8 @@ public class PhenotypeCandidateGeneListEnrichmentPresenter extends CandidateGene
             fireEvent(new LoadPhenotypeEvent(phenotype));
             fireLoadEvent = false;
         }
-        if (phenotype != dataProvider.getEntity()) {
-            dataProvider.setEntity(phenotype);
+        if (phenotype.getId() != dataProvider.getEntityId()) {
+            dataProvider.setEntityId(phenotype.getId());
             candidateGeneListEnrichmentWidget.refresh();
         }
     }

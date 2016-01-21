@@ -275,10 +275,10 @@ public class ClientModule extends AbstractPresenterModule {
 
     public interface AssistedInjectionFactory {
 
-        EnrichmentProviderImpl createEnrichmentProvider(EnrichmentProvider.TYPE type);
+        EnrichmentProviderImpl createEnrichmentProvider(ConstEnums.ENRICHMENT_TYPE type);
 
         CandidateGeneListEnrichmentPresenterWidget createCandidateGeneListEnrichmentPresenter(final EnrichmentProvider dataProvider);
 
-        CandidateGeneListEnrichmentPresenterWidgetView getCandidateGeneListEnrichmentView(final EnrichmentProvider.TYPE viewType);
+        CandidateGeneListEnrichmentPresenterWidgetView getCandidateGeneListEnrichmentView(final ConstEnums.ENRICHMENT_TYPE viewType);
     }
 }

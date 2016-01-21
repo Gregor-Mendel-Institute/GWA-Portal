@@ -5,12 +5,12 @@ import com.gmi.nordborglab.browser.client.events.LoadStudyEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.gin.ClientModule;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
-import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
 import com.gmi.nordborglab.browser.client.mvp.diversity.study.StudyTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.widgets.enrichment.CandidateGeneListEnrichmentPresenter;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -55,7 +55,7 @@ public class StudyCandidateGeneListEnrichmentPresenter extends CandidateGeneList
                                                      final ClientModule.AssistedInjectionFactory factory,
                                                      final CdvManager cdvManager
     ) {
-        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(EnrichmentProvider.TYPE.STUDY), StudyTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(ConstEnums.ENRICHMENT_TYPE.ANALYSIS), StudyTabPresenter.TYPE_SetTabContent);
         this.cdvManager = cdvManager;
     }
 
@@ -66,8 +66,8 @@ public class StudyCandidateGeneListEnrichmentPresenter extends CandidateGeneList
             fireEvent(new LoadStudyEvent(study));
             fireLoadEvent = false;
         }
-        if (study != dataProvider.getEntity()) {
-            dataProvider.setEntity(study);
+        if (study.getId() != dataProvider.getEntityId()) {
+            dataProvider.setEntityId(study.getId());
             candidateGeneListEnrichmentWidget.refresh();
         }
     }

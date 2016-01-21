@@ -4,13 +4,13 @@ import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.gmi.nordborglab.browser.client.events.LoadExperimentEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.gin.ClientModule;
-import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
 import com.gmi.nordborglab.browser.client.manager.ExperimentManager;
 import com.gmi.nordborglab.browser.client.mvp.diversity.experiment.ExperimentDetailTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.widgets.enrichment.CandidateGeneListEnrichmentPresenter;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.ExperimentProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
+import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -56,7 +56,7 @@ public class ExperimentCandidateGeneListEnrichmentPresenter extends CandidateGen
                                                           final ClientModule.AssistedInjectionFactory factory,
                                                           final ExperimentManager experimentManager
     ) {
-        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(EnrichmentProvider.TYPE.EXPERIMENT), ExperimentDetailTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(ConstEnums.ENRICHMENT_TYPE.STUDY), ExperimentDetailTabPresenter.TYPE_SetTabContent);
         this.experimentManager = experimentManager;
     }
 
@@ -68,8 +68,8 @@ public class ExperimentCandidateGeneListEnrichmentPresenter extends CandidateGen
             fireEvent(new LoadExperimentEvent(experiment));
             fireLoadEvent = false;
         }
-        if (experiment != dataProvider.getEntity()) {
-            dataProvider.setEntity(experiment);
+        if (experiment.getId() != dataProvider.getEntityId()) {
+            dataProvider.setEntityId(experiment.getId());
             candidateGeneListEnrichmentWidget.refresh();
         }
     }

@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.meta.candidategenelist.detail;
 
-import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
 import com.gmi.nordborglab.browser.client.mvp.widgets.facets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
@@ -55,7 +54,7 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
 
     private final Widget widget;
     private int minCharSize = 3;
-    private final EnrichmentProvider.TYPE type;
+    private final ConstEnums.ENRICHMENT_TYPE type;
 
     private final DataGrid<CandidateGeneListEnrichmentProxy> finishedDataGrid;
     private final CustomPager finishedPager = new CustomPager();
@@ -83,7 +82,7 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
 
     @Inject
     public CandidateGeneListEnrichmentPresenterWidgetView(final Binder binder, final CustomDataGridResources dataGridResources,
-                                                          final PlaceManager placeManager, @Assisted EnrichmentProvider.TYPE type) {
+                                                          final PlaceManager placeManager, @Assisted ConstEnums.ENRICHMENT_TYPE type) {
         this.placeManager = placeManager;
         this.type = type;
         finishedDataGrid = new DataGrid<CandidateGeneListEnrichmentProxy>(50, dataGridResources, keyProvider);
@@ -142,13 +141,13 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
     private void addCommonColumns(DataGrid<CandidateGeneListEnrichmentProxy> grid, CandidateGeneListEnrichmentDataGridColumns.CheckBoxFooter checkBoxFooter) {
         PlaceRequest.Builder studyRequest = new PlaceRequest.Builder().nameToken(NameTokens.study);
         PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.candidateGeneListDetail);
-        if (type != EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST) {
+        if (type != ConstEnums.ENRICHMENT_TYPE.CANDIDATE_GENE_LIST) {
             grid.addColumn(new CandidateGeneListEnrichmentDataGridColumns.TitleColumn(placeManager, request), new TextHeader("List"), checkBoxFooter);
         }
-        if (type != EnrichmentProvider.TYPE.STUDY) {
+        if (type != ConstEnums.ENRICHMENT_TYPE.ANALYSIS) {
             grid.addColumn(new CandidateGeneListEnrichmentDataGridColumns.StudyColumn(placeManager, studyRequest), new TextHeader("Analysis"), checkBoxFooter);
 
-            if (type != EnrichmentProvider.TYPE.PHENOTYPE) {
+            if (type != ConstEnums.ENRICHMENT_TYPE.PHENOTYPE) {
                 grid.addColumn(new Column<CandidateGeneListEnrichmentProxy, String>(new TextCell()) {
                     @Override
                     public String getValue(CandidateGeneListEnrichmentProxy object) {
@@ -156,7 +155,7 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
                     }
                 }, new TextHeader("Phenotype"), checkBoxFooter);
 
-                if (type != EnrichmentProvider.TYPE.EXPERIMENT) {
+                if (type != ConstEnums.ENRICHMENT_TYPE.STUDY) {
                     grid.addColumn(new Column<CandidateGeneListEnrichmentProxy, String>(new TextCell()) {
                         @Override
                         public String getValue(CandidateGeneListEnrichmentProxy object) {

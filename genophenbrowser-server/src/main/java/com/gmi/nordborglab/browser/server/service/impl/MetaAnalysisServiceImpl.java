@@ -110,11 +110,11 @@ import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
  */
 
 
-@Service
+@Service("MetaAnalysisServiceImpl")
 @Transactional(readOnly = true)
 public class MetaAnalysisServiceImpl implements MetaAnalysisService {
 
-    private enum ENRICHMENT_VIEW_TYPE {CANDIDATE_GENE_LIST, EXPERIMENT, PHENTOYPE, STUDY}
+
 
     @Resource
     protected Client client;
@@ -149,6 +149,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
 
     @Resource
     protected CandidateGeneListEnrichmentRepository candidateGeneListEnrichmentsRepository;
+
 
     private static Logger logger = LoggerFactory.getLogger(MetaAnalysisService.class);
 
@@ -811,9 +812,9 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         return genes;
     }
 
-    private boolean isCandidateGeneListInStudy(Study study, CandidateGeneList candidateGeneList) {
+    private boolean isCandidateGeneListInStudy(Study study, Long candidateGeneListId) {
         for (CandidateGeneListEnrichment enrichment : study.getCandidateGeneListEnrichments()) {
-            if (enrichment.getCandidateGeneList() == candidateGeneList) {
+            if (enrichment.getCandidateGeneList() != null && candidateGeneListId.equals(enrichment.getCandidateGeneList().getId())) {
                 return true;
             }
         }
@@ -821,12 +822,12 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
     }
 
 
-    private CandidateGeneListEnrichmentPage findAvailableCandidateGeneListEnrichments(final SecureEntity entity, String searchString, int page, int size) {
-        if (entity instanceof CandidateGeneList) {
+    private CandidateGeneListEnrichmentPage findAvailableCandidateGeneListEnrichments(final Long id, ConstEnums.ENRICHMENT_TYPE type, String searchString, int page, int size) {
+        if (type == ConstEnums.ENRICHMENT_TYPE.CANDIDATE_GENE_LIST) {
             SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
             request.setSize(size).setFrom(page).setTypes("study").setNoFields();
-            QueryBuilder aclFilter = getAclFilterForEnrichment(entity, false);
-            QueryBuilder entityFilter = getEntityFilterForEnrichment(entity);
+            QueryBuilder aclFilter = getAclFilterForEnrichment(type, false);
+            QueryBuilder entityFilter = getEntityFilterForEnrichment(type, id);
             QueryBuilder availableFilter = QueryBuilders.boolQuery()
                     .mustNot(QueryBuilders.hasChildQuery("candidate_gene_list_enrichment", entityFilter));
             QueryBuilder searchFilter = QueryBuilders.boolQuery().filter(aclFilter).filter(availableFilter);
@@ -846,7 +847,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 @Nullable
                 @Override
                 public CandidateGeneListEnrichment apply(@Nullable Study study) {
-                    if (study != null && !isCandidateGeneListInStudy(study, (CandidateGeneList) entity)) {
+                    if (study != null && !isCandidateGeneListInStudy(study, id)) {
                         CandidateGeneListEnrichment enrichment = new CandidateGeneListEnrichment();
                         enrichment.setStudy(study);
                         return enrichment;
@@ -855,9 +856,8 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 }
             }), Predicates.notNull()));
             return new CandidateGeneListEnrichmentPage(enrichments, new PageRequest(page, size), (enrichments.size() == 0 ? 0 : response.getHits().getTotalHits()), null);
-        } //TODO replace with a SQL join query.
-        else if (entity instanceof Study) {
-            List<Long> ids = candidateGeneListRepository.findExistingEnrichmentByStudy(entity.getId());
+        } else if (type == ConstEnums.ENRICHMENT_TYPE.ANALYSIS) {
+            List<Long> ids = candidateGeneListRepository.findExistingEnrichmentByStudy(id);
             SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
             request.setTypes("candidate_gene_list").setNoFields().setSize(size).setFrom(page);
             QueryBuilder query = QueryBuilders.matchAllQuery();
@@ -875,19 +875,19 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                         }
                     }).toArray(new String[]{}))));
             SearchResponse response = request.execute().actionGet();
-            Set<Long> idsToFetch = ImmutableSet.copyOf(EsSearcher.getIdsFromResponse(response));
+            ImmutableSet<Long> idsToFetch = ImmutableSet.copyOf(EsSearcher.getIdsFromResponse(response));
 
             List<CandidateGeneList> candidateGeneLists = candidateGeneListRepository.findAll(idsToFetch);
             Ordering<CandidateGeneList> orderByEs = Ordering.explicit(ImmutableList.copyOf(idsToFetch)).onResultOf(DomainFunctions.getCandidateGeneListId());
             List<CandidateGeneList> results = orderByEs.immutableSortedCopy(candidateGeneLists);
-
+            final Study entity = studyRepository.findOne(id);
             List<CandidateGeneListEnrichment> enrichments = Lists.newArrayList(Iterables.filter(Iterables.transform(results, new Function<CandidateGeneList, CandidateGeneListEnrichment>() {
                 @Nullable
                 @Override
                 public CandidateGeneListEnrichment apply(@Nullable CandidateGeneList candidateGeneList) {
                     if (candidateGeneList != null) {
                         CandidateGeneListEnrichment enrichment = new CandidateGeneListEnrichment();
-                        enrichment.setStudy((Study) entity);
+                        enrichment.setStudy(entity);
                         enrichment.setCandidateGeneList(candidateGeneList);
                         return enrichment;
                     }
@@ -901,17 +901,17 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
 
 
     @Override
-    public CandidateGeneListEnrichmentPage findCandidateGeneListEnrichments(SecureEntity entity, ConstEnums.ENRICHMENT_FILTER currentFilter, String searchString, int page, int size) {
+    public CandidateGeneListEnrichmentPage findCandidateGeneListEnrichments(Long id, ConstEnums.ENRICHMENT_TYPE type, ConstEnums.ENRICHMENT_FILTER currentFilter, String searchString, int page, int size) {
 
         if (currentFilter == ConstEnums.ENRICHMENT_FILTER.AVAILABLE) {
-            return findAvailableCandidateGeneListEnrichments(entity, searchString, page, size);
+            return findAvailableCandidateGeneListEnrichments(id, type, searchString, page, size);
         }
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
         request.setSize(size).setFrom(page).setTypes("candidate_gene_list_enrichment").setNoFields();
-        QueryBuilder aclFilter = getAclFilterForEnrichment(entity, true);
+        QueryBuilder aclFilter = getAclFilterForEnrichment(type, true);
         QueryBuilder finishedFilter = QueryBuilders.termQuery("status", "Finished");
         QueryBuilder runningFilter = QueryBuilders.termsQuery("status", "Running", "Waiting", "Failed");
-        QueryBuilder entityFilter = getEntityFilterForEnrichment(entity);
+        QueryBuilder entityFilter = getEntityFilterForEnrichment(type, id);
 
         QueryBuilder typeFilter = null;
         switch (currentFilter) {
@@ -958,24 +958,24 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
 
 
     @Override
-    public List<ESFacet> findEnrichmentStats(SecureEntity entity, String searchString) {
+    public List<ESFacet> findEnrichmentStats(Long id, ConstEnums.ENRICHMENT_TYPE type, String searchString) {
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
 
         request.setNoFields().setSize(0);
-        QueryBuilder typeFilter = getEntityFilterForEnrichment(entity);
+        QueryBuilder typeFilter = getEntityFilterForEnrichment(type, id);
         QueryBuilder aclFilter;
         QueryBuilder availableFilter = null;
         QueryBuilder runningFilter = QueryBuilders.boolQuery().filter(typeFilter).filter(QueryBuilders.termsQuery("status", "Running", "Waiting", "Failed"));
         QueryBuilder finishedFilter = QueryBuilders.boolQuery().filter(typeFilter).filter(QueryBuilders.termsQuery("status", "Finished"));
-        if (entity instanceof CandidateGeneList) {
+        if (type == ConstEnums.ENRICHMENT_TYPE.CANDIDATE_GENE_LIST) {
             request.setTypes("study");
-            aclFilter = getAclFilterForEnrichment(entity, false);
+            aclFilter = getAclFilterForEnrichment(type, false);
             availableFilter = QueryBuilders.boolQuery().mustNot(QueryBuilders.hasChildQuery("candidate_gene_list_enrichment", typeFilter));
             finishedFilter = QueryBuilders.hasChildQuery("candidate_gene_list_enrichment", finishedFilter);
             runningFilter = QueryBuilders.hasChildQuery("candidate_gene_list_enrichment", runningFilter);
         } else {
             request.setTypes("candidate_gene_list_enrichment");
-            aclFilter = getAclFilterForEnrichment(entity, true);
+            aclFilter = getAclFilterForEnrichment(type, true);
         }
         request.addAggregation(AggregationBuilders.filter(ConstEnums.ENRICHMENT_FILTER.FINISHED.name()).filter(finishedFilter));
         request.addAggregation(AggregationBuilders.filter(ConstEnums.ENRICHMENT_FILTER.RUNNING.name()).filter(runningFilter));
@@ -1001,11 +1001,11 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         filterFacet = aggregations.get(ConstEnums.ENRICHMENT_FILTER.RUNNING.name());
         facets.add(new ESFacet(ConstEnums.ENRICHMENT_FILTER.RUNNING.name(), 0, filterFacet.getDocCount(), 0, null));
 
-        if (entity instanceof CandidateGeneList) {
+        if (type == ConstEnums.ENRICHMENT_TYPE.CANDIDATE_GENE_LIST) {
             filterFacet = aggregations.get(ConstEnums.ENRICHMENT_FILTER.AVAILABLE.name());
             facets.add(new ESFacet(ConstEnums.ENRICHMENT_FILTER.AVAILABLE.name(), 0, filterFacet.getDocCount(), 0, null));
-        } else if (entity instanceof Study) {
-            long count = findAvailableCandidateGeneListEnrichmentsForStudyCount(entity.getId());
+        } else if (type == ConstEnums.ENRICHMENT_TYPE.ANALYSIS) {
+            long count = findAvailableCandidateGeneListEnrichmentsForStudyCount(id);
             facets.add(new ESFacet(ConstEnums.ENRICHMENT_FILTER.AVAILABLE.name(), 0, count, 0, null));
         }
         return facets;
@@ -1029,12 +1029,12 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         return response.getHits().getTotalHits();
     }
 
-    private QueryBuilder getAclFilterForEnrichment(SecureEntity entity, boolean isInEnrichment) {
+    private QueryBuilder getAclFilterForEnrichment(ConstEnums.ENRICHMENT_TYPE type, boolean isInEnrichment) {
         List<String> permissions = Lists.newArrayList("read");
         QueryBuilder studyAclFilter = esAclManager.getAclFilterForPermissions(permissions);
         QueryBuilder aclFilter = (isInEnrichment ? QueryBuilders.hasParentQuery("study", studyAclFilter) : studyAclFilter);
 
-        if (!(entity instanceof CandidateGeneList)) {
+        if (!(type == ConstEnums.ENRICHMENT_TYPE.CANDIDATE_GENE_LIST)) {
             QueryBuilder candidateAcl = esAclManager.getAclFilterForPermissions(permissions, "candidate_gene_list_acl");
             aclFilter = QueryBuilders.boolQuery()
                     .filter(aclFilter)
@@ -1044,28 +1044,33 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
     }
 
 
-    private QueryBuilder getEntityFilterForEnrichment(SecureEntity entity) {
+    private QueryBuilder getEntityFilterForEnrichment(ConstEnums.ENRICHMENT_TYPE type, Long id) {
         QueryBuilder typeFilter = null;
         //TODO change to visitor or strategy pattern
-        if (entity instanceof CandidateGeneList) {
-            typeFilter = QueryBuilders.termQuery("candidategenelist.id", entity.getId().toString());
-        } else if (entity instanceof Experiment) {
-            typeFilter = QueryBuilders.termQuery("experiment_.id", entity.getId().toString());
-        } else if (entity instanceof TraitUom) {
-            typeFilter = QueryBuilders.termQuery("phenotype_.id", entity.getId().toString());
-        } else if (entity instanceof Study) {
-            typeFilter = QueryBuilders.termQuery("study_.id", entity.getId().toString());
-        } else {
-            throw new RuntimeException("entity unknown");
+        switch (type) {
+            case CANDIDATE_GENE_LIST:
+                typeFilter = QueryBuilders.termQuery("candidategenelist.id", id.toString());
+                break;
+            case STUDY:
+                typeFilter = QueryBuilders.termQuery("experiment_.id", id.toString());
+                break;
+            case PHENOTYPE:
+                typeFilter = QueryBuilders.termQuery("phenotype_.id", id.toString());
+                break;
+            case ANALYSIS:
+                typeFilter = QueryBuilders.termQuery("study_.id", id.toString());
+                break;
+            default:
+                throw new RuntimeException("entity unknown");
         }
         return typeFilter;
     }
 
     @Override
     @Transactional(readOnly = false)
-    public void createCandidateGeneListEnrichments(SecureEntity entity, boolean isAllChecked, List<CandidateGeneListEnrichment> candidateGeneListEnrichments) {
+    public void createCandidateGeneListEnrichments(Long id, ConstEnums.ENRICHMENT_TYPE type, boolean isAllChecked, List<CandidateGeneListEnrichment> candidateGeneListEnrichments) {
         if (isAllChecked) {
-            candidateGeneListEnrichments = getCandidateGeneEnrichmentFromEntity(entity);
+            candidateGeneListEnrichments = getCandidateGeneEnrichmentFromEntity(id, type);
         }
         Iterable<CandidateGeneListEnrichment> filteredRecords = Iterables.filter(candidateGeneListEnrichments, new Predicate<CandidateGeneListEnrichment>() {
             @Override
@@ -1074,10 +1079,11 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
                 return candidateGeneListEnrichment.getId() == null;
             }
         });
+        SecureEntity entity = getEnrichmentEntityFromIdAndType(id, type);
         for (CandidateGeneListEnrichment enrichment : filteredRecords) {
-            if (entity instanceof CandidateGeneList) {
+            if (type == ConstEnums.ENRICHMENT_TYPE.CANDIDATE_GENE_LIST) {
                 enrichment.setCandidateGeneList((CandidateGeneList) entity);
-            } else if (entity instanceof Study) {
+            } else if (type == ConstEnums.ENRICHMENT_TYPE.ANALYSIS) {
                 enrichment.setStudy((Study) entity);
             }
             enrichment.setStatus("Waiting");
@@ -1090,14 +1096,26 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         indexCandidateGeneListEnrichments(candidateGeneListEnrichments);
     }
 
-    private List<CandidateGeneListEnrichment> getCandidateGeneEnrichmentFromEntity(SecureEntity entity) {
+    private SecureEntity getEnrichmentEntityFromIdAndType(Long id, ConstEnums.ENRICHMENT_TYPE type) {
+        switch (type) {
+            case CANDIDATE_GENE_LIST:
+                return candidateGeneListRepository.findOne(id);
+            case ANALYSIS:
+                return studyRepository.findOne(id);
+            default:
+                throw new RuntimeException(String.format("Type %s not supported", type));
+        }
+    }
+
+
+    private List<CandidateGeneListEnrichment> getCandidateGeneEnrichmentFromEntity(Long id, ConstEnums.ENRICHMENT_TYPE type) {
         long count = 0;
-        if (entity instanceof CandidateGeneList) {
+        if (type == ConstEnums.ENRICHMENT_TYPE.CANDIDATE_GENE_LIST) {
             count = studyRepository.count() * 10;
         } else {
             count = candidateGeneListRepository.count() * 10;
         }
-        CandidateGeneListEnrichmentPage page = findCandidateGeneListEnrichments(entity, ConstEnums.ENRICHMENT_FILTER.AVAILABLE, "", 0, (int) count);
+        CandidateGeneListEnrichmentPage page = findCandidateGeneListEnrichments(id, type, ConstEnums.ENRICHMENT_FILTER.AVAILABLE, "", 0, (int) count);
         return page.getContents();
     }
 
@@ -1231,6 +1249,21 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
             genes = extractGeneInfos(response.getHits().getAt(0));
         }
         return genes;
+    }
+
+    @Override
+    public String getClassNameFromEnrichmentType(ConstEnums.ENRICHMENT_TYPE type) {
+        switch (type) {
+            case CANDIDATE_GENE_LIST:
+                return CandidateGeneList.class.getName();
+            case ANALYSIS:
+                return Study.class.getName();
+            case PHENOTYPE:
+                return TraitUom.class.getName();
+            case STUDY:
+                return Experiment.class.getName();
+        }
+        throw new RuntimeException(String.format("Type %s not supported", type));
     }
 }
 

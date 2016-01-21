@@ -3,7 +3,6 @@ package com.gmi.nordborglab.browser.client.manager;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 
@@ -19,9 +18,7 @@ import java.util.Set;
  */
 public interface EnrichmentProvider {
 
-    void setEntity(SecureEntityProxy study);
-
-    enum TYPE {CANDIDATE_GENE_LIST, STUDY, PHENOTYPE, EXPERIMENT;}
+    void setEntityId(Long studyId);
 
     void fetchData(ConstEnums.ENRICHMENT_FILTER filter, String searchString, int start, int size, Receiver<CandidateGeneListEnrichmentPageProxy> receiver);
 
@@ -29,7 +26,7 @@ public interface EnrichmentProvider {
 
     void findEnrichmentStats(String searchString, Receiver<List<FacetProxy>> receiver);
 
-    TYPE getViewType();
+    ConstEnums.ENRICHMENT_TYPE getViewType();
 
-    SecureEntityProxy getEntity();
+    Long getEntityId();
 }

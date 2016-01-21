@@ -3,7 +3,6 @@ package com.gmi.nordborglab.browser.client.manager;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.CandidateGeneListEnrichmentProxy;
 import com.gmi.nordborglab.browser.shared.proxy.FacetProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.MetaAnalysisRequest;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
@@ -26,37 +25,37 @@ public class EnrichmentProviderImpl implements EnrichmentProvider {
 
     private final CustomRequestFactory rf;
 
-    private final EnrichmentProvider.TYPE type;
-    private SecureEntityProxy entity;
+    private final ConstEnums.ENRICHMENT_TYPE type;
+    private Long entityId;
     private static String[] candidateGeneListPath = {"contents.study.phenotype.experiment", "contents.study.transformation", "contents.study.alleleAssay"};
     private static String[] experimentPath = {"contents.candidateGeneList", "contents.study.phenotype", "contents.study.transformation", "contents.study.alleleAssay"};
     private static String[] phenotypePath = {"contents.candidateGeneList", "contents.study.transformation", "contents.study.alleleAssay"};
     private static String[] studyPath = {"contents.candidateGeneList", "contents.study.transformation", "contents.study.alleleAssay"};
 
     @Inject
-    public EnrichmentProviderImpl(CustomRequestFactory rf, @Assisted EnrichmentProvider.TYPE type) {
+    public EnrichmentProviderImpl(CustomRequestFactory rf, @Assisted ConstEnums.ENRICHMENT_TYPE type) {
         this.rf = rf;
         this.type = type;
     }
 
     @Override
-    public SecureEntityProxy getEntity() {
-        return entity;
+    public Long getEntityId() {
+        return entityId;
     }
 
-    public void setEntity(SecureEntityProxy entity) {
-        this.entity = entity;
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
     }
 
     private String[] getPath() {
         switch (type) {
             case CANDIDATE_GENE_LIST:
                 return candidateGeneListPath;
-            case STUDY:
+            case ANALYSIS:
                 return studyPath;
             case PHENOTYPE:
                 return phenotypePath;
-            case EXPERIMENT:
+            case STUDY:
                 return experimentPath;
         }
         return null;
@@ -64,9 +63,9 @@ public class EnrichmentProviderImpl implements EnrichmentProvider {
 
     @Override
     public void fetchData(ConstEnums.ENRICHMENT_FILTER filter, String searchString, int start, int size, Receiver<CandidateGeneListEnrichmentPageProxy> receiver) {
-        if (entity == null)
+        if (entityId == null)
             return;
-        rf.metaAnalysisRequest().findCandidateGeneListEnrichments(entity, filter, searchString, start, size).with(getPath()).fire(receiver);
+        rf.metaAnalysisRequest().findCandidateGeneListEnrichments(entityId, type, filter, searchString, start, size).with(getPath()).fire(receiver);
     }
 
     @Override
@@ -81,18 +80,18 @@ public class EnrichmentProviderImpl implements EnrichmentProvider {
                 candidateGeneListEnrichments.add(newEnrichment);
             }
         }
-        ctx.createCandidateGeneListEnrichments(entity, isAllChecked, candidateGeneListEnrichments).fire(receiver);
+        ctx.createCandidateGeneListEnrichments(entityId, type, isAllChecked, candidateGeneListEnrichments).fire(receiver);
     }
 
     @Override
     public void findEnrichmentStats(String searchString, Receiver<List<FacetProxy>> receiver) {
-        if (entity == null)
+        if (entityId == null)
             return;
-        rf.metaAnalysisRequest().findEnrichmentStats(entity, searchString).fire(receiver);
+        rf.metaAnalysisRequest().findEnrichmentStats(entityId, type, searchString).fire(receiver);
     }
 
     @Override
-    public TYPE getViewType() {
+    public ConstEnums.ENRICHMENT_TYPE getViewType() {
         return type;
     }
 

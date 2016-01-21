@@ -185,7 +185,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
         facetSearchPresenterWidget.setSearchBoxVisible(false);
         facetSearchPresenterWidget.setDefaultFilter(ConstEnums.GENE_FILTER.ALL.name());
         facetSearchPresenterWidget.initFixedFacets(FACET_MAP);
-        dataProvider = factory.createEnrichmentProvider(EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST);
+        dataProvider = factory.createEnrichmentProvider(ConstEnums.ENRICHMENT_TYPE.CANDIDATE_GENE_LIST);
         this.candidateGeneListEnrichmentPresenter = factory.createCandidateGeneListEnrichmentPresenter(dataProvider);
         this.currentUser = currentUser;
         this.rf = rf;
@@ -212,7 +212,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                     public void onSuccess(CandidateGeneListProxy response) {
                         candidateGeneList = response;
                         enrichmentCount = candidateGeneList.getEnrichmentCount();
-                        dataProvider.setEntity(candidateGeneList);
+                        dataProvider.setEntityId(candidateGeneList.getId());
                         getView().showPermissionPanel(false);
                         refreshView();
                     }
@@ -282,7 +282,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                     public void onSuccess(CandidateGeneListProxy response) {
                         candidateGeneList = response;
                         enrichmentCount = candidateGeneList.getEnrichmentCount();
-                        dataProvider.setEntity(candidateGeneList);
+                        dataProvider.setEntityId(candidateGeneList.getId());
                         candidateGeneListEnrichmentPresenter.refresh();
                     }
                 });

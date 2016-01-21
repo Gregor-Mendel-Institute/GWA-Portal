@@ -165,7 +165,7 @@ public class CdvServiceImpl implements CdvService {
                     permission, TraitUom.class, traitUomId);
             aclManager.addPermission(study, new GrantedAuthoritySid("ROLE_ADMIN"), permission, TraitUom.class, traitUomId);
             if (study.isCreateEnrichments()) {
-                cdvService.createCandidateGeneListEnrichments(study, true, null);
+                cdvService.createCandidateGeneListEnrichments(study.getId(), ConstEnums.ENRICHMENT_TYPE.ANALYSIS, true, null);
             }
         }
         study = aclManager.setPermissionAndOwner(study);

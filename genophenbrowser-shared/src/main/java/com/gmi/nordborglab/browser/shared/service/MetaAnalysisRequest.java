@@ -12,7 +12,6 @@ import com.gmi.nordborglab.browser.shared.proxy.GenePageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisTopResultsCriteriaProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
-import com.gmi.nordborglab.browser.shared.proxy.SecureEntityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
@@ -53,9 +52,9 @@ public interface MetaAnalysisRequest extends RequestContext {
 
     Request<Void> removeGeneFromCandidateGeneList(CandidateGeneListProxy candidateGeneList, String geneId);
 
-    Request<CandidateGeneListEnrichmentPageProxy> findCandidateGeneListEnrichments(SecureEntityProxy entity, ConstEnums.ENRICHMENT_FILTER currentFilter, String searchString, int start, int length);
+    Request<CandidateGeneListEnrichmentPageProxy> findCandidateGeneListEnrichments(Long id, ConstEnums.ENRICHMENT_TYPE type, ConstEnums.ENRICHMENT_FILTER currentFilter, String searchString, int start, int length);
 
-    Request<Void> createCandidateGeneListEnrichments(SecureEntityProxy entity, boolean isAllChecked, List<CandidateGeneListEnrichmentProxy> candidateGeneListEnrichments);
+    Request<Void> createCandidateGeneListEnrichments(Long id, ConstEnums.ENRICHMENT_TYPE type, boolean isAllChecked, List<CandidateGeneListEnrichmentProxy> candidateGeneListEnrichments);
 
-    Request<List<FacetProxy>> findEnrichmentStats(SecureEntityProxy entity, String searchString);
+    Request<List<FacetProxy>> findEnrichmentStats(Long id, ConstEnums.ENRICHMENT_TYPE type, String searchString);
 }

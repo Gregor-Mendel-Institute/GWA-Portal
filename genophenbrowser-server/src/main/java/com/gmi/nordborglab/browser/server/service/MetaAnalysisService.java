@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.server.service;
 
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
-import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.meta.MetaAnalysisTopResultsCriteria;
 import com.gmi.nordborglab.browser.server.domain.pages.CandidateGeneListEnrichmentPage;
 import com.gmi.nordborglab.browser.server.domain.pages.CandidateGeneListPage;
@@ -57,15 +56,16 @@ public interface MetaAnalysisService {
     @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.CandidateGeneList','READ')")
     List<Gene> getGenesInCandidateGeneListEnrichment(Long id);
 
-    @PreAuthorize("hasPermission(#entity,'READ')")
-    CandidateGeneListEnrichmentPage findCandidateGeneListEnrichments(SecureEntity entity, ConstEnums.ENRICHMENT_FILTER currentFilter, String searchString, int start, int length);
+    @PreAuthorize("hasPermission(#id, @MetaAnalysisServiceImpl.getClassNameFromEnrichmentType( #type ),'READ')")
+    CandidateGeneListEnrichmentPage findCandidateGeneListEnrichments(Long id, ConstEnums.ENRICHMENT_TYPE type, ConstEnums.ENRICHMENT_FILTER currentFilter, String searchString, int start, int length);
 
+    @PreAuthorize("hasPermission(#id,@MetaAnalysisServiceImpl.getClassNameFromEnrichmentType( #type ),'READ')")
+    List<ESFacet> findEnrichmentStats(Long id, ConstEnums.ENRICHMENT_TYPE type, String searchString);
 
-    @PreAuthorize("hasPermission(#entity,'READ')")
-    List<ESFacet> findEnrichmentStats(SecureEntity entity, String searchString);
-
-    @PreAuthorize("hasPermission(#entity,'READ')")
-    void createCandidateGeneListEnrichments(SecureEntity entity, boolean isAllChecked, List<CandidateGeneListEnrichment> candidateGeneListEnrichments);
+    @PreAuthorize("hasPermission(#id,@MetaAnalysisServiceImpl.getClassNameFromEnrichmentType( #type ),'READ')")
+    void createCandidateGeneListEnrichments(Long id, ConstEnums.ENRICHMENT_TYPE type, boolean isAllChecked, List<CandidateGeneListEnrichment> candidateGeneListEnrichments);
 
     void indexCandidateGeneListEnrichment(CandidateGeneListEnrichment enrichment);
+
+    String getClassNameFromEnrichmentType(ConstEnums.ENRICHMENT_TYPE type);
 }

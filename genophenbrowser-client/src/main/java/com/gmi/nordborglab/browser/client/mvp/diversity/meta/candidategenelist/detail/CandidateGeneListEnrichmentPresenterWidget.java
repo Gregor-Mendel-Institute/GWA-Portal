@@ -105,7 +105,7 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
         getView().setUiHandlers(this);
         this.dataProvider = dataProvider;
         facetSearchPresenterWidget.setDefaultFilter(ConstEnums.ENRICHMENT_FILTER.FINISHED.name());
-        if (dataProvider.getViewType() == EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST || dataProvider.getViewType() == EnrichmentProvider.TYPE.STUDY) {
+        if (dataProvider.getViewType() == ConstEnums.ENRICHMENT_TYPE.CANDIDATE_GENE_LIST || dataProvider.getViewType() == ConstEnums.ENRICHMENT_TYPE.ANALYSIS) {
             facetSearchPresenterWidget.initFixedFacets(FACET_MAP);
         } else {
             facetSearchPresenterWidget.initFixedFacets(Maps.filterEntries(FACET_MAP, new Predicate<Map.Entry<String, String>>() {
@@ -115,6 +115,7 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
                 }
             }));
         }
+        getView().displayType(ConstEnums.ENRICHMENT_FILTER.valueOf(facetSearchPresenterWidget.getFilter()));
     }
 
     @Override
@@ -141,7 +142,7 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
             @Override
             public void onChanged(FacetSearchChangeEvent event) {
                 final ConstEnums.ENRICHMENT_FILTER filter = ConstEnums.ENRICHMENT_FILTER.valueOf(facetSearchPresenterWidget.getFilter());
-                if (filter == ConstEnums.ENRICHMENT_FILTER.AVAILABLE && (dataProvider.getViewType() != EnrichmentProvider.TYPE.CANDIDATE_GENE_LIST && dataProvider.getViewType() != EnrichmentProvider.TYPE.STUDY)) {
+                if (filter == ConstEnums.ENRICHMENT_FILTER.AVAILABLE && (dataProvider.getViewType() != ConstEnums.ENRICHMENT_TYPE.CANDIDATE_GENE_LIST && dataProvider.getViewType() != ConstEnums.ENRICHMENT_TYPE.ANALYSIS)) {
                     return;
                 }
                 final ConstEnums.ENRICHMENT_FILTER currentFilter = ConstEnums.ENRICHMENT_FILTER.valueOf(facetSearchPresenterWidget.getFilter());
@@ -157,14 +158,14 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
     }
 
     private void requestEnrichments(final HasData<CandidateGeneListEnrichmentProxy> display) {
-        if (dataProvider.getEntity() == null) {
+        if (dataProvider.getEntityId() == null) {
             return;
         }
         fireEvent(new LoadingIndicatorEvent(true));
-        final ConstEnums.ENRICHMENT_FILTER currentFilter = ConstEnums.ENRICHMENT_FILTER.valueOf(facetSearchPresenterWidget.getFilter());
         Receiver<CandidateGeneListEnrichmentPageProxy> receiver = new Receiver<CandidateGeneListEnrichmentPageProxy>() {
             @Override
             public void onSuccess(CandidateGeneListEnrichmentPageProxy candidateGeneListEnrichments) {
+                final ConstEnums.ENRICHMENT_FILTER currentFilter = ConstEnums.ENRICHMENT_FILTER.valueOf(facetSearchPresenterWidget.getFilter());
                 fireEvent(new LoadingIndicatorEvent(false));
                 if (currentFilter == ConstEnums.ENRICHMENT_FILTER.FINISHED) {
                     double maxPvalue = candidateGeneListEnrichments.getFacets().get(0).getTerms().get(0).getValue();
@@ -178,7 +179,7 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
             }
         };
         Range range = display.getVisibleRange();
-        dataProvider.fetchData(currentFilter, facetSearchPresenterWidget.getSearchString(), range.getStart(), range.getLength(), receiver);
+        dataProvider.fetchData(ConstEnums.ENRICHMENT_FILTER.valueOf(facetSearchPresenterWidget.getFilter()), facetSearchPresenterWidget.getSearchString(), range.getStart(), range.getLength(), receiver);
     }
 
     @Override
@@ -207,6 +208,7 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
             dataProvider.findEnrichmentStats(facetSearchPresenterWidget.getSearchString(), new Receiver<List<FacetProxy>>() {
                 @Override
                 public void onSuccess(List<FacetProxy> response) {
+                    updateFacets = false;
                     facetSearchPresenterWidget.displayFacets(response);
                 }
             });
@@ -261,7 +263,7 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
                 fireEvent(new LoadingIndicatorEvent(false));
                 facetSearchPresenterWidget.setFilter(ConstEnums.ENRICHMENT_FILTER.RUNNING.name());
                 updateFacets = true;
-                refreshView();
+                //refreshView();
             }
         });
     }
