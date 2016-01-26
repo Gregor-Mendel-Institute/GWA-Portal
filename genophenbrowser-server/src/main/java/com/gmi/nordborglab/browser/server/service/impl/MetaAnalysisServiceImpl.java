@@ -1070,6 +1070,7 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
     @Transactional(readOnly = false)
     public void createCandidateGeneListEnrichments(Long id, ConstEnums.ENRICHMENT_TYPE type, boolean isAllChecked, List<CandidateGeneListEnrichment> candidateGeneListEnrichments) {
         if (isAllChecked) {
+            //TODO switch to scroll API because otherwise causes exception
             candidateGeneListEnrichments = getCandidateGeneEnrichmentFromEntity(id, type);
         }
         Iterable<CandidateGeneListEnrichment> filteredRecords = Iterables.filter(candidateGeneListEnrichments, new Predicate<CandidateGeneListEnrichment>() {
