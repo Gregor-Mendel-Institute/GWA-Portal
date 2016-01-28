@@ -397,7 +397,6 @@ public class SubmitAnalysisTask {
                     userNotificationRepository.save(notification);
                     ClientComService.pushUserNotification(studyJob.getAppUser().getId().toString(), studyJob.getAppUser().getEmail(), "gwasjob", studyJob.getStudy().getId());
                 }
-                throw new RuntimeException("Can't handle status: " + status);
             }
         } catch (Exception e) {
             logger.error("Failed to update the HPC job id", e);
