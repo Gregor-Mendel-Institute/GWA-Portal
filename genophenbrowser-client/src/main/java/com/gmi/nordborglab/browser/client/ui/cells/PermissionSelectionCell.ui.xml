@@ -72,7 +72,8 @@
             transition: opacity 0.218s;
             background: #fff;
             border: 1px solid #ccc;
-            border: 1px solid rgba(0,0,0,.2);
+            /* @alternate */
+            border: 1px solid rgba(0, 0, 0, .2);
             cursor: default;
             font-size: 13px;
             margin: 0;

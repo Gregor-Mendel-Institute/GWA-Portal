@@ -11,7 +11,7 @@
              type="com.gmi.nordborglab.browser.client.resources.MainResources"/>
 
     <ui:style>
-        @external .hlt1;
+        @external hlt1;
         .hlt1 {
             font-weight: bold;
             font-style: normal;
@@ -21,8 +21,8 @@
             margin: 20px 11px 18px 5px;
         }
 
-        @external .searchBoxPopup;
-        @external .alt;
+        @external searchBoxPopup;
+        @external alt;
         .searchBoxPopup {
             z-index: 999999 !important;
             width: 400px;
@@ -85,7 +85,7 @@
             cursor: pointer;
         }
 
-        @external .searchBoxPopup_term;
+        @external searchBoxPopup_term;
         .searchBoxPopup_term {
             float: right;
             display: block;
@@ -100,7 +100,7 @@
             padding-left: 5px;
         }
 
-        @external .searchBoxPopup_nohits;
+        @external searchBoxPopup_nohits;
         .searchBoxPopup_nohits {
             margin-left: 100px;
             border-left: 1px solid #DDD;

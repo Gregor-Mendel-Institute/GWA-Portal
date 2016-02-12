@@ -30,7 +30,6 @@
             display: block;
             color: #fff;
             width: 50px;
-            font-size: 22px;
             padding: 5px 0;
             -webkit-border-radius: 2px;
             -moz-border-radius: 2px;
@@ -74,7 +73,6 @@
             box-shadow: 0 1px 0 1px #e4e6eb;
             overflow: hidden;
             margin: 0 0 28px 0;
-            background: #fff;
             padding: 10px;
             position: relative;
             background: #f5f5f5;

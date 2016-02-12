@@ -67,8 +67,6 @@
         .panel-default {
             border: 1px solid #CCC;
             border-top: 0;
-            -webkit-border-radius: 0px;
-            border-radius: 0px;
             border-right: 0px;
             border-left: 0px;
             margin-bottom: 0px !important;

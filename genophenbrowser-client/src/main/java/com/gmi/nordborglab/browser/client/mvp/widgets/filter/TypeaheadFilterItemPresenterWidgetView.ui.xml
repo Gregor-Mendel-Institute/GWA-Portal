@@ -4,7 +4,7 @@
              xmlns:be='urn:import:org.gwtbootstrap3.extras.typeahead.client.ui'>
 
     <ui:style>
-        @external .typeahead;
+        @external typeahead;
         .typeahead {
             z-index: 1051 !important;
         }

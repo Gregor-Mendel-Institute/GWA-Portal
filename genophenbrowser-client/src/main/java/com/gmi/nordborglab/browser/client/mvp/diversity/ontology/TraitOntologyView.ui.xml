@@ -30,13 +30,13 @@
             font-weight: normal !important;
         }
 
-        @external .gwt-TabLayoutPanelTabs;
+        @external gwt-TabLayoutPanelTabs;
         .gwt-TabLayoutPanelTabs {
             background: white !important;
             border-bottom: 1px solid #DDD !important;
         }
 
-        @external .gwt-TabLayoutPanelTab-selected;
+        @external gwt-TabLayoutPanelTab-selected;
         .gwt-TabLayoutPanelTab-selected {
             margin-bottom: -1px;
             color: #555 !important;
