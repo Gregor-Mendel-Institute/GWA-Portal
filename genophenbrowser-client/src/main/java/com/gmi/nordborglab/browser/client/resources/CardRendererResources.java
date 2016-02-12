@@ -9,7 +9,7 @@ import com.google.gwt.resources.client.CssResource;
 public interface CardRendererResources extends ClientBundle {
 
 
-    public interface Style extends CssResource {
+    interface Style extends CssResource {
 
         String icon();
 
@@ -38,6 +38,6 @@ public interface CardRendererResources extends ClientBundle {
         String card_container();
     }
 
-    @Source("cardstyles.css")
+    @Source("cardstyles.gss")
     Style style();
 }

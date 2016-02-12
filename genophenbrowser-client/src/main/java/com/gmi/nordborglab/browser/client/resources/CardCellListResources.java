@@ -11,11 +11,11 @@ import com.google.gwt.user.cellview.client.CellList;
  */
 public interface CardCellListResources extends CellList.Resources {
 
-    public interface CardStyle extends CellList.Style {
+    interface CardStyle extends CellList.Style {
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String DEFAULT_CSS = "cardCellListStyle.css";
+        String DEFAULT_CSS = "cardCellListStyle.gss";
 
         /**
          * Applied to even items.

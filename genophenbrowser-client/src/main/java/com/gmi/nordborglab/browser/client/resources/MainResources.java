@@ -7,7 +7,7 @@ import com.google.gwt.resources.client.ImageResource;
 public interface MainResources extends ClientBundle {
 
 
-    public interface MainStyle extends CssResource {
+    interface MainStyle extends CssResource {
 
         String transplant_logo_footer();
 
@@ -122,6 +122,6 @@ public interface MainResources extends ClientBundle {
     @Source("images/loader.gif")
     ImageResource loader();
 
-    @Source("style.css")
+    @Source("style.gss")
     MainStyle style();
 }
