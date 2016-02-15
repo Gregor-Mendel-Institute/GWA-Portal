@@ -27,7 +27,7 @@
         <gwtp.version>1.4</gwtp.version>
         <gin.version>2.1.2</gin.version>
         <guice.version>3.0</guice.version>
-        <gwtquery.version>1.4.3</gwtquery.version>
+        <gwtquery.version>1.5-beta1</gwtquery.version>
         <jukito.version>1.4.1</jukito.version>
         <gwtchosen.version>1.2.0</gwtchosen.version>
         <gwtbootstrap3.version>1.0-SNAPSHOT</gwtbootstrap3.version>

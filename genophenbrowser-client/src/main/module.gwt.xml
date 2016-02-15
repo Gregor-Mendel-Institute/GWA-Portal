@@ -63,4 +63,8 @@
     <!-- change to localhost for development -->
     <set-configuration-property name="includeSourceMapUrl"
                                 value="browser/src/__HASH___sourceMap__FRAGMENT__.json"/>
+
+    <set-configuration-property name="CssResource.gssDefaultInUiBinder" value="true"/>
+    <!-- disable when all CSS from 3rd party like GWASGeneViewer etc are converted to GSS -->
+    <set-configuration-property name="CssResource.conversionMode" value="strict"/>
 </module>

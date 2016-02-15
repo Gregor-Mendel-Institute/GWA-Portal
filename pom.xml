@@ -25,14 +25,14 @@
     </developers>
 
     <properties>
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <mavenVersion>3.0</mavenVersion>
         <skipTests>true</skipTests>
 
-        <guava.version>18.0</guava.version>
-        <gwt.version>2.7.0-patched</gwt.version>
+        <guava.version>20.0-SNAPSHOT</guava.version>
+        <gwt.version>2.8.0-patched</gwt.version>
         <universal-analytics.version>2.1</universal-analytics.version>
         <junit.version>4.12</junit.version>
         <mockito.version>1.10.17</mockito.version>
@@ -182,6 +182,8 @@
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
+                        <compilerVersion>${java.version}</compilerVersion>
+                        <!-- required because of https://github.com/mkarneim/pojobuilder/issues/71 -->
                         <compilerArgument>-proc:none</compilerArgument>
                     </configuration>
                     <dependencies>
