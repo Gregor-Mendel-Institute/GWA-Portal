@@ -84,7 +84,7 @@ public class GoogleAnalyticsManager {
     }
 
     public void setLoggedIn(boolean loggedIn) {
-        analytics.setGlobalSettings().customsOptions().customDimension(1, loggedIn ? "YES" : "NO").go();
+        analytics.setGlobalSettings().customDimensionsAndMetricsOptions().customDimension(1, loggedIn ? "YES" : "NO").go();
     }
 
     private String getURLFromRequest(PlaceRequest request) {

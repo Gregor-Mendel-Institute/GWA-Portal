@@ -2,7 +2,7 @@ package com.gmi.nordborglab.browser.client.place;
 
 import com.arcbees.analytics.shared.Analytics;
 import com.arcbees.analytics.shared.options.ContentOptions;
-import com.arcbees.analytics.shared.options.CustomsOptions;
+import com.arcbees.analytics.shared.options.CustomDimensionsAndMetricsOptions;
 import com.arcbees.analytics.shared.options.EventsOptions;
 import com.arcbees.analytics.shared.options.ExceptionOptions;
 import com.arcbees.analytics.shared.options.HitOptions;
@@ -90,10 +90,10 @@ public class GoogleAnalyticsManagerTest {
     }
 
     private void testSetLoggedIn(boolean loggedIn) {
-        CustomsOptions customOptions = mock(CustomsOptions.class, RETURNS_DEEP_STUBS);
+        CustomDimensionsAndMetricsOptions customOptions = mock(CustomDimensionsAndMetricsOptions.class, RETURNS_DEEP_STUBS);
         //required because of builder
         given(customOptions.customDimension(any(Integer.class), any(String.class))).willReturn(customOptions);
-        given(analytics.setGlobalSettings().customsOptions()).willReturn(customOptions);
+        given(analytics.setGlobalSettings().customDimensionsAndMetricsOptions()).willReturn(customOptions);
         sut.setLoggedIn(loggedIn);
         verify(customOptions).customDimension(1, loggedIn ? "YES" : "NO");
         // required because otherwise Nullpointer exception
