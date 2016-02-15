@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.server.converters;
 
 import com.gmi.nordborglab.browser.server.data.ChrGWAData;
 import com.gmi.nordborglab.browser.server.data.GWASData;
-import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -17,7 +16,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.util.Map;
 
 /**
  * Created by uemit.seren on 14.01.14.
