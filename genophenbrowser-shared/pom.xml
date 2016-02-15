@@ -31,7 +31,6 @@
       <dependency>
           <groupId>com.google.gwt</groupId>
           <artifactId>gwt-user</artifactId>
-          <version>2.7.0-patched</version>
       </dependency>
   </dependencies>
    <dependencyManagement>
@@ -39,13 +38,11 @@
            <dependency>
                <groupId>com.google.guava</groupId>
                <artifactId>guava-gwt</artifactId>
-               <scope>provided</scope>
                <version>${guava.version}</version>
            </dependency>
            <dependency>
                <groupId>com.google.guava</groupId>
                <artifactId>guava</artifactId>
-               <scope>provided</scope>
                <version>${guava.version}</version>
            </dependency>
        </dependencies>
