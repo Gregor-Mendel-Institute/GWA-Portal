@@ -1,5 +1,3 @@
-@CHARSET "UTF-8";
-
 .dataGridHeader {
     border-bottom: 1px solid gray;
     padding: 3px 5px;
@@ -12,7 +10,7 @@
 }
 
 .dataGridCell {
-    border-bottom: 1px solid #CBCBCB;
+    border-bottom: 1px solid #cbcbcb;
     border-left: 0;
     border-right: 0;
     border-top: 0;
@@ -20,15 +18,15 @@
 }
 
 .dataGridOddRow {
-    background: #F8F8F8;
+    background: #f8f8f8;
 }
 
 .dataGridHoveredRow {
-    background: #EEE;
+    background: #eee;
 }
 
 .dataGridKeyboardSelectedRow {
-    background: #FFC;
+    background: #ffc;
 }
 
 .dataGridSelectedRow {

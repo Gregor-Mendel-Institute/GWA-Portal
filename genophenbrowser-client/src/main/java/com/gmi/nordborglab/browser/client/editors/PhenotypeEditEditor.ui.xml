@@ -7,7 +7,7 @@
     <ui:style>
 
         /* required because of bug that puts the typeadead below the modal */
-        @external .typeahead;
+        @external typeahead;
         .typeahead {
             z-index: 1051 !important;
         }

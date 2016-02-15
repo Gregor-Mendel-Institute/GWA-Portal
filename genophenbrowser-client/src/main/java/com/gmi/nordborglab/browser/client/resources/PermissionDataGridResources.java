@@ -13,12 +13,9 @@ public interface PermissionDataGridResources extends CellTable.Resources {
 
 
     interface PermissionDataGridStyle extends CellTable.Style {
-
-
     }
 
-
     @Override
-    @Source({"permissionDataGridStyle.css"})
-    public PermissionDataGridStyle cellTableStyle();
+    @Source({"permissionDataGridStyle.gss"})
+    PermissionDataGridStyle cellTableStyle();
 }

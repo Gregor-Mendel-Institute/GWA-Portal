@@ -1,85 +1,82 @@
-@CHARSET "UTF-8";
-
-@sprite .transplant_logo_footer {
-    gwt-image: 'transplant_logo_footer';
+.transplant_logo_footer {
+    gwt-sprite: "transplant_logo_footer";
 }
 
-@sprite .gmi_logo_footer {
-    gwt-image: 'gmi_logo_footer';
+.gmi_logo_footer {
+    gwt-sprite: "gmi_logo_footer";
 }
 
-@sprite .fp7_logo_footer {
-    gwt-image: 'fp7_logo_footer';
+.fp7_logo_footer {
+    gwt-sprite: "fp7_logo_footer";
 }
 
-@sprite .eu_logo_footer {
-    gwt-image: 'eu_logo_footer';
+.eu_logo_footer {
+    gwt-sprite: "eu_logo_footer";
 }
 
-@sprite .loader {
-    gwt-image: 'loader';
+.loader {
+    gwt-sprite: "loader";
 }
 
-@sprite .arrow_down {
-    gwt-image: 'arrow_down';
+.arrow_down {
+    gwt-sprite: "arrow_down";
     position: absolute;
     top: 1.72em;
     right: 3px;
     margin-right: 4px;
 }
 
-@sprite .avatar {
-    gwt-image: 'avatar';
+.avatar {
+    gwt-sprite: "avatar";
     float: left;
 }
 
-@sprite .logout {
-    gwt-image: 'logout';
+.logout {
+    gwt-sprite: "logout";
     float: left;
 }
 
-@sprite .profile {
-    gwt-image: 'profile';
+.profile {
+    gwt-sprite: "profile";
     float: left;
 }
 
-@sprite .earth {
-    gwt-image: 'earth';
+.earth {
+    gwt-sprite: "earth";
 }
 
-@sprite .piechart {
-    gwt-image: 'piechart';
+.piechart {
+    gwt-sprite: "piechart";
 }
 
-@sprite .columnchart {
-    gwt-image: 'columnchart';
+.columnchart {
+    gwt-sprite: "columnchart";
 }
 
-@sprite .motionchart {
-    gwt-image: 'motionchart';
+.motionchart {
+    gwt-sprite: "motionchart";
 }
 
-@sprite .tablechart {
-    gwt-image: 'tablechart';
+.tablechart {
+    gwt-sprite: "tablechart";
 }
 
-@sprite .map {
-    gwt-image: 'map';
+.map {
+    gwt-sprite: "map";
 }
 
-@sprite .plant_icon {
-    gwt-image: 'plant1';
+.plant_icon {
+    gwt-sprite: "plant1";
 }
 
 .chartActionRow {
     background: whiteSmoke;
-    border-bottom: 1px solid #E5E5E5;
+    border-bottom: 1px solid #e5e5e5;
     border-left: none;
     border-right: none;
-    border-top: 1px solid #E5E5E5;
+    border-top: 1px solid #e5e5e5;
     height: 38px;
     line-height: 38px;
-    /*padding: 4px 10px;*/
 }
 
 .actionIcon {
@@ -97,8 +94,8 @@
 
 .actionIcon:hover {
     border: 1px solid #8f8f8f;
-    color: #000000;
-    background-color: #FFF;
+    color: #000;
+    background-color: #fff;
 }
 
 .actionIcon i {
@@ -106,7 +103,6 @@
 }
 
 .actionIcon a {
-    /*color: inherit !important;*/
     outline: none;
 }
 
@@ -123,8 +119,8 @@
 
 .iconContainer {
     cursor: pointer;
-    border: 1px solid #BBB;
-    border-right: 0px;
+    border: 1px solid #bbb;
+    border-right: 0;
     display: inline-block;
     line-height: 31px;
     padding: 2px 4px;
@@ -133,11 +129,11 @@
 
 .iconItem {
     display: inline-block;
-    border: 0px;
+    border: 0;
 }
 
 .iconContainer_right {
-    border-right: 1px solid #BBB !important;
+    border-right: 1px solid #bbb !important;
 }
 
 .iconContainer_active {
@@ -149,12 +145,13 @@
 }
 
 @external gwt-ListBox;
+
 .gwt-ListBox {
     padding: 5px 4px;
-    border: 1px solid #CCC;
+    border: 1px solid #ccc;
     border-top: 1px solid #999;
     font-size: small;
-    font-family: Arial Unicode MS, Arial, sans-serif;
+    font-family: 'Arial Unicode MS', Arial, sans-serif;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -162,14 +159,7 @@
 
 @external input-group;
 @external twitter-typeahead;
-/* Bugfix because of https://github.com/twitter/typeahead.js/issues/378#issuecomment-45295345 */
+
 .input-group .twitter-typeahead {
     display: table-cell !important;
 }
-
-/*.gwt-TextBox:focus,.gwt-ListBox:focus {
-	border: solid 1px #73A6FF;
-	background: #EFF5FF;
-	color: #000;
-	outline: none;
-}*/

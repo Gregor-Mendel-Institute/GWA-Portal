@@ -1,37 +1,33 @@
 package com.gmi.nordborglab.browser.client.resources;
 
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.DataGrid.Style;
 
 public interface CustomDataGridResources  extends DataGrid.Resources {
-	
+
+        String DEFAULT_GSS = "com/google/gwt/user/cellview/client/DataGrid.gss";
 	
 	interface CustomDataGridStyle extends DataGrid.Style {
 		
 		@Override
-		public String dataGridHeader();
+                String dataGridHeader();
 		
 		@Override
-		public String dataGridCell();
+                String dataGridCell();
 		
 		@Override
-		public String dataGridOddRow();
+                String dataGridOddRow();
 		
 		@Override
-		public String dataGridHoveredRow();
+                String dataGridHoveredRow();
 		
 		@Override
-		public String dataGridKeyboardSelectedRow();
+                String dataGridKeyboardSelectedRow();
 		
 		@Override
-		public String dataGridSelectedRow();
-		
-	
+                String dataGridSelectedRow();
 	}
-	
-	
-	
+
 	@Override
-	@Source({Style.DEFAULT_CSS,"customDataGridStyle.css"})
-	public CustomDataGridStyle dataGridStyle();
+        @Source({DEFAULT_GSS, "customDataGridStyle.gss"})
+        CustomDataGridStyle dataGridStyle();
 }

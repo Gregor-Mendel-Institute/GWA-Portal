@@ -26,14 +26,10 @@
             box-shadow: 0 1px 0 1px #e4e6eb;
             overflow: hidden;
             margin: 0 0 28px 0;
-            background: #fff;
             padding: 10px;
             position: relative;
             background: #f5f5f5;
             max-width: 220px;
-            /*width: 250px;
-            display: inline-block;
-            margin-right: 50px;*/
         }
 
         .stats_item_value {
@@ -66,7 +62,6 @@
             display: block;
             color: #fff;
             width: 50px;
-            font-size: 22px;
             padding: 14px 0;
             -webkit-border-radius: 2px;
             -moz-border-radius: 2px;
