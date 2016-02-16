@@ -37,6 +37,7 @@ import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
@@ -91,7 +92,7 @@ public class StudyDetailPresenter extends
     private final Validator validator;
     private final GoogleAnalyticsManager analyticsManager;
 
-    public static final Object TYPE_SetGWASUploadContent = new Object();
+    static final PermanentSlot<GWASUploadWizardPresenterWidget> SLOT_GWAS_UPLOAD = new PermanentSlot<>();
 
     public enum LOWER_CHART_TYPE {
         histogram, explorer
@@ -113,7 +114,7 @@ public class StudyDetailPresenter extends
                                 final CdvManager cdvManager, final CurrentUser currentUser,
                                 final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget, Validator validator,
                                 final GoogleAnalyticsManager analyticsManager) {
-        super(eventBus, view, proxy, StudyTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, StudyTabPresenter.SLOT_CONTENT);
         this.validator = validator;
         this.analyticsManager = analyticsManager;
         getView().setUiHandlers(this);
@@ -149,7 +150,7 @@ public class StudyDetailPresenter extends
     @Override
     protected void onBind() {
         super.onBind();
-        setInSlot(TYPE_SetGWASUploadContent, gwasUploadWizardPresenterWidget);
+        setInSlot(SLOT_GWAS_UPLOAD, gwasUploadWizardPresenterWidget);
         registerHandler(GWASUploadedEvent.register(getEventBus(), new GWASUploadedEvent.Handler() {
             @Override
             public void onGWASUploaded(GWASUploadedEvent event) {

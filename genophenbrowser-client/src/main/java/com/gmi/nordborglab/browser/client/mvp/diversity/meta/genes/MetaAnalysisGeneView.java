@@ -33,7 +33,6 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -200,6 +199,7 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
         groupedDataGrid = createDatagrid(groupedSelectionModel);
         initGroupedDataAble();
         widget = binder.createAndBindUi(this);
+        bindSlot(MetaAnalysisGenePresenter.SLOT_FILTER_CONTENT, filterContainer);
         lowerLimitTb.getElement().setAttribute("type", "range");
         lowerLimitTb.getElement().setAttribute("min", "-20");
         lowerLimitTb.getElement().setAttribute("max", "0");
@@ -275,14 +275,6 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
         return Integer.valueOf(parentElement.attr("__assoc_ix"));
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == MetaAnalysisGenePresenter.TYPE_FilterContent) {
-            filterContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
-        }
-    }
 
     @UiHandler("lowerLimitTb")
     public void onLowerLimitTbChanged(ChangeEvent e) {

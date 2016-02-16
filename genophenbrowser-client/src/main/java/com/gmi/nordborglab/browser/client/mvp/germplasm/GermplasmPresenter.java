@@ -11,17 +11,16 @@ import com.gmi.nordborglab.browser.shared.proxy.BreadcrumbItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy.CATEGORY;
 import com.gmi.nordborglab.browser.shared.proxy.TaxonomyProxy;
 import com.google.common.collect.ImmutableList;
-import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
+import com.gwtplatform.mvp.client.presenter.slots.NestedSlot;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.Proxy;
-import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import java.util.List;
@@ -46,9 +45,8 @@ public class GermplasmPresenter extends
     public interface MyProxy extends Proxy<GermplasmPresenter> {
     }
 
-    @ContentSlot
-    public static final Type<RevealContentHandler<?>> TYPE_SetMainContent = new Type<RevealContentHandler<?>>();
-    public static final Object TYPE_SearchPresenterContent = new Object();
+    public static final NestedSlot SLOT_CONTENT = new NestedSlot();
+    static final PermanentSlot<SearchPresenter> SLOT_SEARCH = new PermanentSlot<>();
 
     private final PlaceManager placeManager;
     private final HelperManager helperManager;
@@ -64,7 +62,7 @@ public class GermplasmPresenter extends
     public GermplasmPresenter(final EventBus eventBus, final MyView view,
                               final MyProxy proxy, final PlaceManager placeManager,
                               final HelperManager helperManager, final TaxonomyManager taxonomyManager, final SearchPresenter searchPresenter) {
-        super(eventBus, view, proxy, ApplicationPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, ApplicationPresenter.SLOT_MAIN_CONTENT);
         this.searchPresenter = searchPresenter;
         searchPresenter.setCategory(CATEGORY.GERMPLASM);
         searchPresenter.setMinCharSize(1);
@@ -77,13 +75,12 @@ public class GermplasmPresenter extends
     @Override
     protected void onBind() {
         super.onBind();
-        setInSlot(TYPE_SearchPresenterContent, searchPresenter);
+        setInSlot(SLOT_SEARCH, searchPresenter);
     }
 
     @Override
     protected void onUnbind() {
         super.onUnbind();
-        clearSlot(TYPE_SearchPresenterContent);
     }
 
     @Override

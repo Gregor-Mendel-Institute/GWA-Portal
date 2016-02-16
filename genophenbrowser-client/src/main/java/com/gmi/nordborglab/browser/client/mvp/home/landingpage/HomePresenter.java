@@ -8,7 +8,6 @@ import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramFacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramProxy;
 import com.gmi.nordborglab.browser.shared.proxy.NewsItemProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
-import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.inject.Inject;
@@ -17,11 +16,10 @@ import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyStandard;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
-import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
+import com.gwtplatform.mvp.client.presenter.slots.NestedSlot;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 
 import java.util.HashMap;
@@ -50,8 +48,7 @@ public class HomePresenter extends
 
     }
 
-    @ContentSlot
-    public static final Type<RevealContentHandler<?>> TYPE_SetMainContent = new Type<RevealContentHandler<?>>();
+    public static final NestedSlot SLOT_CONTENT = new NestedSlot();
 
     private final CurrentUser currentUser;
 
@@ -64,7 +61,7 @@ public class HomePresenter extends
     @Inject
     public HomePresenter(final EventBus eventBus, final MyView view,
                          final MyProxy proxy, final CurrentUser currentUser, final CustomRequestFactory rf) {
-        super(eventBus, view, proxy, HomeTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, HomeTabPresenter.SLOT_CONTENT);
         getView().setUiHandlers(this);
         this.rf = rf;
         this.currentUser = currentUser;

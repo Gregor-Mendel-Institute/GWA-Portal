@@ -12,7 +12,6 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -149,6 +148,7 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
         greySliceOption.setColor("#eee");
         initDataGrid();
         widget = binder.createAndBindUi(this);
+        bindSlot(MetaAnalysisTopResultsPresenter.SLOT_FILTER_CONTENT, filterContainer);
         stats2Chart = ImmutableBiMap.<MetaAnalysisTopResultsPresenter.STATS, PieChart>builder().put(MetaAnalysisTopResultsPresenter.STATS.CHR, chrPieChart)
                 .put(MetaAnalysisTopResultsPresenter.STATS.INGENE, inGenePieChart).put(MetaAnalysisTopResultsPresenter.STATS.MAF, overFDRPieChart)
                 .put(MetaAnalysisTopResultsPresenter.STATS.ANNOTATION, annotationPieChart).build();
@@ -270,15 +270,6 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
             }
         }
 
-    }
-
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == MetaAnalysisTopResultsPresenter.TYPE_FilterContent) {
-            filterContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
-        }
     }
 
     @Override

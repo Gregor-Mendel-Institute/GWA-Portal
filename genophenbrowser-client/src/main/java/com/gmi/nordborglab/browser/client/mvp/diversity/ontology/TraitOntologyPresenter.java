@@ -68,7 +68,7 @@ public class TraitOntologyPresenter
                                   final OntologyManager ontologyManager,
                                   final PlaceManager placeManager,
                                   final PhenotypeManager phenotypeManager) {
-        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, DiversityPresenter.SLOT_CONTENT);
         this.phenotypeManager = phenotypeManager;
         this.placeManager = placeManager;
         this.ontologyManager = ontologyManager;

@@ -37,7 +37,7 @@ public class DashboardPresenter extends
     @Inject
     public DashboardPresenter(final EventBus eventBus, final MyView view,
                               final MyProxy proxy) {
-        super(eventBus, view, proxy, HomeTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, HomeTabPresenter.SLOT_CONTENT);
     }
 
 

@@ -34,6 +34,8 @@ import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
+import com.gwtplatform.mvp.client.presenter.slots.SingleSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
@@ -77,9 +79,11 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
 
     }
 
-    public static final Object TYPE_SetGWASUploadContent = new Object();
-    public static final Object TYPE_SetGWASPLOTContent = new Object();
-    public static final Object TYPE_SetPermissionContent = new Object();
+
+    static final PermanentSlot<GWASUploadWizardPresenterWidget> SLOT_GWAS_UPLOAD = new PermanentSlot();
+    static final SingleSlot<GWASPlotPresenterWidget> SLOT_GWAS_PLOT = new SingleSlot<>();
+    static final PermanentSlot<PermissionDetailPresenter> SLOT_PERMISSIONS = new PermanentSlot<>();
+
 
     private final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget;
     private final AsyncDataProvider<GWASResultProxy> dataProvider = new AsyncDataProvider<GWASResultProxy>() {
@@ -109,7 +113,7 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
                                final GWASPlotPresenterWidget gwasPlotPresenterWidget,
                                final PermissionDetailPresenter permissionDetailPresenter,
                                final FacetSearchPresenterWidget facetSearchPresenterWidget) {
-        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, DiversityPresenter.SLOT_CONTENT);
         this.gwasUploadWizardPresenterWidget = gwasUploadWizardPresenterWidget;
         this.gwasPlotPresenterWidget = gwasPlotPresenterWidget;
         this.permissionDetailPresenter = permissionDetailPresenter;
@@ -144,10 +148,10 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
     @Override
     public void onBind() {
         super.onBind();
-        setInSlot(TYPE_SetGWASUploadContent, gwasUploadWizardPresenterWidget);
-        setInSlot(TYPE_SetGWASPLOTContent, gwasPlotPresenterWidget);
-        setInSlot(TYPE_SetPermissionContent, permissionDetailPresenter);
-        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        setInSlot(SLOT_GWAS_UPLOAD, gwasUploadWizardPresenterWidget);
+        setInSlot(SLOT_GWAS_PLOT, gwasPlotPresenterWidget);
+        setInSlot(SLOT_PERMISSIONS, permissionDetailPresenter);
+        setInSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetSearchPresenterWidget);
         registerHandler(GWASUploadedEvent.register(getEventBus(), new GWASUploadedEvent.Handler() {
             @Override
             public void onGWASUploaded(GWASUploadedEvent event) {

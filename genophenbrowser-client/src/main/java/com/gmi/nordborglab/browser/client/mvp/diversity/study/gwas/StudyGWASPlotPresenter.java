@@ -10,20 +10,18 @@ import com.gmi.nordborglab.browser.client.mvp.diversity.study.StudyTabPresenter;
 import com.gmi.nordborglab.browser.client.mvp.widgets.gwas.GWASPlotPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.TabData;
 import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
+import com.gwtplatform.mvp.client.presenter.slots.SingleSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
@@ -44,8 +42,7 @@ public class StudyGWASPlotPresenter
     public interface MyProxy extends TabContentProxyPlace<StudyGWASPlotPresenter> {
     }
 
-    @ContentSlot
-    public static final GwtEvent.Type<RevealContentHandler<?>> TYPE_SetGWASPlotsContent = new GwtEvent.Type<RevealContentHandler<?>>();
+    static final SingleSlot<GWASPlotPresenterWidget> SLOT_GWAS_PLOT = new SingleSlot<>();
 
     protected StudyProxy study;
     protected Long studyId;
@@ -60,7 +57,7 @@ public class StudyGWASPlotPresenter
                                   final MyProxy proxy, final PlaceManager placeManager,
                                   final CdvManager cdvManager,
                                   final GWASPlotPresenterWidget gwasPlotPresenterWidget) {
-        super(eventBus, view, proxy, StudyTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, StudyTabPresenter.SLOT_CONTENT);
         this.gwasPlotPresenterWidget = gwasPlotPresenterWidget;
         this.placeManager = placeManager;
         this.cdvManager = cdvManager;
@@ -70,7 +67,7 @@ public class StudyGWASPlotPresenter
     @Override
     protected void onBind() {
         super.onBind();
-        setInSlot(TYPE_SetGWASPlotsContent, gwasPlotPresenterWidget);
+        setInSlot(SLOT_GWAS_PLOT, gwasPlotPresenterWidget);
         registerHandler(getEventBus().addHandlerToSource(SelectSNPEvent.TYPE, gwasPlotPresenterWidget, new SelectSNPEvent.Handler() {
             @Override
             public void onSelectSNP(SelectSNPEvent event) {

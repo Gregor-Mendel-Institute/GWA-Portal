@@ -80,9 +80,11 @@ public class GermplasmView extends ViewImpl implements
     @Inject
     public GermplasmView(final Binder binder, final PlaceManager placeManager,
                          final MainResources mainRes) {
-        widget = binder.createAndBindUi(this);
         this.placeManager = placeManager;
         this.mainRes = mainRes;
+        widget = binder.createAndBindUi(this);
+        bindSlot(GermplasmPresenter.SLOT_SEARCH, searchContainer);
+        bindSlot(GermplasmPresenter.SLOT_CONTENT, container);
     }
 
     @Override
@@ -90,20 +92,6 @@ public class GermplasmView extends ViewImpl implements
         return widget;
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == GermplasmPresenter.TYPE_SetMainContent) {
-            setMainContent(content);
-        } else if (slot == GermplasmPresenter.TYPE_SearchPresenterContent) {
-            if (content == null) {
-                searchContainer.clear();
-            } else {
-                searchContainer.add(content);
-            }
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
     private void setMainContent(IsWidget content) {
         if (content != null) {

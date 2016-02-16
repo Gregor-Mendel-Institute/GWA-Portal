@@ -53,7 +53,7 @@ public class PublicationOverviewPresenter extends
     @Inject
     public PublicationOverviewPresenter(EventBus eventBus, MyView view, MyProxy proxy,
                                         final ExperimentManager experimentManager, final PlaceManager placeManager) {
-        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, DiversityPresenter.SLOT_CONTENT);
         this.placeManager = placeManager;
         this.experimentManager = experimentManager;
         getView().setUiHandlers(this);

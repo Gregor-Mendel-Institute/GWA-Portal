@@ -9,11 +9,10 @@ import com.gwtplatform.mvp.client.RequestTabsHandler;
 import com.gwtplatform.mvp.client.TabContainerPresenter;
 import com.gwtplatform.mvp.client.TabView;
 import com.gwtplatform.mvp.client.annotations.ChangeTab;
-import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.RequestTabs;
+import com.gwtplatform.mvp.client.presenter.slots.NestedSlot;
 import com.gwtplatform.mvp.client.proxy.Proxy;
-import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 
 public class ExperimentDetailTabPresenter
         extends
@@ -33,13 +32,12 @@ public class ExperimentDetailTabPresenter
     public static final Type<ChangeTabHandler> TYPE_ChangeTab = new Type<ChangeTabHandler>();
 
 
-    @ContentSlot
-    public static final Type<RevealContentHandler<?>> TYPE_SetTabContent = new Type<RevealContentHandler<?>>();
+    public static final NestedSlot SLOT_CONTENT = new NestedSlot();
 
 
     @Inject
     public ExperimentDetailTabPresenter(final EventBus eventBus, final MyView view,
                                         final MyProxy proxy) {
-        super(eventBus, view, proxy, TYPE_SetTabContent, TYPE_RequestTabs, TYPE_ChangeTab, DiversityPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, SLOT_CONTENT, TYPE_RequestTabs, TYPE_ChangeTab, DiversityPresenter.SLOT_CONTENT);
     }
 }

@@ -90,7 +90,7 @@ public class FilterPresenterWidgetView extends ViewWithUiHandlers<FilterPresente
 
     @Override
     public void addToSlot(Object slot, IsWidget content) {
-        if (slot == FilterPresenterWidget.TYPE_FilterItemsContent) {
+        if (slot == FilterPresenterWidget.SLOT_ITEMS) {
             addFilter(content);
         } else {
             super.addToSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
@@ -100,7 +100,7 @@ public class FilterPresenterWidgetView extends ViewWithUiHandlers<FilterPresente
 
     @Override
     public void setInSlot(Object slot, IsWidget content) {
-        if (slot == FilterPresenterWidget.TYPE_FilterItemsContent) {
+        if (slot == FilterPresenterWidget.SLOT_ITEMS) {
             clearAvailableFilters();
             addToSlot(slot, content);
         } else {

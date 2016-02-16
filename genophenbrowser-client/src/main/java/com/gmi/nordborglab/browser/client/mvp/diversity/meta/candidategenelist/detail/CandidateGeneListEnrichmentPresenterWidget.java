@@ -122,7 +122,7 @@ public class CandidateGeneListEnrichmentPresenterWidget extends PresenterWidget<
     protected void onBind() {
         super.onBind();    //To change body of overridden methods use File | Settings | File Templates.
         finisheDataProvider.addDataDisplay(getView().getFinishedDisplay());
-        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        setInSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetSearchPresenterWidget);
         registerHandler(getView().getAvailableDisplay().getSelectionModel().addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {

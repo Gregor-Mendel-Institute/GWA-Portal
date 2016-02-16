@@ -85,7 +85,7 @@ public class PassportDetailPresenter
                                    final MyProxy proxy, final PlaceManager placeManager,
                                    final CurrentUser currentUser, final PassportManager passportManager
     ) {
-        super(eventBus, view, proxy, GermplasmPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, GermplasmPresenter.SLOT_CONTENT);
         this.placeManager = placeManager;
         this.currentUser = currentUser;
         this.passportManager = passportManager;

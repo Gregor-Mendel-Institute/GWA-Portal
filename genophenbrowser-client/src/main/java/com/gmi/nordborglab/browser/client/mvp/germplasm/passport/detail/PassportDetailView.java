@@ -39,7 +39,6 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
@@ -196,11 +195,6 @@ public class PassportDetailView extends ViewImpl implements
         marker.setMap(mapWidget);
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        super.setInSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
-
-    }
 
     @Override
     public void showPassportOnMap(PassportProxy passport) {

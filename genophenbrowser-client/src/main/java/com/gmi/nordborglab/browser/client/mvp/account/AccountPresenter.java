@@ -88,7 +88,7 @@ public class AccountPresenter extends Presenter<AccountPresenter.MyView, Account
                             final CurrentUser currentUser, final PlaceManager placeManager,
                             final CustomRequestFactory rf,
                             final ClientValidation validation) {
-        super(eventBus, view, proxy, ApplicationPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, ApplicationPresenter.SLOT_MAIN_CONTENT);
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
         this.validation = validation;

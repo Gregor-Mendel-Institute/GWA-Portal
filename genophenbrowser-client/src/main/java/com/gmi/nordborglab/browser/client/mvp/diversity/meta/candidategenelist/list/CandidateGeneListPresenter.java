@@ -69,7 +69,7 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
                                       CandidateGeneListPresenter.MyProxy proxy, final CustomRequestFactory rf,
                                       final PlaceManager placeManager, final CurrentUser currentUser,
                                       final FacetSearchPresenterWidget facetSearchPresenterWidget) {
-        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, DiversityPresenter.SLOT_CONTENT);
         this.currentUser = currentUser;
         this.rf = rf;
         this.facetSearchPresenterWidget = facetSearchPresenterWidget;
@@ -129,7 +129,7 @@ public class CandidateGeneListPresenter extends Presenter<CandidateGeneListPrese
     @Override
     protected void onBind() {
         super.onBind();
-        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        setInSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetSearchPresenterWidget);
         registerHandler(getEventBus().addHandlerToSource(FacetSearchChangeEvent.TYPE, facetSearchPresenterWidget, new FacetSearchChangeEvent.Handler() {
 
             @Override

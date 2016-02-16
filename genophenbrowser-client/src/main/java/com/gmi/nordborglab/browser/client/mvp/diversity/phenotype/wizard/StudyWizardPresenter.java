@@ -247,7 +247,7 @@ public class StudyWizardPresenter extends
                                 final CurrentUser currentUser,
                                 final PhenotypeManager phenotypeManager,
                                 final PlaceManager placeManager, final ObsUnitManager obsUnitManager) {
-        super(eventBus, view, proxy, PhenotypeDetailTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, PhenotypeDetailTabPresenter.SLOT_CONTENT);
         validator = Validation.buildDefaultValidatorFactory().getValidator();
         getView().setUiHandlers(this);
         this.cdvManager = cdvManager;

@@ -6,7 +6,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -52,28 +51,11 @@ public class GenotypeView extends ViewImpl implements
         menuItems = ImmutableMap.<MENU_ITEM, Hyperlink>builder()
                 .put(MENU_ITEM.GENOMEBROWSER, genomeBrowserMenu)
                 .put(MENU_ITEM.SNPVIEWER, snpViewerMenu).build();
+        bindSlot(GenotypePresenter.SLOT_SEARCH, searchContainer);
+        bindSlot(GenotypePresenter.SLOT_CONTENT, container);
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == GenotypePresenter.TYPE_SetMainContent) {
-            setMainContent(content);
-        } else if (slot == GenotypePresenter.TYPE_SearchPresenterContent) {
-            if (content == null) {
-                searchContainer.clear();
-            } else {
-                searchContainer.add(content);
-            }
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
-    private void setMainContent(IsWidget content) {
-        if (content != null) {
-            container.setWidget(content);
-        }
-    }
 
     @Override
     public void setTitle(String title) {

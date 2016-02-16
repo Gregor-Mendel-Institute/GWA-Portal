@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.mvp.home;
 
 import com.gmi.nordborglab.browser.client.ui.BaseTabContainerView;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
@@ -26,6 +25,7 @@ public class HomeTabView extends BaseTabContainerView implements HomeTabPresente
     @Inject
     public HomeTabView(final Binder binder) {
         widget = binder.createAndBindUi(this);
+        bindSlot(HomeTabPresenter.SLOT_CONTENT, tabContainer.getPanelContent());
     }
 
     @Override
@@ -33,13 +33,5 @@ public class HomeTabView extends BaseTabContainerView implements HomeTabPresente
         return widget;
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == HomeTabPresenter.TYPE_SetTabContent) {
-            setMainContent(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
 }

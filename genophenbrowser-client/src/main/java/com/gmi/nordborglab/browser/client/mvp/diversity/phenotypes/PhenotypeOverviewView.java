@@ -13,7 +13,6 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -48,16 +47,8 @@ public class PhenotypeOverviewView extends ViewWithUiHandlers<PhenotypeOverviewU
         dataGrid = new DataGrid<>(25, customDataGridResources, new EntityProxyKeyProvider<PhenotypeProxy>());
         initGrid();
         widget = binder.createAndBindUi(this);
+        bindSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetContainer);
         pager.setDisplay(dataGrid);
-    }
-
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
-            facetContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
     }
 
     @Override

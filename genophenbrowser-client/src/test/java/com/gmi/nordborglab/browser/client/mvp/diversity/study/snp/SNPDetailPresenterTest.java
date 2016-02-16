@@ -104,7 +104,7 @@ public class SNPDetailPresenterTest extends PresenterTestBase {
     public void test_onBind_SetPresenterWidgetInSlot() {
 
         presenter.onBind();
-        verify(view).setInSlot(presenter.SLOT_SNPDetailView, snpDetailPresenterWidget);
+        verify(view).setInSlot(presenter.SLOT_SNP_DETAIL, snpDetailPresenterWidget);
     }
 
     @Test

@@ -12,18 +12,16 @@ import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyStandard;
+import com.gwtplatform.mvp.client.presenter.slots.NestedSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.Proxy;
-import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 
@@ -51,8 +49,7 @@ public class ApplicationPresenter extends
         void resetNotificationBubble();
     }
 
-    @ContentSlot
-    public static final Type<RevealContentHandler<?>> TYPE_SetMainContent = new Type<RevealContentHandler<?>>();
+    public static final NestedSlot SLOT_MAIN_CONTENT = new NestedSlot();
 
     @ProxyStandard
     public interface MyProxy extends Proxy<ApplicationPresenter> {

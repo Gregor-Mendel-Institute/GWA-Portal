@@ -31,7 +31,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -84,6 +83,7 @@ public class PassportListView extends ViewWithUiHandlers<PassportListViewUiHandl
         passportDataGrid.setWidth("100%");
         passportDataGrid.setMinimumTableWidth(1280, Unit.PX);
         widget = binder.createAndBindUi(this);
+        bindSlot(PassportListPresenter.SLOT_FILTER, filterContainer);
         pager.setDisplay(passportDataGrid);
 
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
@@ -120,14 +120,6 @@ public class PassportListView extends ViewWithUiHandlers<PassportListViewUiHandl
         return widget;
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == PassportListPresenter.TYPE_FilterContent) {
-            filterContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
-        }
-    }
 
     private void initDataGridColumns() {
         PlaceRequest.Builder passportDetailRequest = new PlaceRequest.Builder().nameToken(NameTokens.passport);

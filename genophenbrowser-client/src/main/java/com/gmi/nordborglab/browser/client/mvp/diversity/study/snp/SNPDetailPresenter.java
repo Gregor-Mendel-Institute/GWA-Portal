@@ -8,7 +8,6 @@ import com.gmi.nordborglab.browser.client.mvp.widgets.snps.SNPDetailPresenterWid
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.shared.proxy.SNPGWASInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
-import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.gwt.query.client.Promise;
 import com.google.gwt.query.client.plugins.deferred.PromiseFunction;
 import com.google.inject.Inject;
@@ -18,13 +17,12 @@ import com.google.web.bindery.requestfactory.shared.gquery.PromiseRF;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
+import com.gwtplatform.mvp.client.presenter.slots.SingleSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 public class SNPDetailPresenter extends Presenter<SNPDetailPresenter.MyView, SNPDetailPresenter.MyProxy> implements SNPDetailUiHandlers {
@@ -32,8 +30,7 @@ public class SNPDetailPresenter extends Presenter<SNPDetailPresenter.MyView, SNP
     public interface MyView extends View, HasUiHandlers<SNPDetailUiHandlers> {
     }
 
-    @ContentSlot
-    public static final Type<RevealContentHandler<?>> SLOT_SNPDetailView = new Type<RevealContentHandler<?>>();
+    static final SingleSlot<SNPDetailPresenterWidget> SLOT_SNP_DETAIL = new SingleSlot<>();
 
     @NameToken(NameTokens.snps)
     @ProxyCodeSplit
@@ -54,7 +51,7 @@ public class SNPDetailPresenter extends Presenter<SNPDetailPresenter.MyView, SNP
     @Inject
     SNPDetailPresenter(EventBus eventBus, MyView view, MyProxy proxy, PlaceManager placeManager,
                        CdvManager cdvManager, final SNPDetailPresenterWidget snpDetailPresenterWidget) {
-        super(eventBus, view, proxy, StudyTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, StudyTabPresenter.SLOT_CONTENT);
         this.snpDetailPresenterWidget = snpDetailPresenterWidget;
         this.placeManager = placeManager;
         this.cdvManager = cdvManager;
@@ -64,7 +61,7 @@ public class SNPDetailPresenter extends Presenter<SNPDetailPresenter.MyView, SNP
     @Override
     protected void onBind() {
         super.onBind();
-        setInSlot(SLOT_SNPDetailView, snpDetailPresenterWidget);
+        setInSlot(SLOT_SNP_DETAIL, snpDetailPresenterWidget);
     }
 
     @Override

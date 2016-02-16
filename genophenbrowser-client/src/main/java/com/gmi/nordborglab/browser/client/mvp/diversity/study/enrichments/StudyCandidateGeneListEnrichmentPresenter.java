@@ -55,7 +55,7 @@ public class StudyCandidateGeneListEnrichmentPresenter extends CandidateGeneList
                                                      final ClientModule.AssistedInjectionFactory factory,
                                                      final CdvManager cdvManager
     ) {
-        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(ConstEnums.ENRICHMENT_TYPE.ANALYSIS), StudyTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(ConstEnums.ENRICHMENT_TYPE.ANALYSIS), StudyTabPresenter.SLOT_CONTENT);
         this.cdvManager = cdvManager;
     }
 

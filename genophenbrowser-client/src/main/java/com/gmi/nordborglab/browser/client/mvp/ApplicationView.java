@@ -28,7 +28,6 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineHyperlink;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -136,6 +135,7 @@ public class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> i
     @Inject
     public ApplicationView(final Binder binder, final MainResources resources, final PlaceManager placeManager) {
         widget = binder.createAndBindUi(this);
+        bindSlot(ApplicationPresenter.SLOT_MAIN_CONTENT, container);
         this.resources = resources;
         loadingIndicator.getStyle().setDisplay(Display.NONE);
         this.placeManager = placeManager;
@@ -157,18 +157,6 @@ public class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> i
         return widget;
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == ApplicationPresenter.TYPE_SetMainContent) {
-            setMainContent(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
-
-    private void setMainContent(IsWidget content) {
-        container.setWidget(content);
-    }
 
     @Override
     public String getUserData() {

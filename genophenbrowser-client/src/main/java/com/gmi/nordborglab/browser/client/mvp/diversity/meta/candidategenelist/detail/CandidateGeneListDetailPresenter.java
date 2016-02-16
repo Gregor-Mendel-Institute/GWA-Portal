@@ -46,6 +46,7 @@ import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
@@ -110,7 +111,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     public interface MyProxy extends ProxyPlace<CandidateGeneListDetailPresenter> {
     }
 
-    public static final Object TYPE_SetEnrichmentCntent = new Object();
+    static final PermanentSlot<CandidateGeneListEnrichmentPresenterWidget> SLOT_ENRICHMENT = new PermanentSlot<>();
     private CandidateGeneListProxy candidateGeneList;
     private final PermissionDetailPresenter permissionDetailPresenter;
     private final Receiver<CandidateGeneListProxy> receiver = new Receiver<CandidateGeneListProxy>() {
@@ -139,7 +140,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     private final CurrentUser currentUser;
     private List<FacetProxy> statsFacets;
 
-    public static final Object TYPE_SetPermissionContent = new Object();
+    static final PermanentSlot<PermissionDetailPresenter> SLOT_PERMISSION = new PermanentSlot<>();
     private GenePageProxy genesPage;
     private final BiMap<ConstEnums.GENE_FILTER, List<String>> filter2Annotation;
     private final CandidateGeneListEnrichmentPresenterWidget candidateGeneListEnrichmentPresenter;
@@ -171,7 +172,7 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
                                             final ClientModule.AssistedInjectionFactory factory,
                                             final FacetSearchPresenterWidget facetSearchPresenterWidget,
                                             final SearchManager searchManager) {
-        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, DiversityPresenter.SLOT_CONTENT);
         filter2Annotation = new ImmutableBiMap.Builder<ConstEnums.GENE_FILTER, List<String>>()
                 .put(ConstEnums.GENE_FILTER.PROTEIN, Lists.newArrayList("gene"))
                 .put(ConstEnums.GENE_FILTER.TRANSPOSON, Lists.newArrayList("transposable_element", "transposable_element_gene"))
@@ -201,9 +202,9 @@ public class CandidateGeneListDetailPresenter extends Presenter<CandidateGeneLis
     @Override
     protected void onBind() {
         super.onBind();    //To change body of overridden methods use File | Settings | File Templates.
-        setInSlot(TYPE_SetPermissionContent, permissionDetailPresenter);
-        setInSlot(TYPE_SetEnrichmentCntent, candidateGeneListEnrichmentPresenter);
-        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        setInSlot(SLOT_PERMISSION, permissionDetailPresenter);
+        setInSlot(SLOT_ENRICHMENT, candidateGeneListEnrichmentPresenter);
+        setInSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetSearchPresenterWidget);
         registerHandler(getEventBus().addHandlerToSource(PermissionDoneEvent.TYPE, permissionDetailPresenter, new PermissionDoneEvent.Handler() {
             @Override
             public void onPermissionDone(PermissionDoneEvent event) {

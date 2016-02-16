@@ -70,7 +70,7 @@ public class TaxonomyDetailPresenter
     public TaxonomyDetailPresenter(final EventBus eventBus, final MyView view,
                                    final MyProxy proxy, final PlaceManager placeManager,
                                    final TaxonomyManager taxonomyManager, final CurrentUser currentUser) {
-        super(eventBus, view, proxy, GermplasmPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, GermplasmPresenter.SLOT_CONTENT);
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
         this.taxonomyManager = taxonomyManager;

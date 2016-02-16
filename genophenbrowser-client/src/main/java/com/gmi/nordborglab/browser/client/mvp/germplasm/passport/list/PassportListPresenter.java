@@ -31,6 +31,7 @@ import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
@@ -176,7 +177,8 @@ public class PassportListPresenter extends
     private final CurrentUser currentUser;
     private final FilterPresenterWidget filterPresenterWidget;
     private final DropDownFilterItemPresenterWidget genotypeFilterWidget;
-    public static final Object TYPE_FilterContent = new Object();
+
+    static final PermanentSlot<FilterPresenterWidget> SLOT_FILTER = new PermanentSlot<>();
 
     @Inject
     public PassportListPresenter(final EventBus eventBus, final MyView view,
@@ -185,7 +187,7 @@ public class PassportListPresenter extends
                                  final FilterPresenterWidget filterPresenterWidget,
                                  final Provider<DropDownFilterItemPresenterWidget> dropDownFilterProvider,
                                  final Provider<TextBoxFilterItemPresenterWidget> textBoxFilterProvider) {
-        super(eventBus, view, proxy, GermplasmPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, GermplasmPresenter.SLOT_CONTENT);
         this.filterPresenterWidget = filterPresenterWidget;
         this.dataProvider = dataProvider;
         this.placeManager = placeManager;
@@ -251,7 +253,7 @@ public class PassportListPresenter extends
     protected void onBind() {
         super.onBind();
         dataProvider.addDataDisplay(getView().getPassportDisplay());
-        setInSlot(TYPE_FilterContent, filterPresenterWidget);
+        setInSlot(SLOT_FILTER, filterPresenterWidget);
         registerHandler(getEventBus().addHandlerToSource(FilterModifiedEvent.TYPE, filterPresenterWidget, new FilterModifiedEvent.Handler() {
             @Override
             public void onFilterModified(FilterModifiedEvent event) {

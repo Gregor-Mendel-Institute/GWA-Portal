@@ -16,7 +16,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -64,6 +63,7 @@ public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> imple
         dataGrid = new DataGrid<StudyProxy>(20, dataGridResources, KEY_PROVIDER);
         initCellTable();
         widget = binder.createAndBindUi(this);
+        bindSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetContainer);
         pager.setDisplay(dataGrid);
     }
 
@@ -113,13 +113,5 @@ public class StudyListView extends ViewWithUiHandlers<StudyListUiHandlers> imple
         newAnalysisBtn.setVisible(showAdd);
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
-            facetContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
 }

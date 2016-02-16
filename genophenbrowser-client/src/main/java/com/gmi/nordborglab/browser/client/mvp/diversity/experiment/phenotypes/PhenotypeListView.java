@@ -17,7 +17,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -65,6 +64,9 @@ public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListUiHandler
         dataGrid = new DataGrid<>(20, dataGridResources, new EntityProxyKeyProvider<PhenotypeProxy>());
         initCellTable();
         widget = binder.createAndBindUi(this);
+
+        bindSlot(PhenotypeListPresenter.SLOT_PHENOTYPE_UPLOAD, phenotypeUploadPanel);
+        bindSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetContainer);
         pager.setDisplay(dataGrid);
         ModalBody modalBody = new ModalBody();
         modalBody.add(phenotypeUploadPanel);
@@ -120,16 +122,6 @@ public class PhenotypeListView extends ViewWithUiHandlers<PhenotypeListUiHandler
         return dataGrid;
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == PhenotypeListPresenter.TYPE_SetPhenotypeUploadContent) {
-            phenotypeUploadPanel.add(content);
-        } else if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
-            facetContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
     @UiHandler("uploadPhenotypeBtn")
     public void onClickUploadBtn(ClickEvent e) {

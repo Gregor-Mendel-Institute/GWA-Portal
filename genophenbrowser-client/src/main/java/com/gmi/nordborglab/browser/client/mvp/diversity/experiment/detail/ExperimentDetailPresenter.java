@@ -46,6 +46,7 @@ import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
 import com.gwtplatform.mvp.client.annotations.TitleFunction;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
@@ -115,7 +116,8 @@ public class ExperimentDetailPresenter
         return title;
     }
 
-    public static final Object TYPE_SetPermissionContent = new Object();
+    static final PermanentSlot<PermissionDetailPresenter> SLOT_PERMISSION = new PermanentSlot<>();
+
     private final PlaceManager placeManager;
     private final ExperimentManager experimentManager;
     private ExperimentProxy experiment;
@@ -136,7 +138,7 @@ public class ExperimentDetailPresenter
                                      final ExperimentManager experimentManager,
                                      final CurrentUser currentUser,
                                      final PermissionDetailPresenter permissionDetailPresenter, final Validator validator) {
-        super(eventBus, view, proxy, ExperimentDetailTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, ExperimentDetailTabPresenter.SLOT_CONTENT);
         this.validator = validator;
         getView().setUiHandlers(this);
         this.permissionDetailPresenter = permissionDetailPresenter;
@@ -171,7 +173,7 @@ public class ExperimentDetailPresenter
     @Override
     protected void onBind() {
         super.onBind();
-        setInSlot(TYPE_SetPermissionContent, permissionDetailPresenter);
+        setInSlot(SLOT_PERMISSION, permissionDetailPresenter);
         registerHandler(getEventBus().addHandlerToSource(PermissionDoneEvent.TYPE, permissionDetailPresenter, new PermissionDoneEvent.Handler() {
             @Override
             public void onPermissionDone(PermissionDoneEvent event) {

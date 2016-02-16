@@ -60,7 +60,7 @@ public class UserListPresenter extends Presenter<UserListPresenter.MyView, UserL
     @Inject
     public UserListPresenter(EventBus eventBus, MyView view, MyProxy proxy, final PlaceManager placeManager, final CustomRequestFactory rf,
                              final FacetSearchPresenterWidget facetSearchPresenterWidget) {
-        super(eventBus, view, proxy, ApplicationPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, ApplicationPresenter.SLOT_MAIN_CONTENT);
         facetSearchPresenterWidget.setDefaultFilter("ALL");
         facetSearchPresenterWidget.initFixedFacets(FacetSearchPresenterWidget.USER_MAP);
         this.facetSearchPresenterWidget = facetSearchPresenterWidget;
@@ -73,7 +73,7 @@ public class UserListPresenter extends Presenter<UserListPresenter.MyView, UserL
     @Override
     protected void onBind() {
         super.onBind();
-        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        setInSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetSearchPresenterWidget);
         registerHandler(getEventBus().addHandlerToSource(FacetSearchChangeEvent.TYPE, facetSearchPresenterWidget, new FacetSearchChangeEvent.Handler() {
 
             @Override

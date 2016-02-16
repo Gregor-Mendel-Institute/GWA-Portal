@@ -40,7 +40,6 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -178,10 +177,11 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
     private Modal editPopup = new Modal();
     private DialogOptions deleteOptions = DialogOptions.newOptions("Do you really want to delete the candidate gene list?");
     private Modal permissionPopUp = new Modal();
+    private ModalBody permissionPopupContent = new ModalBody();
 
     private Modal resetEnrichmentPopup = new Modal();
 
-    private static enum ACTION {UPLOAD, ADD, REMOVE}
+    private enum ACTION {UPLOAD, ADD, REMOVE}
 
     private BiMap<ACTION, ClickHandler> action2ClickHandler;
     private int enrichmentCount = 0;
@@ -236,6 +236,10 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
             }
         });
         widget = binder.createAndBindUi(this);
+        bindSlot(CandidateGeneListDetailPresenter.SLOT_PERMISSION, permissionPopupContent);
+        bindSlot(CandidateGeneListDetailPresenter.SLOT_ENRICHMENT, enrichmentContainer);
+        bindSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetContainer);
+        permissionPopUp.add(permissionPopupContent);
 
         stats2Chart = ImmutableBiMap.<CandidateGeneListDetailPresenter.STATS, PieChart>builder()
                 .put(CandidateGeneListDetailPresenter.STATS.CHR, chrPieChart)
@@ -485,21 +489,6 @@ public class CandidateGeneListDetailView extends ViewWithUiHandlers<CandidateGen
             editPopup.hide();
     }
 
-
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == CandidateGeneListDetailPresenter.TYPE_SetPermissionContent) {
-            ModalBody modalBody = new ModalBody();
-            modalBody.add(content);
-            permissionPopUp.add(modalBody);
-        } else if (slot == CandidateGeneListDetailPresenter.TYPE_SetEnrichmentCntent) {
-            enrichmentContainer.add(content);
-        } else if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
-            facetContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
     @Override
     public void showDeletePopup() {

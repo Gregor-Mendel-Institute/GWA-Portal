@@ -3,15 +3,14 @@ package com.gmi.nordborglab.browser.client.mvp.genotype;
 import com.gmi.nordborglab.browser.client.mvp.ApplicationPresenter;
 import com.gmi.nordborglab.browser.client.mvp.widgets.search.SearchPresenter;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.mvp.client.Presenter;
-import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
+import com.gwtplatform.mvp.client.presenter.slots.NestedSlot;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.Proxy;
-import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 /**
@@ -32,9 +31,8 @@ public class GenotypePresenter extends
     public interface MyProxy extends Proxy<GenotypePresenter> {
     }
 
-    @ContentSlot
-    public static final GwtEvent.Type<RevealContentHandler<?>> TYPE_SetMainContent = new GwtEvent.Type<RevealContentHandler<?>>();
-    public static final Object TYPE_SearchPresenterContent = new Object();
+    public static final NestedSlot SLOT_CONTENT = new NestedSlot();
+    static final PermanentSlot<SearchPresenter> SLOT_SEARCH = new PermanentSlot<>();
 
     private final PlaceManager placeManager;
     private final SearchPresenter searchPresenter;
@@ -43,7 +41,7 @@ public class GenotypePresenter extends
     public GenotypePresenter(final EventBus eventBus, final MyView view,
                              final MyProxy proxy, final PlaceManager placeManager,
                              final SearchPresenter searchPresenter) {
-        super(eventBus, view, proxy, ApplicationPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, ApplicationPresenter.SLOT_MAIN_CONTENT);
         this.placeManager = placeManager;
         this.searchPresenter = searchPresenter;
     }
@@ -51,7 +49,7 @@ public class GenotypePresenter extends
     @Override
     protected void onBind() {
         super.onBind();
-        setInSlot(TYPE_SearchPresenterContent, searchPresenter);
+        setInSlot(SLOT_SEARCH, searchPresenter);
     }
 
     @Override

@@ -24,7 +24,8 @@
         <hibernate-validator.version>4.1.0.Final</hibernate-validator.version>
         <javax.validation.version>1.0.0.GA</javax.validation.version>
         <jsr305.version>3.0.1</jsr305.version>
-        <gwtp.version>1.4</gwtp.version>
+        <!-- required until https://github.com/ArcBees/GWTP/issues/744 is fixed -->
+        <gwtp.version>1.6-SNAPSHOT</gwtp.version>
         <gin.version>2.1.2</gin.version>
         <guice.version>3.0</guice.version>
         <gwtquery.version>1.5-beta1</gwtquery.version>

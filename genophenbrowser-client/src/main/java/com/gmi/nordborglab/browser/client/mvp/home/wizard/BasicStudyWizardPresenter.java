@@ -39,7 +39,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.view.client.HasData;
@@ -53,13 +52,12 @@ import com.google.web.bindery.requestfactory.shared.ServerFailure;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.UseGatekeeper;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
-import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
 import javax.annotation.Nullable;
@@ -190,9 +188,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
     }
 
-    @ContentSlot
-    public static final GwtEvent.Type<RevealContentHandler<?>> TYPE_SetPhenotypeUploadContent = new GwtEvent.Type<RevealContentHandler<?>>();
-    public static final Object TYPE_SetIsaTabUploadContent = new Object();
+    static final PermanentSlot<PhenotypeUploadWizardPresenterWidget> SLOT_PHENOTYPE_UPLOAD = new PermanentSlot<>();
+    static final PermanentSlot<PhenotypeUploadWizardPresenterWidget> SLOT_ISATAB_UPLOAD = new PermanentSlot<>();
 
     private final PlaceManager placeManager;
     private ImmutableSortedMap<Double, Integer> histogram;
@@ -311,7 +308,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                                      final PhenotypeUploadWizardPresenterWidget isaTabUploadWizard,
                                      Validator validator,
                                      final GoogleAnalyticsManager analyticsManager) {
-        super(eventBus, view, proxy, ApplicationPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, ApplicationPresenter.SLOT_MAIN_CONTENT);
         this.currentUser = currentUser;
         this.analyticsManager = analyticsManager;
         this.validator = validator;
@@ -778,8 +775,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
     protected void onBind() {
         super.onBind();
         isaTabUploadWizard.setExperiment(null);
-        setInSlot(TYPE_SetPhenotypeUploadContent, phenotypeUploadWizard);
-        setInSlot(TYPE_SetIsaTabUploadContent, isaTabUploadWizard);
+        setInSlot(SLOT_PHENOTYPE_UPLOAD, phenotypeUploadWizard);
+        setInSlot(SLOT_ISATAB_UPLOAD, isaTabUploadWizard);
         registerHandler(getEventBus().addHandlerToSource(PhenotypeUploadedEvent.TYPE, phenotypeUploadWizard, new PhenotypeUploadedEvent.Handler() {
             @Override
             public void onPhenotypeUploaded(PhenotypeUploadedEvent event) {

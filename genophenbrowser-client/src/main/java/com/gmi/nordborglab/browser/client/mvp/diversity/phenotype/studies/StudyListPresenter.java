@@ -74,7 +74,7 @@ public class StudyListPresenter extends
                               final PhenotypeManager phenotypeManager, final CdvManager cdvManager,
                               final CurrentUser currentUser, final
                               FacetSearchPresenterWidget facetSearchPresenterWidget) {
-        super(eventBus, view, proxy, PhenotypeDetailTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, PhenotypeDetailTabPresenter.SLOT_CONTENT);
         this.facetSearchPresenterWidget = facetSearchPresenterWidget;
         facetSearchPresenterWidget.setDefaultFilter(ConstEnums.TABLE_FILTER.ALL.name());
         getView().setUiHandlers(this);
@@ -107,7 +107,7 @@ public class StudyListPresenter extends
     protected void onBind() {
         super.onBind();
         dataProvider.addDataDisplay(getView().getDisplay());
-        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        setInSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetSearchPresenterWidget);
         registerHandler(StudyModifiedEvent.register(getEventBus(), new StudyModifiedEvent.Handler() {
             @Override
             public void onStudyModified(StudyModifiedEvent event) {

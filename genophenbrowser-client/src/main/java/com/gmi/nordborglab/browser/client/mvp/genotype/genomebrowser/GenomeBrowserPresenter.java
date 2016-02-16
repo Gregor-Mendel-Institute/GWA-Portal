@@ -33,7 +33,7 @@ public class GenomeBrowserPresenter extends Presenter<GenomeBrowserPresenter.MyV
 
     @Inject
     public GenomeBrowserPresenter(EventBus eventBus, MyView view, MyProxy proxy) {
-        super(eventBus, view, proxy, GenotypePresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, GenotypePresenter.SLOT_CONTENT);
         getView().setUiHandlers(this);
     }
 }
