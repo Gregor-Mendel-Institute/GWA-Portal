@@ -114,7 +114,7 @@ public class PhenotypeDetailPresenter
                                     final MyProxy proxy, final PlaceManager placeManager,
                                     final PhenotypeManager phenotypeManager,
                                     final CurrentUser currentUser, final OntologyManager ontologyManager, Validator validator) {
-        super(eventBus, view, proxy, PhenotypeDetailTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, PhenotypeDetailTabPresenter.SLOT_CONTENT);
         this.validator = validator;
         getView().setUiHandlers(this);
         this.placeManager = placeManager;

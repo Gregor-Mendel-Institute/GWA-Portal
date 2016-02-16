@@ -16,7 +16,6 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -52,6 +51,7 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
         dataGrid = new DataGrid<StudyProxy>(20, dataGridResources, new EntityProxyKeyProvider<StudyProxy>());
         initGrid();
         widget = binder.createAndBindUi(this);
+        bindSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetContainer);
         pager.setDisplay(dataGrid);
     }
 
@@ -60,14 +60,6 @@ public class StudyOverviewView extends ViewWithUiHandlers<StudyOverviewUiHandler
         return widget;
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
-            facetContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
     private void initGrid() {
         PlaceRequest.Builder request = new PlaceRequest.Builder().nameToken(NameTokens.study);

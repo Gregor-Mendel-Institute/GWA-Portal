@@ -47,7 +47,7 @@ public class PhenotypeOverviewPresenter
     public PhenotypeOverviewPresenter(final EventBus eventBus, final MyView view,
                                       final MyProxy proxy, final PhenotypeManager phenotypeManager, final PlaceManager placeManager,
                                       final FacetSearchPresenterWidget facetSearchPresenterWidget) {
-        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, DiversityPresenter.SLOT_CONTENT);
         this.placeManager = placeManager;
         this.facetSearchPresenterWidget = facetSearchPresenterWidget;
         getView().setUiHandlers(this);
@@ -79,7 +79,7 @@ public class PhenotypeOverviewPresenter
     @Override
     protected void onBind() {
         super.onBind();
-        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        setInSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetSearchPresenterWidget);
         registerHandler(getEventBus().addHandlerToSource(FacetSearchChangeEvent.TYPE, facetSearchPresenterWidget, new FacetSearchChangeEvent.Handler() {
 
             @Override

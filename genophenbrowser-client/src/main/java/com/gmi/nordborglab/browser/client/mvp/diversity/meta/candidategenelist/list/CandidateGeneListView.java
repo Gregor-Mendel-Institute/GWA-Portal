@@ -30,7 +30,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
@@ -129,6 +128,7 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
         dataGrid = new DataGrid<>(50, dataGridResources, new EntityProxyKeyProvider<CandidateGeneListProxy>());
         initCellTable();
         widget = binder.createAndBindUi(this);
+        bindSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetContainer);
         this.candidateGeneListEditDriver = candidateGeneListEditDriver;
         this.candidateGeneListEditDriver.initialize(candidateGeneListEditor);
         pager.setDisplay(dataGrid);
@@ -190,14 +190,6 @@ public class CandidateGeneListView extends ViewWithUiHandlers<CanidateGeneListUi
     }
 
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
-            facetContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
     @Override
     public Widget asWidget() {

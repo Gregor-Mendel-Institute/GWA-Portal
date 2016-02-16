@@ -7,7 +7,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -34,6 +33,7 @@ public class StudyGWASPlotView extends ViewImpl implements
     public StudyGWASPlotView(final Binder binder, SNPDetailPopup snpPopOver) {
         this.snpPopOver = snpPopOver;
         widget = binder.createAndBindUi(this);
+        bindSlot(StudyGWASPlotPresenter.SLOT_GWAS_PLOT, gwasPlotContainer);
         ModalBody modalBody = new ModalBody();
         modalBody.add(plotPanel);
         popUpPanel.add(modalBody);
@@ -46,14 +46,6 @@ public class StudyGWASPlotView extends ViewImpl implements
         return widget;
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == StudyGWASPlotPresenter.TYPE_SetGWASPlotsContent) {
-            gwasPlotContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
     @Override
     public void showSNPPopUp(Long analysisId, SelectSNPEvent event) {

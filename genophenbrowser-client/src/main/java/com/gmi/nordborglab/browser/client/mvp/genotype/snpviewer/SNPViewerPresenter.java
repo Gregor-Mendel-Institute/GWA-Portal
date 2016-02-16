@@ -36,6 +36,7 @@ import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
+import com.gwtplatform.mvp.client.presenter.slots.SingleSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
@@ -74,7 +75,7 @@ public class SNPViewerPresenter extends Presenter<SNPViewerPresenter.MyView, SNP
 
     }
 
-    public static final Object TYPE_SetSNPDetailContent = new Object();
+    public static final SingleSlot<SNPDetailPresenterWidget> SLOT_SNP_DETAIL = new SingleSlot<>();
     private final CurrentUser currentUser;
     private final PlaceManager placeManager;
 
@@ -119,7 +120,7 @@ public class SNPViewerPresenter extends Presenter<SNPViewerPresenter.MyView, SNP
                               final SearchManager searchManager,
                               SNPDetailPresenterWidget snpDetailPresenter,
                               final GoogleAnalyticsManager analyticsManager) {
-        super(eventBus, view, proxy, GenotypePresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, GenotypePresenter.SLOT_CONTENT);
         this.snpDetailPresenter = snpDetailPresenter;
         this.analyticsManager = analyticsManager;
         this.searchManager = searchManager;
@@ -132,7 +133,7 @@ public class SNPViewerPresenter extends Presenter<SNPViewerPresenter.MyView, SNP
     @Override
     public void onBind() {
         super.onBind();
-        setInSlot(TYPE_SetSNPDetailContent, snpDetailPresenter);
+        setInSlot(SLOT_SNP_DETAIL, snpDetailPresenter);
         getView().setAvailableGenotypes(currentUser.getAppData().getAlleleAssayList());
     }
 

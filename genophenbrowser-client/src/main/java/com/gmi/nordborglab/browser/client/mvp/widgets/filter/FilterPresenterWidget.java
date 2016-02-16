@@ -9,6 +9,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.PresenterWidget;
 import com.gwtplatform.mvp.client.View;
+import com.gwtplatform.mvp.client.presenter.slots.Slot;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class FilterPresenterWidget extends PresenterWidget<FilterPresenterWidget
 
     }
 
-    public static final Object TYPE_FilterItemsContent = new Object();
+    public static final Slot<FilterItemPresenterWidget<?>> SLOT_ITEMS = new Slot<>();
 
     private List<FilterItemPresenterWidget> filterItemWidgets;
     private Boolean hasMultiple = null;
@@ -52,7 +53,7 @@ public class FilterPresenterWidget extends PresenterWidget<FilterPresenterWidget
             if (hasMultiple != null) {
                 filterItem.setHasMultiple(hasMultiple);
             }
-            addToSlot(TYPE_FilterItemsContent, filterItem);
+            addToSlot(SLOT_ITEMS, filterItem);
         }
     }
 

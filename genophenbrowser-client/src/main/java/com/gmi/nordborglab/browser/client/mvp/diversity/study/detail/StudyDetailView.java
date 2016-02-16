@@ -30,7 +30,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
@@ -101,6 +100,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     private GeoChart geoChart = new GeoChart();
     private PieChart pieChart;
     private Modal gwasUploadPopup = new Modal();
+    private ModalBody gwasUploadPopupContent = new ModalBody();
     private Modal plotsPopup = new Modal();
     private Modal editPopup = new Modal();
     private DialogOptions deleteOptions = DialogOptions.newOptions("Do you really want to delete the analysis?");
@@ -181,6 +181,10 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         this.mainRes = mainRes;
         this.studyDisplayEditor = studyDisplayEditor;
         widget = binder.createAndBindUi(this);
+
+        gwasUploadPopup.add(gwasUploadPopupContent);
+        bindSlot(StudyDetailPresenter.SLOT_GWAS_UPLOAD, gwasUploadPopupContent);
+
 
         this.displayDriver = displayDriver;
         this.displayDriver.initialize(studyDisplayEditor);
@@ -538,17 +542,6 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         getUiHandlers().onStartAnalysis();
     }
 
-
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == StudyDetailPresenter.TYPE_SetGWASUploadContent) {
-            ModalBody modalBody = new ModalBody();
-            modalBody.add(content);
-            gwasUploadPopup.add(modalBody);
-        } else {
-            super.setInSlot(slot, content);    //To change body of overridden methods use File | Settings | File Templates.
-        }
-    }
 
     @Override
     public void showEditPopup(boolean show) {

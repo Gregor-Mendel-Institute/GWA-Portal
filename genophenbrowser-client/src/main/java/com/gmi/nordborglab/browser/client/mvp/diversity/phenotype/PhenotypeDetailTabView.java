@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.mvp.diversity.phenotype;
 
 import com.gmi.nordborglab.browser.client.ui.BaseTabContainerView;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
@@ -17,6 +16,7 @@ public class PhenotypeDetailTabView extends BaseTabContainerView implements
     @Inject
     public PhenotypeDetailTabView(final Binder binder) {
         widget = binder.createAndBindUi(this);
+        bindSlot(PhenotypeDetailTabPresenter.SLOT_CONTENT, tabContainer.getPanelContent());
     }
 
     @Override
@@ -24,12 +24,5 @@ public class PhenotypeDetailTabView extends BaseTabContainerView implements
         return widget;
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == PhenotypeDetailTabPresenter.TYPE_SetTabContent) {
-            setMainContent(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
+
 }

@@ -10,7 +10,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -82,6 +81,8 @@ public class DiversityView extends ViewImpl implements
         this.placeManager = placeManager;
         this.welcomeTour = tour;
         widget = binder.createAndBindUi(this);
+        bindSlot(DiversityPresenter.SLOT_SEARCH, searchContainer);
+        bindSlot(DiversityPresenter.SLOT_CONTENT, container);
         // for Tour
         experimentAccGroup.getElement().setId("experimentAccGroup");
         titleLabel.getElement().setId("breadcrumb");
@@ -104,26 +105,6 @@ public class DiversityView extends ViewImpl implements
         return widget;
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == DiversityPresenter.TYPE_SetMainContent) {
-            setMainContent(content);
-        } else if (slot == DiversityPresenter.TYPE_SearchPresenterContent) {
-            if (content == null) {
-                searchContainer.clear();
-            } else {
-                searchContainer.add(content);
-            }
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
-
-    private void setMainContent(IsWidget content) {
-        if (content != null) {
-            container.setWidget(content);
-        }
-    }
 
     @Override
     public void clearBreadcrumbs(int breadcrumbSize) {

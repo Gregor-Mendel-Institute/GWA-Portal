@@ -20,7 +20,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
@@ -111,6 +110,7 @@ public class HomeView extends ViewWithUiHandlers<HomeUiHandlers> implements Home
         newsList = new CellList<NewsItemProxy>(newsItemCell, new EntityProxyKeyProvider<NewsItemProxy>());
         newsList.setEmptyListWidget(new HTML("No news found"));
         widget = binder.createAndBindUi(this);
+        bindSlot(HomePresenter.SLOT_CONTENT, container);
         tourBtn.getElement().setId("tourBtn");
         statMap = ImmutableMap.<AppStatProxy.STAT, SpanElement>builder()
                 .put(AppStatProxy.STAT.USER, statsUsers)
@@ -134,20 +134,6 @@ public class HomeView extends ViewWithUiHandlers<HomeUiHandlers> implements Home
         return widget;
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == HomePresenter.TYPE_SetMainContent) {
-            setMainContent(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
-
-    private void setMainContent(IsWidget content) {
-        if (content != null) {
-            container.setWidget(content);
-        }
-    }
 
     @Override
     public void setLinkToWizard(boolean isLoggedIn) {

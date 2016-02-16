@@ -21,7 +21,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeLayoutPanel;
@@ -128,7 +127,7 @@ public class SNPViewerView extends ViewWithUiHandlers<SNPViewerUiHandlers> imple
         snpsDataGrid = new DataGrid(50, customDataGridResources);
         defaultDataGridLoadingIndicator = snpsDataGrid.getLoadingIndicator();
         initWidget(binder.createAndBindUi(this));
-
+        bindSlot(SNPViewerPresenter.SLOT_SNP_DETAIL, snpDetailPresenterContainer);
         phenotypeTa.addTypeaheadSelectedHandler(new TypeaheadSelectedHandler<SearchItemProxy>() {
             @Override
             public void onSelected(TypeaheadSelectedEvent<SearchItemProxy> typeaheadSelectedEvent) {
@@ -200,15 +199,6 @@ public class SNPViewerView extends ViewWithUiHandlers<SNPViewerUiHandlers> imple
     @Override
     public void clearRegionError() {
 
-    }
-
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == SNPViewerPresenter.TYPE_SetSNPDetailContent) {
-            snpDetailPresenterContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
     }
 
 

@@ -57,7 +57,7 @@ public class PublicationDetailPresenter extends
     @Inject
     public PublicationDetailPresenter(EventBus eventBus, MyView view, MyProxy proxy,
                                       final CustomRequestFactory rf, final PlaceManager placeManager) {
-        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, DiversityPresenter.SLOT_CONTENT);
         this.placeManager = placeManager;
         this.rf = rf;
         experimentDataProvider.addDataDisplay(getView().getExperimentDisplay());

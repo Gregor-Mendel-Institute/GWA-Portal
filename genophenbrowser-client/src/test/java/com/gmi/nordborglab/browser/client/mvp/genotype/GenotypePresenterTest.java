@@ -55,7 +55,7 @@ public class GenotypePresenterTest extends PresenterTestBase {
     @Test
     public void test_SearchPresenterIsBound() {
         presenter.onBind();
-        verify(view).setInSlot(presenter.TYPE_SearchPresenterContent, searchPresenter);
+        verify(view).setInSlot(presenter.SLOT_SEARCH, searchPresenter);
     }
 
     @Test

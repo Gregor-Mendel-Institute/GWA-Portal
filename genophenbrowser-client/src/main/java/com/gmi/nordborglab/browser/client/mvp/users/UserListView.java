@@ -15,7 +15,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
@@ -59,6 +58,7 @@ public class UserListView extends ViewWithUiHandlers<UserListUiHandler> implemen
         this.avatarNameCell = avatarNameCell;
         table = new DataGrid<>(15, dataGridResources);
         widget = binder.createAndBindUi(this);
+        bindSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetContainer);
         initDataGrid();
         pager = new NumberedPager(pagination);
         pager.setDisplay(table);
@@ -111,14 +111,6 @@ public class UserListView extends ViewWithUiHandlers<UserListUiHandler> implemen
         return widget;
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
-            facetContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
     @Override
     public HasData<AppUserProxy> getDisplay() {

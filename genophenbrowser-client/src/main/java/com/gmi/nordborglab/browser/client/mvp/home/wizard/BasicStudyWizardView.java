@@ -64,7 +64,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeLayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
@@ -287,6 +286,8 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         missingGenotypesDataGrid = new DataGrid<TraitProxy>(50, dataGridResources, new EntityProxyKeyProvider<TraitProxy>(), new HTMLPanel(
                 "There are no plants with missing genotypes"));
         widget = binder.createAndBindUi(this);
+        bindSlot(BasicStudyWizardPresenter.SLOT_ISATAB_UPLOAD, isaTabUploadContainer);
+        bindSlot(BasicStudyWizardPresenter.SLOT_PHENOTYPE_UPLOAD, phenotypeUploadPanel);
         experimentEditDriver.initialize(experimentEditEditor);
         missingGenotypesPager.setDisplay(missingGenotypesDataGrid);
         wizard.addCancelButtonClickHandler(new ClickHandler() {
@@ -903,17 +904,6 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         GwtTour.removeAllCallOuts();
     }
 
-
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == BasicStudyWizardPresenter.TYPE_SetPhenotypeUploadContent) {
-            phenotypeUploadPanel.add(content);
-        } else if (slot == BasicStudyWizardPresenter.TYPE_SetIsaTabUploadContent) {
-            isaTabUploadContainer.add(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
     public TransformationCard getSelectedTransformationCard() {
         return selectedTransformationCard;

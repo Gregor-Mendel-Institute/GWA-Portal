@@ -56,7 +56,7 @@ public class ExperimentCandidateGeneListEnrichmentPresenter extends CandidateGen
                                                           final ClientModule.AssistedInjectionFactory factory,
                                                           final ExperimentManager experimentManager
     ) {
-        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(ConstEnums.ENRICHMENT_TYPE.STUDY), ExperimentDetailTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(ConstEnums.ENRICHMENT_TYPE.STUDY), ExperimentDetailTabPresenter.SLOT_CONTENT);
         this.experimentManager = experimentManager;
     }
 

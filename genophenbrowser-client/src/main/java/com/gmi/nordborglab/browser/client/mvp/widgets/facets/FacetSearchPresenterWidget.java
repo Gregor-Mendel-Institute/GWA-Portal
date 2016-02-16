@@ -9,6 +9,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.mvp.client.HasUiHandlers;
 import com.gwtplatform.mvp.client.PresenterWidget;
 import com.gwtplatform.mvp.client.View;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
 
@@ -35,7 +36,7 @@ public class FacetSearchPresenterWidget extends PresenterWidget<FacetSearchPrese
         void setSearchBoxVisible(boolean visible);
     }
 
-    public static final Object TYPE_SetFacetSearchWidget = new Object();
+    public static final PermanentSlot<FacetSearchPresenterWidget> SLOT_CONTENT = new PermanentSlot<>();
     private String searchString = null;
     private String defaultFilter = "PRIVATE";
     private String filter = "PRIVATE";

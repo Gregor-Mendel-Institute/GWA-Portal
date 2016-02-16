@@ -9,11 +9,10 @@ import com.gwtplatform.mvp.client.RequestTabsHandler;
 import com.gwtplatform.mvp.client.TabContainerPresenter;
 import com.gwtplatform.mvp.client.TabView;
 import com.gwtplatform.mvp.client.annotations.ChangeTab;
-import com.gwtplatform.mvp.client.annotations.ContentSlot;
 import com.gwtplatform.mvp.client.annotations.ProxyStandard;
 import com.gwtplatform.mvp.client.annotations.RequestTabs;
+import com.gwtplatform.mvp.client.presenter.slots.NestedSlot;
 import com.gwtplatform.mvp.client.proxy.Proxy;
-import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,8 +33,7 @@ public class HomeTabPresenter extends TabContainerPresenter<HomeTabPresenter.MyV
     public static final GwtEvent.Type<ChangeTabHandler> TYPE_ChangeTab = new GwtEvent.Type<ChangeTabHandler>();
 
 
-    @ContentSlot
-    public static final GwtEvent.Type<RevealContentHandler<?>> TYPE_SetTabContent = new GwtEvent.Type<RevealContentHandler<?>>();
+    public static final NestedSlot SLOT_CONTENT = new NestedSlot();
 
     @ProxyStandard
     public interface MyProxy extends Proxy<HomeTabPresenter> {
@@ -44,6 +42,6 @@ public class HomeTabPresenter extends TabContainerPresenter<HomeTabPresenter.MyV
     @Inject
     public HomeTabPresenter(final EventBus eventBus, final MyView view,
                             final MyProxy proxy) {
-        super(eventBus, view, proxy, TYPE_SetTabContent, TYPE_RequestTabs, TYPE_ChangeTab, ApplicationPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, SLOT_CONTENT, TYPE_RequestTabs, TYPE_ChangeTab, ApplicationPresenter.SLOT_MAIN_CONTENT);
     }
 }

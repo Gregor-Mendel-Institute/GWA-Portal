@@ -34,6 +34,7 @@ import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
@@ -62,7 +63,7 @@ public class PhenotypeListPresenter
 
     protected final AsyncDataProvider<PhenotypeProxy> dataProvider;
 
-    public static final Object TYPE_SetPhenotypeUploadContent = new Object();
+    static final PermanentSlot<PhenotypeUploadWizardPresenterWidget> SLOT_PHENOTYPE_UPLOAD = new PermanentSlot<>();
     private final PhenotypeManager phenotypeManager;
 
     private ExperimentProxy experiment;
@@ -82,7 +83,7 @@ public class PhenotypeListPresenter
                                   final PhenotypeUploadWizardPresenterWidget phenotypeUploadWizardPresenterWidget,
                                   final CurrentUser currentUser,
                                   final FacetSearchPresenterWidget facetSearchPresenterWidget, final ExperimentManager experimentManager) {
-        super(eventBus, view, proxy, ExperimentDetailTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, ExperimentDetailTabPresenter.SLOT_CONTENT);
         getView().setUiHandlers(this);
         this.phenotypeUploadWizardPresenterWidget = phenotypeUploadWizardPresenterWidget;
         this.facetSearchPresenterWidget = facetSearchPresenterWidget;
@@ -133,8 +134,8 @@ public class PhenotypeListPresenter
     @Override
     protected void onBind() {
         super.onBind();
-        setInSlot(TYPE_SetPhenotypeUploadContent, phenotypeUploadWizardPresenterWidget);
-        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        setInSlot(SLOT_PHENOTYPE_UPLOAD, phenotypeUploadWizardPresenterWidget);
+        setInSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetSearchPresenterWidget);
         registerHandler(PhenotypeUploadedEvent.register(getEventBus(), new PhenotypeUploadedEvent.Handler() {
             @Override
             public void onPhenotypeUploaded(PhenotypeUploadedEvent event) {

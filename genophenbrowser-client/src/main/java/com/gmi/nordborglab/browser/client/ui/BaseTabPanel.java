@@ -3,7 +3,7 @@ package com.gmi.nordborglab.browser.client.ui;
 import com.gmi.nordborglab.browser.client.TabDataDynamic;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
@@ -93,10 +93,7 @@ public abstract class BaseTabPanel extends ResizeComposite implements TabPanel, 
 
     protected abstract BaseTab createNewTab(TabData tabData);
 
-    public void setPanelContent(IsWidget panelContent) {
-        tabContentPanel.clear();
-        if (panelContent != null) {
-            tabContentPanel.add(panelContent);
-        }
+    public HasOneWidget getPanelContent() {
+        return tabContentPanel;
     }
 }

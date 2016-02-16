@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.mvp.diversity.study;
 
 import com.gmi.nordborglab.browser.client.ui.BaseTabContainerView;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
@@ -16,19 +15,11 @@ public class StudyTabView extends BaseTabContainerView implements StudyTabPresen
     @Inject
     public StudyTabView(final Binder binder) {
         widget = binder.createAndBindUi(this);
+        bindSlot(StudyTabPresenter.SLOT_CONTENT, tabContainer.getPanelContent());
     }
 
     @Override
     public Widget asWidget() {
         return widget;
-    }
-
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == StudyTabPresenter.TYPE_SetTabContent) {
-            setMainContent(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
     }
 }

@@ -55,7 +55,7 @@ public class PhenotypeCandidateGeneListEnrichmentPresenter extends CandidateGene
                                                          final ClientModule.AssistedInjectionFactory factory,
                                                          final PhenotypeManager phenotypeManager
     ) {
-        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(ConstEnums.ENRICHMENT_TYPE.PHENOTYPE), PhenotypeDetailTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, rf, placeManager, factory, factory.createEnrichmentProvider(ConstEnums.ENRICHMENT_TYPE.PHENOTYPE), PhenotypeDetailTabPresenter.SLOT_CONTENT);
         this.phenotypeManager = phenotypeManager;
     }
 

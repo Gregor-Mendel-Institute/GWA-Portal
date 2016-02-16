@@ -145,7 +145,7 @@ public class ProfilePresenter extends Presenter<ProfilePresenter.MyView, Profile
     public ProfilePresenter(final EventBus eventBus, final MyView view, final MyProxy proxy,
                             final CurrentUser currentUser, final CustomRequestFactory rf,
                             final PlaceManager placeManager) {
-        super(eventBus, view, proxy, ApplicationPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, ApplicationPresenter.SLOT_MAIN_CONTENT);
         getView().setUiHandlers(this);
         this.rf = rf;
         this.currentUser = currentUser;

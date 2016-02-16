@@ -42,6 +42,7 @@ import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 
@@ -77,7 +78,7 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
     public interface MyProxy extends ProxyPlace<MetaAnalysisTopResultsPresenter> {
     }
 
-    public static final Object TYPE_FilterContent = new Object();
+    static final PermanentSlot<FilterPresenterWidget> SLOT_FILTER_CONTENT = new PermanentSlot<>();
 
     private final CustomRequestFactory rf;
 
@@ -128,7 +129,7 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
                                            final Provider<TypeaheadFilterItemPresenterWidget> typeaheadFilterProvider,
                                            final CurrentUser currentUser
     ) {
-        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, DiversityPresenter.SLOT_CONTENT);
         getView().setUiHandlers(this);
         this.filterPresenterWidget = filterPresenterWidget;
         List<FilterItemPresenterWidget> filterWidgets = Lists.newArrayList();
@@ -187,7 +188,7 @@ public class MetaAnalysisTopResultsPresenter extends Presenter<MetaAnalysisTopRe
     @Override
     public void onBind() {
         super.onBind();
-        setInSlot(TYPE_FilterContent, filterPresenterWidget);
+        setInSlot(SLOT_FILTER_CONTENT, filterPresenterWidget);
         registerHandler(getEventBus().addHandlerToSource(FilterModifiedEvent.TYPE, filterPresenterWidget, new FilterModifiedEvent.Handler() {
             @Override
             public void onFilterModified(FilterModifiedEvent event) {

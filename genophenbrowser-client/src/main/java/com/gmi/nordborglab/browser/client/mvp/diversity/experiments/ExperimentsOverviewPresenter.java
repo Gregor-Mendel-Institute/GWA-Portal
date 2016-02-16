@@ -53,7 +53,7 @@ public class ExperimentsOverviewPresenter
                                         final ExperimentManager experimentManager,
                                         final PlaceManager placeManager,
                                         final FacetSearchPresenterWidget facetSearchPresenterWidget) {
-        super(eventBus, view, proxy, ExperimentsOverviewTabPresenter.TYPE_SetTabContent);
+        super(eventBus, view, proxy, ExperimentsOverviewTabPresenter.SLOT_CONTENT);
         getView().setUiHandlers(this);
         this.facetSearchPresenterWidget = facetSearchPresenterWidget;
         this.experimentManager = experimentManager;
@@ -87,7 +87,7 @@ public class ExperimentsOverviewPresenter
     protected void onBind() {
         super.onBind();
         dataProvider.addDataDisplay(getView().getDisplay());
-        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        setInSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetSearchPresenterWidget);
         registerHandler(getEventBus().addHandlerToSource(FacetSearchChangeEvent.TYPE, facetSearchPresenterWidget, new FacetSearchChangeEvent.Handler() {
 
             @Override

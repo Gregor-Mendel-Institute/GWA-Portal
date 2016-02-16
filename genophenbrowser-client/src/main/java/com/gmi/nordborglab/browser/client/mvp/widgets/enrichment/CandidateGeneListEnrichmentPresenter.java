@@ -8,6 +8,7 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
+import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.Proxy;
 import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
@@ -25,7 +26,7 @@ public abstract class CandidateGeneListEnrichmentPresenter<T extends Proxy<?>> e
     public interface MyView extends View {
     }
 
-    public static Object TYPE_SetCandidateGeneListEnrichment = new Object();
+    static final PermanentSlot<CandidateGeneListEnrichmentPresenterWidget> SLOT_ENRICHMENT = new PermanentSlot<>();
     protected final GwtEvent.Type<RevealContentHandler<?>> SLOT;
 
     protected final PlaceManager placeManager;
@@ -51,7 +52,7 @@ public abstract class CandidateGeneListEnrichmentPresenter<T extends Proxy<?>> e
     @Override
     protected void onBind() {
         super.onBind();    //To change body of overridden methods use File | Settings | File Templates.
-        setInSlot(TYPE_SetCandidateGeneListEnrichment, candidateGeneListEnrichmentWidget);
+        setInSlot(SLOT_ENRICHMENT, candidateGeneListEnrichmentWidget);
     }
 
     @Override

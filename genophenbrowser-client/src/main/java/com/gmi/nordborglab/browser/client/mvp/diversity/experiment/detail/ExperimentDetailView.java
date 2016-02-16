@@ -29,7 +29,6 @@ import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ProvidesKey;
@@ -111,6 +110,8 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     private final ExperimentDisplayDriver experimentDisplayDriver;
     private final MainResources resources;
     private Modal permissionPopUp = new Modal();
+    private ModalBody permissionPopUpContent = new ModalBody();
+
     private boolean layoutScheduled = false;
     private final Scheduler.ScheduledCommand layoutCmd = new Scheduler.ScheduledCommand() {
         public void execute() {
@@ -140,6 +141,9 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
             }
         });
         widget = binder.createAndBindUi(this);
+        permissionPopUp.add(permissionPopUpContent);
+        bindSlot(ExperimentDetailPresenter.SLOT_PERMISSION, permissionPopUpContent);
+
         this.experimentEditDriver = experimentEditDriver;
         this.experimentDisplayDriver = experimentDisplayDriver;
         this.experimentDisplayDriver.initialize(experimentDisplayEditor);
@@ -270,18 +274,6 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
     public ExperimentEditDriver getExperimentEditDriver() {
         return experimentEditDriver;
     }
-
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == ExperimentDetailPresenter.TYPE_SetPermissionContent) {
-            ModalBody modalBody = new ModalBody();
-            modalBody.add(content);
-            permissionPopUp.add(modalBody);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
-
 
     @Override
     public void showPermissionPanel(boolean show) {

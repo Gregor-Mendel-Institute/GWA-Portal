@@ -48,7 +48,7 @@ public class StockDetailPresenter extends
                                 final MyProxy proxy, final PlaceManager placeManager,
                                 final CurrentUser currentUser,
                                 final StockManager stockManager) {
-        super(eventBus, view, proxy, GermplasmPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, GermplasmPresenter.SLOT_CONTENT);
         this.placeManager = placeManager;
         this.currentUser = currentUser;
         this.stockManager = stockManager;

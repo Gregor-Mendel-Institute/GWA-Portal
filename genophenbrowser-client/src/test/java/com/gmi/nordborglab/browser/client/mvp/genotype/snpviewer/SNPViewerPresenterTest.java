@@ -159,7 +159,7 @@ public class SNPViewerPresenterTest extends PresenterTestBase {
     public void test_setGenotypesAndDataDisplayOnBind() {
         presenter.onBind();
         verify(view).setAvailableGenotypes(currentUser.getAppData().getAlleleAssayList());
-        verify(view).setInSlot(presenter.TYPE_SetSNPDetailContent, snpDetailPresenter);
+        verify(view).setInSlot(presenter.SLOT_SNP_DETAIL, snpDetailPresenter);
     }
 
 

@@ -40,7 +40,7 @@ public class TaxonomyOverviewPresenter
     public TaxonomyOverviewPresenter(final EventBus eventBus, final MyView view,
                                      final MyProxy proxy,
                                      final PlaceManager placeManager) {
-        super(eventBus, view, proxy, GermplasmPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, GermplasmPresenter.SLOT_CONTENT);
         getView().setUiHandlers(this);
         this.placeManager = placeManager;
     }

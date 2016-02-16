@@ -20,7 +20,6 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.cellview.client.TextHeader;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -89,6 +88,7 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
         runningDataGrid = new DataGrid<CandidateGeneListEnrichmentProxy>(50, dataGridResources, keyProvider);
         availableDataGrid = new DataGrid<CandidateGeneListEnrichmentProxy>(50, dataGridResources, keyProvider);
         widget = binder.createAndBindUi(this);
+        bindSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetContainer);
         initDataGrids();
         finishedPager.setDisplay(finishedDataGrid);
         runningPager.setDisplay(runningDataGrid);
@@ -232,14 +232,6 @@ public class CandidateGeneListEnrichmentPresenterWidgetView extends ViewWithUiHa
         }
     }
 
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-        if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
-            facetContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
-    }
 
     @Override
     public HasData<CandidateGeneListEnrichmentProxy> getFinishedDisplay() {

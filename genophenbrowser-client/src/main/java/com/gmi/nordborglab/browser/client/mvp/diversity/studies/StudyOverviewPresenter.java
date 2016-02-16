@@ -47,7 +47,7 @@ public class StudyOverviewPresenter
     public StudyOverviewPresenter(final EventBus eventBus, final MyView view,
                                   final MyProxy proxy, final CdvManager cdvManager, final PlaceManager placeManager,
                                   final FacetSearchPresenterWidget facetSearchPresenterWidget) {
-        super(eventBus, view, proxy, DiversityPresenter.TYPE_SetMainContent);
+        super(eventBus, view, proxy, DiversityPresenter.SLOT_CONTENT);
         this.facetSearchPresenterWidget = facetSearchPresenterWidget;
         getView().setUiHandlers(this);
         this.cdvManager = cdvManager;
@@ -79,7 +79,7 @@ public class StudyOverviewPresenter
     @Override
     protected void onBind() {
         super.onBind();
-        setInSlot(FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget, facetSearchPresenterWidget);
+        setInSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetSearchPresenterWidget);
         registerHandler(getEventBus().addHandlerToSource(FacetSearchChangeEvent.TYPE, facetSearchPresenterWidget, new FacetSearchChangeEvent.Handler() {
 
             @Override

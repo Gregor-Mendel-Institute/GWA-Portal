@@ -34,7 +34,6 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -160,6 +159,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     private GWASResultEditEditor gwasEditEditor = new GWASResultEditEditor();
     private Modal editPopUp = new Modal();
     private Modal permissionPopUp = new Modal();
+    private ModalBody permissionPopupContent = new ModalBody();
     private DialogOptions deleteOptions = DialogOptions.newOptions("Do you really want to delete the GWAS result?");
     private final CurrentUser currentUser;
 
@@ -174,6 +174,11 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         this.avatarNameCell = avatarNameCell;
         gwasResultDataGrid = new DataGrid<>(50, dataGridResources, new EntityProxyKeyProvider<GWASResultProxy>());
         widget = binder.createAndBindUi(this);
+        permissionPopUp.add(permissionPopupContent);
+        bindSlot(GWASViewerPresenter.SLOT_PERMISSIONS, permissionPopupContent);
+        bindSlot(GWASViewerPresenter.SLOT_GWAS_PLOT, gwasPlots);
+        bindSlot(GWASViewerPresenter.SLOT_GWAS_UPLOAD, gwasUploadPanel);
+        bindSlot(FacetSearchPresenterWidget.SLOT_CONTENT, facetContainer);
         tabPaneContainer.showWidget(0);
         gwasResultPager.setDisplay(gwasResultDataGrid);
         initDataGridColumns();
@@ -311,24 +316,6 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     @Override
     public Widget asWidget() {
         return widget;
-    }
-
-    @Override
-    public void setInSlot(Object slot, IsWidget content) {
-
-        if (slot == GWASViewerPresenter.TYPE_SetGWASUploadContent) {
-            gwasUploadPanel.setWidget(content);
-        } else if (slot == GWASViewerPresenter.TYPE_SetGWASPLOTContent) {
-            gwasPlots.setWidget(content);
-        } else if (slot == GWASViewerPresenter.TYPE_SetPermissionContent) {
-            ModalBody modalBody = new ModalBody();
-            modalBody.add(content);
-            permissionPopUp.add(modalBody);
-        } else if (slot == FacetSearchPresenterWidget.TYPE_SetFacetSearchWidget) {
-            facetContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
     }
 
 
