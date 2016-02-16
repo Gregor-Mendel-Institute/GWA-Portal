@@ -5,6 +5,7 @@ import com.gmi.nordborglab.browser.server.form.Registration;
 import com.gmi.nordborglab.browser.server.service.DuplicateRegistrationException;
 import com.gmi.nordborglab.browser.server.service.UserService;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.web.ProviderSignInUtils;
@@ -30,7 +31,8 @@ public class RegistrationController {
     @Resource
     UserService userService;
 
-    private final ProviderSignInUtils providerSignInUtils = new ProviderSignInUtils();
+    @Autowired
+    ProviderSignInUtils providerSignInUtils;
 
     @RequestMapping(method = RequestMethod.GET)
     public String showRegistration(WebRequest request, ModelMap model) {

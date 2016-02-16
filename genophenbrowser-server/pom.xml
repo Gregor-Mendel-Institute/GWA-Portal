@@ -17,7 +17,7 @@
         <maven>${mavenVersion}</maven>
     </prerequisites>
     <properties>
-        <io.spring.platform.version>1.1.2.RELEASE</io.spring.platform.version>
+        <io.spring.platform.version>2.0.2.RELEASE</io.spring.platform.version>
         <org.springframework.social.github>1.0.0.M4</org.springframework.social.github>
         <org.springframework.social.google>1.0.0.RELEASE</org.springframework.social.google>
         <!-- required because smile is not part of io.spring.platform -->
@@ -212,6 +212,13 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-ehcache</artifactId>
+            <!-- https://dzone.com/articles/hibernate-4-and-ehcache-higher -->
+            <exclusions>
+                <exclusion>
+                    <groupId>net.sf.ehcache</groupId>
+                    <artifactId>ehcache-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -323,10 +330,6 @@
         <dependency>
             <groupId>org.springframework.amqp</groupId>
             <artifactId>spring-rabbit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.amqp</groupId>
-            <artifactId>spring-erlang</artifactId>
         </dependency>
         <dependency>
             <groupId>com.rabbitmq</groupId>

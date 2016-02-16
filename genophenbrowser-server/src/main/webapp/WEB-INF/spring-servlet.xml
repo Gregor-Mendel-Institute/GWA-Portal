@@ -36,9 +36,6 @@
             <mvc:mapping path="/**"/>
             <bean id="cacheFilter" class="org.springframework.web.servlet.mvc.WebContentInterceptor">
                 <property name="cacheSeconds" value="31536000"/>
-                <property name="useExpiresHeader" value="false"/>
-                <property name="useCacheControlHeader" value="true"/>
-                <property name="useCacheControlNoStore" value="false"/>
             </bean>
         </mvc:interceptor>
         <mvc:interceptor>
@@ -50,9 +47,6 @@
             <mvc:mapping path="/registration"/>
             <bean id="noCacheFilter" class="org.springframework.web.servlet.mvc.WebContentInterceptor">
                 <property name="cacheSeconds" value="0"/>
-                <property name="useExpiresHeader" value="false"/>
-                <property name="useCacheControlHeader" value="true"/>
-                <property name="useCacheControlNoStore" value="true"/>
             </bean>
         </mvc:interceptor>
     </mvc:interceptors>

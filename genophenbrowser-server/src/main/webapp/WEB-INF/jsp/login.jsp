@@ -19,13 +19,14 @@
 <div class="sign_in_container">
     <div class="content">
         <div>
-            <form class="login-form" action="j_spring_security_check?spring-security-redirect=/${url}" method="post">
+            <c:url var="loginUrl" value="/login?spring-security-redirect=/${url}"/>
+            <form class="login-form" action="${loginUrl}" method="post">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="isRegularLogin" value="true"/>
                 <h1>Sign In</h1>
 
                 <div>
-                    <c:if test="${not empty param.login_error}">
+                    <c:if test="${param.error != null}">
                         <div class="alert alert-danger">
                             Your login attempt was not successful, try again.<br/><br/>
                             Reason: <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.
@@ -38,14 +39,14 @@
                     <div class="form-group">
                         <div class="input-group input-group-lg">
                             <span class="input-group-addon e_icon-user"></span>
-                            <input id="j_username" name="j_username" size="20" maxlength="50" type="text"
+                            <input id="username" name="username" size="20" maxlength="50" type="text"
                                    placeHolder="name@example.com" class="form-control"/>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="input-group input-group-lg">
                             <span class="input-group-addon e_icon-key"></span>
-                            <input id="j_password" name="j_password" size="20" maxlength="50" type="password"
+                            <input id="password" name="password" size="20" maxlength="50" type="password"
                                    placeHolder="Password" class="form-control"/>
                         </div>
                     </div>
@@ -55,8 +56,8 @@
                         </div>
                         <div class="checkbox remember_me" style="margin-left:180px;display:inline-block;">
                             <label>
-                                <input type='checkbox' id="_spring_security_remember_me"
-                                       name='_spring_security_remember_me'>
+                                <input type='checkbox' id="remember-me"
+                                       name='remember-me'>
                                 Keep me signed in
                             </label>
                         </div>

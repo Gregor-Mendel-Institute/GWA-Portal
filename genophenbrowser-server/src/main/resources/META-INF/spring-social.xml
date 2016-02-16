@@ -83,5 +83,10 @@
             </property>
         </bean>
         <alias name="connectionFactoryRegistry" alias="connectionFactoryLocator"/>
+        <bean id="providerSignInUtils" class="org.springframework.social.connect.web.ProviderSignInUtils">
+            <constructor-arg ref="connectionFactoryRegistry"/>
+            <constructor-arg ref="usersConnectionRepository"/>
+        </bean>
     </beans>
+
 </beans>

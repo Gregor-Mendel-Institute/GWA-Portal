@@ -13,6 +13,8 @@
                 <property name="cacheName" value="aclCache"/>
             </bean>
         </constructor-arg>
+        <constructor-arg ref="permissionGrantingStrategy"/>
+        <constructor-arg ref="aclAuthorizationStrategy"/>
     </bean>
 
     <bean id="permissionGrantingStrategy"
@@ -32,18 +34,18 @@
           class="org.springframework.security.acls.jdbc.BasicLookupStrategy">
         <constructor-arg ref="dataSource"/>
         <constructor-arg ref="aclCache"/>
-        <constructor-arg>
-            <bean class="org.springframework.security.acls.domain.AclAuthorizationStrategyImpl">
-                <constructor-arg>
-                    <bean class="org.springframework.security.core.authority.SimpleGrantedAuthority">
-                        <constructor-arg value="ROLE_ADMIN"/>
-                    </bean>
-                </constructor-arg>
-                <property name="sidRetrievalStrategy" ref="sidRetrievalStrategy"/>
-            </bean>
-        </constructor-arg>
+        <constructor-arg ref="aclAuthorizationStrategy"/>
         <constructor-arg ref="permissionGrantingStrategy"/>
         <property name="permissionFactory" ref="permissionFactory"/>
+    </bean>
+
+    <bean id="aclAuthorizationStrategy" class="org.springframework.security.acls.domain.AclAuthorizationStrategyImpl">
+        <constructor-arg>
+            <bean class="org.springframework.security.core.authority.SimpleGrantedAuthority">
+                <constructor-arg value="ROLE_ADMIN"/>
+            </bean>
+        </constructor-arg>
+        <property name="sidRetrievalStrategy" ref="sidRetrievalStrategy"/>
     </bean>
 
     <bean id="aclService" class="org.springframework.security.acls.jdbc.JdbcMutableAclService">
