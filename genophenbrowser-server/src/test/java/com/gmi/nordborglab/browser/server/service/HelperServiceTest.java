@@ -3,11 +3,14 @@ package com.gmi.nordborglab.browser.server.service;
 import com.gmi.nordborglab.browser.server.domain.AppData;
 import com.gmi.nordborglab.browser.server.domain.BreadcrumbItem;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.cdv.Transformation;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Passport;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Stock;
 import com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
+import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
+import com.gmi.nordborglab.browser.server.math.Transformations;
 import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
 import com.gmi.nordborglab.browser.server.repository.PassportRepository;
 import com.gmi.nordborglab.browser.server.repository.StockRepository;
@@ -27,7 +30,9 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -348,6 +353,35 @@ public class HelperServiceTest extends BaseTest {
             i = i + 1;
         }
     }
+
+
+    @Test
+    public void testApplyTransformation() {
+        Study study = getTestStudyWithTraits();
+        service.applyTransformation(study);
+        Transformations.LogTransformFunc logTransFunc = new Transformations.LogTransformFunc(1.0, 7.5);
+        for (Trait trait : study.getTraits()) {
+            assertThat(logTransFunc.apply(Double.valueOf(trait.getId())), is(Double.valueOf(trait.getValue())));
+        }
+    }
+
+
+    private Study getTestStudyWithTraits() {
+        Study study = new Study();
+        Transformation transformation = new Transformation();
+        transformation.setName("log");
+        study.setTransformation(transformation);
+        Set<Trait> traits = new HashSet<>();
+        for (int i = 1; i < 10; i++) {
+            Trait trait = new Trait();
+            trait.setId(Long.valueOf(i));
+            trait.setValue(String.valueOf(i));
+            traits.add(trait);
+        }
+        study.setTraits(traits);
+        return study;
+    }
+
 
     private List<String[]> getPhenotypeOkData() {
         List<String[]> data = Lists.newArrayList();

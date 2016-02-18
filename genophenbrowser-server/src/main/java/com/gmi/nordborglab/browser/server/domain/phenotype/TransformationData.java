@@ -50,6 +50,9 @@ public class TransformationData {
         if (shapiroPval == null)
         {
             shapiroPval = Transformations.calculateShapiroPval(values);
+            if (shapiroPval > 0.0) {
+                shapiroPval = Math.round(-Math.log10(shapiroPval) * 100.0) / 100.0;
+            }
         }
         return shapiroPval;
     }

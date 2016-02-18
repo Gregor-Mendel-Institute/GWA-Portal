@@ -65,7 +65,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -106,6 +105,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -577,31 +577,24 @@ public class HelperServiceImpl implements HelperService {
 
     @Override
     public Study applyTransformation(Study study) {
-        DescriptiveStatistics stats = Transformations.getDescriptiveStatistics(Collections2.transform(study.getTraits(), new Function<Trait, Double>() {
-
-            @Nullable
-            @Override
-            public Double apply(Trait trait) {
-                Preconditions.checkNotNull(trait);
-                Double value = null;
-                try {
-                    value = Double.parseDouble(trait.getValue());
-                } catch (Exception e) {
-
-                }
-                return value;
+        List<Trait> traits = new ArrayList<>(study.getTraits());
+        ImmutableList<Double> values = ImmutableList.copyOf(Iterables.filter(Collections2.transform(traits, (t) -> {
+            try {
+                return Double.parseDouble(t.getValue());
+            } catch (Exception e) {
+                return null;
             }
-        }));
-        Transformations.TransformFunc transFormFunc = Transformations.getTransformFunc(study.getTransformation().getName(), stats.getMin(), stats.getVariance());
-        if (transFormFunc != null) {
-            for (Trait trait : study.getTraits()) {
-                try {
-                    Double value = Double.parseDouble(trait.getValue());
-                    trait.setValue(transFormFunc.apply(value).toString());
-                } catch (Exception e) {
-
-                }
-            }
+        }), (v) -> v != null));
+        if (values.size() != traits.size()) {
+            throw new RuntimeException("Study contains invalid phenotype values");
+        }
+        List<Double> transformedValues = Transformations.transform(study.getTransformation().getName(), values);
+        Iterator<Trait> traitIterator = traits.iterator();
+        Iterator<Double> valueIterator = transformedValues.iterator();
+        while (traitIterator.hasNext() && valueIterator.hasNext()) {
+            Trait trait = traitIterator.next();
+            Double value = valueIterator.next();
+            trait.setValue(value.toString());
         }
         return study;
     }

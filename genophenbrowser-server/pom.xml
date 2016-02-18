@@ -25,6 +25,7 @@
         <com.ffasterxml.jackson>2.6.3</com.ffasterxml.jackson>
         <postgresql.version>9.4-1201-jdbc41</postgresql.version>
         <jhdf5.version>13.06.3-SNAPSHOT</jhdf5.version>
+        <flanagan.version>1.0.0</flanagan.version>
         <jstl.version>1.2</jstl.version>
         <esapi.version>2.1.0</esapi.version>
         <visualization.datasource.version>1.1.1</visualization.datasource.version>
@@ -55,6 +56,10 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>uk.ac.ucl.ee.flanagan</groupId>
+            <artifactId>flanagan</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.google.auto.value</groupId>
             <artifactId>auto-value</artifactId>
@@ -343,6 +348,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>uk.ac.ucl.ee.flanagan</groupId>
+                <artifactId>flanagan</artifactId>
+                <version>${flanagan.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-exec</artifactId>

@@ -1,9 +1,12 @@
 package com.gmi.nordborglab.browser.server.math;
 
+import com.gmi.nordborglab.browser.shared.util.Normality;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
+import flanagan.analysis.BoxCox;
+import flanagan.analysis.Stat;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import javax.annotation.Nullable;
@@ -21,7 +24,7 @@ import static com.google.common.base.Predicates.notNull;
  */
 public abstract class Transformations {
 
-    public abstract static class TransformFunc implements Function<Double, Double> {
+    abstract static class TransformFunc implements Function<Double, Double> {
 
         protected final Double minValue;
 
@@ -33,7 +36,7 @@ public abstract class Transformations {
         }
     }
 
-    public static class RawTransformFunc extends TransformFunc {
+    static class RawTransformFunc extends TransformFunc {
         public RawTransformFunc(Double minValue, Double stdVariance) {
             super(minValue, stdVariance);
         }
@@ -65,7 +68,7 @@ public abstract class Transformations {
 
     }
 
-    public static class SqrtTransformFunc extends TransformFunc {
+    static class SqrtTransformFunc extends TransformFunc {
 
         public SqrtTransformFunc(Double minValue, Double stdVariance) {
             super(minValue, stdVariance);
@@ -81,7 +84,7 @@ public abstract class Transformations {
 
     }
 
-    public static class BoxCoxTransformFunc extends TransformFunc {
+    static class BoxCoxTransformFunc extends TransformFunc {
 
         public BoxCoxTransformFunc(Double minValue, Double stdVariance) {
             super(minValue, stdVariance);
@@ -97,7 +100,7 @@ public abstract class Transformations {
 
     }
 
-    public static DescriptiveStatistics getDescriptiveStatistics(Collection<Double> values) {
+    static DescriptiveStatistics getDescriptiveStatistics(Collection<Double> values) {
         DescriptiveStatistics stats = new DescriptiveStatistics(Doubles.toArray(Collections2.filter(values, notNull())));
         return stats;
     }
@@ -118,24 +121,30 @@ public abstract class Transformations {
     }
 
     public static List<Double> boxCoxTransform(List<Double> values) {
-        return values;
+        DescriptiveStatistics stats = getDescriptiveStatistics(values);
+        Double variance = stats.getVariance();
+        Double min = stats.getMin();
+        values = Lists.transform(values, new BoxCoxTransformFunc(min, variance));
+        Stat stat = new Stat(values.toArray(new Double[]{}));
+        BoxCox boxCox = new BoxCox(stat);
+        double[] transformedValues = boxCox.transformedData();
+        return Doubles.asList(transformedValues);
     }
 
     public static Double calculateShapiroPval(List<Double> values) {
-        return 0.0;
+        Normality normality = new Normality(values);
+        return normality.getShapiroWilkPvalue();
     }
 
-    public static TransformFunc getTransformFunc(String transformation, Double minValue, Double stdVariance) {
-        TransformFunc func = null;
+    public static List<Double> transform(String transformation, List<Double> values) {
         if (transformation.equalsIgnoreCase("log")) {
-            func = new LogTransformFunc(minValue, stdVariance);
+            return logTransform(values);
         } else if (transformation.equalsIgnoreCase("sqrt")) {
-            func = new SqrtTransformFunc(minValue, stdVariance);
+            return sqrtTransform(values);
         } else if (transformation.equalsIgnoreCase("boxcox")) {
-            func = new BoxCoxTransformFunc(minValue, stdVariance);
+            return boxCoxTransform(values);
         } else {
-            func = new RawTransformFunc(minValue, stdVariance);
+            return values;
         }
-        return func;
     }
 }

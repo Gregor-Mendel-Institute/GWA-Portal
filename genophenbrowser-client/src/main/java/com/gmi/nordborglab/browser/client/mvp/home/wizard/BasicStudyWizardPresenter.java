@@ -29,6 +29,7 @@ import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationProxy;
 import com.gmi.nordborglab.browser.shared.service.CdvRequest;
 import com.gmi.nordborglab.browser.shared.service.ExperimentRequest;
+import com.gmi.nordborglab.browser.shared.util.Normality;
 import com.gmi.nordborglab.browser.shared.util.PhenotypeHistogram;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -410,7 +411,11 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
         List<Double> traitValues = Lists.transform(filteredPhenotypeValues, Statistics.traitToDouble);
         histogram = PhenotypeHistogram.getHistogram(traitValues, BIN_COUNT);
-        getView().showTransformationHistogram(TransformationDataProxy.TYPE.RAW, histogram, 0.0);
+        double shapiroPval = Normality.getShapiroWilkPvalue(traitValues);
+        if (shapiroPval > 0.0) {
+            shapiroPval = Math.round(-Math.log10(shapiroPval) * 100.0) / 100.0;
+        }
+        getView().showTransformationHistogram(TransformationDataProxy.TYPE.RAW, histogram, shapiroPval);
         fireEvent(new LoadingIndicatorEvent(true));
         helperManager.calculateTransformations(new Receiver<List<TransformationDataProxy>>() {
             @Override
