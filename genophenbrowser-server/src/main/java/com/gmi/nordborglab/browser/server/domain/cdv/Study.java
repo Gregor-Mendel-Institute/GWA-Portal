@@ -60,6 +60,12 @@ public class Study extends SecureEntity {
     private String name;
     private String producer;
 
+    @Column(name = "pseudo_heritability")
+    private Double pseudoHeritability;
+
+    @Column(name = "shapiro_wilk_pvalue")
+    private Double shapiroWilkPvalue;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date study_date = new Date();
 
@@ -133,6 +139,9 @@ public class Study extends SecureEntity {
     }
 
     public void setAlleleAssay(AlleleAssay alleleAssay) {
+        if (this.alleleAssay != alleleAssay) {
+            this.pseudoHeritability = null;
+        }
         this.alleleAssay = alleleAssay;
         alleleAssay.addStudy(this);
     }
@@ -254,5 +263,21 @@ public class Study extends SecureEntity {
 
     public boolean isCreateEnrichments() {
         return createEnrichments;
+    }
+
+    public Double getPseudoHeritability() {
+        return pseudoHeritability;
+    }
+
+    public void setPseudoHeritability(Double pseudoHeritability) {
+        this.pseudoHeritability = pseudoHeritability;
+    }
+
+    public Double getShapiroWilkPvalue() {
+        return shapiroWilkPvalue;
+    }
+
+    public void setShapiroWilkPvalue(Double shapiroWilkPvalue) {
+        this.shapiroWilkPvalue = shapiroWilkPvalue;
     }
 }

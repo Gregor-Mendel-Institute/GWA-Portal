@@ -2,6 +2,7 @@ package com.gmi.nordborglab.browser.server.domain.phenotype;
 
 import com.gmi.nordborglab.browser.server.math.Transformations;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
+import com.gmi.nordborglab.browser.shared.util.Normality;
 
 import java.util.List;
 
@@ -18,15 +19,17 @@ public class TransformationData {
     private TransformationDataProxy.TYPE type;
     private List<Double> values;
     private Double shapiroPval;
+    private Double pseudoHeritability;
 
 
     public TransformationData() {
 
     }
 
-    public TransformationData(TransformationDataProxy.TYPE type, List<Double> values) {
+    public TransformationData(TransformationDataProxy.TYPE type, List<Double> values, Double pseudoHeritability) {
         this.type = type;
         this.values = values;
+        this.pseudoHeritability = pseudoHeritability;
     }
 
     public TransformationDataProxy.TYPE getType() {
@@ -51,7 +54,7 @@ public class TransformationData {
         {
             shapiroPval = Transformations.calculateShapiroPval(values);
             if (shapiroPval > 0.0) {
-                shapiroPval = Math.round(-Math.log10(shapiroPval) * 100.0) / 100.0;
+                shapiroPval = Normality.getRoundedValue(Normality.calculateScoreFromPValue(shapiroPval));
             }
         }
         return shapiroPval;
@@ -61,5 +64,11 @@ public class TransformationData {
         this.shapiroPval = shapiroPval;
     }
 
+    public Double getPseudoHeritability() {
+        return pseudoHeritability;
+    }
 
+    public void setPseudoHeritability(Double pseudoHeritability) {
+        this.pseudoHeritability = pseudoHeritability;
+    }
 }

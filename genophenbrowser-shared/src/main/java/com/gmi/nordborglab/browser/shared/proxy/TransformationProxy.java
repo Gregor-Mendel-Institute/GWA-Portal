@@ -14,9 +14,9 @@ import com.google.web.bindery.requestfactory.shared.ProxyForName;
 @ProxyForName(value="com.gmi.nordborglab.browser.server.domain.cdv.Transformation", locator="com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
 public interface TransformationProxy extends EntityProxy {
 
-    public Long getId();
+    Long getId();
 
-    public String getName();
+    String getName();
 
-    public String getDescription();
+    String getDescription();
 }

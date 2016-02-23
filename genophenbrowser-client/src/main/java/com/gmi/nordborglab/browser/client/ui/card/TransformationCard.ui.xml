@@ -38,7 +38,12 @@
                 <div>
                     <p>
                         <b>Shapiro-wilk score:</b>
-                        <span ui:field="shapiroScoreLb"/>
+                        <span ui:field="shapiroScoreLb">
+                            Calculating...
+                        </span>
+                        |
+                        <b>Pseudo-heritability:</b>
+                        <span ui:field="pseudoHeritabilityLb">Calculating...</span>
                         <b:Icon type="CHECK" addStyleNames="pull-right {cardRen.style.empty_ok}" ui:field="selectIcon"/>
                     </p>
                 </div>

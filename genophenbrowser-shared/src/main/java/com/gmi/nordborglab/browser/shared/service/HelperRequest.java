@@ -4,6 +4,7 @@ import com.gmi.nordborglab.browser.shared.proxy.AppDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.BreadcrumbItemProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramFacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UserNotificationProxy;
 import com.google.web.bindery.requestfactory.shared.Request;
@@ -20,9 +21,11 @@ public interface HelperRequest extends RequestContext {
 
     Request<AppDataProxy> getAppData();
 
-    Request<List<TransformationDataProxy>> calculateTransformations(List<Double> values);
+    Request<List<TransformationDataProxy>> calculateTransformations(List<TraitProxy> values, Long alleleAssayId);
 
     Request<List<UserNotificationProxy>> getUserNotifications(Integer limit);
 
     Request<List<DateStatHistogramFacetProxy>> findRecentTraitHistogram(DateStatHistogramProxy.INTERVAL interval);
+
+    Request<Double> calculatePseudoHeritability(List<TraitProxy> traits, TransformationDataProxy.TYPE type, Long alleleAssayId);
 }

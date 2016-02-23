@@ -66,6 +66,7 @@ public class HelperServiceTest extends BaseTest {
     @Resource
     private StudyRepository studyRepository;
 
+
     @Before
     public void setUp() {
 
@@ -363,6 +364,26 @@ public class HelperServiceTest extends BaseTest {
         for (Trait trait : study.getTraits()) {
             assertThat(logTransFunc.apply(Double.valueOf(trait.getId())), is(Double.valueOf(trait.getValue())));
         }
+    }
+
+
+    @Test
+    public void testGetPseudoHeritabilityFromTraitUom() {
+        SecurityUtils.setAnonymousUser();
+        TraitUom traitUom = traitUomRepository.findOne(5L);
+        Transformation transformation = new Transformation();
+        transformation.setName("log");
+        Double pseudo = service.getPseudoHeritability(1L, traitUom, transformation);
+        assertThat(pseudo, is(0.8788464607344941));
+
+    }
+
+    @Test
+    public void testGetPseudoHeritabilityFromStudy() {
+        SecurityUtils.setAnonymousUser();
+        Study study = studyRepository.findOne(160L);
+        Double pseudo = service.getPseudoHeritability(study);
+        assertThat(pseudo, is(0.8788464607344941));
     }
 
 

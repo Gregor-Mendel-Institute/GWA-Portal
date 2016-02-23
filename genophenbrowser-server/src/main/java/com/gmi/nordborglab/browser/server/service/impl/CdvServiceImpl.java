@@ -35,6 +35,7 @@ import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -101,6 +102,8 @@ public class CdvServiceImpl implements CdvService {
     @Value("${AMQP.RUN_BY_DEFAULT_ON_HPC}")
     private Boolean RUN_BY_DEFAULT_ON_HPC;
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CdvService.class);
+
     //TODO change ACL
     @Override
     public StudyPage findStudiesByPhenotypeId(Long id, int start, int size) {
@@ -152,6 +155,20 @@ public class CdvServiceImpl implements CdvService {
                 if (RUN_BY_DEFAULT_ON_HPC) {
                     study.getJob().setHPC(true);
                 }
+            }
+        }
+        if (study.getPseudoHeritability() == null) {
+            try {
+                study.setPseudoHeritability(helperService.getPseudoHeritability(study));
+            } catch (Exception e) {
+                logger.error("Failed to calculate pseudo_heritability", e);
+            }
+        }
+        if (study.getShapiroWilkPvalue() == null) {
+            try {
+                study.setShapiroWilkPvalue(helperService.calculateShapiroWilkPvalue(study));
+            } catch (Exception e) {
+                logger.error("Failed to calculate shapiro wilk pvalue", e);
             }
         }
         study = studyRepository.save(study);

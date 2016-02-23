@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gmi.nordborglab.browser.server.data.isatab.IsaTabExporter;
 import com.gmi.nordborglab.browser.server.domain.AppData;
 import com.gmi.nordborglab.browser.server.domain.BreadcrumbItem;
@@ -65,6 +67,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -78,6 +84,7 @@ import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuild
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -100,6 +107,9 @@ import org.supercsv.util.CsvContext;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -108,10 +118,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
 public class HelperServiceImpl implements HelperService {
+
 
     private static class SupressException extends CellProcessorAdaptor {
 
@@ -155,6 +167,14 @@ public class HelperServiceImpl implements HelperService {
             value = null;
         }
     }
+
+    final static Function<Trait, Double> trait2ValueFunc = (t) -> {
+        try {
+            return Double.parseDouble(t.getValue());
+        } catch (Exception ex) {
+        }
+        return null;
+    };
 
     @Resource
     private IsaTabExporter isaTabExporter;
@@ -221,6 +241,12 @@ public class HelperServiceImpl implements HelperService {
 
     @Resource
     protected EsAclManager esAclManager;
+
+    @Value("${java.io.tmpdir}")
+    private String TEMP_FOLDER;
+
+    @Value("${GENOTYPE.data_folder}")
+    private String GENOTYPE_FOLDER;
 
 
     public HelperServiceImpl() {
@@ -345,12 +371,104 @@ public class HelperServiceImpl implements HelperService {
     }
 
     @Override
-    public List<TransformationData> calculateTransformations(List<Double> values) {
+    public List<TransformationData> calculateTransformations(List<Trait> traits, Long alleleAssayId) {
         List<TransformationData> transformations = Lists.newArrayList();
-        transformations.add(new TransformationData(TransformationDataProxy.TYPE.LOG, Transformations.logTransform(values)));
-        transformations.add(new TransformationData(TransformationDataProxy.TYPE.SQRT, Transformations.sqrtTransform(values)));
-        transformations.add(new TransformationData(TransformationDataProxy.TYPE.BOXCOX, Transformations.boxCoxTransform(values)));
+        transformations.add(getTransformationData(TransformationDataProxy.TYPE.LOG, traits, alleleAssayId));
+        transformations.add(getTransformationData(TransformationDataProxy.TYPE.SQRT, traits, alleleAssayId));
+        transformations.add(getTransformationData(TransformationDataProxy.TYPE.BOXCOX, traits, alleleAssayId));
         return transformations;
+    }
+
+    @Override
+    public Double calculatePseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE type, Long alleleAssayId) {
+        return getPseudoHeritability(traits, type, alleleAssayId);
+    }
+
+    @Override
+    public Double calculateShapiroWilkPvalue(Study study) {
+        List<Double> transformedValues = Transformations.transform(TransformationDataProxy.TYPE.valueOf(study.getTransformation().getName().toUpperCase()), Lists.transform(new ArrayList<>(study.getTraits()), trait2ValueFunc));
+        return Transformations.calculateShapiroPval(transformedValues);
+    }
+
+    private TransformationData getTransformationData(TransformationDataProxy.TYPE type, List<Trait> traits, Long alleleAssayId) {
+        List<Double> transformedValues = Transformations.transform(type, Lists.transform(traits, trait2ValueFunc));
+        Double pseudoHeritability = -1.0;
+        try {
+            pseudoHeritability = getPseudoHeritability(traits, transformedValues, alleleAssayId);
+        } catch (Exception e) {
+
+        }
+        return new TransformationData(type, transformedValues, pseudoHeritability);
+    }
+
+
+    @Override
+    public Double getPseudoHeritability(Long alleleAssayId, TraitUom traitUom, Transformation transformation) {
+        return getPseudoHeritability(new ArrayList<>(traitUom.getTraits()), transformation, alleleAssayId);
+    }
+
+    @Override
+    public Double getPseudoHeritability(Study study) {
+        return getPseudoHeritability(new ArrayList<>(study.getTraits()), study.getTransformation(), study.getAlleleAssay().getId());
+    }
+
+    private Double getPseudoHeritability(List<Trait> traits, Transformation transformation, Long alleleAssayId) {
+        return getPseudoHeritability(traits, TransformationDataProxy.TYPE.valueOf(transformation.getName().toUpperCase()), alleleAssayId);
+    }
+
+
+    private Double getPseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE transformation, Long alleleAssayId) {
+        List<Double> transformedValues = Transformations.transform(transformation, Lists.transform(traits, trait2ValueFunc));
+        return getPseudoHeritability(traits, transformedValues, alleleAssayId);
+    }
+
+    private Double getPseudoHeritability(List<Trait> traits, List<Double> values, Long alleleAssayId) {
+        Double pseudoHeritability = -1.0;
+        // get two lists of traits and transformed values
+
+        Iterator<Trait> traitIterator = traits.iterator();
+        Iterator<Double> valueIterator = values.iterator();
+        // save list on temp folder
+        File csvFile = new File(TEMP_FOLDER + File.separator + UUID.randomUUID() + ".csv");
+        try (FileWriter writer = new FileWriter(csvFile)) {
+            writer.append("accessionId," + "phentoype\n");
+            while (traitIterator.hasNext() && valueIterator.hasNext()) {
+                Trait trait = traitIterator.next();
+                Double value = valueIterator.next();
+                String val = value != null ? value.toString() : "";
+                writer.append(trait.getObsUnit().getStock().getPassport().getId().toString() + "," + val + "\n");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
+        File genotypeFolder = new File(GENOTYPE_FOLDER).getAbsoluteFile();
+        // need to get parent folder because otherwise Permission Denied because of NFS settings
+        String parentFolder = genotypeFolder.getParent();
+
+        String statsPrgm = String.format("docker run --rm -v %s:/GENOTYPE:ro -v %s/:/DATA:ro pygwas_stats -g /GENOTYPE/PYGWAS_GENOTYPES/%s -t pseudo /DATA/%s", parentFolder, TEMP_FOLDER, alleleAssayId, csvFile.getName());
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
+        CommandLine cmdLine = CommandLine.parse(statsPrgm);
+        DefaultExecutor executor = new DefaultExecutor();
+        ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
+        executor.setWatchdog(watchdog);
+        executor.setStreamHandler(streamHandler);
+        try {
+            int exitValue = executor.execute(cmdLine);
+            if (exitValue != 0)
+                throw new RuntimeException("Error calculating stats");
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+            Map<String, Object> result = objectMapper.readValue(outputStream.toByteArray(), HashMap.class);
+            pseudoHeritability = (Double) result.get("pseudo_heritability");
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        } finally {
+            // delete phenoptype value
+            csvFile.delete();
+        }
+        return pseudoHeritability;
     }
 
     @Override
@@ -588,7 +706,7 @@ public class HelperServiceImpl implements HelperService {
         if (values.size() != traits.size()) {
             throw new RuntimeException("Study contains invalid phenotype values");
         }
-        List<Double> transformedValues = Transformations.transform(study.getTransformation().getName(), values);
+        List<Double> transformedValues = Transformations.transform(TransformationDataProxy.TYPE.valueOf(study.getTransformation().getName().toUpperCase()), values);
         Iterator<Trait> traitIterator = traits.iterator();
         Iterator<Double> valueIterator = transformedValues.iterator();
         while (traitIterator.hasNext() && valueIterator.hasNext()) {

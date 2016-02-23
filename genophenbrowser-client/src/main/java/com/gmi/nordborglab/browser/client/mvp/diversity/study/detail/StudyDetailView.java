@@ -14,6 +14,7 @@ import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
+import com.gmi.nordborglab.browser.shared.util.Normality;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -105,6 +106,9 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     private Modal editPopup = new Modal();
     private DialogOptions deleteOptions = DialogOptions.newOptions("Do you really want to delete the analysis?");
     private PlotDownloadPopup plotsPanel = new PlotDownloadPopup(PlotDownloadPopup.PLOT_TYPE.STUDY);
+
+    private Double shapiroWilkPvalue;
+    private Double pseudoHeritability;
 
     @UiField(provided = true)
     StudyDisplayEditor studyDisplayEditor;
@@ -382,9 +386,23 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         return options;
     }
 
+    private String getTitle() {
+        String title = "Phenotype Histogram (shapiroWilkPvalue: " + getRoundedValue(shapiroWilkPvalue) + " | pseudoHerit.: " + getRoundedValue(pseudoHeritability) + ")";
+        return title;
+    }
+
+    private String getRoundedValue(Double value) {
+        if (value == null)
+            return "N/A";
+        value = Normality.getRoundedValue(value);
+        if (value == Double.NaN)
+            return "Infinity";
+        return String.valueOf(value);
+    }
+
     private Options createColumnChartOptions() {
         Options options = Options.create();
-        options.setTitle("Phenotype Histogram");
+        options.setTitle(getTitle());
         Options animationOptions = Options.create();
         animationOptions.set("duration", 1000.0);
         animationOptions.set("easing", "out");
@@ -564,5 +582,11 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         navLinkPhenCSV.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/phenotypedata.csv");
         navLinkPhenJSON.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/phenotypedata.json");
         plotsPanel.setId(id);
+    }
+
+    @Override
+    public void setStats(Double pseudoHeritability, Double shapiroWilkPvalue) {
+        this.shapiroWilkPvalue = shapiroWilkPvalue;
+        this.pseudoHeritability = pseudoHeritability;
     }
 }

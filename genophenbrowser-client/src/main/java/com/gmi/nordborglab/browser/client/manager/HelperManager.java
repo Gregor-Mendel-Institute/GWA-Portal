@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.manager;
 
 import com.gmi.nordborglab.browser.shared.proxy.BreadcrumbItemProxy;
+import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
 import com.gmi.nordborglab.browser.shared.service.HelperRequest;
@@ -26,8 +27,12 @@ public class HelperManager extends RequestFactoryManager<HelperRequest> {
     }
 
 
-    public void calculateTransformations(Receiver<List<TransformationDataProxy>> receiver, List<Double> values) {
-        getContext().calculateTransformations(values).fire(receiver);
+    public void calculateTransformations(Receiver<List<TransformationDataProxy>> receiver, List<TraitProxy> values, Long alleleAssayId) {
+        getContext().calculateTransformations(values, alleleAssayId).fire(receiver);
+    }
+
+    public void calculatePseudoHeritability(Receiver<Double> receiver, List<TraitProxy> traits, TransformationDataProxy.TYPE type, Long alleleAssayId) {
+        getContext().calculatePseudoHeritability(traits, type, alleleAssayId).fire(receiver);
     }
 
 }

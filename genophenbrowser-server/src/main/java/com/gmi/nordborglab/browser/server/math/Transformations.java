@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.server.math;
 
+import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
 import com.gmi.nordborglab.browser.shared.util.Normality;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -136,15 +137,16 @@ public abstract class Transformations {
         return normality.getShapiroWilkPvalue();
     }
 
-    public static List<Double> transform(String transformation, List<Double> values) {
-        if (transformation.equalsIgnoreCase("log")) {
-            return logTransform(values);
-        } else if (transformation.equalsIgnoreCase("sqrt")) {
-            return sqrtTransform(values);
-        } else if (transformation.equalsIgnoreCase("boxcox")) {
-            return boxCoxTransform(values);
-        } else {
-            return values;
+    public static List<Double> transform(TransformationDataProxy.TYPE transformation, List<Double> values) {
+        switch (transformation) {
+            case LOG:
+                return logTransform(values);
+            case SQRT:
+                return sqrtTransform(values);
+            case BOXCOX:
+                return boxCoxTransform(values);
+            default:
+                return values;
         }
     }
 }
