@@ -19,6 +19,7 @@ import com.gmi.nordborglab.browser.shared.proxy.StudyJobProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TraitProxy;
 import com.gmi.nordborglab.browser.shared.service.CdvRequest;
+import com.gmi.nordborglab.browser.shared.util.Normality;
 import com.gmi.nordborglab.browser.shared.util.PhenotypeHistogram;
 import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.ImmutableSet;
@@ -76,6 +77,8 @@ public class StudyDetailPresenter extends
         void showDeletePopup();
 
         void setStudyId(Long id);
+
+        void setStats(Double pseudoHeritability, Double shapiroWilkPvalue);
     }
 
     protected StudyProxy study;
@@ -198,6 +201,7 @@ public class StudyDetailPresenter extends
         getView().scheduledLayout();
         getView().setPhenotypExplorerData(ImmutableSet.copyOf(study.getTraits()));
         getView().setStudyId(study.getId());
+        getView().setStats(study.getPseudoHeritability(), Normality.calculateScoreFromPValue(study.getShapiroWilkPvalue()));
         fireEvent(new LoadingIndicatorEvent(false));
     }
 

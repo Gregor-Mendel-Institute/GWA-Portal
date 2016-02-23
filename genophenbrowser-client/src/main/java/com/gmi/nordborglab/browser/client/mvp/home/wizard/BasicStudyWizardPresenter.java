@@ -40,6 +40,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.view.client.HasData;
@@ -117,7 +118,7 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
 
         void onShowPhenotypeUploadPanel(boolean isSHow);
 
-        void showTransformationHistogram(TransformationDataProxy.TYPE type, ImmutableSortedMap<Double, Integer> histogram, Double shapiroPval);
+        void showTransformationHistogram(TransformationDataProxy.TYPE type, ImmutableSortedMap<Double, Integer> histogram, Double shapiroPval, Double pseudoHeritability);
 
         void setAvailableTransformations(List<TransformationProxy> transformationList);
 
@@ -164,6 +165,8 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
         HasValue<Boolean> getIsCreateEnrichments();
 
         void updateGWASRuntime(GWASRuntimeInfoProxy info, int size);
+
+        void showPseudoHeritability(Double response);
     }
 
     static class PhenotypeNamePredicate implements Predicate<PhenotypeProxy> {
@@ -408,25 +411,28 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                             }
                         }
                 ));
-
+        helperManager.calculatePseudoHeritability(new Receiver<Double>() {
+            @Override
+            public void onSuccess(Double response) {
+                getView().showPseudoHeritability(response);
+            }
+        }, filteredPhenotypeValues, TransformationDataProxy.TYPE.NO, selectedAlleleAssay.getId());
         List<Double> traitValues = Lists.transform(filteredPhenotypeValues, Statistics.traitToDouble);
         histogram = PhenotypeHistogram.getHistogram(traitValues, BIN_COUNT);
-        double shapiroPval = Normality.getShapiroWilkPvalue(traitValues);
-        if (shapiroPval > 0.0) {
-            shapiroPval = Math.round(-Math.log10(shapiroPval) * 100.0) / 100.0;
-        }
-        getView().showTransformationHistogram(TransformationDataProxy.TYPE.RAW, histogram, shapiroPval);
-        fireEvent(new LoadingIndicatorEvent(true));
         helperManager.calculateTransformations(new Receiver<List<TransformationDataProxy>>() {
             @Override
             public void onSuccess(List<TransformationDataProxy> response) {
                 for (TransformationDataProxy transformationData : response) {
                     fireEvent(new LoadingIndicatorEvent(false));
-                    getView().showTransformationHistogram(transformationData.getType(), PhenotypeHistogram.getHistogram(transformationData.getValues(), BIN_COUNT), transformationData.getShapiroPval());
+                    getView().showTransformationHistogram(transformationData.getType(), PhenotypeHistogram.getHistogram(transformationData.getValues(), BIN_COUNT), transformationData.getShapiroPval(), transformationData.getPseudoHeritability());
                 }
-
             }
-        }, traitValues);
+        }, filteredPhenotypeValues, selectedAlleleAssay.getId());
+        double shapiroPval = Normality.getShapiroWilkPvalue(traitValues);
+        if (shapiroPval > 0.0) {
+            shapiroPval = Math.round(-Math.log10(shapiroPval) * 100.0) / 100.0;
+        }
+        getView().showTransformationHistogram(TransformationDataProxy.TYPE.NO, histogram, shapiroPval, null);
     }
 
 
@@ -578,8 +584,13 @@ public class BasicStudyWizardPresenter extends Presenter<BasicStudyWizardPresent
                     getView().showCallout("genotype", true);
                     break;
                 }
-                filterAndShowTransformations();
-                calculateAndUpdateRuntime();
+                fireEvent(new LoadingIndicatorEvent(true));
+                Scheduler.get().scheduleFixedDelay(() -> {
+                    filterAndShowTransformations();
+                    calculateAndUpdateRuntime();
+                    return false;
+                }, 1000);
+
                 break;
 
             case TRANSFORMATION:

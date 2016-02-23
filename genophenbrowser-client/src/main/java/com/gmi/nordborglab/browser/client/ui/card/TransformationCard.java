@@ -47,6 +47,7 @@ public class TransformationCard extends Composite implements RequiresResize {
     private TransformationProxy transformation;
 
     private Double shapiroScore;
+    private Double pseudoHeritability;
     @UiField
     SpanElement shapiroScoreLb;
     @UiField
@@ -63,6 +64,8 @@ public class TransformationCard extends Composite implements RequiresResize {
     FocusPanel focusPanel;
     @UiField
     CardRendererResources cardRen;
+    @UiField
+    SpanElement pseudoHeritabilityLb;
     private boolean layoutScheduled = false;
     private final Scheduler.ScheduledCommand layoutCmd = new Scheduler.ScheduledCommand() {
         public void execute() {
@@ -81,13 +84,14 @@ public class TransformationCard extends Composite implements RequiresResize {
     }
 
 
-    public void setHistogramData(ImmutableSortedMap<Double, Integer> data, Double shapiroScore) {
-        setHistogramData(DataTableUtils.createPhenotypeHistogramTable(data), shapiroScore);
+    public void setHistogramData(ImmutableSortedMap<Double, Integer> data, Double shapiroScore, Double pseudoHeritability) {
+        setHistogramData(DataTableUtils.createPhenotypeHistogramTable(data), shapiroScore, pseudoHeritability);
     }
 
-    public void setHistogramData(DataTable histogramData, Double shapiroScore) {
+    public void setHistogramData(DataTable histogramData, Double shapiroScore, Double pseudoHeritability) {
         this.histogramData = histogramData;
         this.shapiroScore = shapiroScore;
+        setPseudoHeritability(pseudoHeritability);
         shapiroScoreLb.setInnerText(shapiroScore.toString());
         scheduledLayout();
     }
@@ -166,6 +170,15 @@ public class TransformationCard extends Composite implements RequiresResize {
         titleLb.setInnerText(transformation.getName() + " transformation");
     }
 
+    public void setPseudoHeritability(Double pseudoHeritability) {
+        this.pseudoHeritability = pseudoHeritability;
+        pseudoHeritabilityLb.setInnerText(pseudoHeritability != null ? getRoundedValue(pseudoHeritability) : "Calculating...");
+    }
+
+    String getRoundedValue(Double value) {
+        return String.valueOf(Math.round(value * 100.0) / 100.0);
+    }
+
 
     public void setEventBus(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -182,6 +195,10 @@ public class TransformationCard extends Composite implements RequiresResize {
 
     public Double getShapiroScore() {
         return shapiroScore;
+    }
+
+    public Double getPseudoHeritability() {
+        return pseudoHeritability;
     }
 
     public void setChartHeight(String height) {

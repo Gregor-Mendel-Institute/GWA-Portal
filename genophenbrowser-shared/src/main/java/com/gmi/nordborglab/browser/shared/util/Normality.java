@@ -51,4 +51,19 @@ public class Normality {
     public static Double getShapiroWilkPvalue(List<Double> values) {
         return new Normality(values).getShapiroWilkPvalue();
     }
+
+    public static Double calculateScoreFromPValue(Double pValue) {
+        if (pValue == null)
+            return null;
+        if (pValue > 0.0) {
+            return -Math.log10(pValue);
+        }
+        return Double.NaN;
+    }
+
+    public static Double getRoundedValue(Double value) {
+        if (value == null || Double.isNaN(value))
+            return value;
+        return Math.round(value * 100) / 100.0;
+    }
 }

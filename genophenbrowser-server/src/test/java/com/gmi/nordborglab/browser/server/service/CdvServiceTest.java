@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.server.service;
 
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
+import com.gmi.nordborglab.browser.server.domain.cdv.Transformation;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.pages.StudyPage;
@@ -9,6 +10,7 @@ import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.repository.AlleleAssayRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitRepository;
+import com.gmi.nordborglab.browser.server.repository.TransformationRepository;
 import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
 import com.gmi.nordborglab.browser.server.testutils.SecurityUtils;
@@ -33,9 +35,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class CdvServiceTest extends BaseTest {
@@ -51,6 +55,9 @@ public class CdvServiceTest extends BaseTest {
 
     @Resource
     private MutableAclService aclService;
+
+    @Resource
+    private TransformationRepository transformationRepository;
 
     @Resource
     private AlleleAssayRepository alleleAssayRepository;
@@ -102,19 +109,21 @@ public class CdvServiceTest extends BaseTest {
         SecurityUtils.makeActiveUser("TEST", "TEST", adminAuthorities);
         Study study = new Study();
         study.setName("test");
-        Set<Trait> traits = new HashSet<Trait>();
-        Trait trait = traitRepository.findOne(1L);
+        Set<Trait> traits = new HashSet<>(traitRepository.findAllByStudiesId(160L));
+        Transformation transformation = transformationRepository.findOne(1L);
+        study.setTransformation(transformation);
         AlleleAssay alleleAssay = alleleAssayRepository.findOne(1L);
         study.setAlleleAssay(alleleAssay);
-        traits.add(trait);
         study.setTraits(traits);
         study = service.saveStudy(study);
         assertNotNull(study);
         assertEquals("test", study.getName());
         assertNotNull(study.getTraits());
-        assertEquals(1L, study.getTraits().size());
+        assertEquals(194L, study.getTraits().size());
         assertNotNull(study.getStudyDate());
-        assertEquals("TEST", study.getProducer());
+        assertEquals("TEST null", study.getProducer());
+        assertThat(study.getPseudoHeritability(), is(0.9017288538771943));
+        assertThat(study.getShapiroWilkPvalue(), is(7.093110844098556E-11));
     }
 
     @Test(expected = RuntimeException.class)

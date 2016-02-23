@@ -9,46 +9,46 @@ import java.util.Set;
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.domain.cdv.Study", locator = "com.gmi.nordborglab.browser.server.service.SpringEntitiyLocator")
 public interface StudyProxy extends SecureEntityProxy {
 
-    public Long getId();
+    Long getId();
 
     @NotNull
-    public StudyProtocolProxy getProtocol();
+    StudyProtocolProxy getProtocol();
 
-    public void setProtocol(StudyProtocolProxy protocol);
-
-    @NotNull
-    public AlleleAssayProxy getAlleleAssay();
-
-    public void setAlleleAssay(AlleleAssayProxy alleleAssay);
+    void setProtocol(StudyProtocolProxy protocol);
 
     @NotNull
-    public String getName();
+    AlleleAssayProxy getAlleleAssay();
 
-    public void setName(String name);
+    void setAlleleAssay(AlleleAssayProxy alleleAssay);
 
-    public String getProducer();
+    @NotNull
+    String getName();
 
-    public void setProducer(String producer);
+    void setName(String name);
 
-    public Date getStudyDate();
+    String getProducer();
 
-    public void setStudyDate(Date date);
+    void setProducer(String producer);
 
-    public AccessControlEntryProxy getUserPermission();
+    Date getStudyDate();
 
-    public boolean isOwner();
+    void setStudyDate(Date date);
 
-    public void setTraits(Set<TraitProxy> traits);
+    AccessControlEntryProxy getUserPermission();
 
-    public Set<TraitProxy> getTraits();
+    boolean isOwner();
 
-    public PhenotypeProxy getPhenotype();
+    void setTraits(Set<TraitProxy> traits);
 
-    public void setTransformation(TransformationProxy transformation);
+    Set<TraitProxy> getTraits();
 
-    public TransformationProxy getTransformation();
+    PhenotypeProxy getPhenotype();
 
-    public StudyJobProxy getJob();
+    void setTransformation(TransformationProxy transformation);
+
+    TransformationProxy getTransformation();
+
+    StudyJobProxy getJob();
 
     void setJob(StudyJobProxy studyJob);
 
@@ -61,4 +61,10 @@ public interface StudyProxy extends SecureEntityProxy {
     void setCreateEnrichments(boolean isCreateEnrichments);
 
     boolean isCreateEnrichments();
+
+    Double getPseudoHeritability();
+
+    Double getShapiroWilkPvalue();
+
+    void setShapiroWilkPvalue(Double shapiroWilkPvalue);
 }

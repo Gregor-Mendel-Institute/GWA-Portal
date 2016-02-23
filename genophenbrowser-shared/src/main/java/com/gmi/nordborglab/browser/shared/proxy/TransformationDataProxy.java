@@ -19,9 +19,12 @@ public interface TransformationDataProxy extends ValueProxy{
 
     Double getShapiroPval();
 
-    public enum TYPE {RAW,LOG,SQRT,BOXCOX}
+    enum TYPE {NO, LOG, SQRT, BOXCOX}
 
-    public TYPE getType();
-    public List<Double> getValues();
+    TYPE getType();
+
+    List<Double> getValues();
+
+    Double getPseudoHeritability();
 
 }

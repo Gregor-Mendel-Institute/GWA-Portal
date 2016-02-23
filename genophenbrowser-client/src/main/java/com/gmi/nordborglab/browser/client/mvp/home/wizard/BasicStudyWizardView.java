@@ -509,25 +509,27 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     }
 
     @Override
-    public void showTransformationHistogram(TransformationDataProxy.TYPE type, ImmutableSortedMap<Double, Integer> histogram, Double shapiroPval) {
+    public void showTransformationHistogram(TransformationDataProxy.TYPE type, ImmutableSortedMap<Double, Integer> histogram, Double shapiroPval, Double pseudoHeritability) {
         switch (type) {
-            case RAW:
-                noTransformationCard.setHistogramData(histogram, shapiroPval);
+            case NO:
+                noTransformationCard.setHistogramData(histogram, shapiroPval, null);
                 onSelectTransformationCard(noTransformationCard);
                 break;
             case LOG:
-                logTransformationCard.setHistogramData(histogram, shapiroPval);
+                logTransformationCard.setHistogramData(histogram, shapiroPval, pseudoHeritability);
                 break;
             case SQRT:
-                sqrtTransformationCard.setHistogramData(histogram, shapiroPval);
+                sqrtTransformationCard.setHistogramData(histogram, shapiroPval, pseudoHeritability);
                 break;
-
             case BOXCOX:
-                boxCoxTransformationCard.setHistogramData(histogram, shapiroPval);
+                boxCoxTransformationCard.setHistogramData(histogram, shapiroPval, pseudoHeritability);
                 break;
         }
+    }
 
-
+    @Override
+    public void showPseudoHeritability(Double pseudoHeritability) {
+        noTransformationCard.setPseudoHeritability(pseudoHeritability);
     }
 
     private void onSelectTransformationCard(TransformationCard transformationCard) {
@@ -645,7 +647,7 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         summaryPhenotypeCard.setValue(phenotype);
         summaryGenotypCard.setValue(alleleAssay);
         summaryTransformationCard.setTransformation(selectedTransformationCard.getTransformation());
-        summaryTransformationCard.setHistogramData(selectedTransformationCard.getHistogramData(), selectedTransformationCard.getShapiroScore());
+        summaryTransformationCard.setHistogramData(selectedTransformationCard.getHistogramData(), selectedTransformationCard.getShapiroScore(), selectedTransformationCard.getPseudoHeritability());
         summaryTransformationCard.onResize();
         summaryMethodCard.setStudyProtocol(selectedMethod.getStudyProtocol());
     }
