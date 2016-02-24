@@ -360,7 +360,7 @@ public class UserServiceImpl implements UserService {
                 break;
             default:
                 if (searchString == null || searchString.isEmpty())
-                    request.addSort("firstname.name", SortOrder.ASC);
+                    request.addSort("firstname", SortOrder.ASC);
         }
         // set filter
         request.setPostFilter(searchFilter);
