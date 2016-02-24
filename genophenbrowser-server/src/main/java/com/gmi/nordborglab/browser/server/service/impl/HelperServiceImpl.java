@@ -55,6 +55,7 @@ import com.gmi.nordborglab.browser.server.security.EsAclManager;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.browser.shared.proxy.AppStatProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramFacetProxy;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramProxy;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationDataProxy;
@@ -512,7 +513,7 @@ public class HelperServiceImpl implements HelperService {
             public UserNotification apply(NewsItem input) {
                 Preconditions.checkNotNull(input);
                 UserNotification notification = new UserNotification();
-                String profileUrl = "<img class=\"img-circle\" src=\"" + PermissionServiceImpl.GRAVATAR_URL + input.getAuthor().getAvatarHash() + "&s=29\" />";
+                String profileUrl = "<img class=\"img-circle\" src=\"" + AppUserProxy.GRAVATAR_URL + input.getAuthor().getAvatarHash() + "&s=29\" />";
                 notification.setText(profileUrl + "&nbsp;<span class=\"notificationNews\">News:</span> <a href=\"/#/home\">" + input.getTitle() + "</a>");
                 notification.setType("site");
                 notification.setCreateDate(input.getCreateDate());

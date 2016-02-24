@@ -23,6 +23,7 @@ import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.security.EsAclManager;
 import com.gmi.nordborglab.browser.server.security.SecurityUtil;
 import com.gmi.nordborglab.browser.server.service.PermissionService;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
@@ -57,8 +58,6 @@ import java.util.Map;
 @Service
 @Transactional(readOnly = true)
 public class PermissionServiceImpl implements PermissionService {
-
-    public static final String GRAVATAR_URL = "http://www.gravatar.com/avatar/";
 
     private static final Logger logger = LoggerFactory.getLogger(PermissionServiceImpl.class);
 
@@ -266,7 +265,7 @@ public class PermissionServiceImpl implements PermissionService {
                     notification.setAppUser(user);
                     notification.setType("permission");
                     String link = "";
-                    String userIcon = "<img class=\"img-circle\" src=\"" + GRAVATAR_URL + owner.getAvatarHash() + "&s=29\" />";
+                    String userIcon = "<img class=\"img-circle\" src=\"" + AppUserProxy.GRAVATAR_URL + owner.getAvatarHash() + "&s=29\" />";
                     String objType = "";
                     String objName = "";
 

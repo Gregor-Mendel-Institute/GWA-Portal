@@ -43,10 +43,10 @@ public class AvatarNameCell extends AbstractCell<AppUserProxy> {
 
     @Override
     public void render(Context context, AppUserProxy value, SafeHtmlBuilder sb) {
-        SafeUri link = UriUtils.fromSafeConstant("javascript:;");
+        SafeUri link = UriUtils.fromSafeConstant("");
         String name = "N/A";
         String type = "N/A";
-        SafeUri avatarUrl = UriUtils.fromSafeConstant("javascript:;");
+        SafeUri avatarUrl = UriUtils.fromSafeConstant("");
         if (value != null) {
             if (value.getId() != null) {
                 PlaceRequest request = new PlaceRequest.Builder().nameToken(NameTokens.profile).with("id", value.getId().toString()).build();

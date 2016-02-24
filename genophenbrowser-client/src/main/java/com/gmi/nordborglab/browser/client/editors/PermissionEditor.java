@@ -1,10 +1,10 @@
 package com.gmi.nordborglab.browser.client.editors;
 
 import com.gmi.nordborglab.browser.client.resources.PermissionDataGridResources;
-import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.ui.cells.EntypoIconActionCell;
 import com.gmi.nordborglab.browser.client.ui.cells.PermissionSelectionCell;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.CustomAclProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PermissionPrincipalProxy;
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
@@ -66,7 +66,7 @@ public class PermissionEditor extends Composite implements Editor<CustomAclProxy
         public SafeHtml render(PermissionPrincipalProxy object) {
             SafeHtmlBuilder builder = new SafeHtmlBuilder();
             if (object.getIsUser()) {
-                imageCell.render(null, UriUtils.fromSafeConstant(CurrentUser.GRAVATAR_URL + object.getAvatarHash() + "&s=29"), builder);
+                imageCell.render(null, UriUtils.fromSafeConstant(AppUserProxy.GRAVATAR_URL + object.getAvatarHash() + "&s=29"), builder);
             } else {
                 String icon = "fa fa-unlock";
                 if (object.getName().startsWith("Private")) {

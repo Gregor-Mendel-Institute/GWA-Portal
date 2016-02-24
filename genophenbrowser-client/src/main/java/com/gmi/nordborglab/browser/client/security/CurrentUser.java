@@ -39,8 +39,6 @@ public class CurrentUser {
     private boolean isComChannelOpen = false;
     private final CustomRequestFactory rf;
 
-    public final static String GRAVATAR_URL = "http://www.gravatar.com/avatar/";
-
     @Inject
     public CurrentUser(RequestDispatcher dispatcher, MessageBus messageBus, EventBus eventBus, CustomRequestFactory rf) {
         this.dispatcher = dispatcher;
@@ -225,7 +223,7 @@ public class CurrentUser {
     public static String getGravatarUrl(AppUserProxy user, int size, boolean check) {
         if (user == null)
             return "";
-        String url = GRAVATAR_URL + user.getGravatarHash() + ".jpg?s=" + size + "&d=identicon";
+        String url = AppUserProxy.GRAVATAR_URL + user.getGravatarHash() + ".jpg?s=" + size + "&d=identicon";
         if (check) {
             url = url + (user.getAvatarSource() == AppUserProxy.AVATAR_SOURCE.IDENTICON ? "&f=1" : "");
         }

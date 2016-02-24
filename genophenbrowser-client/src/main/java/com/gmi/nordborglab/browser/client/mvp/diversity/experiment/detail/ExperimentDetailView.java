@@ -191,25 +191,25 @@ public class ExperimentDetailView extends ViewWithUiHandlers<ExperimentDetailUiH
         actionBarPanel.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         actionBarPanel.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
 
-        edit.addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                getUiHandlers().onEdit();
-            }
-        }, ClickEvent.getType());
-        delete.addDomHandler(new ClickHandler() {
+        delete.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 getUiHandlers().onDelete();
             }
-        }, ClickEvent.getType());
+        });
 
-        share.addDomHandler(new ClickHandler() {
+        share.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 getUiHandlers().onShare();
             }
-        }, ClickEvent.getType());
+        });
+        edit.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getUiHandlers().onEdit();
+            }
+        });
     }
 
     private void initDataGrid() {

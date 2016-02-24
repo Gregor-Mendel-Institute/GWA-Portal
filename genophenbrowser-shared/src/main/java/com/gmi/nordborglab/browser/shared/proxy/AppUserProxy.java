@@ -14,7 +14,10 @@ import java.util.List;
 @PasswordsEqual
 public interface AppUserProxy extends ValueProxy {
 
-    public enum AVATAR_SOURCE {
+
+    final String GRAVATAR_URL = "https://secure.gravatar.com/avatar/";
+
+    enum AVATAR_SOURCE {
         GRAVATAR, IDENTICON, CUSTOM
     }
 
