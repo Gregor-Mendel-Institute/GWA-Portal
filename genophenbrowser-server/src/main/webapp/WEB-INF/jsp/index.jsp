@@ -151,9 +151,12 @@
         }
     </style>
     <!-- FIXME use until https://github.com/eemi2010/gwt-tour/issues/1 is fixed -->
+
     <script type="text/javascript">
+        window.erraiBusRemoteCommunicationEnabled = false;
         <sec:authorize access="isAuthenticated()">
         var userData = {'user': '<sec:authentication htmlEscape="false" property="principal.json"/>'};
+        window.erraiBusRemoteCommunicationEnabled = true;
         </sec:authorize>
         var appData = {
             'jBrowseUrl': '${jbrowseUrl}',
