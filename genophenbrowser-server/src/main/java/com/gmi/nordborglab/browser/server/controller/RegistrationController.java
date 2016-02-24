@@ -68,6 +68,7 @@ public class RegistrationController {
             servletRequest.login(user.getUsername(), registration.getPassword());
         } catch (DuplicateRegistrationException e) {
             result.rejectValue("email", "not.unique");
+            return "registrationform";
         } catch (ServletException ex) {
             ex.printStackTrace();
         }
