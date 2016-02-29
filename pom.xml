@@ -46,7 +46,9 @@
         <google.autovalue>1.1</google.autovalue>
 
         <maven.surefire.plugin>2.12.4</maven.surefire.plugin>
-        <maven.compiler.plugin>3.1</maven.compiler.plugin>
+        <!-- don't upgrade to 3.1 until this https://issues.apache.org/jira/browse/MCOMPILER-205 is fixed -->
+        <!-- http://stackoverflow.com/questions/31891219/illegalstateexception-in-hibernate-metamodel-generation-with-maven-->
+        <maven.compiler.plugin>2.5.1</maven.compiler.plugin>
         <maven.source.plugin>2.4</maven.source.plugin>
         <maven.jar.plugin>2.4</maven.jar.plugin>
         <maven.tomcat6.plugin>2.2</maven.tomcat6.plugin>
@@ -184,7 +186,7 @@
                         <target>${java.version}</target>
                         <compilerVersion>${java.version}</compilerVersion>
                         <!-- required because of https://github.com/mkarneim/pojobuilder/issues/71 -->
-                        <compilerArgument>-proc:none</compilerArgument>
+                        <!--<compilerArgument>-proc:none</compilerArgument>-->
                     </configuration>
                     <dependencies>
                     </dependencies>
