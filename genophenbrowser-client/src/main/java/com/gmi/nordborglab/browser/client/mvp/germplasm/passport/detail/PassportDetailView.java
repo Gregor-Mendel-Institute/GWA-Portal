@@ -8,8 +8,6 @@ import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HyperlinkPlaceManagerColumn;
-import com.gmi.nordborglab.browser.client.util.CustomDataTable;
-import com.gmi.nordborglab.browser.client.util.CustomDataTable.Filter;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.LocalityProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
@@ -18,6 +16,7 @@ import com.gmi.nordborglab.browser.shared.proxy.StockProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StudyProxy;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
@@ -44,12 +43,14 @@ import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.visualization.client.DataView;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
+import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.DataView;
+import com.googlecode.gwt.charts.client.RowFilter;
+import com.googlecode.gwt.charts.client.corechart.PieChart;
+import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
 import com.gwtplatform.mvp.client.ViewImpl;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
@@ -126,7 +127,7 @@ public class PassportDetailView extends ViewImpl implements
     private MapWidget mapWidget;
     private Marker marker = Marker.newInstance(null);
     private final PlaceManager placeManager;
-    private CustomDataTable statsDataTable = null;
+    private DataTable statsDataTable = null;
     private boolean layoutScheduled = false;
 
     @Inject
@@ -376,7 +377,7 @@ public class PassportDetailView extends ViewImpl implements
     }
 
     @Override
-    public void setStatsDataTable(CustomDataTable statsDataTable) {
+    public void setStatsDataTable(DataTable statsDataTable) {
         this.statsDataTable = statsDataTable;
 
     }
@@ -401,18 +402,18 @@ public class PassportDetailView extends ViewImpl implements
         if (statsDataTable == null)
             return;
         DataView view = DataView.create(statsDataTable);
-        int[] columns = new int[2];
-        columns[0] = 0;
-        columns[1] = 1;
+        JsArrayInteger columns = JsArrayInteger.createArray(2).cast();
+        columns.set(0, 0);
+        columns.set(1, 1);
         view.setColumns(columns);
         ///TODO add JSNI call to getFilteredRows to custom DataTable
-        JsArray<Filter> filters = JsArray.createArray().cast();
-        Filter filter = Filter.createObject().cast();
+        JsArray<RowFilter> filters = JsArray.createArray().cast();
+        RowFilter filter = RowFilter.createObject().cast();
         filter.setColumn(2);
         filter.setValue(type.ordinal());
         filters.push(filter);
-        view.setRows(statsDataTable.getFilteredRows(filters));
-        PieOptions options = PieOptions.create();
+        view.setRows(statsDataTable.getFilteredRows(filters).cast());
+        PieChartOptions options = PieChartOptions.create();
         options.setHeight(statsChartContainer.getOffsetHeight());
         options.setWidth(statsChartContainer.getOffsetWidth());
         //Options animationOptions = Options.create();
@@ -435,14 +436,14 @@ public class PassportDetailView extends ViewImpl implements
                 break;
         }
         options.setTitle(title);
+        PieChart pieChart;
         if (statsChartContainer.getWidget() == null) {
-            statsChartContainer.add(new PieChart(view, options));
+            pieChart = new PieChart();
+            statsChartContainer.add(pieChart);
         } else {
-            PieChart pieChart = (PieChart) statsChartContainer.getWidget();
-            pieChart.draw(view, options);
+            pieChart = (PieChart) statsChartContainer.getWidget();
         }
-
-
+        pieChart.draw(view, options);
     }
 
     @UiHandler({"statisticTypeBtn", "unitOfMeasureBtn", "envOBtn", "traitOBtn"})

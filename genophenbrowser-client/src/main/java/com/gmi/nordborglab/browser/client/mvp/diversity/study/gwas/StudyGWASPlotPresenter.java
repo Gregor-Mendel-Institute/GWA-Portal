@@ -79,10 +79,6 @@ public class StudyGWASPlotPresenter
     @Override
     protected void onReset() {
         super.onReset();
-        if (fireLoadEvent) {
-            fireEvent(new LoadStudyEvent(study));
-            fireLoadEvent = false;
-        }
         gwasPlotPresenterWidget.loadPlots(studyId, GetGWASDataAction.TYPE.STUDY);
         getView().setAnalysisId(studyId);
     }
@@ -107,7 +103,7 @@ public class StudyGWASPlotPresenter
                     @Override
                     public void onSuccess(StudyProxy response) {
                         study = response;
-                        fireLoadEvent = true;
+                        fireEvent(new LoadStudyEvent(study));
                     }
                 }, studyIdToLoad);
             }

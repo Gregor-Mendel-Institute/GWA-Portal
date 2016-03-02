@@ -5,7 +5,6 @@ import com.gmi.nordborglab.browser.client.dto.SNPAllele;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
-import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.SNPGWASInfoProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SNPInfoProxy;
@@ -50,16 +49,17 @@ import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.visualizations.MotionChart;
 import com.google.inject.Inject;
 import com.googlecode.gwt.charts.client.ChartLayoutInterface;
+import com.googlecode.gwt.charts.client.DataTable;
 import com.googlecode.gwt.charts.client.corechart.CandlestickChart;
 import com.googlecode.gwt.charts.client.corechart.CandlestickChartOptions;
 import com.googlecode.gwt.charts.client.corechart.ScatterChart;
 import com.googlecode.gwt.charts.client.corechart.ScatterChartOptions;
 import com.googlecode.gwt.charts.client.event.ReadyEvent;
 import com.googlecode.gwt.charts.client.event.ReadyHandler;
+import com.googlecode.gwt.charts.client.motionchart.MotionChart;
+import com.googlecode.gwt.charts.client.motionchart.MotionChartOptions;
 import com.googlecode.gwt.charts.client.options.Bar;
 import com.googlecode.gwt.charts.client.options.HAxis;
 import com.googlecode.gwt.charts.client.options.TextPosition;
@@ -180,7 +180,7 @@ public class SNPDetailPresenterWidgetView
     private CHART_TYPE chartType = CHART_TYPE.table;
     private boolean layoutScheduled = false;
     private DataGrid<SNPAllele> alleleDataGrid;
-    private ResizeableMotionChart motionChart;
+    private MotionChart motionChart = new MotionChart();
     private DataTable explorerData;
     private com.googlecode.gwt.charts.client.DataTable boxPlotData;
     private CandlestickChart candlestickChart = new CandlestickChart();
@@ -201,7 +201,6 @@ public class SNPDetailPresenterWidgetView
 
     private static final String MOTIONCHART_STATE_PHENOTYPE = "%7B%22time%22%3A%22notime%22%2C%22iconType%22%3A%22VBAR%22%2C%22xZoomedDataMin%22%3Anull%2C%22yZoomedDataMax%22%3Anull%2C%22xZoomedIn%22%3Afalse%2C%22iconKeySettings%22%3A%5B%5D%2C%22showTrails%22%3Atrue%2C%22xAxisOption%22%3A%224%22%2C%22colorOption%22%3A%227%22%2C%22yAxisOption%22%3A%224%22%2C%22playDuration%22%3A15%2C%22xZoomedDataMax%22%3Anull%2C%22orderedByX%22%3Afalse%2C%22duration%22%3A%7B%22multiplier%22%3A1%2C%22timeUnit%22%3A%22none%22%7D%2C%22xLambda%22%3A1%2C%22orderedByY%22%3Afalse%2C%22sizeOption%22%3A%22_UNISIZE%22%2C%22yZoomedDataMin%22%3Anull%2C%22nonSelectedAlpha%22%3A0.4%2C%22stateVersion%22%3A3%2C%22dimensions%22%3A%7B%22iconDimensions%22%3A%5B%22dim0%22%5D%7D%2C%22yLambda%22%3A1%2C%22yZoomedIn%22%3Afalse%7D%3B";
     private static final String MOTIONCHART_STATE_NO_PHENOTYPE = "%7B%22xZoomedIn%22%3Afalse%2C%22playDuration%22%3A15000%2C%22iconType%22%3A%22VBAR%22%2C%22yLambda%22%3A1%2C%22uniColorForNonSelected%22%3Afalse%2C%22xZoomedDataMin%22%3A0%2C%22sizeOption%22%3A%22_UNISIZE%22%2C%22nonSelectedAlpha%22%3A0.4%2C%22time%22%3A%221900%22%2C%22duration%22%3A%7B%22multiplier%22%3A1%2C%22timeUnit%22%3A%22Y%22}%2C%22dimensions%22%3A%7B%22iconDimensions%22%3A[%22dim0%22]}%2C%22orderedByX%22%3Atrue%2C%22iconKeySettings%22%3A[]%2C%22xAxisOption%22%3A%223%22%2C%22yZoomedDataMax%22%3A70%2C%22colorOption%22%3A%227%22%2C%22yAxisOption%22%3A%223%22%2C%22showTrails%22%3Afalse%2C%22xLambda%22%3A1%2C%22xZoomedDataMax%22%3A1129%2C%22yZoomedIn%22%3Afalse%2C%22yZoomedDataMin%22%3A0%2C%22orderedByY%22%3Afalse%7D%3B";
-    //{"xZoomedIn":false,"playDuration":15000,"iconType":"VBAR","yLambda":1,"uniColorForNonSelected":false,"xZoomedDataMin":0,"sizeOption":"_UNISIZE","nonSelectedAlpha":0.4,"time":"1900","duration":{"multiplier":1,"timeUnit":"Y"},"dimensions":{"iconDimensions":["dim0"]},"orderedByX":true,"iconKeySettings":[],"xAxisOption":"3","yZoomedDataMax":70,"colorOption":"7","yAxisOption":"3","showTrails":false,"xLambda":1,"xZoomedDataMax":1129,"yZoomedIn":false,"yZoomedDataMin":0,"orderedByY":false}
     private boolean hasPhenotypes = false;
     private static final String COLOR_REF = "#3366cc";
     private static final String COLOR_ALT = "#dc3912";
@@ -309,9 +308,9 @@ public class SNPDetailPresenterWidgetView
                 lowerChartContainer.add(alleleDataGrid);
                 break;
             case explorer:
-                motionChart = new ResizeableMotionChart(explorerData,
-                        createMotionChartOptions());
                 lowerChartContainer.add(motionChart);
+                motionChart.draw(explorerData,
+                        createMotionChartOptions());
                 break;
             case boxplot:
                 lowerChartContainer.add(boxPlotStripContainer);
@@ -419,13 +418,10 @@ public class SNPDetailPresenterWidgetView
         return options;
     }
 
-    private MotionChart.Options createMotionChartOptions() {
-        MotionChart.Options options = MotionChart.Options.create();
-        options.set(
-                "state",
+    private MotionChartOptions createMotionChartOptions() {
+        MotionChartOptions options = MotionChartOptions.create();
+        options.setState(
                 hasPhenotypes ? MOTIONCHART_STATE_PHENOTYPE : MOTIONCHART_STATE_NO_PHENOTYPE);
-        options.setHeight(lowerChartContainer.getOffsetHeight());
-        options.setWidth(lowerChartContainer.getOffsetWidth());
         return options;
     }
 

@@ -114,6 +114,7 @@ public class JBrowseAnnotationDataService implements AnnotationDataService {
                 logger.error("Error retrieving gene count", e);
             }
         } else {
+            throw new RuntimeException(String.format("Data for stats {0} could not be found", stats));
         }
         return table;
     }

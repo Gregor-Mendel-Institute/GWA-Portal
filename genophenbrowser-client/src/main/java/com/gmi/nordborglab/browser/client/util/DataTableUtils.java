@@ -18,16 +18,13 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Ordering;
 import com.google.common.primitives.Doubles;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Random;
-import com.google.gwt.visualization.client.AbstractDataTable;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.visualizations.corechart.Options;
 import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataColumn;
+import com.googlecode.gwt.charts.client.DataTable;
 import com.googlecode.gwt.charts.client.RoleType;
+import com.googlecode.gwt.charts.client.corechart.ColumnChartOptions;
 import com.googlecode.gwt.charts.client.options.Animation;
 import com.googlecode.gwt.charts.client.options.AnimationEasing;
 
@@ -62,23 +59,8 @@ public class DataTableUtils {
         }
     };
 
-    public static CustomDataTable createDataTableFromString(String json) {
-        CustomDataTable dataTable = null;
-        try {
-            JavaScriptObject jsData = JsonUtils.unsafeEval(json);
-            dataTable = (CustomDataTable) DataTable.create(jsData);
-        } catch (Exception e) {
-        }
-        return dataTable;
-    }
-
-    public static com.googlecode.gwt.charts.client.DataTable createChartDataTableFromString(String json) {
-        com.googlecode.gwt.charts.client.DataTable dataTable = null;
-        try {
-            dataTable = (com.googlecode.gwt.charts.client.DataTable) com.googlecode.gwt.charts.client.DataTable.create(json);
-        } catch (Exception e) {
-        }
-        return dataTable;
+    public static DataTable createDataTable(String json) {
+        return DataTable.create(json);
     }
 
     public static DataTable createPhentoypeExplorerTable(ImmutableList<TraitProxy> traits) {
@@ -119,13 +101,13 @@ public class DataTableUtils {
 
     private static DataTable getDataTableForPhenotypeExplorereTable() {
         DataTable dataTable = DataTable.create();
-        dataTable.addColumn(AbstractDataTable.ColumnType.STRING, "ID Name Phenotype");
-        dataTable.addColumn(AbstractDataTable.ColumnType.NUMBER, "Date");
-        dataTable.addColumn(AbstractDataTable.ColumnType.NUMBER, "Longitude");
-        dataTable.addColumn(AbstractDataTable.ColumnType.NUMBER, "Latitude");
-        dataTable.addColumn(AbstractDataTable.ColumnType.NUMBER, "Phenotype");
-        dataTable.addColumn(AbstractDataTable.ColumnType.STRING, "Accession");
-        dataTable.addColumn(AbstractDataTable.ColumnType.STRING, "Country");
+        dataTable.addColumn(ColumnType.STRING, "ID Name Phenotype");
+        dataTable.addColumn(ColumnType.NUMBER, "Date");
+        dataTable.addColumn(ColumnType.NUMBER, "Longitude");
+        dataTable.addColumn(ColumnType.NUMBER, "Latitude");
+        dataTable.addColumn(ColumnType.NUMBER, "Phenotype");
+        dataTable.addColumn(ColumnType.STRING, "Accession");
+        dataTable.addColumn(ColumnType.STRING, "Country");
         return dataTable;
     }
 
@@ -161,8 +143,8 @@ public class DataTableUtils {
     public static DataTable createPhenotypeHistogramTable(ImmutableSortedMap<Double, Integer> histogram) {
         DataTable histogramData = DataTable.create();
         NumberFormat numberFormat = NumberFormat.getDecimalFormat().overrideFractionDigits(2);
-        histogramData.addColumn(AbstractDataTable.ColumnType.STRING, "Bin");
-        histogramData.addColumn(AbstractDataTable.ColumnType.NUMBER, "Frequency");
+        histogramData.addColumn(ColumnType.STRING, "Bin");
+        histogramData.addColumn(ColumnType.NUMBER, "Frequency");
         if (histogram != null) {
             histogramData.addRows(histogram.size() - 1);
             ImmutableList<Double> keys = histogram.keySet().asList();
@@ -183,8 +165,8 @@ public class DataTableUtils {
         return histogramData;
     }
 
-    public static com.googlecode.gwt.charts.client.DataTable createPhenotypeHistogramTable2(Map<String, Double> histogram) {
-        com.googlecode.gwt.charts.client.DataTable histogramData = com.googlecode.gwt.charts.client.DataTable.create();
+    public static DataTable createPhenotypeHistogramTable2(Map<String, Double> histogram) {
+        DataTable histogramData = DataTable.create();
         NumberFormat numberFormat = NumberFormat.getDecimalFormat().overrideFractionDigits(2);
         histogramData.addColumn(ColumnType.STRING, "Accession");
         histogramData.addColumn(ColumnType.NUMBER, "Phenotype");
@@ -199,20 +181,6 @@ public class DataTableUtils {
 
     public static DataTable createPhenotypeGeoChartTable(Multiset<String> data) {
         DataTable geoChartData = DataTable.create();
-        geoChartData.addColumn(AbstractDataTable.ColumnType.STRING, "Country");
-        geoChartData.addColumn(AbstractDataTable.ColumnType.NUMBER, "Frequency");
-        if (data != null) {
-            for (String cty : data.elementSet()) {
-                int i = geoChartData.addRow();
-                geoChartData.setValue(i, 0, cty);
-                geoChartData.setValue(i, 1, data.count(cty));
-            }
-        }
-        return geoChartData;
-    }
-
-    public static com.googlecode.gwt.charts.client.DataTable createPhenotypeGeoChartTable2(Multiset<String> data) {
-        com.googlecode.gwt.charts.client.DataTable geoChartData = com.googlecode.gwt.charts.client.DataTable.create();
         geoChartData.addColumn(ColumnType.STRING, "Country");
         geoChartData.addColumn(ColumnType.NUMBER, "Frequency");
         if (data != null) {
@@ -225,8 +193,8 @@ public class DataTableUtils {
         return geoChartData;
     }
 
-    public static com.googlecode.gwt.charts.client.DataTable createFroMFacets(FacetProxy facet) {
-        com.googlecode.gwt.charts.client.DataTable dataTable = com.googlecode.gwt.charts.client.DataTable.create();
+    public static DataTable createFroMFacets(FacetProxy facet) {
+        DataTable dataTable = DataTable.create();
         dataTable.addColumn(ColumnType.STRING, facet.getName());
         dataTable.addColumn(ColumnType.NUMBER, "count");
         int rowCount = dataTable.addRows(facet.getTerms().size());
@@ -238,13 +206,13 @@ public class DataTableUtils {
         return dataTable;
     }
 
-    public static Options getDefaultPhenotypeHistogramOptions() {
-        Options options = Options.create();
+    public static ColumnChartOptions getDefaultPhenotypeHistogramOptions() {
+        ColumnChartOptions options = ColumnChartOptions.create();
         options.setTitle("Phenotype Histogram");
-        Options animationOptions = Options.create();
-        animationOptions.set("duration", 1000.0);
-        animationOptions.set("easing", "out");
-        options.set("animation", animationOptions);
+        Animation animationOptions = Animation.create();
+        animationOptions.setDuration(1000);
+        animationOptions.setEasing(AnimationEasing.OUT);
+        options.setAnimation(animationOptions);
         return options;
     }
 
@@ -260,7 +228,7 @@ public class DataTableUtils {
 
     public static DataTable getDataTableForSNPAllelePhenotypeTable() {
         DataTable dataTable = getDataTableForPhenotypeExplorereTable();
-        dataTable.addColumn(AbstractDataTable.ColumnType.STRING, "Allele");
+        dataTable.addColumn(ColumnType.STRING, "Allele");
         return dataTable;
     }
 
@@ -332,8 +300,8 @@ public class DataTableUtils {
         });
     }
 
-    public static com.googlecode.gwt.charts.client.DataTable createSNPAllelePhenotypeForBoxplotTable(ImmutableMultimap<String, SNPAllele> groupedByAllele, SNPInfoProxy alleleInfo) {
-        com.googlecode.gwt.charts.client.DataTable dataTable = com.googlecode.gwt.charts.client.DataTable.create();
+    public static DataTable createSNPAllelePhenotypeForBoxplotTable(ImmutableMultimap<String, SNPAllele> groupedByAllele, SNPInfoProxy alleleInfo) {
+        DataTable dataTable = DataTable.create();
         dataTable.addColumn(ColumnType.STRING, null);
         dataTable.addColumn(ColumnType.NUMBER, alleleInfo.getRef());
         dataTable.addColumn(ColumnType.NUMBER, null);
@@ -379,10 +347,10 @@ public class DataTableUtils {
         return dataTable;
     }
 
-    public static com.googlecode.gwt.charts.client.DataTable createSNPAllelePhenotypeForStripChartTable(Collection<SNPAllele> snpAlleles, SNPInfoProxy alleleInfo) {
+    public static DataTable createSNPAllelePhenotypeForStripChartTable(Collection<SNPAllele> snpAlleles, SNPInfoProxy alleleInfo) {
         String allele1 = alleleInfo.getRef();
         String allele2 = alleleInfo.getAlt();
-        com.googlecode.gwt.charts.client.DataTable dataTable = com.googlecode.gwt.charts.client.DataTable.create();
+        DataTable dataTable = DataTable.create();
         dataTable.addColumn(ColumnType.NUMBER, "Allele");
         dataTable.addColumn(ColumnType.NUMBER, allele1);
         dataTable.addColumn(DataColumn.create(ColumnType.STRING, RoleType.TOOLTIP));

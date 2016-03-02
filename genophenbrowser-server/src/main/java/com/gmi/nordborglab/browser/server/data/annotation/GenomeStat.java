@@ -9,22 +9,22 @@ package com.gmi.nordborglab.browser.server.data.annotation;
  */
 public class GenomeStat {
 
+    private String id;
     private String name;
-    private String label;
     private boolean isStackable = false;
     private boolean isStepPlot = true;
 
-    public GenomeStat(String name, String label) {
+    public GenomeStat(String id, String name) {
         this.name = name;
-        this.label = label;
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {
         return name;
-    }
-
-    public String getLabel() {
-        return label;
     }
 
     public boolean isStackable() {

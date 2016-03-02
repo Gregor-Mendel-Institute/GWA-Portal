@@ -32,10 +32,9 @@
         <jukito.version>1.4.1</jukito.version>
         <gwtchosen.version>1.2.0</gwtchosen.version>
         <gwtbootstrap3.version>1.0-SNAPSHOT</gwtbootstrap3.version>
-        <gwasgeneviewer.version>0.4.13-SNAPSHOT</gwasgeneviewer.version>
+        <gwasviewer.version>1.0.0-SNAPSHOT</gwasviewer.version>
         <gwtmaps.version>3.10.0-alpha-7</gwtmaps.version>
-        <geochart.version>0.1.4-SNAPSHOT</geochart.version>
-        <gwt-charts.version>0.9.10</gwt-charts.version>
+        <gwt-charts.version>0.9.11-SNAPSHOT</gwt-charts.version>
         <gwt-tour.version>1.0-SNAPSHOT</gwt-tour.version>
         <gwt-supercsv>0.0.1-SNAPSHOT</gwt-supercsv>
     </properties>
@@ -162,16 +161,12 @@
             <artifactId>gwtbootstrap3-extras</artifactId>
         </dependency>
         <dependency>
-            <groupId>at.gmi.nordborglab.widgets</groupId>
-            <artifactId>gwasgeneviewer</artifactId>
+            <groupId>com.github.timeu.gwt-libs.gwasviewer</groupId>
+            <artifactId>gwasviewer</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.branflake2267</groupId>
             <artifactId>gwt-maps-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>at.gmi.nordborglab.widgets</groupId>
-            <artifactId>geochart</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
@@ -273,19 +268,14 @@
                 <version>${gwtbootstrap3.version}</version>
             </dependency>
             <dependency>
-                <groupId>at.gmi.nordborglab.widgets</groupId>
-                <artifactId>gwasgeneviewer</artifactId>
-                <version>${gwasgeneviewer.version}</version>
+                <groupId>com.github.timeu.gwt-libs.gwasviewer</groupId>
+                <artifactId>gwasviewer</artifactId>
+                <version>${gwasviewer.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.branflake2267</groupId>
                 <artifactId>gwt-maps-api</artifactId>
                 <version>${gwtmaps.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>at.gmi.nordborglab.widgets</groupId>
-                <artifactId>geochart</artifactId>
-                <version>${geochart.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.validation</groupId>

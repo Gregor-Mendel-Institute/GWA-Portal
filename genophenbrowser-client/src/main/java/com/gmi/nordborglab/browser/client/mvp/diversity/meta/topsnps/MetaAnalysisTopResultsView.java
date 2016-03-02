@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.visualization.client.visualizations.corechart.Options;
 import com.google.inject.Inject;
 import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
@@ -27,7 +26,6 @@ import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
 import com.googlecode.gwt.charts.client.event.ReadyEvent;
 import com.googlecode.gwt.charts.client.event.ReadyHandler;
 import com.googlecode.gwt.charts.client.event.SelectEvent;
-import com.googlecode.gwt.charts.client.options.Animation;
 import com.googlecode.gwt.charts.client.options.Slice;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
@@ -237,8 +235,6 @@ public class MetaAnalysisTopResultsView extends ViewWithUiHandlers<MetaAnalysisT
         if (isBlank) {
             options.setColors("#eee");
         }
-        Animation animation = Animation.create();
-        Options animationOptions = Options.create();
         return options;
     }
 

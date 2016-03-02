@@ -6,7 +6,6 @@ import com.gmi.nordborglab.browser.client.mvp.germplasm.GermplasmPresenter;
 import com.gmi.nordborglab.browser.client.mvp.germplasm.stock.StockDetailView.StockDisplayDriver;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
-import com.gmi.nordborglab.browser.client.util.CustomDataTable;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StockProxy;
@@ -14,6 +13,7 @@ import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
+import com.googlecode.gwt.charts.client.DataTable;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
@@ -26,7 +26,7 @@ public class StockDetailPresenter extends
 
     public interface MyView extends com.gwtplatform.mvp.client.View {
 
-        void setPedigreeData(CustomDataTable pedigreeData);
+        void setPedigreeData(DataTable pedigreeData);
 
         void scheduleLayout();
 
@@ -63,7 +63,7 @@ public class StockDetailPresenter extends
     protected void onReset() {
         super.onReset();
         fireEvent(new LoadingIndicatorEvent(false));
-        getView().setPedigreeData(DataTableUtils.createDataTableFromString(stock.getPedigreeData()));
+        getView().setPedigreeData(DataTableUtils.createDataTable(stock.getPedigreeData()));
         getView().getDisplayDriver().display(stock);
     }
 

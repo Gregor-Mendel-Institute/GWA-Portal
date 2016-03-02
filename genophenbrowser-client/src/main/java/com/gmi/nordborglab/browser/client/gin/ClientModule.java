@@ -1,14 +1,13 @@
 package com.gmi.nordborglab.browser.client.gin;
 
-import at.gmi.nordborglab.widgets.geneviewer.client.datasource.DataSource;
-import at.gmi.nordborglab.widgets.geneviewer.client.datasource.LocalStorageImpl;
-import at.gmi.nordborglab.widgets.geneviewer.client.datasource.LocalStorageImpl.TYPE;
-import at.gmi.nordborglab.widgets.geneviewer.client.datasource.impl.JBrowseCacheDataSourceImpl;
+
 import com.arcbees.analytics.client.AnalyticsModule;
 import com.eemi.gwt.tour.client.Placement;
 import com.eemi.gwt.tour.client.Tour;
 import com.eemi.gwt.tour.client.TourStep;
 import com.eemi.gwt.tour.client.jso.Function;
+import com.github.timeu.gwtlibs.gwasviewer.client.events.GeneDataSource;
+import com.gmi.nordborglab.browser.client.dispatch.GeneDataSourceImpl;
 import com.gmi.nordborglab.browser.client.manager.CdvManager;
 import com.gmi.nordborglab.browser.client.manager.EnrichmentProvider;
 import com.gmi.nordborglab.browser.client.manager.EnrichmentProviderImpl;
@@ -35,7 +34,6 @@ import com.gmi.nordborglab.browser.shared.util.ConstEnums;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
-import com.google.gwt.storage.client.Storage;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
@@ -248,17 +246,8 @@ public class ClientModule extends AbstractPresenterModule {
 
     @Provides
     @Singleton
-    public DataSource createJBrowseDataSource() {
-        at.gmi.nordborglab.widgets.geneviewer.client.datasource.Cache cache = null;
-        if (Storage.isSupported()) {
-            try {
-                cache = new LocalStorageImpl(TYPE.SESSION);
-            } catch (Exception e) {
-            }
-        } else {
-            cache = new at.gmi.nordborglab.widgets.geneviewer.client.datasource.DefaultCacheImpl();
-        }
-        return new JBrowseCacheDataSourceImpl(GWT.getHostPageBaseURL() + "/provider/genes/", cache);
+    public GeneDataSource createJBrowseDataSource() {
+        return new GeneDataSourceImpl(GWT.getHostPageBaseURL() + "/provider/");
     }
 
     @Provides

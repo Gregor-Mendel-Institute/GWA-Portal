@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.germplasm.taxonomy.detail;
 
-import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.gmi.nordborglab.browser.client.editors.TaxonomyDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.TaxonomyEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.diversity.experiment.detail.ExperimentDetailPresenter.State;
@@ -154,10 +153,9 @@ public class TaxonomyDetailView extends ViewWithUiHandlers<TaxonomyDetailUiHandl
         drawStockDataChart();
     }
 
-    private GeoChart.Options createGeoChartOptions() {
-        GeoChart.Options options = GeoChart.Options.create();
-        options.setTitle("Geographic distribution");
-        options.set("keepAspectRatio", false);
+    private GeoChartOptions createGeoChartOptions() {
+        GeoChartOptions options = GeoChartOptions.create();
+        options.setKeepAspectRatio(false);
         return options;
     }
 

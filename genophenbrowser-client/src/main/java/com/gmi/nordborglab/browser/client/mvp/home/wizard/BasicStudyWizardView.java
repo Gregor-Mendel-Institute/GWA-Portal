@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.mvp.home.wizard;
 
-import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.eemi.gwt.tour.client.CallOut;
 import com.eemi.gwt.tour.client.GwtTour;
 import com.eemi.gwt.tour.client.Placement;
@@ -12,8 +11,6 @@ import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
-import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
-import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.ui.WizardPanel;
 import com.gmi.nordborglab.browser.client.ui.card.ExperimentCard;
 import com.gmi.nordborglab.browser.client.ui.card.GenotypeCard;
@@ -70,13 +67,21 @@ import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.visualizations.MotionChart;
-import com.google.gwt.visualization.client.visualizations.corechart.Options;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
+import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.corechart.ColumnChart;
+import com.googlecode.gwt.charts.client.corechart.ColumnChartOptions;
+import com.googlecode.gwt.charts.client.geochart.GeoChart;
+import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
+import com.googlecode.gwt.charts.client.motionchart.MotionChart;
+import com.googlecode.gwt.charts.client.motionchart.MotionChartOptions;
+import com.googlecode.gwt.charts.client.options.Legend;
+import com.googlecode.gwt.charts.client.options.LegendPosition;
+import com.googlecode.gwt.charts.client.options.Tooltip;
+import com.googlecode.gwt.charts.client.options.TooltipTrigger;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import org.gwtbootstrap3.client.shared.event.ModalHideEvent;
 import org.gwtbootstrap3.client.ui.Anchor;
@@ -207,6 +212,11 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     private DataTable phenotypeGeoChartData;
     private final FlagMap flagMap;
     private ImmutableBiMap<StatisticTypeProxy, AnchorListItem> statisticTypeLinks;
+
+    private final MotionChart motionChart = new MotionChart();
+    private final ColumnChart columnChart = new ColumnChart();
+    private final GeoChart geoChart = new GeoChart();
+
 
     private static enum PHENTOYPE_CHART_TYPE {
         HISTOGRAM, GEOCHART, EXPLORER
@@ -822,38 +832,32 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     private void drawPhenotypeCharts() {
         switch (activePhenotypeChartType) {
             case HISTOGRAM:
-                if (phenotypeChartContainer.getWidget() == null) {
-                    ResizeableColumnChart columnChart = new ResizeableColumnChart(phenotypeHistogramData, createColumnChart());
-                    phenotypeChartContainer.setWidget(columnChart);
-                } else {
-                    ResizeableColumnChart columnChart = (ResizeableColumnChart) phenotypeChartContainer.getWidget();
-                    columnChart.draw2(phenotypeHistogramData, createColumnChart());
-                }
+                phenotypeChartContainer.setWidget(columnChart);
+                columnChart.draw(phenotypeHistogramData, createColumnChart());
                 break;
             case GEOCHART:
-                GeoChart geoChart = new GeoChart();
                 phenotypeChartContainer.setWidget(geoChart);
                 geoChart.draw(phenotypeGeoChartData, createGeoChartOptions());
                 break;
             case EXPLORER:
                 //TODO causes exception
-                ResizeableMotionChart motionChart = new ResizeableMotionChart(phenotypeExplorerData, createMotionChartOptions());
                 phenotypeChartContainer.setWidget(motionChart);
+                motionChart.draw(phenotypeExplorerData, createMotionChartOptions());
                 break;
         }
     }
 
-    private Options createColumnChart() {
-        Options options = DataTableUtils.getDefaultPhenotypeHistogramOptions();
+    private ColumnChartOptions createColumnChart() {
+        ColumnChartOptions options = DataTableUtils.getDefaultPhenotypeHistogramOptions();
         if (!isStatisticTypeSelected()) {
             options.setTitle("Select a phentoype and a measure type");
             options.setColors("whiteSmoke");
-            Options toolTip = Options.create();
-            toolTip.set("trigger", "none");
-            options.set("tooltip", toolTip);
-            Options legendOption = Options.create();
-            legendOption.set("position", "none");
-            options.set("legend", legendOption);
+            Tooltip toolTip = Tooltip.create();
+            toolTip.setTrigger(TooltipTrigger.NONE);
+            options.setTooltip(toolTip);
+            Legend legendOption = Legend.create();
+            legendOption.setPosition(LegendPosition.NONE);
+            options.setLegend(legendOption);
         }
         return options;
     }
@@ -870,21 +874,15 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         return selected;
     }
 
-    private MotionChart.Options createMotionChartOptions() {
-        MotionChart.Options options = MotionChart.Options.create();
-        options.set(
-                "state",
+    private MotionChartOptions createMotionChartOptions() {
+        MotionChartOptions options = MotionChartOptions.create();
+        options.setState(
                 "%7B%22time%22%3A%22notime%22%2C%22iconType%22%3A%22BUBBLE%22%2C%22xZoomedDataMin%22%3Anull%2C%22yZoomedDataMax%22%3Anull%2C%22xZoomedIn%22%3Afalse%2C%22iconKeySettings%22%3A%5B%5D%2C%22showTrails%22%3Atrue%2C%22xAxisOption%22%3A%222%22%2C%22colorOption%22%3A%224%22%2C%22yAxisOption%22%3A%223%22%2C%22playDuration%22%3A15%2C%22xZoomedDataMax%22%3Anull%2C%22orderedByX%22%3Afalse%2C%22duration%22%3A%7B%22multiplier%22%3A1%2C%22timeUnit%22%3A%22none%22%7D%2C%22xLambda%22%3A1%2C%22orderedByY%22%3Afalse%2C%22sizeOption%22%3A%22_UNISIZE%22%2C%22yZoomedDataMin%22%3Anull%2C%22nonSelectedAlpha%22%3A0.4%2C%22stateVersion%22%3A3%2C%22dimensions%22%3A%7B%22iconDimensions%22%3A%5B%22dim0%22%5D%7D%2C%22yLambda%22%3A1%2C%22yZoomedIn%22%3Afalse%7D%3B");
-        options.setHeight(phenotypeChartContainer.getOffsetHeight());
-        options.setWidth(phenotypeChartContainer.getOffsetWidth());
         return options;
     }
 
-    private GeoChart.Options createGeoChartOptions() {
-        GeoChart.Options options = GeoChart.Options.create();
-        options.setTitle("Geographic distribution");
-        options.setHeight(phenotypeChartContainer.getOffsetHeight());
-        options.setWidth(phenotypeChartContainer.getOffsetWidth());
+    private GeoChartOptions createGeoChartOptions() {
+        GeoChartOptions options = GeoChartOptions.create();
         return options;
     }
 

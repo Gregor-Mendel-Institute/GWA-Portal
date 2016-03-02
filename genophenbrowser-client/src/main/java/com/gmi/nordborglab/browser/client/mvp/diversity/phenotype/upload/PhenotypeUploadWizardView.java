@@ -16,7 +16,6 @@ import com.gmi.nordborglab.browser.client.resources.FlagMap;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
-import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.ui.card.PhenotypeUploadDataCardCell;
 import com.gmi.nordborglab.browser.client.ui.cells.BooleanIconCell;
 import com.gmi.nordborglab.browser.client.ui.cells.FlagCell;
@@ -75,14 +74,15 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.visualizations.MotionChart;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
+import com.googlecode.gwt.charts.client.DataTable;
 import com.googlecode.gwt.charts.client.corechart.Histogram;
 import com.googlecode.gwt.charts.client.geochart.GeoChart;
 import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
+import com.googlecode.gwt.charts.client.motionchart.MotionChart;
+import com.googlecode.gwt.charts.client.motionchart.MotionChartOptions;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtsupercsv.cellprocessor.Optional;
@@ -411,9 +411,9 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     private final ExperimentUploadDataEditDriver experimentUploadDataEditDriver;
     private final ValueColumn valueColumn = new ValueColumn(0);
     private ColumnSortEvent.ListHandler<SampleDataProxy> sortHandler = new ColumnSortEvent.ListHandler<>(null);
-    private ResizeableMotionChart motionChart;
-    private Histogram histogramChart;
-    private GeoChart geoChart;
+    private final MotionChart motionChart = new MotionChart();
+    private final Histogram histogramChart = new Histogram();
+    private final GeoChart geoChart = new GeoChart();
     private final FlagMap flagMap;
 
     private ImmutableSet<Marker> markers;
@@ -421,8 +421,8 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
     private InfoWindow iw = InfoWindow.newInstance(null);
 
     private DataTable explorerData;
-    private com.googlecode.gwt.charts.client.DataTable geoChartData;
-    private com.googlecode.gwt.charts.client.DataTable histogramData;
+    private DataTable geoChartData;
+    private DataTable histogramData;
     private int index;
 
     private static enum CHART_TYPE {
@@ -466,8 +466,6 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
         summaryDataGridPager.setDisplay(summaryDataGrid);
         initFileUploadWidget(false);
         initFileUploadHandlers();
-        geoChart = new GeoChart();
-        histogramChart = new Histogram();
         initMap();
     }
 
@@ -837,9 +835,9 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
                 if (explorerData == null) {
                     explorerData = DataTableUtils.createSampleDataTable(getUiHandlers().getExplorerData(), index);
                 }
-                motionChart = new ResizeableMotionChart(explorerData,
-                        createMotionChartOptions());
                 chartContainer.add(motionChart);
+                motionChart.draw(explorerData,
+                        createMotionChartOptions());
                 break;
             case HISTOGRAM:
                 chartContainer.add(histogramChart);
@@ -851,7 +849,7 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
             case GEOCHART:
                 chartContainer.add(geoChart);
                 if (geoChartData == null) {
-                    geoChartData = DataTableUtils.createPhenotypeGeoChartTable2(getUiHandlers().getGeoChartdata());
+                    geoChartData = DataTableUtils.createPhenotypeGeoChartTable(getUiHandlers().getGeoChartdata());
                 }
                 geoChart.draw(geoChartData, createGeoChart());
                 break;
@@ -868,18 +866,14 @@ public class PhenotypeUploadWizardView extends ViewWithUiHandlers<PhenotypeUploa
 
     private GeoChartOptions createGeoChart() {
         GeoChartOptions options = GeoChartOptions.create();
-        //options.setTitle("Geographic distribution");
         options.setHeight(chartContainer.getOffsetHeight());
         return options;
     }
 
-    private MotionChart.Options createMotionChartOptions() {
-        MotionChart.Options options = MotionChart.Options.create();
-        options.set(
-                "state",
+    private MotionChartOptions createMotionChartOptions() {
+        MotionChartOptions options = MotionChartOptions.create();
+        options.setState(
                 "%7B%22time%22%3A%22notime%22%2C%22iconType%22%3A%22BUBBLE%22%2C%22xZoomedDataMin%22%3Anull%2C%22yZoomedDataMax%22%3Anull%2C%22xZoomedIn%22%3Afalse%2C%22iconKeySettings%22%3A%5B%5D%2C%22showTrails%22%3Atrue%2C%22xAxisOption%22%3A%222%22%2C%22colorOption%22%3A%224%22%2C%22yAxisOption%22%3A%223%22%2C%22playDuration%22%3A15%2C%22xZoomedDataMax%22%3Anull%2C%22orderedByX%22%3Afalse%2C%22duration%22%3A%7B%22multiplier%22%3A1%2C%22timeUnit%22%3A%22none%22%7D%2C%22xLambda%22%3A1%2C%22orderedByY%22%3Afalse%2C%22sizeOption%22%3A%22_UNISIZE%22%2C%22yZoomedDataMin%22%3Anull%2C%22nonSelectedAlpha%22%3A0.4%2C%22stateVersion%22%3A3%2C%22dimensions%22%3A%7B%22iconDimensions%22%3A%5B%22dim0%22%5D%7D%2C%22yLambda%22%3A1%2C%22yZoomedIn%22%3Afalse%7D%3B");
-        options.setHeight(chartContainer.getOffsetHeight());
-        options.setWidth(chartContainer.getOffsetWidth());
         return options;
     }
 

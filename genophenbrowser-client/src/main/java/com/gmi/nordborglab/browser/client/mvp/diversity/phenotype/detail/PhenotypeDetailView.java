@@ -1,14 +1,11 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.detail;
 
-import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.PhenotypeEditEditor;
 import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.client.mvp.diversity.study.detail.StudyDetailPresenter.LOWER_CHART_TYPE;
 import com.gmi.nordborglab.browser.client.mvp.diversity.study.detail.StudyDetailPresenter.UPPER_CHART_TYPE;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
-import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
-import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.StatisticTypeProxy;
@@ -31,13 +28,21 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.visualizations.MotionChart;
-import com.google.gwt.visualization.client.visualizations.corechart.Options;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
+import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.corechart.ColumnChart;
+import com.googlecode.gwt.charts.client.corechart.ColumnChartOptions;
+import com.googlecode.gwt.charts.client.corechart.PieChart;
+import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
+import com.googlecode.gwt.charts.client.geochart.GeoChart;
+import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
+import com.googlecode.gwt.charts.client.motionchart.MotionChart;
+import com.googlecode.gwt.charts.client.motionchart.MotionChartOptions;
+import com.googlecode.gwt.charts.client.options.Legend;
+import com.googlecode.gwt.charts.client.options.LegendPosition;
+import com.googlecode.gwt.charts.client.options.Tooltip;
+import com.googlecode.gwt.charts.client.options.TooltipTrigger;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
@@ -111,12 +116,10 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     protected DataTable phenotypeTypeData;
     private LOWER_CHART_TYPE lowerChartType = LOWER_CHART_TYPE.histogram;
     private UPPER_CHART_TYPE upperChartType = UPPER_CHART_TYPE.geochart;
-    private ResizeableColumnChart columnChart;
-    private ResizeableMotionChart motionChart;
-    //private ResizeablePieChart
+    private ColumnChart columnChart = new ColumnChart();
+    private MotionChart motionChart = new MotionChart();
     private GeoChart geoChart = new GeoChart();
-    private PieChart pieChart;
-    private PieChart phenotypePieChart;
+    private PieChart pieChart = new PieChart();
     private final PhenotypeDisplayDriver displayDriver;
     private final PhenotypeEditDriver editDriver;
     private boolean layoutScheduled = false;
@@ -322,52 +325,42 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
     private void forceLayout() {
         if (!widget.isAttached() || !widget.isVisible())
             return;
-        //drawPhenotypePieChart();
         drawUpperCharts();
         drawLowerCharts();
         container.getElement().getParentElement().getStyle().setOverflow(Style.Overflow.AUTO);
     }
 
 
-
-
-    private GeoChart.Options createGeoChartOptions() {
-        GeoChart.Options options = GeoChart.Options.create();
-        options.setTitle("Geographic distribution");
-        options.setHeight(upperChartContainer.getOffsetHeight());
+    private GeoChartOptions createGeoChartOptions() {
+        GeoChartOptions options = GeoChartOptions.create();
         return options;
     }
 
-    private Options createColumnChartOptions() {
-        Options options = DataTableUtils.getDefaultPhenotypeHistogramOptions();
+    private ColumnChartOptions createColumnChartOptions() {
+        ColumnChartOptions options = DataTableUtils.getDefaultPhenotypeHistogramOptions();
         if (showBlank) {
             options.setTitle("Select a statistic type from the top list (measure, mean, variance, etc)");
             options.setColors("#CCC");
-            Options toolTip = Options.create();
-            toolTip.set("trigger", "none");
-            options.set("tooltip", toolTip);
-            Options legendOption = Options.create();
-            legendOption.set("position", "none");
-            options.set("legend", legendOption);
+            Tooltip toolTip = Tooltip.create();
+            toolTip.setTrigger(TooltipTrigger.NONE);
+            options.setTooltip(toolTip);
+            Legend legendOption = Legend.create();
+            legendOption.setPosition(LegendPosition.NONE);
+            options.setLegend(legendOption);
         }
         return options;
     }
 
-    private MotionChart.Options createMotionChartOptions() {
-        MotionChart.Options options = MotionChart.Options.create();
-        options.set(
-                "state",
+    private MotionChartOptions createMotionChartOptions() {
+        MotionChartOptions options = MotionChartOptions.create();
+        options.setState(
                 "%7B%22time%22%3A%22notime%22%2C%22iconType%22%3A%22BUBBLE%22%2C%22xZoomedDataMin%22%3Anull%2C%22yZoomedDataMax%22%3Anull%2C%22xZoomedIn%22%3Afalse%2C%22iconKeySettings%22%3A%5B%5D%2C%22showTrails%22%3Atrue%2C%22xAxisOption%22%3A%222%22%2C%22colorOption%22%3A%224%22%2C%22yAxisOption%22%3A%223%22%2C%22playDuration%22%3A15%2C%22xZoomedDataMax%22%3Anull%2C%22orderedByX%22%3Afalse%2C%22duration%22%3A%7B%22multiplier%22%3A1%2C%22timeUnit%22%3A%22none%22%7D%2C%22xLambda%22%3A1%2C%22orderedByY%22%3Afalse%2C%22sizeOption%22%3A%22_UNISIZE%22%2C%22yZoomedDataMin%22%3Anull%2C%22nonSelectedAlpha%22%3A0.4%2C%22stateVersion%22%3A3%2C%22dimensions%22%3A%7B%22iconDimensions%22%3A%5B%22dim0%22%5D%7D%2C%22yLambda%22%3A1%2C%22yZoomedIn%22%3Afalse%7D%3B");
-        options.setHeight(lowerChartContainer.getOffsetHeight());
-        options.setWidth(lowerChartContainer.getOffsetWidth());
         return options;
     }
 
-    private Options createPieChartOptions() {
-        PieOptions options = PieOptions.create();
+    private PieChartOptions createPieChartOptions() {
+        PieChartOptions options = PieChartOptions.create();
         options.setTitle("Geographic distribution");
-        options.setHeight(upperChartContainer.getOffsetHeight());
-        options.setWidth(upperChartContainer.getOffsetWidth());
         return options;
     }
 
@@ -376,39 +369,36 @@ public class PhenotypeDetailView extends ViewWithUiHandlers<PhenotypeDetailUiHan
         if (upperChartType == UPPER_CHART_TYPE.geochart) {
             if (upperChartContainer.getWidget() == null) {
                 upperChartContainer.add(geoChart);
-                geoChart.draw(geoChartData, createGeoChartOptions());
             } else {
                 geoChart = (GeoChart) upperChartContainer.getWidget();
-                geoChart.draw(geoChartData, createGeoChartOptions());
             }
+            geoChart.draw(geoChartData, createGeoChartOptions());
+
         } else {
             if (upperChartContainer.getWidget() == null) {
-                pieChart = new PieChart(geoChartData, createPieChartOptions());
                 upperChartContainer.add(pieChart);
             } else {
                 pieChart = (PieChart) upperChartContainer.getWidget();
-                pieChart.draw(geoChartData, createPieChartOptions());
             }
+            pieChart.draw(geoChartData, createPieChartOptions());
         }
     }
 
     private void drawLowerCharts() {
         if (lowerChartType == LOWER_CHART_TYPE.histogram) {
             if (lowerChartContainer.getWidget() == null) {
-                columnChart = new ResizeableColumnChart(histogramData,
-                        createColumnChartOptions());
                 lowerChartContainer.add(columnChart);
             } else {
-                columnChart = (ResizeableColumnChart) lowerChartContainer.getWidget();
-                columnChart.draw2(histogramData, createColumnChartOptions());
+                columnChart = (ColumnChart) lowerChartContainer.getWidget();
             }
+            columnChart.draw(histogramData, createColumnChartOptions());
         } else {
             if (lowerChartContainer.getWidget() != null) {
                 lowerChartContainer.clear();
             }
-            motionChart = new ResizeableMotionChart(phenotypeExplorerData,
-                    createMotionChartOptions());
             lowerChartContainer.add(motionChart);
+            motionChart.draw(phenotypeExplorerData,
+                    createMotionChartOptions());
         }
     }
 
