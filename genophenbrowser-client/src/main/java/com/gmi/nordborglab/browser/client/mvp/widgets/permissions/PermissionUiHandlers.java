@@ -1,13 +1,16 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.permissions;
 
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
+import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gwtplatform.mvp.client.UiHandlers;
 
-import java.util.Set;
+import java.util.List;
 
 public interface PermissionUiHandlers extends UiHandlers {
 
-    public void onSave();
+    void onSave();
+
+    void onSearchUsers(String users, PermissionDetailView.SearchUserCallback callback);
 
     void onDelete(AccessControlEntryProxy object);
 
@@ -19,5 +22,5 @@ public interface PermissionUiHandlers extends UiHandlers {
 
     void onCancelAddUser();
 
-    void onAddPermission(Set<String> users, AccessControlEntryProxy permission);
+    void onAddPermission(List<AppUserProxy> users, AccessControlEntryProxy permission);
 }

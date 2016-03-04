@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:chzn="urn:import:com.watopi.chosen.client.gwt">
+             xmlns:chzn="urn:import:com.arcbees.chosen.client.gwt">
     <g:HTMLPanel>
         <div>
             <g:Anchor ui:field="filterLabel"/>

@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.wizard;
 
+import com.arcbees.chosen.client.event.ChosenChangeEvent;
+import com.arcbees.chosen.client.gwt.ChosenListBox;
 import com.gmi.nordborglab.browser.client.editors.StudyCreateEditor;
 import com.gmi.nordborglab.browser.client.resources.DataGridStudyResources;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
@@ -65,9 +67,6 @@ import com.googlecode.gwt.charts.client.options.LegendPosition;
 import com.googlecode.gwt.charts.client.options.Tooltip;
 import com.googlecode.gwt.charts.client.options.TooltipTrigger;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
-import com.watopi.chosen.client.event.ChosenChangeEvent;
-import com.watopi.chosen.client.event.ChosenChangeEvent.ChosenChangeHandler;
-import com.watopi.chosen.client.gwt.ChosenListBox;
 
 import java.util.List;
 import java.util.Set;
@@ -265,7 +264,7 @@ public class StudyWizardView extends ViewWithUiHandlers<StudyWizardUiHandlers>
         countryFilterLb.setWidth("200px");
         countryFilterContainer.add(countryFilterLb);
         countryFilterLb.setPlaceholderText("Select countries to filter...");
-        countryFilterLb.addChosenChangeHandler(new ChosenChangeHandler() {
+        countryFilterLb.addChosenChangeHandler(new ChosenChangeEvent.ChosenChangeHandler() {
 
             @Override
             public void onChange(ChosenChangeEvent event) {

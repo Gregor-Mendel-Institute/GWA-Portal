@@ -88,7 +88,7 @@ public class BootstrapperImpl implements Bootstrapper {
                     }
                 }
                 Logger logger = Logger.getLogger("uncaught");
-                logger.log(Level.SEVERE, "Uncaught Exception" + e.getMessage(), e);
+                logger.log(Level.SEVERE, "Uncaught Exception: " + e.getMessage(), e);
                 analyticsManager.sendError("Uncaught", e.getMessage(), true);
             }
         });

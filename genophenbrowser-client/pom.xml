@@ -30,7 +30,7 @@
         <guice.version>3.0</guice.version>
         <gwtquery.version>1.5-beta1</gwtquery.version>
         <jukito.version>1.4.1</jukito.version>
-        <gwtchosen.version>1.2.0</gwtchosen.version>
+        <gwtchosen.version>3.1-SNAPSHOT</gwtchosen.version>
         <gwtbootstrap3.version>1.0-SNAPSHOT</gwtbootstrap3.version>
         <gwasviewer.version>1.0.0-SNAPSHOT</gwasviewer.version>
         <gwtmaps.version>3.10.0-alpha-7</gwtmaps.version>
@@ -131,7 +131,7 @@
             <artifactId>gwtquery</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.jdramaix</groupId>
+            <groupId>com.arcbees</groupId>
             <artifactId>gwtchosen</artifactId>
         </dependency>
         <dependency>
@@ -231,7 +231,7 @@
                 <version>${gwtquery.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.jdramaix</groupId>
+                <groupId>com.arcbees</groupId>
                 <artifactId>gwtchosen</artifactId>
                 <version>${gwtchosen.version}</version>
             </dependency>
