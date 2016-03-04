@@ -2,7 +2,6 @@
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -11,16 +10,5 @@
             margin-top: 5px;
         }
     </ui:style>
-
-    <g:LayoutPanel>
-        <g:layer top="0" height="40px">
-            <g:FlowPanel>
-                <b:Button ui:field="downloadBtn" size="SMALL" type="PRIMARY" icon="ARROW_CIRCLE_DOWN"
-                          text="Download plots" addStyleNames="pull-right {style.button}"></b:Button>
-            </g:FlowPanel>
-        </g:layer>
-        <g:layer top="45px" bottom="0">
-            <g:SimpleLayoutPanel ui:field="gwasPlotContainer"></g:SimpleLayoutPanel>
-        </g:layer>
-    </g:LayoutPanel>
+    <g:SimpleLayoutPanel ui:field="gwasPlotContainer"></g:SimpleLayoutPanel>
 </ui:UiBinder>

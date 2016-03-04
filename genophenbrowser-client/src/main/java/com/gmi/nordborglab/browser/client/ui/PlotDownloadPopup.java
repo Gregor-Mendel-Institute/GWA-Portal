@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.ui;
 
+import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.google.common.base.Preconditions;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -47,19 +48,12 @@ public class PlotDownloadPopup extends Composite {
 
     public enum FORMAT {PNG, PDF}
 
-    ;
-
-    public enum PLOT_TYPE {STUDY, GWASVIEWER;}
-
-    ;
-    private final PLOT_TYPE type;
+    private GetGWASDataAction.TYPE type;
     private static final int DEFAULT_MAC = 15;
 
     private Long id;
 
-    public PlotDownloadPopup(PLOT_TYPE type) {
-        Preconditions.checkNotNull(type);
-        this.type = type;
+    public PlotDownloadPopup() {
         initWidget(ourUiBinder.createAndBindUi(this));
         macTb.getElement().setAttribute("type", "range");
         macTb.getElement().setAttribute("min", "0");
@@ -72,12 +66,14 @@ public class PlotDownloadPopup extends Composite {
                 return true;
             }
         });
-        updateLink();
     }
 
 
-    public void setId(Long id) {
+    public void setSettings(Long id, GetGWASDataAction.TYPE type) {
+        Preconditions.checkNotNull(type);
+        Preconditions.checkNotNull(id);
         this.id = id;
+        this.type = type;
         updateLink();
     }
 

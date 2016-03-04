@@ -670,6 +670,9 @@ public class MetaAnalysisServiceImpl implements MetaAnalysisService {
         CandidateGeneList candidateGeneList = candidateGeneListRepository.findOne(id);
         List<Gene> genes = Lists.newArrayList();
         SearchRequestBuilder request = client.prepareSearch(esAclManager.getIndex());
+        if (size == -1) {
+            size = candidateGeneList.getGeneCount();
+        }
         request.setSize(size).setFrom(page).setTypes("candidate_gene_list").setFetchSource("genes", null);
         QueryBuilder idQuery = QueryBuilders.idsQuery().addIds(candidateGeneList.getId().toString());
 

@@ -14,4 +14,8 @@ public interface GWASPlotUiHandlers extends UiHandlers {
     void onSelectSNP(int chromosome, int xVal, int clientX, int clientY);
 
     void onLoadTrackData(String id, boolean isStacked, String chr);
+
+    void onSearchGenes(String searchString, GWASPlotView.SearchGeneCallback callback);
+
+    void onHighlightGene(String value, boolean isSelection);
 }

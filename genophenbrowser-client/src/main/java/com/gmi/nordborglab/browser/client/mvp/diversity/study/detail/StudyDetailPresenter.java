@@ -38,7 +38,7 @@ import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.annotations.ProxyEvent;
 import com.gwtplatform.mvp.client.annotations.TabInfo;
-import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
+import com.gwtplatform.mvp.client.presenter.slots.SingleSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
 import com.gwtplatform.mvp.shared.proxy.PlaceRequest;
@@ -95,7 +95,7 @@ public class StudyDetailPresenter extends
     private final Validator validator;
     private final GoogleAnalyticsManager analyticsManager;
 
-    static final PermanentSlot<GWASUploadWizardPresenterWidget> SLOT_GWAS_UPLOAD = new PermanentSlot<>();
+    static final SingleSlot<GWASUploadWizardPresenterWidget> SLOT_GWAS_UPLOAD = new SingleSlot<>();
 
     public enum LOWER_CHART_TYPE {
         histogram, explorer

@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.study.detail;
 
+import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.editors.StudyDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.StudyEditEditor;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
@@ -106,7 +107,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     private Modal plotsPopup = new Modal();
     private Modal editPopup = new Modal();
     private DialogOptions deleteOptions = DialogOptions.newOptions("Do you really want to delete the analysis?");
-    private PlotDownloadPopup plotsPanel = new PlotDownloadPopup(PlotDownloadPopup.PLOT_TYPE.STUDY);
+    private PlotDownloadPopup plotsPanel = new PlotDownloadPopup();
 
     private Double shapiroWilkPvalue;
     private Double pseudoHeritability;
@@ -575,7 +576,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         navLinkPvalJSON.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/pvalues.json");
         navLinkPhenCSV.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/phenotypedata.csv");
         navLinkPhenJSON.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/phenotypedata.json");
-        plotsPanel.setId(id);
+        plotsPanel.setSettings(id, GetGWASDataAction.TYPE.STUDY);
     }
 
     @Override

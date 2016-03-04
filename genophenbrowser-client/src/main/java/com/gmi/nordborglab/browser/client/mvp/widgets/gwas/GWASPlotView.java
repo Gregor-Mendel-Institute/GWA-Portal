@@ -1,25 +1,43 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.gwas;
 
+import com.arcbees.chosen.client.ChosenImpl;
+import com.arcbees.chosen.client.ChosenOptions;
+import com.arcbees.chosen.client.ResultsFilter;
+import com.arcbees.chosen.client.SelectParser;
+import com.arcbees.chosen.client.event.ChosenChangeEvent;
+import com.arcbees.chosen.client.gwt.ChosenListBox;
 import com.github.timeu.dygraphsgwt.client.callbacks.Point;
+import com.github.timeu.gwtlibs.gwasviewer.client.DisplayFeature;
 import com.github.timeu.gwtlibs.gwasviewer.client.GWASViewer;
 import com.github.timeu.gwtlibs.gwasviewer.client.SettingsPanel;
 import com.github.timeu.gwtlibs.gwasviewer.client.Track;
 import com.github.timeu.gwtlibs.gwasviewer.client.events.FilterChangeEvent;
 import com.github.timeu.gwtlibs.gwasviewer.client.events.GeneDataSource;
+import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.dto.GWASDataDTO;
+import com.gmi.nordborglab.browser.client.ui.PlotDownloadPopup;
 import com.gmi.nordborglab.browser.client.ui.ResizeableFlowPanel;
+import com.gmi.nordborglab.browser.shared.proxy.SearchFacetPageProxy;
+import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.common.base.Optional;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.googlecode.gwt.charts.client.DataTable;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -65,16 +83,76 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
     protected List<FilterChangeEvent.Handler> filterChangeHandlers = new ArrayList<>();
     private final GeneDataSource geneDataSource;
     private Track[] tracks;
+    private final Modal popUpPanel = new Modal();
+    private final PlotDownloadPopup plotPanel = new PlotDownloadPopup();
+
+    public interface SearchGeneCallback {
+        void onDisplayResults(List<SearchFacetPageProxy> results);
+    }
+
+    private class GeneResultFilter implements ResultsFilter {
+
+        @Override
+        public void filter(String searchString, ChosenImpl chosen, boolean isShowing) {
+            if (!isShowing)
+                return;
+            getUiHandlers().onSearchGenes(searchString, results -> {
+                List<SelectParser.SelectItem> selectItems = chosen.getSelectItems();
+                selectItems.clear();
+                int arrayIndex = 0;
+                int groupIndex = 0;
+                for (SearchFacetPageProxy category : results) {
+                    SelectParser.GroupItem group = new SelectParser.GroupItem();
+                    group.setLabel(category.getCategory().name());
+                    group.setDomId("geneGroup_" + arrayIndex);
+                    group.setChildren(category.getContents().size());
+                    selectItems.add(group);
+                    arrayIndex++;
+                    for (SearchItemProxy item : category.getContents()) {
+                        SelectParser.OptionItem optionItem = new SelectParser.OptionItem();
+                        optionItem.setHtml("<div>" + item.getDisplayText() + "</dv>");
+                        optionItem.setText(item.getDisplayText());
+                        optionItem.setValue(category.getCategory().name() + "__" + item.getId());
+                        optionItem.setArrayIndex(arrayIndex);
+                        optionItem.setOptionsIndex(arrayIndex);
+                        optionItem.setGroupArrayIndex(groupIndex);
+                        optionItem.setDomId("geneOption_" + arrayIndex++);
+                        selectItems.add(optionItem);
+                    }
+                    groupIndex++;
+                }
+
+                chosen.rebuildResultItems();
+            });
+        }
+    }
 
     @UiField
     ResizeableFlowPanel container;
+    @UiField
+    Button downloadBtn;
+    @UiField(provided = true)
+    ChosenListBox geneSearchBox;
+    @UiField
+    LayoutPanel panel;
 
     @Inject
     public GWASPlotView(final Binder binder, final GeneDataSource geneDataSource) {
+        ChosenOptions options = new ChosenOptions();
+        options.setSingleBackstrokeDelete(true);
+        options.setNoResultsText("No user found");
+        options.setResultFilter(new GeneResultFilter());
+        geneSearchBox = new ChosenListBox(true, options);
+        geneSearchBox.setWidth("100%");
         widget = binder.createAndBindUi(this);
         // avoid horizontal scroll bars due to gene info popup
         widget.getElement().getStyle().setOverflowX(Style.Overflow.HIDDEN);
         this.geneDataSource = geneDataSource;
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(plotPanel);
+        popUpPanel.add(modalBody);
+        popUpPanel.setTitle("Download GWAS Plots");
+        geneSearchBox.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
     }
 
     @Override
@@ -85,6 +163,7 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
 
     @Override
     public void drawGWASPlots(GWASDataDTO gwasData) {
+        geneSearchBox.forceRedraw();
         Integer i = 1;
         java.util.Iterator<DataTable> iterator = gwasData.getGwasDataTables().iterator();
         while (iterator.hasNext()) {
@@ -135,6 +214,7 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
         }
     }
 
+
     @Override
     public void setTracks(Track[] tracks) {
         if (this.tracks == null) {
@@ -166,5 +246,35 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
         return Optional.fromNullable(viewer);
     }
 
+    @UiHandler("downloadBtn")
+    public void onClickDownloadBtn(ClickEvent e) {
+        popUpPanel.show();
+
+    }
+
+    @Override
+    public void setPlotSettings(Long id, GetGWASDataAction.TYPE type) {
+        plotPanel.setSettings(id, type);
+    }
+
+    @Override
+    public void removeDisplayFeaturesFromGWAS(int chr, Collection<DisplayFeature> features) {
+        GWASViewer viewer = (GWASViewer) container.getWidget(chr - 1);
+        viewer.removeDisplayFeatures(features);
+    }
+
+    @Override
+    public void addDisplayFeaturesToGWAS(int chr, Collection<DisplayFeature> features) {
+        GWASViewer viewer = (GWASViewer) container.getWidget(chr - 1);
+        for (DisplayFeature feature : features) {
+            viewer.addDisplayFeature(feature, true);
+        }
+        viewer.refresh();
+    }
+
+    @UiHandler("geneSearchBox")
+    public void onSelectGene(ChosenChangeEvent e) {
+        getUiHandlers().onHighlightGene(e.getValue(), e.isSelection());
+    }
 
 }
