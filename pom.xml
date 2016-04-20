@@ -172,6 +172,10 @@
                 <inherited>false</inherited>
                 <configuration>
                     <launcherDir>${project.build.directory}/gwt/launcherDir</launcherDir>
+                    <codeserverArgs>
+                        <param>-bindAddress</param>
+                        <param>0.0.0.0</param>
+                    </codeserverArgs>
                 </configuration>
             </plugin>
         </plugins>

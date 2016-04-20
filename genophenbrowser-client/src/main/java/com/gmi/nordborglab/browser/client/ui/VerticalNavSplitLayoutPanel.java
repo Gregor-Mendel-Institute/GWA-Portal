@@ -67,6 +67,8 @@ public class VerticalNavSplitLayoutPanel extends Composite implements HasWidgets
             splitter.addStyleName(style.splitter_min());
         }
         isHidden = !isHidden;
+        //FIXME wait until https://github.com/gwtproject/gwt/issues/7185 is fixed
+        layoutPanel.forceLayout();
     }
 
     @Override
