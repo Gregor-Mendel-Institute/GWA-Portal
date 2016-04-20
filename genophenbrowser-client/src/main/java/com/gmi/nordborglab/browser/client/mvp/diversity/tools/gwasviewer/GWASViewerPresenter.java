@@ -34,7 +34,6 @@ import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
-import com.gwtplatform.mvp.client.presenter.slots.PermanentSlot;
 import com.gwtplatform.mvp.client.presenter.slots.SingleSlot;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
@@ -68,8 +67,6 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
 
         void showPermissionPanel(boolean show);
 
-        void setGWAResultId(Long id);
-
         void showDeletePopup(GWASResultProxy object);
     }
 
@@ -80,9 +77,9 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
     }
 
 
-    static final PermanentSlot<GWASUploadWizardPresenterWidget> SLOT_GWAS_UPLOAD = new PermanentSlot();
+    static final SingleSlot<GWASUploadWizardPresenterWidget> SLOT_GWAS_UPLOAD = new SingleSlot();
     static final SingleSlot<GWASPlotPresenterWidget> SLOT_GWAS_PLOT = new SingleSlot<>();
-    static final PermanentSlot<PermissionDetailPresenter> SLOT_PERMISSIONS = new PermanentSlot<>();
+    static final SingleSlot<PermissionDetailPresenter> SLOT_PERMISSIONS = new SingleSlot<>();
 
 
     private final GWASUploadWizardPresenterWidget gwasUploadWizardPresenterWidget;
@@ -188,7 +185,6 @@ public class GWASViewerPresenter extends Presenter<GWASViewerPresenter.MyView, G
 
         if (gwasResult != null) {
             getView().showPanel(GWASViewerView.PANELS.PLOTS);
-            getView().setGWAResultId(gwasResult.getId());
             gwasPlotPresenterWidget.loadPlots(gwasResult.getId(), GetGWASDataAction.TYPE.GWASVIEWER);
         } else {
             getView().showPanel(GWASViewerView.PANELS.LIST);

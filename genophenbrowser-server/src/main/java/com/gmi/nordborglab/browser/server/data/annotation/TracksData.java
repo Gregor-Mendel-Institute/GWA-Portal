@@ -7,10 +7,12 @@ package com.gmi.nordborglab.browser.server.data.annotation;
  * Time: 10:33
  * To change this template use File | Settings | File Templates.
  */
-public class GenomeStatsDataResultStatus extends ResultStatus<String> {
+public class TracksData {
 
-    public GenomeStatsDataResultStatus(String status, String statustext, String data) {
-        super(status, statustext, data);
+    private final String data;
+
+    public TracksData(String data) {
+        this.data = data;
     }
 
     public String getData() {

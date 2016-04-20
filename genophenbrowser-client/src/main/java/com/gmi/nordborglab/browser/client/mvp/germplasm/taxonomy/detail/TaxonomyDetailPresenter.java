@@ -200,10 +200,10 @@ public class TaxonomyDetailPresenter
     private void displayStats() {
         if (stats == null)
             return;
-        getView().setGeoChartData(DataTableUtils.createChartDataTableFromString(stats.getGeoChartData()));
-        getView().setAlleleAssayData(DataTableUtils.createChartDataTableFromString(stats.getAlleleAssayData()));
-        getView().setSampStatData(DataTableUtils.createChartDataTableFromString(stats.getSampStatData()));
-        getView().setStockGenerationData(DataTableUtils.createChartDataTableFromString(stats.getStockGenerationData()));
+        getView().setGeoChartData(DataTableUtils.createDataTable(stats.getGeoChartData()));
+        getView().setAlleleAssayData(DataTableUtils.createDataTable(stats.getAlleleAssayData()));
+        getView().setSampStatData(DataTableUtils.createDataTable(stats.getSampStatData()));
+        getView().setStockGenerationData(DataTableUtils.createDataTable(stats.getStockGenerationData()));
         getView().scheduleLayout();
     }
 }

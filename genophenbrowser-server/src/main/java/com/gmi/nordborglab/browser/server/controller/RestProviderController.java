@@ -1,13 +1,11 @@
 package com.gmi.nordborglab.browser.server.controller;
 
 import com.gmi.nordborglab.browser.server.data.GWASData;
-import com.gmi.nordborglab.browser.server.data.annotation.FetchGeneInfoResult;
-import com.gmi.nordborglab.browser.server.data.annotation.FetchGeneResult;
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.annotation.GenomeStat;
-import com.gmi.nordborglab.browser.server.data.annotation.GenomeStatsDataResultStatus;
-import com.gmi.nordborglab.browser.server.data.annotation.GenomeStatsResultStatus;
 import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
+import com.gmi.nordborglab.browser.server.data.annotation.Tracks;
+import com.gmi.nordborglab.browser.server.data.annotation.TracksData;
 import com.gmi.nordborglab.browser.server.data.isatab.IsaTabExporter;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
@@ -353,53 +351,41 @@ public class RestProviderController {
     }
 
 
-    @RequestMapping(method = RequestMethod.GET, value = "/genes/getGenes")
+    @RequestMapping(method = RequestMethod.GET, value = "/genes")
     public
     @ResponseBody
-    FetchGeneResult getGenes(@RequestParam("chromosome") String chromosome, @RequestParam("start") Long start, @RequestParam("end") Long end, @RequestParam("isFeatures") Boolean isFeatures) {
+    List<Gene> getGenes(@RequestParam("chromosome") String chromosome, @RequestParam("start") Long start, @RequestParam("end") Long end, @RequestParam("isFeatures") Boolean isFeatures) {
         List<Gene> genes = annotationDataService.getGenes(chromosome, start, end, isFeatures);
-        FetchGeneResult result = new FetchGeneResult(genes);
-        return result;
+        return genes;
     }
 
 
-    @RequestMapping(method = RequestMethod.GET, value = "/genes/getGeneDescription")
+    @RequestMapping(method = RequestMethod.GET, value = "/gene/{id}")
     public
     @ResponseBody
-    FetchGeneInfoResult getGenes(@RequestParam("gene") String gene) {
-        Isoform isoform = annotationDataService.getGeneIsoform(gene);
-        FetchGeneInfoResult result = new FetchGeneInfoResult(isoform.getDescription());
-        return result;
+    Isoform getGenes(@PathVariable("id") String id) {
+        Isoform isoform = annotationDataService.getGeneIsoform(id);
+        return isoform;
     }
 
 
-    @RequestMapping(method = RequestMethod.GET, value = "/genes/getGenomeStatsList")
+    @RequestMapping(method = RequestMethod.GET, value = "/tracks")
     public
     @ResponseBody
-    GenomeStatsResultStatus getGenomeStatsList() {
+    Tracks getGenomeStatsList() {
         //TODO implment properly
         List<GenomeStat> genomeStats = Lists.newArrayList(new GenomeStat("genecount", "# Genes"));
-        return new GenomeStatsResultStatus("OK", "", genomeStats);
+        return new Tracks(genomeStats);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/genes/getCustomGenomeStatsList")
+    @RequestMapping(method = RequestMethod.GET, value = "/tracks/{stats}/{chr}")
     public
     @ResponseBody
-    GenomeStatsResultStatus getCustomGenomeStatsList() {
-        //TODO implment properly
-        List<GenomeStat> genomeStats = Lists.newArrayList();
-        return new GenomeStatsResultStatus("OK", "", genomeStats);
-    }
-
-
-    @RequestMapping(method = RequestMethod.GET, value = "/genes/getGenomeStatsData")
-    public
-    @ResponseBody
-    GenomeStatsDataResultStatus getGenomeStatsData(@RequestParam("stats") String stats, @RequestParam("chr") String chr) {
+    TracksData getGenomeStatsData(@PathVariable("stats") String stats, @PathVariable("chr") String chr) {
         //TODO implment properly
         DataTable dataTable = annotationDataService.getGenomeStatData(stats, chr);
         CharSequence json = JsonRenderer.renderDataTable(dataTable, true, false, true);
-        return new GenomeStatsDataResultStatus("OK", "", json.toString());
+        return new TracksData(json.toString());
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/taxonomy/{id}/image", produces = MediaType.IMAGE_PNG_VALUE)

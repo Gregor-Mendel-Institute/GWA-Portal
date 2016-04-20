@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.client.bootstrap;
 
-import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
 import com.eemi.gwt.tour.client.GwtTour;
 import com.gmi.nordborglab.browser.client.events.DisplayNotificationEvent;
 import com.gmi.nordborglab.browser.client.events.UserChangeEvent;
@@ -17,10 +16,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.maps.client.LoadApi;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.visualizations.MotionChart;
-import com.google.gwt.visualization.client.visualizations.OrgChart;
-import com.google.gwt.visualization.client.visualizations.corechart.CoreChart;
 import com.google.inject.Inject;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
@@ -28,6 +23,8 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryLogHandler;
 import com.google.web.bindery.requestfactory.shared.LoggingRequest;
 import com.google.web.bindery.requestfactory.shared.Receiver;
+import com.googlecode.gwt.charts.client.ChartLoader;
+import com.googlecode.gwt.charts.client.ChartPackage;
 import com.gwtplatform.mvp.client.Bootstrapper;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 
@@ -91,14 +88,14 @@ public class BootstrapperImpl implements Bootstrapper {
                     }
                 }
                 Logger logger = Logger.getLogger("uncaught");
-                logger.log(Level.SEVERE, "Uncaught Exception" + e.getMessage(), e);
+                logger.log(Level.SEVERE, "Uncaught Exception: " + e.getMessage(), e);
                 analyticsManager.sendError("Uncaught", e.getMessage(), true);
             }
         });
 
         GwtTour.load();
         initUserData();
-        final ParallelRunnable visualizationRunnable = new ParallelRunnable();
+        //final ParallelRunnable visualizationRunnable = new ParallelRunnable();
         final ParallelRunnable rfRunnalbe = new ParallelRunnable();
         final ParallelRunnable mapsRunnable = new ParallelRunnable();
         final ParallelRunnable chartsRunnable = new ParallelRunnable();
@@ -111,7 +108,7 @@ public class BootstrapperImpl implements Bootstrapper {
             }
         };
 
-        ParentCallback parentCallback = new ParentCallback(visualizationRunnable, rfRunnalbe, mapsRunnable) {
+        ParentCallback parentCallback = new ParentCallback(chartsRunnable, rfRunnalbe, mapsRunnable) {
 
             @Override
             protected void handleSuccess() {
@@ -120,10 +117,8 @@ public class BootstrapperImpl implements Bootstrapper {
             }
         };
         /* FIXME https://code.google.com/p/gwt-charts/issues/detail?id=53 */
-        /*ChartLoader chartLoader = new ChartLoader(ChartPackage.CORECHART,ChartPackage.ORGCHART,ChartPackage.GEOCHART);
-        chartLoader.loadApi(chartsRunnable);*/
-
-        VisualizationUtils.loadVisualizationApi(visualizationRunnable, CoreChart.PACKAGE, MotionChart.PACKAGE, GeoChart.PACKAGE, OrgChart.PACKAGE);
+        ChartLoader chartLoader = new ChartLoader(ChartPackage.CORECHART, ChartPackage.ORGCHART, ChartPackage.GEOCHART, ChartPackage.MOTIONCHART);
+        chartLoader.loadApi(chartsRunnable);
 
         // load all the libs for use in the maps
         ArrayList<LoadApi.LoadLibrary> loadLibraries = new ArrayList<LoadApi.LoadLibrary>();

@@ -1,10 +1,10 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.phenotype.wizard;
 
-import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
+import com.arcbees.chosen.client.event.ChosenChangeEvent;
+import com.arcbees.chosen.client.gwt.ChosenListBox;
 import com.gmi.nordborglab.browser.client.editors.StudyCreateEditor;
 import com.gmi.nordborglab.browser.client.resources.DataGridStudyResources;
 import com.gmi.nordborglab.browser.client.resources.FlagMap;
-import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.ui.WizardPanel;
 import com.gmi.nordborglab.browser.client.ui.cells.FlagCell;
 import com.gmi.nordborglab.browser.client.ui.cells.HighlightCell;
@@ -48,18 +48,25 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.visualizations.corechart.Options;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.google.web.bindery.requestfactory.gwt.ui.client.ProxyRenderer;
+import com.googlecode.gwt.charts.client.ColumnType;
+import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.corechart.ColumnChart;
+import com.googlecode.gwt.charts.client.corechart.ColumnChartOptions;
+import com.googlecode.gwt.charts.client.corechart.PieChart;
+import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
+import com.googlecode.gwt.charts.client.geochart.GeoChart;
+import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
+import com.googlecode.gwt.charts.client.options.Animation;
+import com.googlecode.gwt.charts.client.options.AnimationEasing;
+import com.googlecode.gwt.charts.client.options.Legend;
+import com.googlecode.gwt.charts.client.options.LegendPosition;
+import com.googlecode.gwt.charts.client.options.Tooltip;
+import com.googlecode.gwt.charts.client.options.TooltipTrigger;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
-import com.watopi.chosen.client.event.ChosenChangeEvent;
-import com.watopi.chosen.client.event.ChosenChangeEvent.ChosenChangeHandler;
-import com.watopi.chosen.client.gwt.ChosenListBox;
 
 import java.util.List;
 import java.util.Set;
@@ -142,7 +149,7 @@ public class StudyWizardView extends ViewWithUiHandlers<StudyWizardUiHandlers>
     SimplePager phenotypeDataGridPager;
 
     private SearchTerm searchNameTerm = new SearchTerm();
-    private PieChart dataAccessionPiechart;
+    private PieChart dataAccessionPiechart = new PieChart();
     private final StudyCreateDriver studyCreateDriver;
     private HTMLPanel emptyDataGridWidget = new HTMLPanel(
             "There are no plants with missing genotypes");
@@ -150,7 +157,7 @@ public class StudyWizardView extends ViewWithUiHandlers<StudyWizardUiHandlers>
             "Select a genotype dataset");
     private HTMLPanel emptyPhenotypeDataGridWidget = new HTMLPanel(
             "There are no phenotype values to select");
-    private ResizeableColumnChart phenotypeHistogramChart;
+    private ColumnChart phenotypeHistogramChart = new ColumnChart();
     private GeoChart geoChart = new GeoChart();
 
     @Inject
@@ -257,7 +264,7 @@ public class StudyWizardView extends ViewWithUiHandlers<StudyWizardUiHandlers>
         countryFilterLb.setWidth("200px");
         countryFilterContainer.add(countryFilterLb);
         countryFilterLb.setPlaceholderText("Select countries to filter...");
-        countryFilterLb.addChosenChangeHandler(new ChosenChangeHandler() {
+        countryFilterLb.addChosenChangeHandler(new ChosenChangeEvent.ChosenChangeHandler() {
 
             @Override
             public void onChange(ChosenChangeEvent event) {
@@ -321,23 +328,23 @@ public class StudyWizardView extends ViewWithUiHandlers<StudyWizardUiHandlers>
         dataTable.setValue(1, 0, "No genotype");
         dataTable.setValue(1, 1, numberOfObsUnitsWithoutGenotype);
         piechartContainer.clear();
-        dataAccessionPiechart = new PieChart(dataTable,
-                createPieChartOptions(false));
         piechartContainer.add(dataAccessionPiechart);
+        dataAccessionPiechart.draw(dataTable, createPieChartOptions(false));
     }
 
-    private PieChart.PieOptions createPieChartOptions(boolean isblank) {
-        PieChart.PieOptions options = PieChart.PieOptions.create();
+    private PieChartOptions createPieChartOptions(boolean isblank) {
+        PieChartOptions options = PieChartOptions.create();
         options.setHeight(400);
         options.setWidth(600);
         options.setTitle("Genotype overlap");
         if (isblank) {
             options.setColors("#888");
         }
-        Options animationOptions = Options.create();
-        animationOptions.set("duration", 1000.0);
-        animationOptions.set("easing", "out");
-        options.set("animation", animationOptions);
+        Animation animationOptions = Animation.create();
+        animationOptions.setDuration(1000);
+        animationOptions.setEasing(AnimationEasing.OUT);
+        //TODO fix in gwt-charts
+        //options.setAnimation(animationOptions);
         return options;
     }
 
@@ -350,9 +357,10 @@ public class StudyWizardView extends ViewWithUiHandlers<StudyWizardUiHandlers>
         dataTable.setValue(0, 0, "Select a genotype dataset");
         dataTable.setValue(0, 1, 1);
         piechartContainer.clear();
-        dataAccessionPiechart = new PieChart(dataTable,
-                createPieChartOptions(true));
+        dataAccessionPiechart = new PieChart();
         piechartContainer.add(dataAccessionPiechart);
+        dataAccessionPiechart.draw(dataTable,
+                createPieChartOptions(true));
     }
 
     @Override
@@ -378,43 +386,43 @@ public class StudyWizardView extends ViewWithUiHandlers<StudyWizardUiHandlers>
         drawGeoChart(data, createGeoChart(true));
     }
 
-    private GeoChart.Options createGeoChart(boolean isblank) {
-        GeoChart.Options options = GeoChart.Options.create();
+    private GeoChartOptions createGeoChart(boolean isblank) {
+        GeoChartOptions options = GeoChartOptions.create();
         if (isblank) {
         }
-        options.setTitle("Geographic distribution");
         options.setWidth(mapContainer.getOffsetWidth());
         return options;
     }
 
-    private Options createColumnChartOptions(boolean isblank) {
-        Options options = Options.create();
+    private ColumnChartOptions createColumnChartOptions(boolean isblank) {
+        ColumnChartOptions options = ColumnChartOptions.create();
         if (isblank) {
             options.setColors("#CCC");
-            Options toolTip = Options.create();
-            toolTip.set("trigger", "none");
-            options.set("tooltip", toolTip);
-            Options legendOption = Options.create();
-            legendOption.set("position", "none");
-            options.set("legend", legendOption);
+            Tooltip toolTip = Tooltip.create();
+            toolTip.setTrigger(TooltipTrigger.NONE);
+            options.setTooltip(toolTip);
+            Legend legendOption = Legend.create();
+            legendOption.setPosition(LegendPosition.NONE);
+            options.setLegend(legendOption);
         }
         options.setTitle("Phenotype Histogram");
-        Options animationOptions = Options.create();
-        animationOptions.set("duration", 1000.0);
-        animationOptions.set("easing", "out");
-        options.set("animation", animationOptions);
+        Animation animationOptions = Animation.create();
+        animationOptions.setDuration(1000);
+        animationOptions.setEasing(AnimationEasing.OUT);
+        options.setAnimation(animationOptions);
         return options;
     }
 
-    private void drawHistogram(DataTable data, Options options) {
+    private void drawHistogram(DataTable data, ColumnChartOptions options) {
         if (phenotypeHistogramChart == null) {
-            phenotypeHistogramChart = new ResizeableColumnChart(data, options);
+            phenotypeHistogramChart = new ColumnChart();
             phenotypeContainer.add(phenotypeHistogramChart);
-        } else
-            phenotypeHistogramChart.draw2(data, options);
+        }
+
+        phenotypeHistogramChart.draw(data, options);
     }
 
-    private void drawGeoChart(DataTable data, GeoChart.Options options) {
+    private void drawGeoChart(DataTable data, GeoChartOptions options) {
         geoChart.draw(data, options);
     }
 

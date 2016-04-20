@@ -7,7 +7,6 @@ import com.gmi.nordborglab.browser.client.mvp.germplasm.GermplasmPresenter;
 import com.gmi.nordborglab.browser.client.mvp.germplasm.passport.detail.PassportDetailView.PassportDisplayDriver;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
-import com.gmi.nordborglab.browser.client.util.CustomDataTable;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.PassportProxy;
@@ -23,6 +22,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.gwt.ui.client.EntityProxyKeyProvider;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
+import com.googlecode.gwt.charts.client.DataTable;
 import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
@@ -61,7 +61,7 @@ public class PassportDetailPresenter
 
         HasText getGenotypeStatsLabel();
 
-        void setStatsDataTable(CustomDataTable createDataTableFromString);
+        void setStatsDataTable(DataTable createDataTableFromString);
 
         void scheduleLayout();
     }
@@ -202,7 +202,7 @@ public class PassportDetailPresenter
             @Override
             public void onSuccess(PassportStatsProxy response) {
                 stats = response;
-                getView().setStatsDataTable(DataTableUtils.createDataTableFromString(stats.getData()));
+                getView().setStatsDataTable(DataTableUtils.createDataTable(stats.getData()));
             }
 
         }, passportId);

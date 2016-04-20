@@ -1,7 +1,7 @@
 package com.gmi.nordborglab.browser.client.dto;
 
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
-import com.google.gwt.visualization.client.DataTable;
+import com.googlecode.gwt.charts.client.DataTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class GWASDataDTO {
         }
 
         for (int i = 0; i < data.getGWASDataTablesJSON().length(); i++) {
-            gwasDataTables.add(DataTableUtils.createDataTableFromString(data.getGWASDataTablesJSON().get(i)));
+            gwasDataTables.add(DataTableUtils.createDataTable(data.getGWASDataTablesJSON().get(i)));
         }
     }
 

@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.tools.gwasviewer;
 
 
+import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.editors.GWASResultEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.widgets.facets.FacetSearchPresenterWidget;
 import com.gmi.nordborglab.browser.client.place.NameTokens;
@@ -34,7 +35,6 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.IdentityColumn;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
-import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -110,7 +110,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     private final AvatarNameCell avatarNameCell;
     private final PlaceManager placeManager;
     private final Modal plotPoupup = new Modal();
-    private final PlotDownloadPopup plotDownload = new PlotDownloadPopup(PlotDownloadPopup.PLOT_TYPE.GWASVIEWER);
+    private final PlotDownloadPopup plotDownload = new PlotDownloadPopup();
     @UiField
     DeckLayoutPanel tabPaneContainer;
     @UiField
@@ -125,8 +125,6 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     CustomPager gwasResultPager;
     @UiField(provided = true)
     DataGrid<GWASResultProxy> gwasResultDataGrid;
-    @UiField
-    LayoutPanel gwasPlotContainer;
     @UiField
     TabListItem gwasUploadTab;
     @UiField
@@ -295,7 +293,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         hasCells.add(new ActionHasCell(new AclEntypoIconActionCell<>("e_icon-picture", new ActionCell.Delegate<GWASResultProxy>() {
             @Override
             public void execute(GWASResultProxy object) {
-                plotDownload.setId(object.getId());
+                plotDownload.setSettings(object.getId(), GetGWASDataAction.TYPE.GWASVIEWER);
                 showPlotDownloadPopup();
             }
         }, true, AccessControlEntryProxy.READ)));
@@ -342,7 +340,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
         switch (activePanel) {
             case PLOTS:
                 isPlotsDisplayed = true;
-                tabPaneContainer.showWidget(gwasPlotContainer);
+                tabPaneContainer.showWidget(gwasPlots);
                 gwasListTab.setActive(true);
                 break;
             case LIST:
@@ -393,11 +391,6 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     }
 
     @Override
-    public void setGWAResultId(Long id) {
-        plotDownload.setId(id);
-    }
-
-    @Override
     public void showDeletePopup(GWASResultProxy object) {
         deleteCallBack.setObject(object);
         Bootbox.dialog(deleteOptions);
@@ -405,11 +398,6 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
 
     private void showPlotDownloadPopup() {
         plotPoupup.show();
-    }
-
-    @UiHandler("downloadBtn")
-    public void onClickDownloadBtn(ClickEvent e) {
-        showPlotDownloadPopup();
     }
 
     @UiHandler("gwasUploadTab")

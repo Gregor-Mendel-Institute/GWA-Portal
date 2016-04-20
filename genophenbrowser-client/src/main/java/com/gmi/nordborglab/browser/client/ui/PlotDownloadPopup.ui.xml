@@ -15,7 +15,11 @@
             padding-top: 8px;
             vertical-align: top;
         }
-    </ui:style>
+
+        .downloadBtn {
+            color: white !important;
+
+        }</ui:style>
     <g:HTMLPanel>
         <div>
             <form class="form-horizontal">
@@ -50,7 +54,9 @@
                 </fieldset>
                 <b:FormGroup>
                     <g:FlowPanel addStyleNames="col-sm-offset-9 col-sm-3">
-                        <b:AnchorButton icon="FILE" ui:field="downloadBtn" type="PRIMARY">Download</b:AnchorButton>
+                        <b:AnchorButton icon="FILE" ui:field="downloadBtn" type="PRIMARY"
+                                        addStyleNames="{style.downloadBtn}">Download
+                        </b:AnchorButton>
                     </g:FlowPanel>
                 </b:FormGroup>
             </form>

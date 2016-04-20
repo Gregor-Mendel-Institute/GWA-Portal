@@ -1,17 +1,23 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.permissions;
 
 
+import com.arcbees.chosen.client.ChosenImpl;
+import com.arcbees.chosen.client.ChosenOptions;
+import com.arcbees.chosen.client.ResultsFilter;
+import com.arcbees.chosen.client.gwt.MultipleChosenValueListBox;
 import com.gmi.nordborglab.browser.client.editors.PermissionEditor;
 import com.gmi.nordborglab.browser.client.ui.cells.PermissionSelectionCell;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.CustomAclProxy;
-import com.google.gwt.cell.client.ActionCell;
-import com.google.gwt.cell.client.FieldUpdater;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.text.shared.AbstractRenderer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -21,12 +27,10 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
-import com.watopi.chosen.client.ChosenOptions;
-import com.watopi.chosen.client.event.ChosenChangeEvent;
-import com.watopi.chosen.client.gwt.ChosenListBox;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.TextBox;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +43,7 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
     @UiField(provided = true)
     PermissionEditor permissionEditor;
     @UiField(provided = true)
-    ChosenListBox usersSearchBox;
+    MultipleChosenValueListBox<AppUserProxy> usersSearchBox;
     @UiField
     TextBox shareUrlTb;
     @UiField
@@ -62,7 +66,7 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
     Button doneBtn;
     @UiField(provided = true)
     CellWidget<AccessControlEntryProxy> newPermissionDd;
-    private final Map<String, Boolean> selectedUsers = new HashMap<String, Boolean>();
+    private final Map<String, Boolean> selectedUsers = new HashMap<>();
 
     private final PermissionEditDriver permissionEditDriver;
 
@@ -70,6 +74,39 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
     }
 
     public interface PermissionEditDriver extends RequestFactoryEditorDriver<CustomAclProxy, PermissionEditor> {
+    }
+
+    static class UserRenderer extends AbstractRenderer<AppUserProxy> {
+        @Override
+        public String render(AppUserProxy object) {
+            return getFullnameFromUser(object);
+        }
+    }
+
+    public interface SearchUserCallback {
+        void onDisplayResults(List<AppUserProxy> users);
+
+    }
+
+    private class UserResultFilter implements ResultsFilter {
+        @Override
+        public void filter(String searchString, ChosenImpl chosen, boolean isShowing) {
+            if (!isShowing)
+                return;
+            getUiHandlers().onSearchUsers(searchString, users -> {
+                List<AppUserProxy> selectedUsers = usersSearchBox.getValue();
+                List<AppUserProxy> filteredUsers = Lists.newArrayList(Iterables.filter(users, input -> {
+                    for (AppUserProxy us : selectedUsers) {
+                        if (us.getId().equals(input.getId())) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }));
+                filteredUsers.addAll(selectedUsers);
+                setAvailableUsersToSearch(filteredUsers);
+            });
+        }
     }
 
 
@@ -83,41 +120,23 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
         ChosenOptions options = new ChosenOptions();
         options.setSingleBackstrokeDelete(true);
         options.setNoResultsText("No user found");
-        usersSearchBox = new ChosenListBox(true, options);
+        options.setResultFilter(new UserResultFilter());
+        options.setPlaceholderText("Enter name or email address...");
+        usersSearchBox = new MultipleChosenValueListBox<>(new UserRenderer(), item -> item.getId(), options);
+        usersSearchBox.setWidth("410px");
         widget = binder.createAndBindUi(this);
         this.permissionEditDriver = permissionEditDriver;
         this.permissionEditDriver.initialize(permissionEditor);
-        usersSearchBox.addChosenChangeHandler(new ChosenChangeEvent.ChosenChangeHandler() {
-            @Override
-            public void onChange(ChosenChangeEvent chosenChangeEvent) {
-                if (chosenChangeEvent.isSelection()) {
-                    selectedUsers.put(chosenChangeEvent.getValue(), true);
-                } else {
-                    selectedUsers.remove(chosenChangeEvent.getValue());
-                }
-                updateUserSearchPanel();
-            }
-        });
 
-        permissionEditor.setDeleteDelegate(new ActionCell.Delegate<AccessControlEntryProxy>() {
-            @Override
-            public void execute(AccessControlEntryProxy object) {
-                getUiHandlers().onDelete(object);
-            }
-        });
-        permissionEditor.setFieldUpdater(new FieldUpdater<AccessControlEntryProxy, AccessControlEntryProxy>() {
-            @Override
-            public void update(int index, AccessControlEntryProxy object, AccessControlEntryProxy value) {
-                getUiHandlers().onUpdatePermission(value);
-            }
-        });
+        permissionEditor.setDeleteDelegate(object -> getUiHandlers().onDelete(object));
+        permissionEditor.setFieldUpdater((index, object, value) -> getUiHandlers().onUpdatePermission(value));
         addUserBtnPanel.setVisible(false);
         changeNotificationPanel.getStyle().setDisplay(Style.Display.NONE);
 
     }
 
     private void updateUserSearchPanel() {
-        if (selectedUsers.size() == 0) {
+        if (usersSearchBox.getValue() == null || usersSearchBox.getValue().size() == 0) {
             addUserBtnPanel.setVisible(false);
             newPermissionDd.setVisible(false);
         } else {
@@ -131,11 +150,11 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
         return widget;
     }
 
+
     @Override
     public PermissionEditDriver getEditDriver() {
         return permissionEditDriver;
     }
-
 
     @Override
     public List<AccessControlEntryProxy> getPermissionList() {
@@ -153,11 +172,8 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
     }
 
     @Override
-    public void setAvailableUsersToSearch(List<AppUserProxy> users) {
-        usersSearchBox.clear();
-        for (AppUserProxy user : users) {
-            usersSearchBox.addItem(getFullnameFromUser(user), user.getId().toString());
-        }
+    public void setAvailableUsersToSearch(Collection<AppUserProxy> users) {
+        usersSearchBox.setAcceptableValues(users);
     }
 
     @Override
@@ -173,17 +189,18 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
         newPermissionDd.redraw();
     }
 
+
     @Override
     public void resetUserSearchBox() {
-        usersSearchBox.setSelectedIndex(-1);
+        usersSearchBox.setValue(null);
         selectedUsers.clear();
         updateUserSearchPanel();
     }
 
-
     private static String getFullnameFromUser(AppUserProxy user) {
         return user.getFirstname() + " " + user.getLastname() + " (" + user.getEmail() + ")";
     }
+
 
     @Override
     public void addPermission(AccessControlEntryProxy permission) {
@@ -194,16 +211,14 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
     @UiHandler("cancelUserBtn")
     public void onClickCancelAddUserBtn(ClickEvent e) {
         getUiHandlers().onCancelAddUser();
-        usersSearchBox.setSelectedIndex(-1);
+        usersSearchBox.setValue(null);
         selectedUsers.clear();
         updateUserSearchPanel();
-
     }
-
 
     @UiHandler("addUserBtn")
     public void onClickAddUserBtn(ClickEvent e) {
-        getUiHandlers().onAddPermission(selectedUsers.keySet(), newPermissionDd.getValue());
+        getUiHandlers().onAddPermission(usersSearchBox.getValue(), newPermissionDd.getValue());
     }
 
     @UiHandler("cancelBtn")
@@ -219,5 +234,10 @@ public class PermissionDetailView extends ViewWithUiHandlers<PermissionUiHandler
     @UiHandler("saveBtn")
     public void onClickSave(ClickEvent e) {
         getUiHandlers().onSave();
+    }
+
+    @UiHandler("usersSearchBox")
+    public void onChangeUser(ValueChangeEvent<List<AppUserProxy>> e) {
+        updateUserSearchPanel();
     }
 }

@@ -1,12 +1,12 @@
 package com.gmi.nordborglab.browser.client.mvp.widgets.filter;
 
+import com.arcbees.chosen.client.gwt.ChosenListBox;
 import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import com.watopi.chosen.client.gwt.ChosenListBox;
 
 import java.util.HashMap;
 import java.util.List;

@@ -4,6 +4,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
              xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
+             xmlns:o='urn:import:com.googlecode.gwt.charts.client.orgchart'
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -58,7 +59,7 @@
                             </g:HTMLPanel>
                         </g:layer>
                         <g:layer top="47px" bottom="0" left="0" right="0">
-                            <g:SimpleLayoutPanel ui:field="chartUpperContainer"/>
+                            <o:OrgChart ui:field="ancestorsChart"></o:OrgChart>
                         </g:layer>
                     </g:LayoutPanel>
                 </g:layer>
@@ -72,7 +73,7 @@
                             </g:HTMLPanel>
                         </g:layer>
                         <g:layer top="47px" bottom="0" left="0" right="0">
-                            <g:SimpleLayoutPanel ui:field="chartLowerContainer"/>
+                            <o:OrgChart ui:field="descendentsChart"></o:OrgChart>
                         </g:layer>
                     </g:LayoutPanel>
                 </g:layer>

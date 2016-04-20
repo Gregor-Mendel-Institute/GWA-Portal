@@ -5,7 +5,7 @@
              xmlns:c="urn:import:com.google.gwt.user.cellview.client"
              xmlns:ed='urn:import:com.gmi.nordborglab.browser.client.editors'
              xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
-             xmlns:chzn="urn:import:com.watopi.chosen.client.gwt"
+             xmlns:chzn="urn:import:com.arcbees.chosen.client.gwt"
              ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
              ui:generateKeys='com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator'
              ui:generateLocales='default'>
@@ -55,8 +55,7 @@
                             <b:FormLabel>Add users:</b:FormLabel>
                             <g:HTMLPanel addStyleNames="row">
                                 <div class="col-xs-10 {style.userlistbox}">
-                                    <chzn:ChosenListBox ui:field="usersSearchBox" width="100%"
-                                                        placeholderText="Enter name or email address..."/>
+                                    <chzn:MultipleChosenValueListBox ui:field="usersSearchBox" width="410"/>
                                 </div>
                                 <div class="col-xs-2">
                                     <c:CellWidget ui:field="newPermissionDd" visible="false"

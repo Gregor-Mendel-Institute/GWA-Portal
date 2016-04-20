@@ -1,13 +1,11 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.study.detail;
 
-import at.gmi.nordborglab.widgets.geochart.client.GeoChart;
+import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.editors.StudyDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.StudyEditEditor;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.ui.CircularProgressBar;
 import com.gmi.nordborglab.browser.client.ui.PlotDownloadPopup;
-import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
-import com.gmi.nordborglab.browser.client.ui.ResizeableMotionChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.client.util.DateUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AccessControlEntryProxy;
@@ -35,14 +33,18 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.visualizations.MotionChart;
-import com.google.gwt.visualization.client.visualizations.corechart.Options;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
 import com.google.inject.Inject;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryEditorDriver;
+import com.googlecode.gwt.charts.client.ColumnType;
+import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.corechart.ColumnChart;
+import com.googlecode.gwt.charts.client.corechart.ColumnChartOptions;
+import com.googlecode.gwt.charts.client.corechart.PieChart;
+import com.googlecode.gwt.charts.client.corechart.PieChartOptions;
+import com.googlecode.gwt.charts.client.geochart.GeoChart;
+import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
+import com.googlecode.gwt.charts.client.motionchart.MotionChart;
+import com.googlecode.gwt.charts.client.motionchart.MotionChartOptions;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
@@ -96,16 +98,16 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     protected DataTable geoChartData;
     private LOWER_CHART_TYPE lowerChartType = LOWER_CHART_TYPE.histogram;
     private UPPER_CHART_TYPE upperChartType = UPPER_CHART_TYPE.geochart;
-    private ResizeableColumnChart columnChart;
-    private ResizeableMotionChart motionChart;
+    private ColumnChart columnChart = new ColumnChart();
+    private MotionChart motionChart = new MotionChart();
     private GeoChart geoChart = new GeoChart();
-    private PieChart pieChart;
+    private PieChart pieChart = new PieChart();
     private Modal gwasUploadPopup = new Modal();
     private ModalBody gwasUploadPopupContent = new ModalBody();
     private Modal plotsPopup = new Modal();
     private Modal editPopup = new Modal();
     private DialogOptions deleteOptions = DialogOptions.newOptions("Do you really want to delete the analysis?");
-    private PlotDownloadPopup plotsPanel = new PlotDownloadPopup(PlotDownloadPopup.PLOT_TYPE.STUDY);
+    private PlotDownloadPopup plotsPanel = new PlotDownloadPopup();
 
     private Double shapiroWilkPvalue;
     private Double pseudoHeritability;
@@ -379,9 +381,8 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         }
     }
 
-    private GeoChart.Options createGeoChart() {
-        GeoChart.Options options = GeoChart.Options.create();
-        options.setTitle("Geographic distribution");
+    private GeoChartOptions createGeoChart() {
+        GeoChartOptions options = GeoChartOptions.create();
         options.setHeight(upperChartContainer.getOffsetHeight());
         return options;
     }
@@ -400,28 +401,21 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         return String.valueOf(value);
     }
 
-    private Options createColumnChartOptions() {
-        Options options = Options.create();
+    private ColumnChartOptions createColumnChartOptions() {
+        ColumnChartOptions options = DataTableUtils.getDefaultPhenotypeHistogramOptions();
         options.setTitle(getTitle());
-        Options animationOptions = Options.create();
-        animationOptions.set("duration", 1000.0);
-        animationOptions.set("easing", "out");
-        options.set("animation", animationOptions);
         return options;
     }
 
-    private MotionChart.Options createMotionChartOptions() {
-        MotionChart.Options options = MotionChart.Options.create();
-        options.set(
-                "state",
+    private MotionChartOptions createMotionChartOptions() {
+        MotionChartOptions options = MotionChartOptions.create();
+        options.setState(
                 "%7B%22time%22%3A%22notime%22%2C%22iconType%22%3A%22BUBBLE%22%2C%22xZoomedDataMin%22%3Anull%2C%22yZoomedDataMax%22%3Anull%2C%22xZoomedIn%22%3Afalse%2C%22iconKeySettings%22%3A%5B%5D%2C%22showTrails%22%3Atrue%2C%22xAxisOption%22%3A%222%22%2C%22colorOption%22%3A%224%22%2C%22yAxisOption%22%3A%223%22%2C%22playDuration%22%3A15%2C%22xZoomedDataMax%22%3Anull%2C%22orderedByX%22%3Afalse%2C%22duration%22%3A%7B%22multiplier%22%3A1%2C%22timeUnit%22%3A%22none%22%7D%2C%22xLambda%22%3A1%2C%22orderedByY%22%3Afalse%2C%22sizeOption%22%3A%22_UNISIZE%22%2C%22yZoomedDataMin%22%3Anull%2C%22nonSelectedAlpha%22%3A0.4%2C%22stateVersion%22%3A3%2C%22dimensions%22%3A%7B%22iconDimensions%22%3A%5B%22dim0%22%5D%7D%2C%22yLambda%22%3A1%2C%22yZoomedIn%22%3Afalse%7D%3B");
-        options.setHeight(lowerChartContainer.getOffsetHeight());
-        options.setWidth(lowerChartContainer.getOffsetWidth());
         return options;
     }
 
-    private Options createPieChartOptions() {
-        PieOptions options = PieOptions.create();
+    private PieChartOptions createPieChartOptions() {
+        PieChartOptions options = PieChartOptions.create();
         options.setTitle("Geographic distribution");
         options.setHeight(upperChartContainer.getOffsetHeight());
         options.setWidth(upperChartContainer.getOffsetWidth());
@@ -466,21 +460,22 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
             upperChartContainer.add(geoChart);
             geoChart.draw(geoChartData, createGeoChart());
         } else {
-            pieChart = new PieChart(geoChartData, createPieChartOptions());
+            pieChart = new PieChart();
             upperChartContainer.add(pieChart);
+            pieChart.draw(geoChartData, createPieChartOptions());
         }
     }
 
     private void drawLowerCharts() {
         lowerChartContainer.clear();
         if (lowerChartType == LOWER_CHART_TYPE.histogram) {
-            columnChart = new ResizeableColumnChart(histogramData,
-                    createColumnChartOptions());
+            columnChart = new ColumnChart();
             lowerChartContainer.add(columnChart);
+            columnChart.draw(histogramData, createColumnChartOptions());
         } else {
-            motionChart = new ResizeableMotionChart(phenotypeExplorerData,
-                    createMotionChartOptions());
             lowerChartContainer.add(motionChart);
+            motionChart.draw(phenotypeExplorerData,
+                    createMotionChartOptions());
         }
     }
 
@@ -581,7 +576,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
         navLinkPvalJSON.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/pvalues.json");
         navLinkPhenCSV.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/phenotypedata.csv");
         navLinkPhenJSON.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/phenotypedata.json");
-        plotsPanel.setId(id);
+        plotsPanel.setSettings(id, GetGWASDataAction.TYPE.STUDY);
     }
 
     @Override

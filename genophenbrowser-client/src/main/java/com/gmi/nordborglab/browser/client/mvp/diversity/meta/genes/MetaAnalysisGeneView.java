@@ -1,7 +1,7 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.meta.genes;
 
-import at.gmi.nordborglab.widgets.geneviewer.client.GeneViewer;
-import at.gmi.nordborglab.widgets.geneviewer.client.datasource.DataSource;
+import com.github.timeu.gwtlibs.geneviewer.client.GeneViewer;
+import com.github.timeu.gwtlibs.gwasviewer.client.events.GeneDataSource;
 import com.gmi.nordborglab.browser.client.mvp.diversity.meta.topsnps.MetaSNPAnalysisDataGridColumns;
 import com.gmi.nordborglab.browser.client.resources.CustomDataGridResources;
 import com.gmi.nordborglab.browser.client.ui.CustomPager;
@@ -150,6 +150,7 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
     @UiField
     TabLayoutPanel visualizationTabPanel;
     private final CustomDataGridResources customDataGridResources;
+    private String chr = null;
 
     private MetaAnalysisGeneTableBuilder tableBuilder;
 
@@ -168,7 +169,7 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
 
 
     @Inject
-    public MetaAnalysisGeneView(Binder binder, DataSource dataSource,
+    public MetaAnalysisGeneView(Binder binder, GeneDataSource dataSource,
                                 final PlaceManager placeManger,
                                 final CustomDataGridResources customDataGridResources) {
         this.placeManger = placeManger;
@@ -226,12 +227,20 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
                 getUiHandlers().onSelectGene(suggestion.getData().getReplacementText());
             }
         });
-        geneViewer.setHeight("290px");
-        geneViewer.setDataSource(dataSource);
         try {
-            geneViewer.load(null);
+            geneViewer.load(() -> {
+                // TODO make more robust so that we can add handlers before it is loaded
+                geneViewer.addFetchGeneHandler(event -> {
+                    if (chr == null)
+                        return;
+                    dataSource.fetchGenes(chr, event.getStart(), event.getEnd(), true, genes -> geneViewer.setGeneData(genes));
+                });
+                geneViewer.addHighlightGeneHandler(event -> {
+                    dataSource.fetchGeneInfo(event.getGene().name, info -> geneViewer.setGeneInfo(info));
+                });
+            });
         } catch (Exception ex) {
-
+            GWT.log(ex.getMessage());
         }
         flatDataGrid.addCellPreviewHandler(new CellPreviewEvent.Handler<MetaAnalysisProxy>() {
 
@@ -309,6 +318,7 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
     public void reset() {
         geneLb.setInnerText("----------------");
         contentPanel.setWidgetVisible(searchForGeneLb, true);
+        chr = null;
         geneViewer.setChromosome(null);
         geneViewer.setViewRegion(0, 1);
         geneViewer.updateZoom(0, 1);
@@ -420,6 +430,7 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
 
     @Override
     public void setGeneViewerRegion(String chr, int start, int end, int totalLength) {
+        this.chr = "Chr" + chr;
         geneViewer.setChromosome("Chr" + chr);
         geneViewer.setViewRegion(0, totalLength);
         geneViewer.updateZoom(start, end);

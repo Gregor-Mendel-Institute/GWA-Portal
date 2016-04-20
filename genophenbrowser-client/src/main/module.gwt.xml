@@ -12,10 +12,7 @@
     <inherits name="com.google.gwt.editor.Editor"/>
     <inherits name='com.google.gwt.maps.Maps'/>
     <inherits name='com.google.web.bindery.requestfactory.RequestFactory'/>
-    <inherits name="at.gmi.nordborglab.widgets.gwasgeneviewer.GWASGeneViewer"/>
-    <inherits name="at.gmi.nordborglab.widgets.geochart.GeoChart"/>
     <inherits name="com.google.gwt.logging.Logging"/>
-    <inherits name='com.google.gwt.visualization.Visualization'/>
     <inherits name="com.google.common.collect.Collect"/>
     <inherits name="com.google.gwt.precompress.Precompress"/>
     <inherits name="org.hibernate.validator.HibernateValidator"/>
@@ -24,7 +21,7 @@
     <inherits name="org.gwtbootstrap3.extras.typeahead.Typeahead"/>
     <inherits name="org.gwtbootstrap3.extras.bootbox.Bootbox"/>
     <inherits name="org.gwtbootstrap3.extras.toggleswitch.ToggleSwitch"/>
-    <inherits name='com.watopi.chosen.Chosen'/>
+    <inherits name="com.arcbees.chosen.Chosen"/>
     <inherits name="elemental.Elemental"/>
     <inherits name="org.jboss.errai.bus.ErraiBus"/>
     <inherits name="com.googlecode.gwt.charts.Charts"/>

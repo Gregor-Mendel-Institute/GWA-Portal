@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.ui.card;
 
 import com.gmi.nordborglab.browser.client.events.SelectTransformationEvent;
 import com.gmi.nordborglab.browser.client.resources.CardRendererResources;
-import com.gmi.nordborglab.browser.client.ui.ResizeableColumnChart;
 import com.gmi.nordborglab.browser.client.util.DataTableUtils;
 import com.gmi.nordborglab.browser.shared.proxy.TransformationProxy;
 import com.google.common.collect.ImmutableSortedMap;
@@ -19,9 +18,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.visualizations.corechart.Options;
 import com.google.web.bindery.event.shared.EventBus;
+import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.corechart.ColumnChart;
+import com.googlecode.gwt.charts.client.corechart.ColumnChartOptions;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 
 /**
@@ -40,7 +40,7 @@ public class TransformationCard extends Composite implements RequiresResize {
 
     private static TransformationCardUiBinder ourUiBinder = GWT.create(TransformationCardUiBinder.class);
     protected DataTable histogramData;
-    private ResizeableColumnChart chart;
+    private ColumnChart chart;
     private EventBus eventBus;
 
     protected boolean isSelected;
@@ -97,23 +97,18 @@ public class TransformationCard extends Composite implements RequiresResize {
     }
 
 
-    private Options createChartOptions() {
-        Options options = Options.create();
+    private ColumnChartOptions createChartOptions() {
+        ColumnChartOptions options = DataTableUtils.getDefaultPhenotypeHistogramOptions();
         options.setTitle("");
-        Options animationOptions = Options.create();
-        animationOptions.set("duration", 1000.0);
-        animationOptions.set("easing", "out");
-        //options.setHeight(getOffsetHeight() - 40);
-        options.set("animation", animationOptions);
         return options;
     }
 
-    private void drawHistogram(DataTable data, Options options) {
+    private void drawHistogram(DataTable data, ColumnChartOptions options) {
         if (chart == null) {
-            chart = new ResizeableColumnChart(data, options);
+            chart = new ColumnChart();
             histogramContainer.add(chart);
-        } else
-            chart.draw2(data, options);
+        }
+        chart.draw(data, options);
     }
 
     private void forceLayout() {
