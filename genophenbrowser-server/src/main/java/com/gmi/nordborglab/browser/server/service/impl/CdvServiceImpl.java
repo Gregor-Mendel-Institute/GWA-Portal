@@ -12,6 +12,7 @@ import com.gmi.nordborglab.browser.server.domain.util.CandidateGeneListEnrichmen
 import com.gmi.nordborglab.browser.server.domain.util.StudyJob;
 import com.gmi.nordborglab.browser.server.es.EsIndexer;
 import com.gmi.nordborglab.browser.server.es.EsSearcher;
+import com.gmi.nordborglab.browser.server.exceptions.CommandLineException;
 import com.gmi.nordborglab.browser.server.repository.AlleleAssayRepository;
 import com.gmi.nordborglab.browser.server.repository.StudyRepository;
 import com.gmi.nordborglab.browser.server.repository.TraitRepository;
@@ -135,7 +136,7 @@ public class CdvServiceImpl implements CdvService {
 
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false, noRollbackFor = CommandLineException.class)
     public Study saveStudy(Study study) {
         boolean isNewRecord = study.getId() == null;
         CustomUser user = SecurityUtil.getUserFromContext();
@@ -160,7 +161,7 @@ public class CdvServiceImpl implements CdvService {
         if (study.getPseudoHeritability() == null) {
             try {
                 study.setPseudoHeritability(helperService.getPseudoHeritability(study));
-            } catch (Exception e) {
+            } catch (CommandLineException e) {
                 logger.error("Failed to calculate pseudo_heritability", e);
             }
         }

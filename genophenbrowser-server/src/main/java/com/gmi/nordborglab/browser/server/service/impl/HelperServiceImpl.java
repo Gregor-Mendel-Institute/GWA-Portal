@@ -29,6 +29,7 @@ import com.gmi.nordborglab.browser.server.domain.util.GWASRuntimeInfo;
 import com.gmi.nordborglab.browser.server.domain.util.NewsItem;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
+import com.gmi.nordborglab.browser.server.exceptions.CommandLineException;
 import com.gmi.nordborglab.browser.server.math.Transformations;
 import com.gmi.nordborglab.browser.server.repository.AlleleAssayRepository;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListRepository;
@@ -381,7 +382,7 @@ public class HelperServiceImpl implements HelperService {
     }
 
     @Override
-    public Double calculatePseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE type, Long alleleAssayId) {
+    public Double calculatePseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE type, Long alleleAssayId) throws CommandLineException {
         return getPseudoHeritability(traits, type, alleleAssayId);
     }
 
@@ -396,7 +397,7 @@ public class HelperServiceImpl implements HelperService {
         Double pseudoHeritability = -1.0;
         try {
             pseudoHeritability = getPseudoHeritability(traits, transformedValues, alleleAssayId);
-        } catch (Exception e) {
+        } catch (CommandLineException e) {
 
         }
         return new TransformationData(type, transformedValues, pseudoHeritability);
@@ -404,26 +405,26 @@ public class HelperServiceImpl implements HelperService {
 
 
     @Override
-    public Double getPseudoHeritability(Long alleleAssayId, TraitUom traitUom, Transformation transformation) {
+    public Double getPseudoHeritability(Long alleleAssayId, TraitUom traitUom, Transformation transformation) throws CommandLineException {
         return getPseudoHeritability(new ArrayList<>(traitUom.getTraits()), transformation, alleleAssayId);
     }
 
     @Override
-    public Double getPseudoHeritability(Study study) {
+    public Double getPseudoHeritability(Study study) throws CommandLineException {
         return getPseudoHeritability(new ArrayList<>(study.getTraits()), study.getTransformation(), study.getAlleleAssay().getId());
     }
 
-    private Double getPseudoHeritability(List<Trait> traits, Transformation transformation, Long alleleAssayId) {
+    private Double getPseudoHeritability(List<Trait> traits, Transformation transformation, Long alleleAssayId) throws CommandLineException {
         return getPseudoHeritability(traits, TransformationDataProxy.TYPE.valueOf(transformation.getName().toUpperCase()), alleleAssayId);
     }
 
 
-    private Double getPseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE transformation, Long alleleAssayId) {
+    private Double getPseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE transformation, Long alleleAssayId) throws CommandLineException {
         List<Double> transformedValues = Transformations.transform(transformation, Lists.transform(traits, trait2ValueFunc));
         return getPseudoHeritability(traits, transformedValues, alleleAssayId);
     }
 
-    private Double getPseudoHeritability(List<Trait> traits, List<Double> values, Long alleleAssayId) {
+    private Double getPseudoHeritability(List<Trait> traits, List<Double> values, Long alleleAssayId) throws CommandLineException {
         Double pseudoHeritability = -1.0;
         // get two lists of traits and transformed values
 
@@ -464,7 +465,7 @@ public class HelperServiceImpl implements HelperService {
             Map<String, Object> result = objectMapper.readValue(outputStream.toByteArray(), HashMap.class);
             pseudoHeritability = (Double) result.get("pseudo_heritability");
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new CommandLineException("Error calculating stats", e);
         } finally {
             // delete phenoptype value
             csvFile.delete();
