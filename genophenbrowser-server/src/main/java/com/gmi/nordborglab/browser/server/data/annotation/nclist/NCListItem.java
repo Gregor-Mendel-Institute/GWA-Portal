@@ -1,6 +1,5 @@
 package com.gmi.nordborglab.browser.server.data.annotation.nclist;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.gmi.nordborglab.browser.server.data.annotation.Gene;
 import com.gmi.nordborglab.browser.server.data.annotation.GeneFeature;
 
@@ -14,7 +13,6 @@ import java.util.List;
  * Time: 11:51 AM
  * To change this template use File | Settings | File Templates.
  */
-@JsonDeserialize(using = NCListItemDeserializer.class)
 public class NCListItem implements Comparable<NCListItem> {
 
     private Long start;

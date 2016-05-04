@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.server.data.annotation;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * Created with IntelliJ IDEA.
  * User: uemit.seren
@@ -7,6 +8,7 @@ package com.gmi.nordborglab.browser.server.data.annotation;
  * Time: 10:42 AM
  * To change this template use File | Settings | File Templates.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Isoform {
 
     protected String name;
@@ -16,7 +18,7 @@ public class Isoform {
     protected Long end_pos;
     protected String type;
     protected Character strand;
-    protected String description;
+    protected String computational_description;
     protected String short_description;
     protected String curator_summary;
 
@@ -48,8 +50,8 @@ public class Isoform {
         return strand;
     }
 
-    public String getDescription() {
-        return description;
+    public String getComputational_description() {
+        return computational_description;
     }
 
     public String getShort_description() {

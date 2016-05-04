@@ -174,7 +174,7 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
             if (gwasGeneViewers.size() >= i)
                 chart = gwasGeneViewers.get((i - 1));
             if (chart == null) {
-                chart = new GWASViewer("Chr" + i.toString(), color, gene_marker_color, geneDataSource);
+                chart = new GWASViewer(gwasData.getChromosomes().get(i - 1), color, gene_marker_color, geneDataSource);
                 chart.setMinorFilterType(SettingsPanel.MINOR_FILTER.MAC);
                 // TODO activate later
                 chart.setUploadTrackWidget(null);

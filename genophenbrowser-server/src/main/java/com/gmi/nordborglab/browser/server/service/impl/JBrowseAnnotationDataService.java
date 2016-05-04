@@ -145,7 +145,7 @@ public class JBrowseAnnotationDataService implements AnnotationDataService {
     }
 
     private String getTrackDataFilename(String chr) {
-        return JBROWSE_DATA_FOLDER + "/tracks/" + chr + "/" + JBROWSE_TRACK_FOLDER + "/trackData.json";
+        return JBROWSE_DATA_FOLDER + "/tracks/" + JBROWSE_TRACK_FOLDER + "/" + chr + "/trackData.json";
     }
 
     @PostConstruct
@@ -154,9 +154,16 @@ public class JBrowseAnnotationDataService implements AnnotationDataService {
         ObjectMapper mapper = new ObjectMapper(factory);
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         try {
-            annotationMap = mapper.readValue(new File(GENE_ANNOTATION_FILE), new TypeReference<Map<String, GeneAnnotation>>() {
+            File annotationMapFile = new File(GENE_ANNOTATION_FILE);
+            annotationMap = mapper.readValue(annotationMapFile, new TypeReference<Map<String, GeneAnnotation>>() {
             });
+            // Requried if we want to convert
+            /*ObjectMapper smileMapper = new ObjectMapper(new SmileFactory());
+            byte[] smileData = smileMapper.writeValueAsBytes(annotationMap);
+            Path file = Paths.get(GENE_ANNOTATION_FILE+".smile");
+            Files.write(file, smileData);*/
         } catch (Exception e) {
+            logger.error("Error loading annotation map file", e);
         }
     }
 

@@ -1,6 +1,8 @@
 package com.gmi.nordborglab.browser.server.data.annotation;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.Map;
 
 /**
@@ -11,7 +13,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GeneAnnotation {
     protected String gene_type;
     protected String name;

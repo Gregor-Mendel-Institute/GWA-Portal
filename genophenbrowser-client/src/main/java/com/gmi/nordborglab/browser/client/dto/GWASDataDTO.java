@@ -12,6 +12,7 @@ public class GWASDataDTO {
     protected final double bonferroniThreshold;
     protected final List<DataTable> gwasDataTables = new ArrayList<DataTable>();
     protected final List<Integer> chrLengths = new ArrayList<Integer>();
+    protected final List<String> chromosomes = new ArrayList<>();
 
 
     public GWASDataDTO(GWASData data) {
@@ -19,6 +20,10 @@ public class GWASDataDTO {
         this.bonferroniThreshold = data.getBonferroniThreshold();
         for (int i = 0; i < data.getChrLengths().length(); i++) {
             chrLengths.add(data.getChrLengths().get(i));
+        }
+
+        for (int i = 0; i < data.getChromosomes().length(); i++) {
+            chromosomes.add(data.getChromosomes().get(i));
         }
 
         for (int i = 0; i < data.getGWASDataTablesJSON().length(); i++) {
@@ -41,6 +46,9 @@ public class GWASDataDTO {
         return gwasDataTables;
     }
 
+    public List<String> getChromosomes() {
+        return chromosomes;
+    }
 
     public List<Integer> getChrLengths() {
         return chrLengths;

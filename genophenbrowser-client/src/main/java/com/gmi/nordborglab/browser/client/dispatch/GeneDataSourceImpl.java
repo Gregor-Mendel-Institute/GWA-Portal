@@ -55,7 +55,10 @@ public class GeneDataSourceImpl implements GeneDataSource {
             public void onResponseReceived(Request request, Response response) {
                 // TODO switch to AutoBean or elemental
                 JSONObject data = JSONParser.parseStrict(response.getText()).isObject();
-                String description = data.get("description").isString().stringValue();
+                String description = "Not available";
+                if (data.get("computational_description").isString() != null) {
+                    description = data.get("computational_description").isString().stringValue();
+                }
                 fetchGeneInfoCallback.onFetchGeneInfo(description);
             }
 
