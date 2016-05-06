@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.phenotype;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.gmi.nordborglab.browser.server.controller.rest.json.Views;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 
 import javax.persistence.AttributeOverride;
@@ -14,6 +16,7 @@ import javax.persistence.Table;
 @SequenceGenerator(name = "idSequence", sequenceName = "phenotype.div_unit_of_measure_div_unit_of_measure_id_seq", allocationSize = 1)
 public class UnitOfMeasure extends BaseEntity {
 
+    @JsonView(Views.Public.class)
     private String unit_type;
 
     public UnitOfMeasure() {

@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.cdv;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.gmi.nordborglab.browser.server.controller.rest.json.Views;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.genotype.AlleleAssay;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
@@ -44,19 +46,24 @@ public class Study extends SecureEntity {
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "cdv_g2p_protocol_id")
+    @JsonView(Views.StudyDetail.class)
     private StudyProtocol protocol;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "div_allele_assay_id")
+    @JsonView(Views.Studies.class)
     private AlleleAssay alleleAssay;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "cdv_phen_transformation_id", nullable = false)
+    @JsonView(Views.StudyDetail.class)
     private Transformation transformation;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "study", orphanRemoval = true)
+    @JsonView(Views.StudyDetail.class)
     private StudyJob job;
 
+    @JsonView(Views.Public.class)
     private String name;
     private String producer;
 
@@ -70,10 +77,15 @@ public class Study extends SecureEntity {
     private Date study_date = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(Views.Public.class)
     private Date created = new Date();
+
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(Views.Public.class)
     private Date published;
+
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(Views.Public.class)
     private Date modified = new Date();
 
 

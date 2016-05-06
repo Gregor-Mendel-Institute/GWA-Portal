@@ -1,5 +1,8 @@
 package com.gmi.nordborglab.browser.server.domain.observation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.gmi.nordborglab.browser.server.controller.rest.json.Views;
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.domain.SecureEntity;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
@@ -36,24 +39,31 @@ public class Experiment extends SecureEntity {
 
     @NotNull
     @Size(min = 2)
+    @JsonView(Views.Public.class)
     private String name;
 
     @NotNull
     @Size(min = 2)
     private String originator;
 
+    @JsonView(Views.Public.class)
     private String design;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(Views.Public.class)
     private Date created = new Date();
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(Views.Public.class)
     private Date published;
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(Views.Public.class)
     private Date modified = new Date();
 
+    @JsonView(Views.Public.class)
     private String comments;
 
     @OneToMany(mappedBy = "experiment", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonIgnore
     private Set<ObsUnit> obsUnits = new HashSet<ObsUnit>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})

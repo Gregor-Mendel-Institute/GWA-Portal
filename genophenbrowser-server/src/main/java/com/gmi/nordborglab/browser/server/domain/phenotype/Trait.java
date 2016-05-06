@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.phenotype;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.genotype.Allele;
@@ -47,6 +49,7 @@ import java.util.Set;
 @Table(name = "div_trait", schema = "phenotype")
 @AttributeOverride(name = "id", column = @Column(name = "div_trait_id"))
 @SequenceGenerator(name = "idSequence", sequenceName = "phenotype.div_trait_div_trait_id_seq", allocationSize = 1)
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
 public class Trait extends BaseEntity {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})

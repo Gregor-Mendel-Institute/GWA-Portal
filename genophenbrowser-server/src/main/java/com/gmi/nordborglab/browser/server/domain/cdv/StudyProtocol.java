@@ -1,5 +1,7 @@
 package com.gmi.nordborglab.browser.server.domain.cdv;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.gmi.nordborglab.browser.server.controller.rest.json.Views;
 import com.gmi.nordborglab.browser.server.domain.BaseEntity;
 import com.gmi.nordborglab.browser.server.domain.util.GWASRuntimeInfo;
 
@@ -22,9 +24,16 @@ import java.util.Set;
 @SequenceGenerator(name = "idSequence", sequenceName = "cdv.cdv_source_cdv_source_id_seq", allocationSize = 1)
 public class StudyProtocol extends BaseEntity {
 
+    @JsonView(Views.Public.class)
     private String analysis_method;
+
+    @JsonView(Views.Public.class)
     private String type;
+
+    @JsonView(Views.Public.class)
     private String fullname;
+
+    @JsonView(Views.Public.class)
     private String description;
 
     @OneToMany(mappedBy = "protocol", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

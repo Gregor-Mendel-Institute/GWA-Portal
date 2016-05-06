@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
+import com.gmi.nordborglab.browser.server.controller.rest.exceptions.ResourceNotFoundException;
 import com.gmi.nordborglab.browser.server.data.es.ESFacet;
 import com.gmi.nordborglab.browser.server.domain.DomainFunctions;
 import com.gmi.nordborglab.browser.server.domain.acl.AppUser;
@@ -129,6 +130,8 @@ public class CdvServiceImpl implements CdvService {
     @Override
     public Study findStudy(Long id) {
         Study study = studyRepository.findOne(id);
+        if (study == null)
+            throw new ResourceNotFoundException("Analysis not found");
         study = helperService.applyTransformation(study);
         study = aclManager.setPermissionAndOwner(study);
         return study;

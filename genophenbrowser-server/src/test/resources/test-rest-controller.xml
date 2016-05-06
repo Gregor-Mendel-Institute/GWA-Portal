@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- Activates various annotations to be detected in bean classes -->
+    <context:annotation-config/>
+
+    <!-- Scans the classpath for annotated components that will be auto-registered as Spring beans.
+     For example @Controller and @Service. Make sure to set the correct base-package -->
+    <!--<context:component-scan base-package="com.gmi.nordborglab.browser.server.service"/>-->
+
+    <bean id="validator"
+          class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+
+    <bean id="userServiceMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.service.UserService"/>
+    </bean>
+
+    <bean id="traitUomServiceMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.service.TraitUomService"/>
+    </bean>
+
+    <bean id="experimentServiceMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.service.ExperimentService"/>
+    </bean>
+
+    <bean id="helperServiceMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.service.HelperService"/>
+    </bean>
+
+
+    <bean id="cdvServiceMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.service.CdvService"/>
+    </bean>
+
+    <bean id="traitServiceMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.service.TraitService"/>
+    </bean>
+
+    <bean id="metaAnalysisServiceMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.service.MetaAnalysisService"/>
+    </bean>
+
+    <bean id="gwasDataServiceMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.service.GWASDataService"/>
+    </bean>
+
+    <bean id="annotationDataServiceMock" name="jbrowse" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.service.AnnotationDataService"/>
+    </bean>
+
+    <bean id="mailServiceMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.service.MailService"/>
+    </bean>
+
+
+    <bean id="passwordEncoderMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="org.springframework.security.crypto.password.PasswordEncoder"/>
+    </bean>
+
+
+    <bean id="candidateGeneListEnrichmentRepositoryMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.repository.CandidateGeneListEnrichmentRepository"/>
+    </bean>
+
+    <bean id="userRepositoryMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.repository.UserRepository"/>
+    </bean>
+
+
+    <bean id="isaTabExporterMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.data.isatab.IsaTabExporter"/>
+    </bean>
+
+    <bean id="taxonomyRepositoryMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.gmi.nordborglab.browser.server.repository.TaxonomyRepository"/>
+    </bean>
+
+    <bean id="providerSignInUtilsMock" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="org.springframework.social.connect.web.ProviderSignInUtils"/>
+    </bean>
+
+    <!--<bean id="aclManagerMock" class="org.mockito.Mockito" factory-method="mock">
+           <constructor-arg value="com.gmi.nordborglab.browser.server.security.AclManager" />
+    </bean>-->
+</beans>
