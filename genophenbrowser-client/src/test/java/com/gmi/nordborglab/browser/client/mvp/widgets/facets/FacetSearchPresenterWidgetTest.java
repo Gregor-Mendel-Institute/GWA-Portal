@@ -27,7 +27,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 
 /**
@@ -167,10 +166,10 @@ public class FacetSearchPresenterWidgetTest extends PresenterTestBase {
     public void testDisplayFacets() {
         FacetProxy facet1 = mock(FacetProxy.class);
         FacetProxy facet2 = mock(FacetProxy.class);
-        when(facet1.getTotal()).thenReturn(10L);
-        when(facet1.getName()).thenReturn("ALL");
-        when(facet2.getTotal()).thenReturn(5L);
-        when(facet2.getName()).thenReturn("PRIVATE");
+        given(facet1.getTotal()).willReturn(10L);
+        given(facet1.getName()).willReturn("ALL");
+        given(facet2.getTotal()).willReturn(5L);
+        given(facet2.getName()).willReturn("PRIVATE");
         List<FacetProxy> facets = Lists.newArrayList(facet1, facet2);
         presenter.displayFacets(facets);
 

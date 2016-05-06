@@ -37,6 +37,7 @@
         <gwt-charts.version>0.9.11-SNAPSHOT</gwt-charts.version>
         <gwt-tour.version>1.0-SNAPSHOT</gwt-tour.version>
         <gwt-supercsv>0.0.1-SNAPSHOT</gwt-supercsv>
+        <gwtmockito.version>1.1.6</gwtmockito.version>
     </properties>
     <repositories>
         <repository>
@@ -78,7 +79,11 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-codeserver</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.google.gwt.gwtmockito</groupId>
+            <artifactId>gwtmockito</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -194,6 +199,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.google.gwt.gwtmockito</groupId>
+                <artifactId>gwtmockito</artifactId>
+                <version>${gwtmockito.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.google.inject.extensions</groupId>
                 <artifactId>guice-assistedinject</artifactId>
