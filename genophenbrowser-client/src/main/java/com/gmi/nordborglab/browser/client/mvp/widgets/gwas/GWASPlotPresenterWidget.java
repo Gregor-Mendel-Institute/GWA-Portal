@@ -2,10 +2,12 @@ package com.gmi.nordborglab.browser.client.mvp.widgets.gwas;
 
 import com.github.timeu.gwtlibs.gwasviewer.client.DisplayFeature;
 import com.github.timeu.gwtlibs.gwasviewer.client.Track;
+import com.github.timeu.gwtlibs.ldviewer.client.LDData;
 import com.gmi.nordborglab.browser.client.dispatch.CustomCallback;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataActionResult;
 import com.gmi.nordborglab.browser.client.dto.GWASDataDTO;
+import com.gmi.nordborglab.browser.client.events.GWASDataLoadedEvent;
 import com.gmi.nordborglab.browser.client.events.LoadingIndicatorEvent;
 import com.gmi.nordborglab.browser.client.events.SelectSNPEvent;
 import com.gmi.nordborglab.browser.client.place.GoogleAnalyticsManager;
@@ -52,6 +54,7 @@ import java.util.Map;
  */
 public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWidget.MyView> implements GWASPlotUiHandlers {
 
+
     public interface MyView extends View, HasUiHandlers<GWASPlotUiHandlers> {
 
         void drawGWASPlots(GWASDataDTO gwasData);
@@ -66,6 +69,11 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
 
         void addDisplayFeaturesToGWAS(int chr, Collection<DisplayFeature> features);
 
+        void showGlobalLd(Integer position, LDGlobalData ldData);
+
+        void showLdForRegion(String chromosome, LDData ldData, int start, int end);
+
+        DataTable getGWASData(String chromosome);
     }
 
     @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
@@ -81,6 +89,7 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
     }
 
     private Long id;
+    private GWASDataDTO gwasData;
     private GetGWASDataAction.TYPE type;
     private final DispatchAsync dispatch;
     private final GoogleAnalyticsManager analyticsManager;
@@ -116,7 +125,108 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
     }
 
 
+    public void loadLdForSnp(String chromosome, Integer position) {
+        if (gwasData == null || !gwasData.hasLdData())
+            return;
+        fireEvent(new LoadingIndicatorEvent(true));
+        analyticsManager.startTimingEvent("LD", "SNP");
+        Ajax.get(GWT.getHostPageBaseURL() + "/api/analyses/" + id + "/ld/" + chromosome + "/" + position).done(new Function() {
+            @Override
+            public void f() {
+                String response = arguments(0);
+                LDGlobalData ldData = JsonUtils.safeEval(response).cast();
+                getView().showGlobalLd(position, ldData);
+                analyticsManager.endTimingEvent("LD", "SNP", "SUCCESS");
+                analyticsManager.sendEvent("LD", "SNP", "Type:" + type + ",ID:" + id);
+            }
+        }).fail(new Function() {
+            @Override
+            public void f() {
+                Exception error = arguments(0);
+                analyticsManager.endTimingEvent("LD", "SNP", "ERROR");
+                analyticsManager.sendError("LD", "SNP | Type:" + type + ",ID:" + id + ",Error:" + error.getMessage(), true);
+            }
+        }).always(new Function() {
+            @Override
+            public void f() {
+                fireEvent(new LoadingIndicatorEvent(false));
+            }
+        });
+    }
+
+    public void loadLdForRegion(String chromosome, Integer position, Integer numberOfSnps) {
+        if (gwasData == null || !gwasData.hasLdData())
+            return;
+        DataTable data = getView().getGWASData("chr" + chromosome);
+        int indexOfPos = 0;
+        for (int i = 0; i < data.getNumberOfRows(); i++) {
+            if (data.getValueNumber(i, 0) == position) {
+                indexOfPos = i;
+                break;
+            }
+        }
+        final int startSNP = (int) data.getValueNumber((numberOfSnps / 2 > indexOfPos ? 1 : indexOfPos - numberOfSnps / 2), 0);
+        final int stopSNP = (int) data.getValueNumber((numberOfSnps / 2 + indexOfPos > data.getNumberOfRows() ? data.getNumberOfRows() - 2 : indexOfPos + numberOfSnps / 2), 0);
+
+        fireEvent(new LoadingIndicatorEvent(true));
+        analyticsManager.startTimingEvent("LD", "Region");
+        Ajax.get(GWT.getHostPageBaseURL() + "/api/analyses/" + id + "/ld_region/" + chromosome + "/" + startSNP + "/" + stopSNP).done(new Function() {
+            @Override
+            public void f() {
+                String response = arguments(0);
+                LDData ldData = JsonUtils.safeEval(response).cast();
+                getView().showLdForRegion("chr" + chromosome, ldData, startSNP, stopSNP);
+                analyticsManager.endTimingEvent("LD", "Region", "SUCCESS");
+                analyticsManager.sendEvent("LD", "Region", "Type:" + type + ",ID:" + id);
+            }
+        }).fail(new Function() {
+            @Override
+            public void f() {
+                Exception error = arguments(0);
+                analyticsManager.endTimingEvent("LD", "Region", "ERROR");
+                analyticsManager.sendError("LD", "Region | Type:" + type + ",ID:" + id + ",Error:" + error.getMessage(), true);
+            }
+        }).always(new Function() {
+            @Override
+            public void f() {
+                fireEvent(new LoadingIndicatorEvent(false));
+            }
+        });
+    }
+
+    public void loadExactLdForRegion(String chromosome, Integer position) {
+        fireEvent(new LoadingIndicatorEvent(true, "Calculating..."));
+        analyticsManager.startTimingEvent("LD", "Calculate");
+        Ajax.get(GWT.getHostPageBaseURL() + "/api/analyses/" + id + "/ld_exact/" + chromosome + "/" + position).done(new Function() {
+            @Override
+            public void f() {
+                String response = arguments(0);
+                LDData ldData = JsonUtils.safeEval(response).cast();
+                getView().showLdForRegion("chr" + chromosome, ldData, ldData.getStart(), ldData.getEnd());
+                analyticsManager.endTimingEvent("LD", "Calculate", "SUCCESS");
+                analyticsManager.sendEvent("LD", "Calculate", "Type:" + type + ",ID:" + id);
+            }
+        }).fail(new Function() {
+                    @Override
+                    public void f() {
+                        Exception error = arguments(0);
+                        analyticsManager.endTimingEvent("LD", "Calculate", "ERROR");
+                        analyticsManager.sendError("LD", "Calculate | Type:" + type + ",ID:" + id + ",Error:" + error.getMessage(), true);
+                    }
+                }
+        ).always(new Function() {
+            @Override
+            public void f() {
+                fireEvent(new LoadingIndicatorEvent(false));
+            }
+        });
+    }
+
+
     public void loadPlots(Long id, GetGWASDataAction.TYPE type) {
+        if (this.id == id && this.type == type) {
+            return;
+        }
         this.id = id;
         this.type = type;
         getView().setPlotSettings(id, type);
@@ -131,11 +241,14 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
 
     private void loadDataFromServer() {
         analyticsManager.startTimingEvent("GWAS", "View");
+        getView().drawGWASPlots(null);
         dispatch.execute(new GetGWASDataAction(id, type), new CustomCallback<GetGWASDataActionResult>(getEventBus()) {
 
             @Override
             public void onSuccess(GetGWASDataActionResult result) {
                 getView().drawGWASPlots(result.getResultData());
+                getEventBus().fireEventFromSource(new GWASDataLoadedEvent(result.getResultData()), GWASPlotPresenterWidget.this);
+                gwasData = result.getResultData();
                 LoadingIndicatorEvent.fire(this, false);
                 analyticsManager.endTimingEvent("GWAS", "View", "SUCCESS");
                 analyticsManager.sendEvent("GWAS", "Display", "Type:" + type + ",ID:" + id);
@@ -251,4 +364,5 @@ public class GWASPlotPresenterWidget extends PresenterWidget<GWASPlotPresenterWi
     private List<SearchFacetPageProxy> filterResponse(List<SearchFacetPageProxy> response) {
         return Lists.newArrayList(Iterables.filter(response, input -> input.getCategory() == SearchItemProxy.SUB_CATEGORY.CANDIDATE_GENE_LIST || input.getCategory() == SearchItemProxy.SUB_CATEGORY.GENE));
     }
+
 }

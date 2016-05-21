@@ -9,13 +9,15 @@ public class GWASDataForClient {
 	protected final List<String> chromosomes;
 	protected final List<Integer> chrLengths;
 	protected final List<String> gwasData;
-	
-	public GWASDataForClient(double maxScore,double bonferroniThreshold,List<String> chromosomes,List<Integer> chrLengths,List<String> gwasData) {
+	protected final boolean hasLdData;
+
+	public GWASDataForClient(double maxScore, double bonferroniThreshold, List<String> chromosomes, List<Integer> chrLengths, List<String> gwasData, boolean hasLdData) {
 		this.maxScore = maxScore;
 		this.bonferroniThreshold = bonferroniThreshold;
 		this.chrLengths = chrLengths;
 		this.chromosomes = chromosomes;
 		this.gwasData = gwasData;
+		this.hasLdData = hasLdData;
 	}
 
 	public double getMaxScore() {
@@ -37,5 +39,8 @@ public class GWASDataForClient {
 	public List<String> getGwasData() {
 		return gwasData;
 	}
-	
+
+	public boolean hasLdData() {
+		return hasLdData;
+	}
 }
