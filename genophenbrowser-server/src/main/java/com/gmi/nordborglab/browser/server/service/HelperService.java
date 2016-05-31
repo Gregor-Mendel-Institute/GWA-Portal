@@ -34,7 +34,7 @@ public interface HelperService {
     @PreAuthorize("hasPermission(#traitUom,'READ')")
     Double getPseudoHeritability(Long alleleAssayId, TraitUom traitUom, Transformation transformation) throws CommandLineException;
 
-    @PreAuthorize("#study.id == null or hasPermission(#situdy,'READ')")
+    @PreAuthorize("#study.id == null or hasPermission(#study,'READ')")
     Double getPseudoHeritability(Study study) throws CommandLineException;
 
     @PreAuthorize("hasRole('ROLE_USER')")
