@@ -70,7 +70,7 @@ public class GWASDataTableGenerator implements DataTableGenerator {
             CharSequence json = JsonRenderer.renderDataTable(dataTable, true, false, true);
             dataTables.add(json.toString());
         }
-        gwasDataForClient = new GWASDataForClient(gwasData.getMaxScore(), gwasData.getBonferroniScore(), chromosomes, chrLengths, dataTables);
+        gwasDataForClient = new GWASDataForClient(gwasData.getMaxScore(), gwasData.getBonferroniScore(), chromosomes, chrLengths, dataTables, gwasData.hasLdData());
         return gwasDataForClient;
     }
 

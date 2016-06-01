@@ -1,7 +1,5 @@
 package com.gmi.nordborglab.browser.server.service.impl;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gmi.nordborglab.browser.server.data.isatab.IsaTabExporter;
 import com.gmi.nordborglab.browser.server.domain.AppData;
 import com.gmi.nordborglab.browser.server.domain.BreadcrumbItem;
@@ -29,7 +27,7 @@ import com.gmi.nordborglab.browser.server.domain.util.GWASRuntimeInfo;
 import com.gmi.nordborglab.browser.server.domain.util.NewsItem;
 import com.gmi.nordborglab.browser.server.domain.util.Publication;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
-import com.gmi.nordborglab.browser.server.exceptions.CommandLineException;
+import com.gmi.nordborglab.browser.server.exceptions.Hdf5ServerRestException;
 import com.gmi.nordborglab.browser.server.math.Transformations;
 import com.gmi.nordborglab.browser.server.repository.AlleleAssayRepository;
 import com.gmi.nordborglab.browser.server.repository.CandidateGeneListRepository;
@@ -69,10 +67,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.PumpStreamHandler;
 import org.elasticsearch.action.search.MultiSearchRequestBuilder;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -86,12 +80,17 @@ import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuild
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.joda.time.DateTime;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.supercsv.cellprocessor.CellProcessorAdaptor;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ParseDouble;
@@ -109,9 +108,6 @@ import org.supercsv.util.CsvContext;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -120,7 +116,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -177,6 +172,11 @@ public class HelperServiceImpl implements HelperService {
         }
         return null;
     };
+
+    private RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${HDF5_SERVER}")
+    private String HDF5_SERVER;
 
     @Resource
     private IsaTabExporter isaTabExporter;
@@ -249,6 +249,8 @@ public class HelperServiceImpl implements HelperService {
 
     @Value("${GENOTYPE.data_folder}")
     private String GENOTYPE_FOLDER;
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(HelperService.class);
 
 
     public HelperServiceImpl() {
@@ -382,7 +384,7 @@ public class HelperServiceImpl implements HelperService {
     }
 
     @Override
-    public Double calculatePseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE type, Long alleleAssayId) throws CommandLineException {
+    public Double calculatePseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE type, Long alleleAssayId) throws Hdf5ServerRestException {
         return getPseudoHeritability(traits, type, alleleAssayId);
     }
 
@@ -397,7 +399,7 @@ public class HelperServiceImpl implements HelperService {
         Double pseudoHeritability = -1.0;
         try {
             pseudoHeritability = getPseudoHeritability(traits, transformedValues, alleleAssayId);
-        } catch (CommandLineException e) {
+        } catch (Hdf5ServerRestException e) {
 
         }
         return new TransformationData(type, transformedValues, pseudoHeritability);
@@ -405,70 +407,56 @@ public class HelperServiceImpl implements HelperService {
 
 
     @Override
-    public Double getPseudoHeritability(Long alleleAssayId, TraitUom traitUom, Transformation transformation) throws CommandLineException {
+    public Double getPseudoHeritability(Long alleleAssayId, TraitUom traitUom, Transformation transformation) throws Hdf5ServerRestException {
         return getPseudoHeritability(new ArrayList<>(traitUom.getTraits()), transformation, alleleAssayId);
     }
 
     @Override
-    public Double getPseudoHeritability(Study study) throws CommandLineException {
+    public Double getPseudoHeritability(Study study) throws Hdf5ServerRestException {
         return getPseudoHeritability(new ArrayList<>(study.getTraits()), study.getTransformation(), study.getAlleleAssay().getId());
     }
 
-    private Double getPseudoHeritability(List<Trait> traits, Transformation transformation, Long alleleAssayId) throws CommandLineException {
+    private Double getPseudoHeritability(List<Trait> traits, Transformation transformation, Long alleleAssayId) throws Hdf5ServerRestException {
         return getPseudoHeritability(traits, TransformationDataProxy.TYPE.valueOf(transformation.getName().toUpperCase()), alleleAssayId);
     }
 
 
-    private Double getPseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE transformation, Long alleleAssayId) throws CommandLineException {
+    private Double getPseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE transformation, Long alleleAssayId) throws Hdf5ServerRestException {
         List<Double> transformedValues = Transformations.transform(transformation, Lists.transform(traits, trait2ValueFunc));
         return getPseudoHeritability(traits, transformedValues, alleleAssayId);
     }
 
-    private Double getPseudoHeritability(List<Trait> traits, List<Double> values, Long alleleAssayId) throws CommandLineException {
+    private Double getPseudoHeritability(List<Trait> traits, List<Double> values, Long alleleAssayId) throws Hdf5ServerRestException {
         Double pseudoHeritability = -1.0;
         // get two lists of traits and transformed values
 
         Iterator<Trait> traitIterator = traits.iterator();
         Iterator<Double> valueIterator = values.iterator();
         // save list on temp folder
-        File csvFile = new File(TEMP_FOLDER + File.separator + UUID.randomUUID() + ".csv");
-        try (FileWriter writer = new FileWriter(csvFile)) {
-            writer.append("accessionId," + "phentoype\n");
-            while (traitIterator.hasNext() && valueIterator.hasNext()) {
-                Trait trait = traitIterator.next();
-                Double value = valueIterator.next();
-                String val = value != null ? value.toString() : "";
-                writer.append(trait.getObsUnit().getStock().getPassport().getId().toString() + "," + val + "\n");
+        StringBuilder phenotypeData = new StringBuilder("[");
+        boolean isFirst = true;
+        while (traitIterator.hasNext() && valueIterator.hasNext()) {
+            if (!isFirst) {
+                phenotypeData.append(",");
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+            phenotypeData.append("[");
+            Trait trait = traitIterator.next();
+            Double value = valueIterator.next();
+            String val = value != null ? value.toString() : "";
+            phenotypeData.append(trait.getObsUnit().getStock().getPassport().getId().toString() + "," + val + "]");
+            isFirst = false;
         }
+        phenotypeData.append("]");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        File genotypeFolder = new File(GENOTYPE_FOLDER).getAbsoluteFile();
-        // need to get parent folder because otherwise Permission Denied because of NFS settings
-        String parentFolder = genotypeFolder.getParent();
-
-        String statsPrgm = String.format("docker run --rm -v %s:/GENOTYPE:ro -v %s/:/DATA:ro pygwas_stats -g /GENOTYPE/PYGWAS_GENOTYPES/%s -t pseudo /DATA/%s", parentFolder, TEMP_FOLDER, alleleAssayId, csvFile.getName());
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
-        CommandLine cmdLine = CommandLine.parse(statsPrgm);
-        DefaultExecutor executor = new DefaultExecutor();
-        ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
-        executor.setWatchdog(watchdog);
-        executor.setStreamHandler(streamHandler);
+        HttpEntity<String> entity = new HttpEntity<>(phenotypeData.toString(), headers);
         try {
-            int exitValue = executor.execute(cmdLine);
-            if (exitValue != 0)
-                throw new RuntimeException("Error calculating stats");
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-            Map<String, Object> result = objectMapper.readValue(outputStream.toByteArray(), HashMap.class);
-            pseudoHeritability = (Double) result.get("pseudo_heritability");
-        } catch (IOException e) {
-            throw new CommandLineException("Error calculating stats", e);
-        } finally {
-            // delete phenoptype value
-            csvFile.delete();
+            Map<String, Double> statistics = restTemplate.postForObject("http://" + HDF5_SERVER + "/statistics/" + alleleAssayId + "/pseudo", entity, Map.class);
+            pseudoHeritability = statistics.get("pseudo_heritability");
+        } catch (Exception e) {
+            logger.error("Error while calculating pseudo heritability", e);
+            throw new Hdf5ServerRestException("Error while calculating pseudo heritability", e);
         }
         return pseudoHeritability;
     }

@@ -172,4 +172,11 @@ public class CdvRestControllerTest extends AbstractRestControllerTest {
         verify(cdvService, times(1)).findStudy(eq(1L));
         verifyNoMoreInteractions(cdvService);
     }
+
+    @Test
+    public void getLdForSnp_AccessDeniedIfNoPermission() throws Exception {
+        /*mockMvc.perform(get("/api/analyses/1/ld/1/19004437"))
+                .andDo(print())
+                .andExpect(status.is)*/
+    }
 }

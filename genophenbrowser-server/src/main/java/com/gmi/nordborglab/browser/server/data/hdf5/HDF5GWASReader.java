@@ -90,6 +90,8 @@ public class HDF5GWASReader implements GWASReader {
         GWASStats stats = GWASStats.read(reader);
 
         gwasData = new GWASData(data, stats.numberOfSNPs, stats.bonferroniScore, stats.maxScore);
+        boolean hasLdData = reader.isGroup("/ld");
+        gwasData.setHasLdData(hasLdData);
         reader.close();
         return gwasData;
     }

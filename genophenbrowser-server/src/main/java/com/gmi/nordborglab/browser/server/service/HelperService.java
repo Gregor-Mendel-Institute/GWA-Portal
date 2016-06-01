@@ -10,7 +10,7 @@ import com.gmi.nordborglab.browser.server.domain.phenotype.TransformationData;
 import com.gmi.nordborglab.browser.server.domain.stats.AppStat;
 import com.gmi.nordborglab.browser.server.domain.stats.DateStatHistogramFacet;
 import com.gmi.nordborglab.browser.server.domain.util.UserNotification;
-import com.gmi.nordborglab.browser.server.exceptions.CommandLineException;
+import com.gmi.nordborglab.browser.server.exceptions.Hdf5ServerRestException;
 import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
 import com.gmi.nordborglab.browser.server.rest.SampleData;
 import com.gmi.nordborglab.browser.shared.proxy.DateStatHistogramProxy;
@@ -32,10 +32,10 @@ public interface HelperService {
     List<TransformationData> calculateTransformations(List<Trait> values, Long alleleAssayId);
 
     @PreAuthorize("hasPermission(#traitUom,'READ')")
-    Double getPseudoHeritability(Long alleleAssayId, TraitUom traitUom, Transformation transformation) throws CommandLineException;
+    Double getPseudoHeritability(Long alleleAssayId, TraitUom traitUom, Transformation transformation) throws Hdf5ServerRestException;
 
-    @PreAuthorize("#study.id == null or hasPermission(#situdy,'READ')")
-    Double getPseudoHeritability(Study study) throws CommandLineException;
+    @PreAuthorize("#study.id == null or hasPermission(#study,'READ')")
+    Double getPseudoHeritability(Study study) throws Hdf5ServerRestException;
 
     @PreAuthorize("hasRole('ROLE_USER')")
     List<UserNotification> getUserNotifications(Integer limit);
@@ -52,7 +52,7 @@ public interface HelperService {
 
     SampleData parseAndUpdateAccession(SampleData value);
 
-    Double calculatePseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE type, Long alleleAssayId) throws CommandLineException;
+    Double calculatePseudoHeritability(List<Trait> traits, TransformationDataProxy.TYPE type, Long alleleAssayId) throws Hdf5ServerRestException;
 
     @PreAuthorize("#study.id == null or hasPermission(#study,'READ')")
     Double calculateShapiroWilkPvalue(Study study);

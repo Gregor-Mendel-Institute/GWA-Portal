@@ -10,7 +10,7 @@ import com.gmi.nordborglab.browser.server.domain.germplasm.Taxonomy;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
-import com.gmi.nordborglab.browser.server.exceptions.CommandLineException;
+import com.gmi.nordborglab.browser.server.exceptions.Hdf5ServerRestException;
 import com.gmi.nordborglab.browser.server.math.Transformations;
 import com.gmi.nordborglab.browser.server.repository.ExperimentRepository;
 import com.gmi.nordborglab.browser.server.repository.PassportRepository;
@@ -369,7 +369,7 @@ public class HelperServiceTest extends BaseTest {
 
 
     @Test
-    public void testGetPseudoHeritabilityFromTraitUom() throws CommandLineException {
+    public void testGetPseudoHeritabilityFromTraitUom() throws Hdf5ServerRestException {
         SecurityUtils.setAnonymousUser();
         TraitUom traitUom = traitUomRepository.findOne(5L);
         Transformation transformation = new Transformation();
@@ -380,7 +380,7 @@ public class HelperServiceTest extends BaseTest {
     }
 
     @Test
-    public void testGetPseudoHeritabilityFromStudy() throws CommandLineException {
+    public void testGetPseudoHeritabilityFromStudy() throws Hdf5ServerRestException {
         SecurityUtils.setAnonymousUser();
         Study study = studyRepository.findOne(160L);
         Double pseudo = service.getPseudoHeritability(study);

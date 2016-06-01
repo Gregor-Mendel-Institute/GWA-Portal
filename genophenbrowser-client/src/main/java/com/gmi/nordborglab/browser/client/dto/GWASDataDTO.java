@@ -13,7 +13,7 @@ public class GWASDataDTO {
     protected final List<DataTable> gwasDataTables = new ArrayList<DataTable>();
     protected final List<Integer> chrLengths = new ArrayList<Integer>();
     protected final List<String> chromosomes = new ArrayList<>();
-
+    protected final boolean hasLdData;
 
     public GWASDataDTO(GWASData data) {
         this.maxScore = data.getMaxScore();
@@ -29,6 +29,7 @@ public class GWASDataDTO {
         for (int i = 0; i < data.getGWASDataTablesJSON().length(); i++) {
             gwasDataTables.add(DataTableUtils.createDataTable(data.getGWASDataTablesJSON().get(i)));
         }
+        this.hasLdData = data.hasLdData();
     }
 
 
@@ -52,5 +53,9 @@ public class GWASDataDTO {
 
     public List<Integer> getChrLengths() {
         return chrLengths;
+    }
+
+    public boolean hasLdData() {
+        return hasLdData;
     }
 }

@@ -1,7 +1,5 @@
 package com.gmi.nordborglab.browser.server.data;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import java.util.Map;
 
 /**
@@ -18,6 +16,7 @@ public class GWASData {
     private final double bonferroniScore;
     private final float maxScore;
     private String filename;
+    private boolean hasLdData = false;
 
     public GWASData(Map<String, ChrGWAData> chrGWASData, long numberOfSNPs, double bonferroniScore, float maxScore) {
         this.chrGWASData = chrGWASData;
@@ -54,5 +53,13 @@ public class GWASData {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public boolean hasLdData() {
+        return hasLdData;
+    }
+
+    public void setHasLdData(boolean hasLdData) {
+        this.hasLdData = hasLdData;
     }
 }

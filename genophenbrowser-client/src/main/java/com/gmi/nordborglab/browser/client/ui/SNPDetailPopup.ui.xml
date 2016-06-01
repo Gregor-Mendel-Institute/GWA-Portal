@@ -77,7 +77,7 @@
         }
 
         .actionLink {
-
+            cursor: pointer;
         }
     </ui:style>
 
@@ -89,15 +89,18 @@
                 <g:InlineHyperlink text="Detailed SNP Information" addStyleNames="{style.actionLink}"
                                    ui:field="snpInfoLink"></g:InlineHyperlink>
             </li>
-            <!--<li>
-                <g:Anchor ui:field="local_ld_link" text="Show LD in this region" addStyleNames="{style.actionLink}"></g:Anchor>
+            <li>
+                <g:Anchor ui:field="snpLdLink" text="Show LD in this region"
+                          addStyleNames="{style.actionLink}"></g:Anchor>
             </li>
             <li>
-                <g:Anchor ui:field="local_exact_ld_link" text="Calculate exact LD in this region" addStyleNames="{style.actionLink}"></g:Anchor>
+                <g:Anchor ui:field="snpExactLdLink" text="Calculate exact LD in this region"
+                          addStyleNames="{style.actionLink}"></g:Anchor>
             </li>
             <li>
-                <g:Anchor ui:field="global_ld_link" text="Highlight SNPs in LD for this SNP" addStyleNames="{style.actionLink}"></g:Anchor>
-            </li>-->
+                <g:Anchor ui:field="snpGlobalLdLink" text="Highlight SNPs in LD for this SNP"
+                          addStyleNames="{style.actionLink}"></g:Anchor>
+            </li>
         </ul>
     </g:HTMLPanel>
 </ui:UiBinder>

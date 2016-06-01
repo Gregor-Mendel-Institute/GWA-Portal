@@ -13,6 +13,7 @@ import com.github.timeu.gwtlibs.gwasviewer.client.SettingsPanel;
 import com.github.timeu.gwtlibs.gwasviewer.client.Track;
 import com.github.timeu.gwtlibs.gwasviewer.client.events.FilterChangeEvent;
 import com.github.timeu.gwtlibs.gwasviewer.client.events.GeneDataSource;
+import com.github.timeu.gwtlibs.ldviewer.client.LDData;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.dto.GWASDataDTO;
 import com.gmi.nordborglab.browser.client.ui.PlotDownloadPopup;
@@ -38,7 +39,9 @@ import org.gwtbootstrap3.client.ui.ModalBody;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -81,6 +84,7 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
     private String[] gene_mark_colors = {"red", "red", "blue", "red", "green"};
     protected List<GWASViewer> gwasGeneViewers = new ArrayList<>();
     protected List<FilterChangeEvent.Handler> filterChangeHandlers = new ArrayList<>();
+    protected Map<String, DataTable> gwasDataTables = new HashMap<>();
     private final GeneDataSource geneDataSource;
     private Track[] tracks;
     private final Modal popUpPanel = new Modal();
@@ -163,18 +167,25 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
 
     @Override
     public void drawGWASPlots(GWASDataDTO gwasData) {
+        if (gwasData == null) {
+            //TODO display loading screen
+            return;
+        }
         geneSearchBox.forceRedraw();
         Integer i = 1;
         java.util.Iterator<DataTable> iterator = gwasData.getGwasDataTables().iterator();
+        gwasDataTables.clear();
         while (iterator.hasNext()) {
             GWASViewer chart = null;
             DataTable dataTable = iterator.next();
             String[] color = new String[]{colors[i % colors.length]};
             String gene_marker_color = gene_mark_colors[i % gene_mark_colors.length];
+            String chr = gwasData.getChromosomes().get(i - 1);
+            gwasDataTables.put(chr, dataTable);
             if (gwasGeneViewers.size() >= i)
                 chart = gwasGeneViewers.get((i - 1));
             if (chart == null) {
-                chart = new GWASViewer(gwasData.getChromosomes().get(i - 1), color, gene_marker_color, geneDataSource);
+                chart = new GWASViewer(chr, color, gene_marker_color, geneDataSource);
                 chart.setMinorFilterType(SettingsPanel.MINOR_FILTER.MAC);
                 // TODO activate later
                 chart.setUploadTrackWidget(null);
@@ -270,6 +281,26 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
             viewer.addDisplayFeature(feature, true);
         }
         viewer.refresh();
+    }
+
+    @Override
+    public void showGlobalLd(Integer position, LDGlobalData ldData) {
+        for (GWASViewer viewer : gwasGeneViewers) {
+            LDGlobal data = ldData.getGlobalData(viewer.getChromosome().toLowerCase());
+            viewer.showColoredLDValues(position, data.getSnps(), data.getR2());
+        }
+    }
+
+    @Override
+    public void showLdForRegion(String chromosome, LDData ldData, int start, int end) {
+        Optional<GWASViewer> gwasViewer = getViewerFromChr(chromosome);
+        gwasViewer.get().loadLDPlot(ldData.getSnps(), ldData.getR2(), start, end);
+    }
+
+    @Override
+    public DataTable getGWASData(String chromosome) {
+        return gwasDataTables.get(chromosome);
+
     }
 
     @UiHandler("geneSearchBox")

@@ -27,4 +27,8 @@ public class GWASData extends JavaScriptObject {
 	public final native JsArrayString getGWASDataTablesJSON() /*-{
 		return this.gwasData;
 	}-*/;
+
+	public final native boolean hasLdData() /*-{
+        return this.hasLdData;
+    }-*/;
 }

@@ -24,7 +24,7 @@
         <com.fasterxml.jackson.dataformat.smile>2.4.4</com.fasterxml.jackson.dataformat.smile>
         <com.ffasterxml.jackson>2.6.3</com.ffasterxml.jackson>
         <postgresql.version>9.4-1201-jdbc41</postgresql.version>
-        <jhdf5.version>13.06.3-SNAPSHOT</jhdf5.version>
+        <jhdf5.version>14.12.6</jhdf5.version>
         <flanagan.version>1.0.0</flanagan.version>
         <jstl.version>1.2</jstl.version>
         <esapi.version>2.1.0</esapi.version>

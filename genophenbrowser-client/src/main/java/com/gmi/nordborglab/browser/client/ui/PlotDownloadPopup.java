@@ -111,7 +111,7 @@ public class PlotDownloadPopup extends Composite {
     private String getCurrentRestEndpoint() {
         switch (type) {
             case STUDY:
-                return "gwas";
+                return "analyses";
             case GWASVIEWER:
                 return "gwasviewer";
         }
@@ -121,7 +121,7 @@ public class PlotDownloadPopup extends Composite {
     public String getDownloadUrl() {
         if (id == null)
             return "";
-        String url = GWT.getHostPageBaseURL() + "/provider/" + getCurrentRestEndpoint() + "/" + id + "/plots?mac=" + getCurrentMac();
+        String url = GWT.getHostPageBaseURL() + "/api/" + getCurrentRestEndpoint() + "/" + id + "/plots?mac=" + getCurrentMac();
         FORMAT format = getCurrentFormat();
         if (format != null)
             url += "&format=" + format.name().toLowerCase();

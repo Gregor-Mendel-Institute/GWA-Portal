@@ -7,9 +7,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
+import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 
-public class StudyGWASPlotView extends ViewImpl implements
+public class StudyGWASPlotView extends ViewWithUiHandlers<StudyGWASPlotUiHandlers> implements
         StudyGWASPlotPresenter.MyView {
 
     private final Widget widget;
@@ -28,6 +28,18 @@ public class StudyGWASPlotView extends ViewImpl implements
         widget = binder.createAndBindUi(this);
         bindSlot(StudyGWASPlotPresenter.SLOT_GWAS_PLOT, gwasPlotContainer);
         snpPopOver.setAnimationEnabled(true);
+        snpPopOver.getSNPLdLink().addClickHandler((e) -> {
+            getUiHandlers().showLdForRegion(snpPopOver.getChromosome().toString(), snpPopOver.getPosition());
+            snpPopOver.hide();
+        });
+        snpPopOver.getSnpExactLdLink().addClickHandler((e) -> {
+            getUiHandlers().showExactLdForRegion(snpPopOver.getChromosome().toString(), snpPopOver.getPosition());
+            snpPopOver.hide();
+        });
+        snpPopOver.getSnpGlobalLdLink().addClickHandler((e) -> {
+            getUiHandlers().showLdForSNP(snpPopOver.getChromosome().toString(), snpPopOver.getPosition());
+            snpPopOver.hide();
+        });
     }
 
     @Override
@@ -41,5 +53,10 @@ public class StudyGWASPlotView extends ViewImpl implements
         snpPopOver.setDataPoint(analysisId, event.getChromosome(), event.getxVal());
         snpPopOver.setPopupPosition(event.getClientX(), event.getClientY() - 84 / 2);
         snpPopOver.show();
+    }
+
+    @Override
+    public void setHasLdData(boolean hasLdData) {
+        snpPopOver.setHasLdData(hasLdData);
     }
 }

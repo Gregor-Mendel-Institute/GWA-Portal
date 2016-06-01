@@ -28,11 +28,11 @@
                         <b:FormLabel for="chr" addStyleNames="col-sm-3">Chr</b:FormLabel>
                         <g:FlowPanel addStyleNames="col-sm-7">
                             <b:InlineRadio name="chr" text="All" formValue="" value="true"/>
-                            <b:InlineRadio name="chr" text="1" formValue="chr1"/>
-                            <b:InlineRadio name="chr" text="2" formValue="chr2"/>
-                            <b:InlineRadio name="chr" text="3" formValue="chr3"/>
-                            <b:InlineRadio name="chr" text="4" formValue="chr4"/>
-                            <b:InlineRadio name="chr" text="5" formValue="chr5"/>
+                            <b:InlineRadio name="chr" text="1" formValue="1"/>
+                            <b:InlineRadio name="chr" text="2" formValue="2"/>
+                            <b:InlineRadio name="chr" text="3" formValue="3"/>
+                            <b:InlineRadio name="chr" text="4" formValue="4"/>
+                            <b:InlineRadio name="chr" text="5" formValue="5"/>
                         </g:FlowPanel>
                     </b:FormGroup>
                     <b:FormGroup ui:field="macGroup">
