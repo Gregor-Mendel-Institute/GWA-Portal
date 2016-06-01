@@ -300,6 +300,7 @@ public class CdvServiceImpl implements CdvService {
         study.getJob().setModificationDate(new Date());
         study.getJob().setTask("Waiting for workflow to start");
         study.getJob().setPayload(null);
+        study.getJob().setTaskid(null);
         studyRepository.save(study);
         return study;
     }
