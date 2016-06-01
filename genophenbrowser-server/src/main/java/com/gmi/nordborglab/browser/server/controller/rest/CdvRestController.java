@@ -9,13 +9,10 @@ import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.service.CdvService;
 import com.gmi.nordborglab.browser.shared.util.ConstEnums;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,12 +22,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Collection;
 
 /**
@@ -38,13 +34,12 @@ import java.util.Collection;
  */
 @RestController
 @RequestMapping("/api/analyses")
-public class CdvRestController {
+public class CdvRestController extends AbstractRestController {
 
     @Autowired
     private CdvService cdvService;
 
-    @Value("${HDF5_SERVER}")
-    private String HDF5_SERVER;
+
 
     @RequestMapping(method = RequestMethod.GET)
     @JsonView(Views.Studies.class)
@@ -106,9 +101,9 @@ public class CdvRestController {
         for (Trait trait : study.getTraits()) {
             if (!isFirst) {
                 builder.append(",");
-                isFirst = false;
             }
             builder.append(trait.getObsUnit().getStock().getPassport().getId()).append("");
+            isFirst = false;
         }
         builder.append("]");
         passThroughRequest(response, "/ld/" + genotypeId + "/" + chr + "/" + position, builder.toString());
@@ -123,26 +118,15 @@ public class CdvRestController {
         passThroughRequest(response, url, body != null ? body : "");
     }
 
-    private void passThroughRequest(HttpServletResponse response, String postUrl) throws IOException {
-        passThroughRequest(response, postUrl, null);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{analysisId}/plots")
+    @PreAuthorize("hasPermission(#analysisId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
+    public void downloadPlot(HttpServletResponse response, HttpServletRequest request,
+                             @PathVariable Long analysisId,
+                             @RequestParam(value = "chr", required = false) String chr,
+                             @RequestParam(value = "mac", required = false, defaultValue = "15") Integer minMac,
+                             @RequestParam(value = "format", required = false, defaultValue = "png") String format) throws IOException {
+        donwloadPlotRequest(response, "study", analysisId, chr, minMac, format);
     }
 
-    private void passThroughRequest(HttpServletResponse response, String postUrl, String body) throws IOException {
-        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
-        URL url = new URL("http://" + HDF5_SERVER + postUrl);
-        HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-        if (body == null) {
-            httpCon.setRequestMethod("GET");
-        } else {
-            httpCon.setDoOutput(true);
-            httpCon.setRequestMethod("POST");
-            httpCon.setRequestProperty("Content-Type", "application/json");
-            IOUtils.write(body, httpCon.getOutputStream());
-        }
-        int responseCode = httpCon.getResponseCode();
-        if (responseCode != 200) {
-            throw new RuntimeException("Failed to retrieve ld");
-        }
-        IOUtils.copy(httpCon.getInputStream(), response.getOutputStream());
-    }
 }

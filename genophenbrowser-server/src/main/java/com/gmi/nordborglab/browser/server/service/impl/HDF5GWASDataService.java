@@ -31,9 +31,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import ncsa.hdf.hdf5lib.exceptions.HDF5FileNotFoundException;
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteWatchdog;
 import org.elasticsearch.action.search.SearchResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -347,52 +344,4 @@ public class HDF5GWASDataService implements GWASDataService {
         }
         return data;
     }
-
-    private String generateGWASPlots(String gwasFile, String gwasFolder, String name, String chr, Integer minMac, String format) {
-        if (!SUPPORTED_PLOT_FORMATS.contains(format)) {
-            throw new RuntimeException(String.format("Format %s not supported", format));
-        }
-        String chrFlag = "";
-        String chrNamePart = "";
-        //FIXME workaround because mounting gwasFolder directly sometimes causes problems but usually works when mounting the parent folder
-        File folder = new File(gwasFolder).getAbsoluteFile();
-        String parentFolder = folder.getParent();
-        String targetFolder = folder.getName();
-
-        String plotterPrgm = String.format("docker run --rm -v %s:/GWAS_DATA:ro -v %s/PLOT_OUTPUT:/PLOT_OUTPUT pygwas_plotter", parentFolder, TEMP_FOLDER);
-        if (chr != null && !chr.isEmpty()) {
-            if (!SUPPORTED_CHROMOSOMES.contains(chr)) {
-                throw new RuntimeException(String.format("Chromosome %s invalid", chr));
-            }
-            chrFlag = String.format("-c %s", chr);
-            chrNamePart = String.format("_%s", chr);
-        }
-        String outputFile = String.format("%s%s_mac%s.%s", name, chrNamePart, minMac, format);
-        String plotterCmd = String.format("%s /GWAS_DATA/%s/%s -m %d -o /PLOT_OUTPUT/%s %s", plotterPrgm, targetFolder, gwasFile, minMac, outputFile, chrFlag);
-        CommandLine cmdLine = CommandLine.parse(plotterCmd);
-        DefaultExecutor executor = new DefaultExecutor();
-        ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
-        executor.setWatchdog(watchdog);
-        try {
-            int exitValue = executor.execute(cmdLine);
-            if (exitValue != 0)
-                throw new RuntimeException("Error creating plots");
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
-        }
-        return String.format("%s/PLOT_OUTPUT/%s", TEMP_FOLDER, outputFile);
-    }
-
-    @Override
-    public String getStudyPlotFile(Long id, String chr, Integer minMac, String format) {
-        String hdf5file = String.format("%s.hdf5", id);
-        return generateGWASPlots(hdf5file, GWAS_STUDY_FOLDER, id.toString(), chr, minMac, format);
-    }
-
-    @Override
-    public String getGWASViewerPlotFile(Long id, String chr, Integer minMac, String format) {
-        String hdf5file = String.format("%s.hdf5", id);
-        return generateGWASPlots(hdf5file, GWAS_VIEWER_FOLDER, id.toString(), chr, minMac, format);
-    }
-
 }
