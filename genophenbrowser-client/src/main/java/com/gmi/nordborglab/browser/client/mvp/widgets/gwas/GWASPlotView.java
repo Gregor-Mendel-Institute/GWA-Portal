@@ -21,9 +21,11 @@ import com.gmi.nordborglab.browser.client.ui.ResizeableFlowPanel;
 import com.gmi.nordborglab.browser.shared.proxy.SearchFacetPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.common.base.Optional;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -42,6 +44,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -139,6 +142,7 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
     ChosenListBox geneSearchBox;
     @UiField
     LayoutPanel panel;
+    private String geneInfoUrl;
 
     @Inject
     public GWASPlotView(final Binder binder, final GeneDataSource geneDataSource) {
@@ -157,6 +161,12 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
         popUpPanel.add(modalBody);
         popUpPanel.setTitle("Download GWAS Plots");
         geneSearchBox.getElement().getParentElement().getParentElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
+        try {
+            geneInfoUrl = Dictionary.getDictionary("appData").get("geneInfoUrl");
+        } catch (MissingResourceException e) {
+
+        }
+
     }
 
     @Override
@@ -196,7 +206,7 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
                 chart.addFilterChangeHandler(filterChangeHandler);
                 filterChangeHandlers.add(filterChangeHandler);
                 gwasGeneViewers.add(chart);
-                chart.setGeneInfoUrl("http://arabidopsis.org/servlets/TairObject?name={0}&type=gene");
+                chart.setGeneInfoUrl(geneInfoUrl);
                 container.add((IsWidget) chart);
 
                 chart.addSelectTrackHandler(event -> {

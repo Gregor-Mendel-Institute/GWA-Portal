@@ -28,6 +28,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -152,6 +155,8 @@ public class JBrowseAnnotationDataService implements AnnotationDataService {
     public void init() {
         SmileFactory factory = new SmileFactory();
         ObjectMapper mapper = new ObjectMapper(factory);
+        // Requried if we want to convert
+        //ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         try {
             File annotationMapFile = new File(GENE_ANNOTATION_FILE);

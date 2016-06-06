@@ -160,6 +160,7 @@
         </sec:authorize>
         var appData = {
             'jBrowseUrl': '${jbrowseUrl}',
+            'geneInfoUrl': '${geneInfoUrl}',
             'gaTrackingId': '${gaTrackingId}',
             'contactEmail': '${contactEmail}'
         };

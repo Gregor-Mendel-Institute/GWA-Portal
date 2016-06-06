@@ -20,12 +20,16 @@ public class MainController {
     @Value("${SITE.contactemail}")
     private String contactEmail;
 
+    @Value("${GENE.info_url}")
+    private String geneInfoUrl = "";
+
     @RequestMapping(method =  {RequestMethod.GET, RequestMethod.HEAD})
     public ModelAndView index() {
         ModelAndView result = new ModelAndView("index");
         result.addObject("jbrowseUrl", jbrowseUrl);
         result.addObject("gaTrackingId", gaTrackingId);
         result.addObject("contactEmail", contactEmail);
+        result.addObject("geneInfoUrl",geneInfoUrl);
         return result;
     }
 }
