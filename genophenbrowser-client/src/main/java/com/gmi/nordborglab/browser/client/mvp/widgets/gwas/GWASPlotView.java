@@ -21,7 +21,6 @@ import com.gmi.nordborglab.browser.client.ui.ResizeableFlowPanel;
 import com.gmi.nordborglab.browser.shared.proxy.SearchFacetPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.common.base.Optional;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -280,13 +279,13 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
 
     @Override
     public void removeDisplayFeaturesFromGWAS(int chr, Collection<DisplayFeature> features) {
-        GWASViewer viewer = (GWASViewer) container.getWidget(chr - 1);
+        GWASViewer viewer = getViewerFromChr("chr" + chr).get();
         viewer.removeDisplayFeatures(features);
     }
 
     @Override
     public void addDisplayFeaturesToGWAS(int chr, Collection<DisplayFeature> features) {
-        GWASViewer viewer = (GWASViewer) container.getWidget(chr - 1);
+        GWASViewer viewer = getViewerFromChr("chr" + chr).get();
         for (DisplayFeature feature : features) {
             viewer.addDisplayFeature(feature, true);
         }

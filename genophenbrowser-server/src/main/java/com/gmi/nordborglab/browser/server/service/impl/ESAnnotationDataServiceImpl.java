@@ -74,8 +74,8 @@ import java.util.regex.Pattern;
 public class ESAnnotationDataServiceImpl implements AnnotationDataService {
 
 
-    private static Pattern geneIdPattern = Pattern.compile("^AT([1-5]{1})G\\d+$");
-    private static Pattern regionPattern = Pattern.compile("^Chr([1-5]{1})\\:(\\d+)\\-(\\d+)$");
+    private static Pattern geneIdPattern = Pattern.compile("^[a-z]{2}([\\d]{1})G\\w+$", Pattern.CASE_INSENSITIVE);
+    private static Pattern regionPattern = Pattern.compile("^Chr(\\d{1,2})\\:(\\d+)\\-(\\d+)$", Pattern.CASE_INSENSITIVE);
 
     @Resource
     protected GenotypeReader genotypeReader;
