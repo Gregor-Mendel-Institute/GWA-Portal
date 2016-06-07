@@ -55,7 +55,7 @@ public class GenotypeCardRenderer {
             percentage = Math.round(fraction);
         }
         if (percentage < 20) {
-            overlapLabelStyle = "important";
+            overlapLabelStyle = "danger";
         }
         else if (percentage < 100) {
             overlapLabelStyle = "warning";
