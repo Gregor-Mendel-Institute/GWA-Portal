@@ -119,7 +119,7 @@
                             </g:LayoutPanel>
                         </g:layer>
                         <g:layer left="295px" right="0">
-                            <g:LayoutPanel>
+                            <g:LayoutPanel ui:field="phenotypeDataContainer">
                                 <g:layer top="0" height="50px">
                                     <b:NavPills ui:field="statisticTypePills"></b:NavPills>
                                 </g:layer>

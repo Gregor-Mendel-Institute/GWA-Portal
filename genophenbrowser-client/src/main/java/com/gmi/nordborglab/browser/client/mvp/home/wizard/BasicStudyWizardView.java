@@ -197,6 +197,8 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
     ExperimentEditEditor experimentEditEditor;
     @UiField
     Form studyForm;
+    @UiField
+    LayoutPanel phenotypeDataContainer;
     private Modal phenotypeUploadPopup = new Modal();
     private ResizeLayoutPanel phenotypeUploadPanel = new ResizeLayoutPanel();
 
@@ -359,8 +361,9 @@ public class BasicStudyWizardView extends ViewWithUiHandlers<BasicStudyWizardUiH
         createExperimentCard.addClickHandler(createExperimentClickHandler);
         createExperimentCard.getElement().setId("createExperimentCard");
         initMissingGenotypesDataGrid();
-
+        phenotypeDataContainer.getWidget(1).getElement().getParentElement().getStyle().setOverflow(Style.Overflow.VISIBLE);
         initCallouts();
+
     }
 
     @UiHandler("createExperimentPanel")
