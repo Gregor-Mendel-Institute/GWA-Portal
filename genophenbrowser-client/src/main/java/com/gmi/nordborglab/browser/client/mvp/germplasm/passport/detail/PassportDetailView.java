@@ -136,14 +136,14 @@ public class PassportDetailView extends ViewImpl implements
         this.placeManager = placeManager;
 
 
-        phenotypeDataGrid = new DataGrid<PhenotypeProxy>(10, dataGridResources, new EntityProxyKeyProvider<PhenotypeProxy>());
+        phenotypeDataGrid = new DataGrid<>(50, dataGridResources, new EntityProxyKeyProvider<>());
         phenotypeDataGrid.setWidth("100%");
 
-        studyDataGrid = new DataGrid<StudyProxy>(10, dataGridResources, new EntityProxyKeyProvider<StudyProxy>());
+        studyDataGrid = new DataGrid<>(50, dataGridResources, new EntityProxyKeyProvider<>());
         studyDataGrid.setWidth("100%");
 
 
-        stockDataGrid = new DataGrid<StockProxy>(10, dataGridResources, new EntityProxyKeyProvider<StockProxy>());
+        stockDataGrid = new DataGrid<>(50, dataGridResources, new EntityProxyKeyProvider<>());
         stockDataGrid.setWidth("100%");
         widget = binder.createAndBindUi(this);
         stockPager.setDisplay(stockDataGrid);
