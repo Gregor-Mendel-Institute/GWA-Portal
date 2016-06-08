@@ -7,7 +7,6 @@ import com.gmi.nordborglab.browser.client.ui.cells.AvatarNameCell;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.NumberCell;
-import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -95,14 +94,6 @@ public class UserListView extends ViewWithUiHandlers<UserListUiHandler> implemen
                 return object.getNumberOfAnalysis();
             }
         }, "# Analysis");
-
-        table.addColumn(new Column<AppUserProxy, String>(new TextCell()) {
-            @Override
-            public String getValue(AppUserProxy object) {
-                return object.getEmail();
-            }
-        }, "Email");
-
         table.setColumnWidth(0, 250, Style.Unit.PX);
     }
 
