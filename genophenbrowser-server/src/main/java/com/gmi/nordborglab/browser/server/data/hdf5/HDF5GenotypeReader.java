@@ -7,6 +7,7 @@ import com.gmi.nordborglab.browser.server.data.GenotypeReader;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.primitives.Ints;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -92,8 +93,7 @@ public class HDF5GenotypeReader implements GenotypeReader {
     }
 
     private int[] getPositions(IHDF5Reader reader, Integer chr, int start, int end) {
-        final int chr_ix = chr - 1;
-        final int[] chr_region = reader.int32().getMatrixAttr("positions", "chr_regions")[chr_ix];
+        final int[] chr_region = getChrRegionFromChr(reader, chr);
         int[] positions = reader.uint32().readArrayBlockWithOffset("positions", chr_region[1] - chr_region[0], chr_region[0]);
         final int start_pos_ix = getPositionIndex(positions, start);
         final int end_pos_ix = getPositionIndex(positions, end) + 1;
@@ -106,7 +106,6 @@ public class HDF5GenotypeReader implements GenotypeReader {
         final long accessionCount = info.getNumberOfElements();
         List<String> accessionIds = Lists.newArrayList(reader.string().readArray("accessions"));
         List<Integer> passportIndices = Lists.newArrayList();
-        final int chr_ix = chr - 1;
         // get the indices of the passportIds
         if (passportIds != null) {
             for (String passportId : passportIds) {
@@ -117,7 +116,7 @@ public class HDF5GenotypeReader implements GenotypeReader {
             }
         }
         // get the position index;
-        final int[] chr_region = reader.int32().getMatrixAttr("positions", "chr_regions")[chr_ix];
+        final int[] chr_region = getChrRegionFromChr(reader, chr);
         final int block_size = chr_region[1] - chr_region[0];
         final int[] positions = reader.uint32().readArrayBlockWithOffset("positions", block_size, chr_region[0]);
         final int start_pos_ix = chr_region[0] + getPositionIndex(positions, start);
@@ -143,6 +142,15 @@ public class HDF5GenotypeReader implements GenotypeReader {
             ix = -ix - 1;
         }
         return ix;
+    }
+
+    private static int[] getChrRegionFromChr(IHDF5Reader reader, Integer chr) {
+        int chrIdx = chr - 1;
+        if (reader.hasAttribute("positions", "chrs")) {
+            int[] chrs = reader.int32().getArrayAttr("positions", "chrs");
+            chrIdx = Ints.indexOf(chrs, chr);
+        }
+        return reader.int32().getMatrixAttr("positions", "chr_regions")[chrIdx];
     }
 
 
