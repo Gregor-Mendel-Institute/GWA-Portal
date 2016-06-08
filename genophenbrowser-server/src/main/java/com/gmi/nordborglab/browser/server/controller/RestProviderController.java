@@ -115,7 +115,7 @@ public class RestProviderController {
     @ResponseBody
     GWASData getPvalues(@PathVariable("id") Long id) {
         GWASData data = gwasDataService.getGWASDataByStudyId(id, null, false);
-        data.setFilename(id + ".pvals");
+        data.setFilename(id + "_pvals.csv");
         return data;
     }
 

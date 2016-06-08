@@ -22,8 +22,8 @@ import java.nio.charset.Charset;
  */
 public class CSVGwasDataConverter extends AbstractHttpMessageConverter<GWASData> {
     public static final MediaType MEDIA_TYPE = new MediaType("text", "csv", Charset.forName("utf-8"));
-    public final String[] header = new String[] { "chr", "position", "score", "mac",
-            "maf", "gve" };
+    public final String[] header = new String[]{"chr", "pos", "score", "maf",
+            "mac", "GVE"};
 
 
     public CSVGwasDataConverter() {
@@ -57,10 +57,10 @@ public class CSVGwasDataConverter extends AbstractHttpMessageConverter<GWASData>
                 boolean hasGVE = chrData.getGVEs() != null;
                 for (int i = 0;i<chrData.getPositions().length;i++) {
                     if (hasGVE) {
-                        writer.write(chr,chrData.getPositions()[i],chrData.getPvalues()[i],chrData.getMacs()[i],chrData.getMafs()[i],chrData.getGVEs()[i]);
+                        writer.write(chr, chrData.getPositions()[i], chrData.getPvalues()[i], chrData.getMafs()[i], chrData.getMacs()[i], chrData.getGVEs()[i]);
                     }
                     else {
-                        writer.write(chr,chrData.getPositions()[i],chrData.getPvalues()[i],chrData.getMacs()[i],chrData.getMafs()[i],"N/A");
+                        writer.write(chr, chrData.getPositions()[i], chrData.getPvalues()[i], chrData.getMafs()[i], chrData.getMacs()[i], "");
                     }
                 }
             }
