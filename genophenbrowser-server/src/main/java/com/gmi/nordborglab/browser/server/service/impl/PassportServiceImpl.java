@@ -10,6 +10,8 @@ import com.gmi.nordborglab.browser.server.domain.stats.PassportStats;
 import com.gmi.nordborglab.browser.server.repository.PassportRepository;
 import com.gmi.nordborglab.browser.server.repository.StockRepository;
 import com.gmi.nordborglab.browser.server.service.PassportService;
+import com.gmi.nordborglab.jpaontology.model.Term;
+import com.gmi.nordborglab.jpaontology.repository.TermRepository;
 import com.google.visualization.datasource.base.DataSourceException;
 import com.google.visualization.datasource.datatable.ColumnDescription;
 import com.google.visualization.datasource.datatable.DataTable;
@@ -44,6 +46,9 @@ public class PassportServiceImpl implements PassportService {
 
     @Resource
     protected StockRepository stockRepository;
+
+    @Resource
+    protected TermRepository termRepository;
 
     @Override
     public PassportPage findAll(Long taxonomyId, PassportSearchCriteria filter, int start, int size) {
@@ -94,11 +99,13 @@ public class PassportServiceImpl implements PassportService {
 
             for (Object[] item : numberOfPasportsPerTraitOntology) {
                 String traitOntology = (String) item[0];
-                table.addRowFromValues(traitOntology != null ? traitOntology : "N/A", item[1], 0);
+                Term term = termRepository.findByAcc(traitOntology);
+                table.addRowFromValues(term != null ? term.getName() : "N/A", item[1], 0);
             }
             for (Object[] item : numberOfPasportsPerEnvironmentOntology) {
                 String envOntology = (String) item[0];
-                table.addRowFromValues(envOntology != null ? envOntology : "N/A", item[1], 1);
+                Term term = termRepository.findByAcc(envOntology);
+                table.addRowFromValues(term != null ? term.getName() : "N/A", item[1], 1);
             }
 
             for (Object[] item : numberOfPassportsPerStatisticType) {
