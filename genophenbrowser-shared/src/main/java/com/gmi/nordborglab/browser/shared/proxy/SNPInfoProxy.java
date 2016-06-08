@@ -17,23 +17,23 @@ import java.util.List;
 @ProxyForName(value = "com.gmi.nordborglab.browser.server.data.annotation.SNPInfo")
 public interface SNPInfoProxy extends ValueProxy {
 
-    public long getPosition();
+    long getPosition();
 
-    public String getChr();
+    String getChr();
 
-    public Boolean isInGene();
+    Boolean isInGene();
 
-    public String getAlt();
+    String getAlt();
 
-    public String getRef();
+    String getRef();
 
-    public String getLyr();
+    String getAnc();
 
-    public List<SNPAnnotationProxy> getAnnotations();
+    List<SNPAnnotationProxy> getAnnotations();
 
-    public String getGene();
+    String getGene();
 
-    public Integer getRefCount();
+    Integer getRefCount();
 
-    public Integer getAltCount();
+    Integer getAltCount();
 }

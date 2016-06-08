@@ -284,7 +284,8 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
         QueryBuilder filter = QueryBuilders.rangeQuery("position").from(start).to(end);
         SearchRequestBuilder requestBuilder = client.prepareSearch(String.format(INDEX_PREFIX, "chr" + chr))
                 .addSort("position", SortOrder.ASC)
-                .setSize(size).setFrom(page).addFields("annotation", "inGene", "ref", "alt", "lyr").setFetchSource("annotations", null)
+                //FIXME remove lyr if everything is indexed with anc
+                .setSize(size).setFrom(page).addFields("annotation", "inGene", "ref", "alt", "anc", "lyr").setFetchSource("annotations", null)
                 .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).filter(filter));
 
         // Add aggregation
@@ -305,7 +306,12 @@ public class ESAnnotationDataServiceImpl implements AnnotationDataService {
                 snpInfo.setInGene(hit.getFields().get("inGene").<Integer>getValue() != 0);
                 snpInfo.setRef(hit.getFields().get("ref").<String>getValue());
                 snpInfo.setAlt(hit.getFields().get("alt").<String>getValue());
-                snpInfo.setLyr(hit.getFields().get("lyr").<String>getValue());
+                //FIXME remove lyr branch if data is re-indexed
+                if (hit.getFields().containsKey("anc")) {
+                    snpInfo.setAnc(hit.getFields().get("anc").<String>getValue());
+                } else {
+                    snpInfo.setAnc(hit.getFields().get("lyr").<String>getValue());
+                }
                 snpInfo.setPosition(Long.parseLong(hit.getId()));
                 snpInfo.setChr(chr.toString());
                 List<Map<String, Object>> annotationMap = (List<Map<String, Object>>) hit.getSource().get("annotations");

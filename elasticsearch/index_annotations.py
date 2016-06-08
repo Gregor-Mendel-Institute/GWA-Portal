@@ -1,23 +1,16 @@
 #!/usr/bin/env python
 
-import csv
-import os
-import itertools
-import copy
-from optparse import OptionParser
-import pdb
 import cPickle
-import requests
+import csv
 import json
-import StringIO
-import codecs
+import pdb
 import re
-import sys
+import requests
+from optparse import OptionParser
 
 SNPEFF_REGEX = re.compile(r"(\w+)\((.+)\)")
 
-
-index = 'geno_chr%s'
+index = 'geno_%s'
 
 bulk_index_count = 1000
 
@@ -46,7 +39,11 @@ def _bulkIndexDocuments(elasticsearch_host,documents,type,idKey='position'):
     url = '%s/_bulk' % elasticsearch_host
     payload = ''
     for document in documents:
-        bulk_index = index % document["chr"].lower()
+        chr = document["chr"].lower()
+        if chr[:3] == 'chr':
+            bulk_index = index % chr
+        else:
+            bulk_index = index % 'chr' + chr
         #parent_routing_suffix = '"_parent":"%s"' % document['gene'][0]['name'] if 'gene' in document else '"_routing":"%s"' % document['position']
         action = '{"index":{"_index":"%s","_type":"%s","_id":"%s"}}\n' % (bulk_index,type,document[idKey])
         data = json.dumps(document,encoding='cp1252')+'\n'
@@ -228,16 +225,32 @@ def _getDocumentFromSNP(snp):
             i = i+1
         document['gene'] = genes    
     return document
- 
 
-def _getDocumentFromSNPEff(snp):
-    lyr= snp[4]
-    if lyr == '0':
-        lyr = snp[2]
-    elif lyr == '1':
-        lyr = snp[3]
-    document = {'chr':snp[0][3],'position':int(snp[1]),'ref':snp[2],'alt':snp[3],'lyr':lyr}
-    inGene,annotations = _parseSNPEffInfo(snp[5],snp[6])
+
+def _getDocumentFromSNPEff(snp, is_custom_snp_eff):
+    anc = ''
+    if is_custom_snp_eff:
+        anc = snp[4]
+        if anc == '0':
+            anc = snp[2]
+        elif anc == '1':
+            anc = snp[3]
+    chr = snp[0][3]
+    pos = int(snp[1])
+
+    if is_custom_snp_eff:
+        ref = snp[2]
+        alt = snp[3]
+        genotype = snp[5]
+        info = snp[6]
+    else:
+        ref = snp[3]
+        alt = snp[4]
+        genotype = None
+        info = snp[7]
+
+    document = {'chr': chr, 'position': pos, 'ref': ref, 'alt': alt, 'anc': anc}
+    inGene, annotations = _parseSNPEffInfo(genotype, info)
     document['inGene'] = inGene
     document['annotations'] = annotations
     return document
@@ -252,9 +265,7 @@ def _parseSNPEffInfo(genotype,info):
             return (inGene,annotations)
         annotation = {'effect':matches.group(1)}
         fields = matches.group(2).split("|")
-        if len(fields) > 12:
-            raise Exception('Length of parsed fields must be at least 11 but was %s' % len(fields))
-        if fields[-1] != genotype:
+        if genotype != None and fields[-1] != genotype:
             continue
         annotation['impact'] = fields[0]
         if fields[1] != '':
@@ -269,7 +280,10 @@ def _parseSNPEffInfo(genotype,info):
         if fields[8] != '':
             annotation['transcript_id'] = fields[8]
         if fields[9] != '':
-            annotation['rank'] = int(fields[9])
+            try:
+                annotation['rank'] = int(fields[9])
+            except:
+                pass
         annotations.append(annotation)
     return inGene,annotations
              
@@ -281,9 +295,13 @@ def _indexSNPEff(elasticsearch_host,snpeff_filename):
     bulk_ix = 1
     try:
         with open(snpeff_filename,'rb') as content:
+            is_custom_snp_eff = True
             for row in content:
+                if row[0] == '#':
+                    is_custom_snp_eff = False
+                    continue
                 fields = row.split("\t")
-                document = _getDocumentFromSNPEff(fields)
+                document = _getDocumentFromSNPEff(fields, is_custom_snp_eff)
                 documents.append(document)
                 if len(documents) == bulk_index_count:
                     status = _bulkIndexDocuments(elasticsearch_host,documents,'snps') 
@@ -346,7 +364,7 @@ examples:
     parser = OptionParser(usage=usage)
     parser.add_option("-g", "--gene_annotation_file", dest="gene_annotation_filename",help="the gene annotation filename ", metavar="FILE")
     parser.add_option("-s", "--snp_annotation_file", dest="snp_annotation_filename",help="the snp annotation filename", metavar="FILE")
-    parser.add_option("-f","--snpeff_file",dest="snpeff_filename",help="the snpeff file",metavar="FILE")
+    parser.add_option("-f", "--snpeff_file", dest="snpeff_filename", help="the snpeff file", metavar="FILE")
     parser.add_option("-o", "--ontology_file",dest="ontology_filename",help="the ontology filename",metavar="FILE")
     parser.add_option("-e", "--elasticsearch_host",dest="elasticsearch_host",help="the host where elasticsearch is running")
     (options, args) = parser.parse_args()

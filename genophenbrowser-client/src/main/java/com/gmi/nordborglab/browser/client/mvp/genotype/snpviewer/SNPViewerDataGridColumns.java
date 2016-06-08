@@ -137,7 +137,7 @@ public interface SNPViewerDataGridColumns {
 
         @Override
         public String getValue(SNPInfoProxy object) {
-            return object.getLyr();
+            return object.getAnc();
         }
     }
 

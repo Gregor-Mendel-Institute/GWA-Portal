@@ -16,7 +16,7 @@ public class SNPInfo {
     protected Boolean inGene;
     protected String alt = "1";
     protected String ref = "0";
-    protected String lyr;
+    protected String anc;
     protected List<SNPAnnotation> annotations;
     protected String gene;
     protected Integer refCount;
@@ -66,12 +66,12 @@ public class SNPInfo {
         this.ref = ref;
     }
 
-    public String getLyr() {
-        return lyr;
+    public String getAnc() {
+        return anc;
     }
 
-    public void setLyr(String lyr) {
-        this.lyr = lyr;
+    public void setAnc(String anc) {
+        this.anc = anc;
     }
 
     public List<SNPAnnotation> getAnnotations() {
