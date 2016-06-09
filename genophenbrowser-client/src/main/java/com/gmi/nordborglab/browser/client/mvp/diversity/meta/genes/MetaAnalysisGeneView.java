@@ -10,6 +10,7 @@ import com.gmi.nordborglab.browser.client.util.TypeaheadUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AssociationProxy;
 import com.gmi.nordborglab.browser.shared.proxy.MetaAnalysisProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
+import com.gmi.nordborglab.browser.shared.proxy.annotation.GeneProxy;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
@@ -73,8 +74,8 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
 
         private static NumberFormat format = NumberFormat.getDecimalFormat().overrideFractionDigits(2);
 
-
         interface Templates extends SafeHtmlTemplates {
+
 
             @SafeHtmlTemplates.Template("<div style=\"{0}\">{1}</div>")
             SafeHtml cell(SafeStyles styles, SafeHtml value);
@@ -82,7 +83,6 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
         }
 
         public static Templates templates = GWT.create(Templates.class);
-
 
         @Override
         public void render(Context context, AssociationProxy value, SafeHtmlBuilder sb) {
@@ -95,18 +95,20 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
             sb.append(templates.cell(style, SafeHtmlUtils.fromString(format.format(value.getPValue()))));
         }
 
-    }
 
+    }
 
     private int minCharSize = 3;
 
-    interface Binder extends UiBinder<Widget, MetaAnalysisGeneView> {
-    }
 
+    interface Binder extends UiBinder<Widget, MetaAnalysisGeneView> {
+
+    }
     private final Widget widget;
 
     @UiField
     GeneViewer geneViewer;
+
     @UiField(provided = true)
     DataGrid<MetaAnalysisProxy> flatDataGrid;
     @UiField
@@ -151,15 +153,16 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
     TabLayoutPanel visualizationTabPanel;
     private final CustomDataGridResources customDataGridResources;
     private String chr = null;
-
     private MetaAnalysisGeneTableBuilder tableBuilder;
+
+    private GeneProxy gene;
 
     private final PlaceManager placeManger;
 
     private Timer rangeChangeTimer = new Timer() {
         @Override
         public void run() {
-            getUiHandlers().onChangeRange(-1 * Integer.parseInt(lowerLimitTb.getValue()), Integer.parseInt(upperLimitTb.getValue()));
+            getUiHandlers().onChangeRange(-1 * Integer.parseInt(lowerLimitTb.getValue()) * 1000, Integer.parseInt(upperLimitTb.getValue()) * 1000);
         }
     };
 
@@ -237,6 +240,11 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
                 });
                 geneViewer.addHighlightGeneHandler(event -> {
                     dataSource.fetchGeneInfo(event.getGene().name, info -> geneViewer.setGeneInfo(info));
+                });
+                geneViewer.addZoomResizeHandler(event -> {
+                    if (gene == null)
+                        return;
+                    getUiHandlers().onChangeRange((int) gene.getStart() - event.start, event.stop - (int) gene.getEnd());
                 });
             });
         } catch (Exception ex) {
@@ -429,21 +437,25 @@ public class MetaAnalysisGeneView extends ViewWithUiHandlers<MetaAnalysisGeneUiH
 
 
     @Override
-    public void setGeneViewerRegion(String chr, int start, int end, int totalLength) {
+    public void setGeneViewerRegion(String chr, int zoomStart, int zoomEnd, int start, int end) {
         this.chr = "Chr" + chr;
         geneViewer.setChromosome("Chr" + chr);
-        geneViewer.setViewRegion(0, totalLength);
-        geneViewer.updateZoom(start, end);
+        geneViewer.setViewRegion(start, end);
+        geneViewer.updateZoom(zoomStart, zoomEnd);
         contentPanel.setWidgetVisible(searchForGeneLb, false);
     }
 
     @Override
-    public void setGene(String gene) {
-        geneLb.setInnerText(gene);
+    public void setGene(GeneProxy gene) {
+        this.gene = gene;
+        geneLb.setInnerText(gene.getName());
+
     }
 
     @Override
     public void setGeneRange(Integer leftInterval, Integer rightInterval) {
+        leftInterval = Math.round(leftInterval / 1000);
+        rightInterval = Math.round(rightInterval / 1000);
         upperLimitTb.setValue(rightInterval.toString());
         upperLimitLb.setInnerText("+ " + rightInterval.toString() + " kb");
 

@@ -57,7 +57,7 @@ public class MetaAnalysisGenePresenter extends
         Presenter<MetaAnalysisGenePresenter.MyView, MetaAnalysisGenePresenter.MyProxy> implements MetaAnalysisGeneUiHandlers {
 
     public interface MyView extends View, HasUiHandlers<MetaAnalysisGeneUiHandlers> {
-        void setGeneViewerRegion(String chr, int start, int end, int totalLength);
+        void setGeneViewerRegion(String chr, int zoomStart, int zoomEnd, int start, int end);
 
         HasData<MetaAnalysisProxy> getFlatDisplay();
 
@@ -65,7 +65,7 @@ public class MetaAnalysisGenePresenter extends
 
         void setGeneViewerSelection(long position);
 
-        void setGene(String gene);
+        void setGene(GeneProxy gene);
 
         void setGeneRange(Integer leftInterval, Integer rightInterval);
 
@@ -87,6 +87,7 @@ public class MetaAnalysisGenePresenter extends
     private final PlaceManager placeManager;
     private GeneProxy gene;
     private final static int DEFAULT_INTERVAL = 10000;
+    private final static int MAX_INTERVAL = 20000;
     private int leftInterval = DEFAULT_INTERVAL;
     private int rightInterval = DEFAULT_INTERVAL;
     private final FilterPresenterWidget filterPresenterWidget;
@@ -97,6 +98,7 @@ public class MetaAnalysisGenePresenter extends
     public enum VIZ_TYPE {GROUPED, FLAT, HEATMAP}
 
     private VIZ_TYPE vizType = VIZ_TYPE.GROUPED;
+
 
 
     static final PermanentSlot<FilterPresenterWidget> SLOT_FILTER_CONTENT = new PermanentSlot<>();
@@ -314,9 +316,12 @@ public class MetaAnalysisGenePresenter extends
 
     @Override
     public void onChangeRange(int lowerLimit, int upperLimit) {
-        leftInterval = lowerLimit * 1000;
-        rightInterval = upperLimit * 1000;
-        getView().setGeneViewerRegion(gene.getChr(), (int) gene.getStart() - leftInterval, (int) gene.getEnd() + rightInterval, 30000000);
+        leftInterval = lowerLimit;
+        rightInterval = upperLimit;
+        int start = (int) gene.getStart();
+        int end = (int) gene.getEnd();
+        getView().setGeneViewerRegion(gene.getChr(), start - leftInterval, end + rightInterval, start - MAX_INTERVAL, end + MAX_INTERVAL);
+        getView().setGeneRange(leftInterval, rightInterval);
         fetchMetaAnalysisData();
     }
 
@@ -338,9 +343,11 @@ public class MetaAnalysisGenePresenter extends
     private void updateView() {
         if (gene == null)
             return;
-        getView().setGeneViewerRegion(gene.getChr(), (int) gene.getStart() - leftInterval, (int) gene.getEnd() + rightInterval, 30000000);
-        getView().setGeneRange(Math.round(leftInterval / 1000), Math.round(rightInterval / 1000));
-        getView().setGene(gene.getName());
+        int start = (int) gene.getStart();
+        int end = (int) gene.getEnd();
+        getView().setGeneViewerRegion(gene.getChr(), start - leftInterval, end + rightInterval, start - MAX_INTERVAL, end + MAX_INTERVAL);
+        getView().setGeneRange(leftInterval, rightInterval);
+        getView().setGene(gene);
 
     }
 
