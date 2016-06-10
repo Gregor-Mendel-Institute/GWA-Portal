@@ -143,9 +143,10 @@ public class SubmitAnalysisTask {
                 studyJob.setStatus(status);
                 switch (status.toUpperCase()) {
                     case "SUCCESS":
-                        studyJob.setStatus("FINISHED");
+                        studyJob.setStatus("Finished");
                         studyJob.setTask("Finished on Worker");
                         studyJob.setProgress(100);
+                        studyJob.setTaskid(null);
                         try {
                             indexTopSNPs(studyJob.getStudy());
                         } catch (HDF5FileNotFoundException e) {
