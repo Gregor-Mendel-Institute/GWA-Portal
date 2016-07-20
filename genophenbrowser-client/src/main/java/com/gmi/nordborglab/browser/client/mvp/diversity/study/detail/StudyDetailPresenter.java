@@ -26,7 +26,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
-import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -182,7 +181,7 @@ public class StudyDetailPresenter extends
     protected void onReset() {
         super.onReset();
         gwasUploadWizardPresenterWidget.setMultipleUpload(false);
-        gwasUploadWizardPresenterWidget.setRestURL(GWT.getHostPageBaseURL() + "/provider/study/" + study.getId() + "/upload");
+        gwasUploadWizardPresenterWidget.setRestURL("provider/study/" + study.getId() + "/upload");
         if (fireLoadEvent) {
             fireLoadEvent = false;
             fireEvent(new LoadStudyEvent(study));
