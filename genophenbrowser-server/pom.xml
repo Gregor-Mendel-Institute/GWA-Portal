@@ -33,7 +33,7 @@
         <supercsv.version>2.2.1</supercsv.version>
         <apache.commons.math>3.4</apache.commons.math>
         <apache.commons.exec>1.3</apache.commons.exec>
-        <isatab.version>1.7.8-SPECIAL</isatab.version>
+        <isatab.version>1.7.9-SPECIAL</isatab.version>
     </properties>
 
 
@@ -462,6 +462,42 @@
                     <exclusion>
                         <groupId>com.explodingpixels</groupId>
                         <artifactId>scroller</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>net.java.dev.fuse</groupId>
+                        <artifactId>fuse-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.xml.ws</groupId>
+                        <artifactId>jaxws-rt</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.xml.ws</groupId>
+                        <artifactId>jaxws-tools</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.apache.felix.framework</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.jws</groupId>
+                        <artifactId>jsr181-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>xml-apis</groupId>
+                        <artifactId>xml-apis</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.jersey.contribs</groupId>
+                        <artifactId>jersey-multipart</artifactId>
                     </exclusion>
                     <!--
                     <exclusion>
