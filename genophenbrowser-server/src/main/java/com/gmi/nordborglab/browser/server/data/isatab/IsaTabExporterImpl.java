@@ -40,6 +40,7 @@ import org.isatools.isacreator.model.StudyDesign;
 import org.isatools.isacreator.ontologymanager.BioPortal4Client;
 import org.isatools.isacreator.ontologymanager.OntologyManager;
 import org.isatools.isacreator.ontologymanager.OntologySourceRefObject;
+import org.isatools.isacreator.ontologymanager.common.OntologyTerm;
 import org.isatools.isacreator.ontologymanager.utils.OntologyUtils;
 import org.isatools.isacreator.settings.ISAcreatorProperties;
 import org.isatools.isacreator.spreadsheet.model.ReferenceData;
@@ -99,42 +100,30 @@ public class IsaTabExporterImpl implements IsaTabExporter {
     static final String INVESTIGATION_FILE = "i_investigation.txt";
     static final String STUDY_FILE = "s_study.txt";
     static final String ASSAY_FILE = "a_assay.txt";
-    static final String TRAIT_DEF_FILE = "t_trait_def.txt";
+    static final String TRAIT_DEF_FILE = "tdf.txt";
     static final String DERVIVED_DATA_FILE = "d_derived_data.txt";
     static URL CONFIG_DIRECTORY;
     static final Pattern derivedTraitPattern = Pattern.compile("Trait Value\\[(.*)\\]");
 
-    final static String[] STUDY_HEADER = new String[]{"Source Name", "Characteristics[Organism]", "Term Source REF", "Term Accession Number", "Characteristics[Infra-specific name]", "Term Source REF", "Term Accession Number", "Characteristics[Organism part]", "Term Source REF", "Term Accession Number", "Protocol REF", "Sample Name"};
-    final static String[] ASSAY_HEADER = new String[]{"Sample Name", "Protocol REF", "Assay Name", "Comment[Trait Definition File]", "Raw Data File", "Protocol REF", "Normalization Name", "Data Transformation Name", "Derived Data File"};
-    final static String[] TRAIT_DEF_HEADER = new String[]{"Measurement Type", "Term Source REF", "Term Accession Number", "Technology Type", "Term Source REF", "Term Accession Number", "Unit Name", "Term Source REF", "Term Accession Number"};
-    private static ImmutableSet<OntologySourceRefObject> ontologySources = null;
-    //private static final OntologySourceRefObject traitOntologySource = new OntologySourceRefObject("TO","http://www.ontobee.org/browser/index.php?o=TO","","Gramene trait ontology");
-    //private static final OntologySourceRefObject accOntologySource = new OntologySourceRefObject("ARA","http://www.ontobee.org/browser/index.php?o=TO","","Taxonomy trait ontology");
-    private static final OntologySourceRefObject obiOntologySource = new OntologySourceRefObject("OBI", "http://data.bioontology.org/ontologies/OBI", "", "Ontology for Biomedical Investigations\n");
-    private static final OntologySourceRefObject taxOntologySource = new OntologySourceRefObject("NCBITAXON", "http://data.bioontology.org/ontologies/NCBITAXON", "", "National Center for Biotechnology Information (NCBI) Organismal Classification");
+    final static String[] STUDY_HEADER = new String[]{"Source Name", "Characteristics[Organism]", "Characteristics[Infraspecific name]", "Characteristics[Seed origin]", "Characteristics[Study start]", "Characteristics[Study duration]", "Characteristics[Growth facility]", "Characteristics[Geographic location]", "Sample Name"};
+    final static String[] ASSAY_HEADER = new String[]{"Sample Name", "Characteristics[Organism Part]", "Assay Name", "Raw Data File", "Protocol REF", "Parameter Value[Trait Definition File]", "Derived Data File"};
+    final static String[] TRAIT_DEF_HEADER = new String[]{"Variable ID", "Trait", "Term Source REF", "Term Accession Number", "Method", "Term Source REF", "Term Accession Number", "Scale", "Term Source REF", "Term Accession Number"};
+    private static final OntologySourceRefObject accOntologySource = new OntologySourceRefObject("ARA", "http://gwas.gmi.oeaw.ac.at/#/taxonomy/1/passports?alleleAssayId=0", "", "Catalogue of Arabidopsis accessions");
+
 
     public IsaTabExporterImpl() {
         CONFIG_DIRECTORY = getClass().getResource("/ISA_TAB/");
         try {
             ConfigurationManager.loadConfigurations(CONFIG_DIRECTORY.getPath());
-            if (ontologySources == null) {
-                ontologySources = ImmutableSet.<OntologySourceRefObject>builder()
-                        .add(obiOntologySource)
-                                //  .add(traitOntologySource)
-                                //   .add(accOntologySource)
-                        .add(taxOntologySource)
-                        .build();
-            }
-
             final BioPortal4Client client = new BioPortal4Client();
             Collection<Ontology> ontologies = client.getAllOntologies();
             List<OntologySourceRefObject> list = new ArrayList();
+            list.add(accOntologySource);
             for (Ontology ontology : ontologies) {
                 list.add(OntologyUtils.convertOntologyToOntologySourceReferenceObject(ontology));
             }
-            ISAcreatorProperties.setProperty(ISAcreatorProperties.ONTOLOGY_TERM_URI, "true");
+            ISAcreatorProperties.setProperty(ISAcreatorProperties.ONTOLOGY_TERM_URI, "false");
             OntologyManager.setOntologySources(ImmutableSet.copyOf(list));
-            //OntologyManager.getOntologySelectionHistory().put("OBI",OntologyManager.getOntologyTerm("OBI"));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -155,7 +144,7 @@ public class IsaTabExporterImpl implements IsaTabExporter {
         fileOutput.saveISAFiles(false, investigation);
         List<TraitUom> traitUoms = Lists.newArrayList(aclManager.filterByAcl(traitUomRepository.findByExperimentId(experiment.getId())));
         List<String[]> traitDefinitions = createTraitDefinitions(traitUoms);
-        List<String[]> dervivedValues = createDervivedValues(experiment, traitUoms);
+        List<String[]> dervivedValues = createDerivedValues(experiment, traitUoms);
         saveCsvToFile(baseDirectory + File.separator + TRAIT_DEF_FILE, traitDefinitions);
         saveCsvToFile(baseDirectory + File.separator + DERVIVED_DATA_FILE, dervivedValues);
         if (isZip) {
@@ -201,7 +190,7 @@ public class IsaTabExporterImpl implements IsaTabExporter {
     private void saveCsvToFile(String filename, List<String[]> rows) throws IOException {
         try (
                 FileWriter fout = new FileWriter(filename);
-                ICsvListWriter listWriter = new CsvListWriter(fout, CsvPreference.STANDARD_PREFERENCE)
+                ICsvListWriter listWriter = new CsvListWriter(fout, CsvPreference.TAB_PREFERENCE)
         ) {
             // write the header
             listWriter.writeHeader(rows.get(0));
@@ -460,22 +449,30 @@ public class IsaTabExporterImpl implements IsaTabExporter {
         final Study study = new Study(experiment.getId().toString(), experiment.getName(), "", "", "", "");
         study.setSampleFileName(STUDY_FILE);
         study.setStudyDesigns(Lists.newArrayList(new StudyDesign(experiment.getDesign())));
-        final Assay studySample = new Assay(ASSAY_FILE,
+        final Assay studySample = new Assay(STUDY_FILE,
                 ConfigurationManager.selectTROForUserSelection(MappingObject.STUDY_SAMPLE));
-        String[] header = studySample.getTableReferenceObject().getHeaders().toArray(new String[]{"Source Name", "Characteristics[Organism]", "Term Source REF", "Term Accession Number", "Characteristics[Infra-specific name]", "Term Source REF", "Term Accession Number", "Characteristics[Organism part]", "Term Source REF", "Term Accession Number", "Protocol REF", "Sample Name"});
+        //String[] header = studySample.getTableReferenceObject().getHeaders().toArray(STUDY_HEADER);
         for (ObsUnit obsUnit : experiment.getObsUnits()) {
             Passport passport = obsUnit.getStock().getPassport();
+            String taxonomy = passport.getTaxonomy().getGenus() + " " + passport.getTaxonomy().getSpecies();
+            // FIXME required to add passport id because otherwise OntologyManager outputs the wrong id
+            String accename = passport.getAccename() + "_" + passport.getId();
+            // TODO don't harcode it
+            OntologyManager.addToOntologyTerms(taxonomy, new OntologyTerm(taxonomy, "3702", "http://purl.obolibrary.org/obo/NCBITaxon_3702", OntologyManager.getOntologySourceReferenceObjectByAbbreviation("NCBITaxon")));
+            OntologyManager.addToOntologyTerms(accename, new OntologyTerm(accename, passport.getId().toString(), String.format("https://gwas.gmi.oeaw.ac.at/#/passport/%s/overview", passport.getId()), OntologyManager.getOntologySourceReferenceObjectByAbbreviation("ARA")));
             studySample.getTableReferenceObject()
                     .addRowData(
                             STUDY_HEADER,
-                            new String[]{"source" + obsUnit.getId(),
-                                    //passport.getTaxonomy().getGenus() + " " + passport.getTaxonomy().getSpecies(),
-                                    "4932",
-                                    "NCBITAXON",
-                                    "http://purl.obolibrary.org/obo/NCBITaxon_3702",
-                                    passport.getId().toString(),
-                                    "ARA", passport.getId().toString(), // change to div_passport_acc
-                                    "", "", "", "", "sample" + obsUnit.getId()
+                            new String[]{
+                                    "source" + obsUnit.getId(),
+                                    taxonomy,
+                                    accename,
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "sample" + obsUnit.getId()
                             }
                     );
         }
@@ -493,20 +490,17 @@ public class IsaTabExporterImpl implements IsaTabExporter {
         final Vector<String> assayHeaderVector = assay
                 .getTableReferenceObject().getHeaders();
 
-        final String[] assayHeaderArray = assayHeaderVector
-                .toArray(ASSAY_HEADER);
+        /*final String[] assayHeaderArray = assayHeaderVector
+                .toArray(ASSAY_HEADER);*/
         for (ObsUnit obsUnit : experiment.getObsUnits()) {
-            Passport passport = obsUnit.getStock().getPassport();
             assay.getTableReferenceObject().addRowData(
                     ASSAY_HEADER,
                     new String[]{"sample" + obsUnit.getId(),
                             "",
-                            "phenotyping" + obsUnit.getId(),
+                            "assay" + obsUnit.getId(),
+                            "",
+                            "Data transformation",
                             TRAIT_DEF_FILE,
-                            "",
-                            "",
-                            "",
-                            "",
                             DERVIVED_DATA_FILE}
             );
         }
@@ -519,32 +513,34 @@ public class IsaTabExporterImpl implements IsaTabExporter {
         for (TraitUom traitUom : traitUoms) {
             String[] row = new String[TRAIT_DEF_HEADER.length];
             row[0] = traitUom.getLocalTraitName();
+            row[1] = row[0];
             if (traitUom.getToAccession() != null && !traitUom.getToAccession().isEmpty()) {
-                row[1] = "TO";
-                row[2] = traitUom.getToAccession();
+                row[2] = "TO";
+                row[3] = traitUom.getToAccession();
             }
-            row[3] = traitUom.getTraitProtocol();
+            row[4] = traitUom.getTraitProtocol();
             if (traitUom.getUnitOfMeasure() != null) {
-                row[6] = traitUom.getUnitOfMeasure().getUnitType();
+                row[5] = traitUom.getUnitOfMeasure().getUnitType();
+                //TODO retrieve Unit of measure
             }
             traitDefinitions.add(row);
         }
         return traitDefinitions;
     }
 
-    private List<String[]> createDervivedValues(Experiment experiment, List<TraitUom> traitUoms) {
+    private List<String[]> createDerivedValues(Experiment experiment, List<TraitUom> traitUoms) {
         Map<TraitUom, Long> statisticMap = getStatisticTypeFromTrait(traitUoms);
         List<String[]> dervivedValues = Lists.newArrayList();
         String[] header = new String[traitUoms.size() + 1];
         header[0] = "Assay Name";
         for (int i = 1; i <= traitUoms.size(); i++) {
-            header[i] = String.format("Trait Value[%s]", traitUoms.get((i - 1)).getLocalTraitName());
+            header[i] = String.format("%s", traitUoms.get((i - 1)).getLocalTraitName());
         }
         dervivedValues.add(header);
         for (ObsUnit obsUnit : experiment.getObsUnits()) {
             Passport passport = obsUnit.getStock().getPassport();
             String[] row = new String[header.length];
-            row[0] = "phenotyping" + obsUnit.getId().toString();
+            row[0] = "assay" + obsUnit.getId().toString();
             for (int i = 1; i < header.length; i++) {
                 TraitUom traitUom = traitUoms.get(i - 1);
                 row[i] = getTraitValue(obsUnit.getTraits(), traitUom.getId(), statisticMap.get(traitUom));
