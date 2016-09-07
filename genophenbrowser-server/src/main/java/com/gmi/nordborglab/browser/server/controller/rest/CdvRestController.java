@@ -121,12 +121,22 @@ public class CdvRestController extends AbstractRestController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{analysisId}/plots")
     @PreAuthorize("hasPermission(#analysisId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
-    public void downloadPlot(HttpServletResponse response, HttpServletRequest request,
-                             @PathVariable Long analysisId,
-                             @RequestParam(value = "chr", required = false) String chr,
-                             @RequestParam(value = "mac", required = false, defaultValue = "15") Integer minMac,
-                             @RequestParam(value = "format", required = false, defaultValue = "png") String format) throws IOException {
-        donwloadPlotRequest(response, "study", analysisId, chr, minMac, format);
+    public void downloadGWASPlot(HttpServletResponse response, HttpServletRequest request,
+                                 @PathVariable Long analysisId,
+                                 @RequestParam(value = "chr", required = false) String chr,
+                                 @RequestParam(value = "mac", required = false, defaultValue = "15") Integer minMac,
+                                 @RequestParam(value = "format", required = false, defaultValue = "png") String format) throws IOException {
+        downloadPlotRequest(response, "study", "gwas", analysisId, chr, minMac, format);
     }
+
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{analysisId}/qqplots")
+    @PreAuthorize("hasPermission(#analysisId,'com.gmi.nordborglab.browser.server.domain.cdv.Study','READ')")
+    public void downloadQQPlot(HttpServletResponse response, HttpServletRequest request,
+                               @PathVariable Long analysisId,
+                               @RequestParam(value = "format", required = false, defaultValue = "png") String format) throws IOException {
+        downloadPlotRequest(response, "study", "qq", analysisId, null, 0, format);
+    }
+
 
 }

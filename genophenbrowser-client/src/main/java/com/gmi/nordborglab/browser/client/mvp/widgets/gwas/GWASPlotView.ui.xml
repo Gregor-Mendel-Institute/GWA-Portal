@@ -14,6 +14,7 @@
 
         .button {
             margin-top: 5px;
+            margin-right: 5px;
         }
 
         .geneSearchBox * {
@@ -27,13 +28,25 @@
     <g:LayoutPanel ui:field="panel">
         <g:layer top="0" height="40px">
             <g:HTMLPanel>
-                <div class="col-xs-10">
+                <div class="col-xs-9">
                     <chzn:ChosenListBox ui:field="geneSearchBox" addStyleNames="{style.geneSearchBox}"
                                         placeholderText="Enter gene id or candidate gene list to highlight in the Manhattan plots..."/>
                 </div>
-                <div class="col-xs-2">
+                <div class="col-xs-3">
                     <b:Button ui:field="downloadBtn" size="SMALL" type="PRIMARY" icon="ARROW_CIRCLE_DOWN"
                               text="Download plots" addStyleNames="pull-right {style.button}"></b:Button>
+                    <b:Button ui:field="showQQPlotsBtn" size="SMALL" type="SUCCESS" icon="LINE_CHART"
+                              text="QQ-Plots" addStyleNames="pull-right {style.button}"/>
+                    <b:Modal ui:field="qqPlotPopup">
+                        <b:ModalHeader>
+                            <g:HTMLPanel>QQ-Plots</g:HTMLPanel>
+                        </b:ModalHeader>
+                        <b:ModalBody>
+                            <g:HTMLPanel>
+                                <img style="width:100%" ui:field="qqPlotImg"></img>
+                            </g:HTMLPanel>
+                        </b:ModalBody>
+                    </b:Modal>
                 </div>
             </g:HTMLPanel>
         </g:layer>

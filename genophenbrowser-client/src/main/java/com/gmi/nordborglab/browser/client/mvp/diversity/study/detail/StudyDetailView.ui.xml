@@ -93,6 +93,8 @@
                                                     <b:DropDownHeader>Download Plots</b:DropDownHeader>
                                                     <b:AnchorListItem ui:field="plotsLink">Download Plots
                                                     </b:AnchorListItem>
+                                                    <b:AnchorListItem ui:field="qqPlotsLink">Download QQ-Plots
+                                                    </b:AnchorListItem>
                                                 </b:DropDownMenu>
                                             </b:DropDown>
                                         </b:Tooltip>

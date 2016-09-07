@@ -42,9 +42,9 @@ public abstract class AbstractRestController {
         IOUtils.copy(httpCon.getInputStream(), response.getOutputStream());
     }
 
-    protected void donwloadPlotRequest(HttpServletResponse response, String type, Long id, String chr, Integer minMac, String format) throws IOException {
-        String filename = String.format("%s_%s_mac%s_chr%s.%s", type, id, minMac, chr == null ? "all" : chr, format);
-        String url = String.format("/plotting/%s/%s?macs=%s&format=%s", type, id, minMac, format);
+    protected void downloadPlotRequest(HttpServletResponse response, String type, String plotType, Long id, String chr, Integer minMac, String format) throws IOException {
+        String filename = String.format("%s_%s_%s_mac%s_chr%s.%s", type, plotType, id, minMac, chr == null ? "all" : chr, format);
+        String url = String.format("/plotting/%s/%s/%s?macs=%s&format=%s", type, id, plotType, minMac, format);
         if (chr != null) {
             url += "&chr=" + chr;
         }

@@ -179,6 +179,8 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     HTMLPanel lowerPanel;
     @UiField
     LayoutPanel container;
+    @UiField
+    AnchorListItem qqPlotsLink;
 
 
     @Inject
@@ -571,12 +573,14 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
 
     @Override
     public void setStudyId(Long id) {
-        navLinkPvalCSV.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/pvalues.csv");
-        navLinkPvalHDF5.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/pvalues.hdf5");
-        navLinkPvalJSON.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/pvalues.json");
-        navLinkPhenCSV.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/phenotypedata.csv");
-        navLinkPhenJSON.setHref(GWT.getHostPageBaseURL() + "/provider/study/" + id + "/phenotypedata.json");
+        String baseUrl = GWT.getHostPageBaseURL();
+        navLinkPvalCSV.setHref(baseUrl + "/provider/study/" + id + "/pvalues.csv");
+        navLinkPvalHDF5.setHref(baseUrl + "/provider/study/" + id + "/pvalues.hdf5");
+        navLinkPvalJSON.setHref(baseUrl + "/provider/study/" + id + "/pvalues.json");
+        navLinkPhenCSV.setHref(baseUrl + "/provider/study/" + id + "/phenotypedata.csv");
+        navLinkPhenJSON.setHref(baseUrl + "/provider/study/" + id + "/phenotypedata.json");
         plotsPanel.setSettings(id, GetGWASDataAction.TYPE.STUDY);
+        qqPlotsLink.setHref(baseUrl + "/api/analyses/" + id + "/qqplots");
     }
 
     @Override

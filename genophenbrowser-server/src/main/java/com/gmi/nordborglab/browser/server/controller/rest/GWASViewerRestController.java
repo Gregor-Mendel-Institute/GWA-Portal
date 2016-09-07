@@ -20,12 +20,22 @@ public class GWASViewerRestController extends AbstractRestController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}/plots")
     @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.GWASResult','READ')")
-    public void downloadPlot(HttpServletResponse response, HttpServletRequest request,
-                             @PathVariable Long id,
-                             @RequestParam(value = "chr", required = false) String chr,
-                             @RequestParam(value = "mac", required = false, defaultValue = "15") Integer minMac,
-                             @RequestParam(value = "format", required = false, defaultValue = "png") String format) throws IOException {
-        donwloadPlotRequest(response, "viewer", id, chr, minMac, format);
+    public void downloadGWASPlot(HttpServletResponse response, HttpServletRequest request,
+                                 @PathVariable Long id,
+                                 @RequestParam(value = "chr", required = false) String chr,
+                                 @RequestParam(value = "mac", required = false, defaultValue = "15") Integer minMac,
+                                 @RequestParam(value = "format", required = false, defaultValue = "png") String format) throws IOException {
+        downloadPlotRequest(response, "viewer", "gwas", id, chr, minMac, format);
+
+    }
+
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}/qqplots")
+    @PreAuthorize("hasPermission(#id,'com.gmi.nordborglab.browser.server.domain.util.GWASResult','READ')")
+    public void downloadQQPlots(HttpServletResponse response, HttpServletRequest request,
+                                @PathVariable Long id,
+                                @RequestParam(value = "format", required = false, defaultValue = "png") String format) throws IOException {
+        downloadPlotRequest(response, "viewer", "qq", id, null, 0, format);
 
     }
 
