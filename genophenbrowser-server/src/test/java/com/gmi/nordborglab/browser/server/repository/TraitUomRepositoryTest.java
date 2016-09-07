@@ -5,8 +5,8 @@ import com.gmi.nordborglab.browser.server.domain.phenotype.StatisticType;
 import com.gmi.nordborglab.browser.server.domain.phenotype.TraitUom;
 import com.gmi.nordborglab.browser.server.domain.phenotype.UnitOfMeasure;
 import com.gmi.nordborglab.browser.server.testutils.BaseTest;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.gwt.thirdparty.guava.common.collect.Iterables;
 import org.junit.Test;
 import org.springframework.data.domain.Sort;
 

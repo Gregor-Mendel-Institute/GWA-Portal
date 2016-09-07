@@ -65,4 +65,7 @@
     <set-configuration-property name="CssResource.enableGss" value="true"/>
     <!-- disable when all CSS from 3rd party like GWASGeneViewer etc are converted to GSS -->
     <set-configuration-property name="CssResource.conversionMode" value="strict"/>
+
+    <!-- because of this bug with GIN: https://groups.google.com/forum/#!msg/google-web-toolkit/BzjX7dGECbg/4HNbqVXWCgAJ -->
+    <set-configuration-property name="gin.classloading.exceptedPackages" value="com.google.gwt.core.client"/>
 </module>
