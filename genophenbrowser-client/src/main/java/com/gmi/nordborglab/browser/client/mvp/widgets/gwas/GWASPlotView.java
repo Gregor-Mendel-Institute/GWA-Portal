@@ -21,6 +21,8 @@ import com.gmi.nordborglab.browser.client.ui.ResizeableFlowPanel;
 import com.gmi.nordborglab.browser.shared.proxy.SearchFacetPageProxy;
 import com.gmi.nordborglab.browser.shared.proxy.SearchItemProxy;
 import com.google.common.base.Optional;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -141,6 +143,12 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
     ChosenListBox geneSearchBox;
     @UiField
     LayoutPanel panel;
+    @UiField
+    Button showQQPlotsBtn;
+    @UiField
+    ImageElement qqPlotImg;
+    @UiField
+    Modal qqPlotPopup;
     private String geneInfoUrl;
 
     @Inject
@@ -275,6 +283,8 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
     @Override
     public void setPlotSettings(Long id, GetGWASDataAction.TYPE type) {
         plotPanel.setSettings(id, type);
+        String url = GWT.getHostPageBaseURL() + "/api/analyses/" + id + "/qqplots";
+        qqPlotImg.setSrc(url);
     }
 
     @Override
@@ -310,6 +320,11 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
     public DataTable getGWASData(String chromosome) {
         return gwasDataTables.get(chromosome);
 
+    }
+
+    @UiHandler("showQQPlotsBtn")
+    public void onClickShowQQPlotBtn(ClickEvent e) {
+        qqPlotPopup.show();
     }
 
     @UiHandler("geneSearchBox")
