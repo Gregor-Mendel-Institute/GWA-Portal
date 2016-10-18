@@ -14,7 +14,6 @@ public interface PhenotypeProxy extends SecureEntityProxy {
 
     Long getId();
 
-    @NotNull
     UnitOfMeasureProxy getUnitOfMeasure();
 
     void setUnitOfMeasure(UnitOfMeasureProxy unitOfMeasure);
