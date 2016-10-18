@@ -1,6 +1,7 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.tools.gwasviewer;
 
 
+import com.gmi.nordborglab.browser.client.bootstrap.BootstrapperImpl;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.editors.GWASResultEditEditor;
 import com.gmi.nordborglab.browser.client.mvp.widgets.facets.FacetSearchPresenterWidget;
@@ -110,7 +111,7 @@ public class GWASViewerView extends ViewWithUiHandlers<GWASViewerUiHandlers> imp
     private final AvatarNameCell avatarNameCell;
     private final PlaceManager placeManager;
     private final Modal plotPoupup = new Modal();
-    private final PlotDownloadPopup plotDownload = new PlotDownloadPopup();
+    private final PlotDownloadPopup plotDownload = new PlotDownloadPopup(BootstrapperImpl.getChromosomes());
     @UiField
     DeckLayoutPanel tabPaneContainer;
     @UiField

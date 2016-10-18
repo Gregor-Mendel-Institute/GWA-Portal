@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp.diversity.study.detail;
 
+import com.gmi.nordborglab.browser.client.bootstrap.BootstrapperImpl;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.editors.StudyDisplayEditor;
 import com.gmi.nordborglab.browser.client.editors.StudyEditEditor;
@@ -107,7 +108,7 @@ public class StudyDetailView extends ViewWithUiHandlers<StudyDetailUiHandlers> i
     private Modal plotsPopup = new Modal();
     private Modal editPopup = new Modal();
     private DialogOptions deleteOptions = DialogOptions.newOptions("Do you really want to delete the analysis?");
-    private PlotDownloadPopup plotsPanel = new PlotDownloadPopup();
+    private PlotDownloadPopup plotsPanel = new PlotDownloadPopup(BootstrapperImpl.getChromosomes());
 
     private Double shapiroWilkPvalue;
     private Double pseudoHeritability;

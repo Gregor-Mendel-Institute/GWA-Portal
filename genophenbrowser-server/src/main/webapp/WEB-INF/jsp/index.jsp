@@ -162,7 +162,8 @@
             'jBrowseUrl': '${jbrowseUrl}',
             'geneInfoUrl': '${geneInfoUrl}',
             'gaTrackingId': '${gaTrackingId}',
-            'contactEmail': '${contactEmail}'
+            'contactEmail': '${contactEmail}',
+            'chromosomes': '${chromosomes}'
         };
         <%@ include file="/browser/browser.nocache.js" %>
     </script>

@@ -26,14 +26,7 @@
                 <fieldset>
                     <b:FormGroup ui:field="chrGroup">
                         <b:FormLabel for="chr" addStyleNames="col-sm-3">Chr</b:FormLabel>
-                        <g:FlowPanel addStyleNames="col-sm-7">
-                            <b:InlineRadio name="chr" text="All" formValue="" value="true"/>
-                            <b:InlineRadio name="chr" text="1" formValue="1"/>
-                            <b:InlineRadio name="chr" text="2" formValue="2"/>
-                            <b:InlineRadio name="chr" text="3" formValue="3"/>
-                            <b:InlineRadio name="chr" text="4" formValue="4"/>
-                            <b:InlineRadio name="chr" text="5" formValue="5"/>
-                        </g:FlowPanel>
+                        <g:FlowPanel addStyleNames="col-sm-7" ui:field="chrContainer"></g:FlowPanel>
                     </b:FormGroup>
                     <b:FormGroup ui:field="macGroup">
                         <b:FormLabel for="mac" addStyleNames="col-sm-3">Mac [ >=<span ui:field="macLb"/>]

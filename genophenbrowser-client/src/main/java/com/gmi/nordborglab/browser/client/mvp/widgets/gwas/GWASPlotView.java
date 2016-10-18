@@ -14,6 +14,7 @@ import com.github.timeu.gwtlibs.gwasviewer.client.Track;
 import com.github.timeu.gwtlibs.gwasviewer.client.events.FilterChangeEvent;
 import com.github.timeu.gwtlibs.gwasviewer.client.events.GeneDataSource;
 import com.github.timeu.gwtlibs.ldviewer.client.LDData;
+import com.gmi.nordborglab.browser.client.bootstrap.BootstrapperImpl;
 import com.gmi.nordborglab.browser.client.dispatch.command.GetGWASDataAction;
 import com.gmi.nordborglab.browser.client.dto.GWASDataDTO;
 import com.gmi.nordborglab.browser.client.ui.PlotDownloadPopup;
@@ -92,7 +93,7 @@ public class GWASPlotView extends ViewWithUiHandlers<GWASPlotUiHandlers> impleme
     private final GeneDataSource geneDataSource;
     private Track[] tracks;
     private final Modal popUpPanel = new Modal();
-    private final PlotDownloadPopup plotPanel = new PlotDownloadPopup();
+    private final PlotDownloadPopup plotPanel = new PlotDownloadPopup(BootstrapperImpl.getChromosomes());
 
     public interface SearchGeneCallback {
         void onDisplayResults(List<SearchFacetPageProxy> results);

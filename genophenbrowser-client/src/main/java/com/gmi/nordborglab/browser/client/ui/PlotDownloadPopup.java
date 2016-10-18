@@ -12,10 +12,14 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.AnchorButton;
 import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.InlineRadio;
+
+import java.util.LinkedHashSet;
 
 import static com.google.gwt.query.client.GQuery.$;
 
@@ -45,15 +49,18 @@ public class PlotDownloadPopup extends Composite {
     AnchorButton downloadBtn;
     @UiField
     FormGroup macGroup;
+    @UiField
+    FlowPanel chrContainer;
 
     public enum FORMAT {PNG, PDF}
 
     private GetGWASDataAction.TYPE type;
     private static final int DEFAULT_MAC = 15;
+    private final LinkedHashSet<String> chrs;
 
     private Long id;
 
-    public PlotDownloadPopup() {
+    public PlotDownloadPopup(LinkedHashSet<String> chrs) {
         initWidget(ourUiBinder.createAndBindUi(this));
         macTb.getElement().setAttribute("type", "range");
         macTb.getElement().setAttribute("min", "0");
@@ -66,6 +73,18 @@ public class PlotDownloadPopup extends Composite {
                 return true;
             }
         });
+        this.chrs = chrs;
+        chrContainer.clear();
+        InlineRadio radio = new InlineRadio("chr", "All");
+        radio.setFormValue("");
+        radio.setValue(true);
+        chrContainer.add(radio);
+        for (String chr : chrs) {
+            radio = new InlineRadio("chr", chr);
+            radio.setFormValue(chr);
+            chrContainer.add(radio);
+        }
+        // initialize checkboxes for chromosome
     }
 
 
@@ -168,4 +187,6 @@ public class PlotDownloadPopup extends Composite {
         }
         updateMac();
     }
+
+
 }

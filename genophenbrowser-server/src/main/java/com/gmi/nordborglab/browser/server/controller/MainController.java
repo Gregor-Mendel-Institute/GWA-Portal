@@ -23,13 +23,18 @@ public class MainController {
     @Value("${GENE.info_url}")
     private String geneInfoUrl = "";
 
+    @Value("${GENOME.chromosomes}")
+    private String chromosomes = "";
+
     @RequestMapping(method =  {RequestMethod.GET, RequestMethod.HEAD})
     public ModelAndView index() {
+
         ModelAndView result = new ModelAndView("index");
         result.addObject("jbrowseUrl", jbrowseUrl);
         result.addObject("gaTrackingId", gaTrackingId);
         result.addObject("contactEmail", contactEmail);
         result.addObject("geneInfoUrl",geneInfoUrl);
+        result.addObject("chromosomes", chromosomes);
         return result;
     }
 }

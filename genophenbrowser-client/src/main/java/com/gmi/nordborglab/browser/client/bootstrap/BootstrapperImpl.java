@@ -12,6 +12,8 @@ import com.gmi.nordborglab.browser.shared.proxy.AppDataProxy;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.service.AppUserFactory;
 import com.gmi.nordborglab.browser.shared.service.CustomRequestFactory;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.maps.client.LoadApi;
@@ -29,6 +31,7 @@ import com.gwtplatform.mvp.client.Bootstrapper;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -157,6 +160,12 @@ public class BootstrapperImpl implements Bootstrapper {
     public static String getContactEmail() {
         Dictionary data = Dictionary.getDictionary("appData");
         return data.get("contactEmail");
+    }
+
+    public static LinkedHashSet<String> getChromosomes() {
+        Dictionary data = Dictionary.getDictionary("appData");
+        return Sets.newLinkedHashSet(Splitter.on(",").split(data.get("chromosomes")));
+
     }
 
     protected String getGATrackingId() {
