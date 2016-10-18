@@ -275,6 +275,8 @@ public class HDF5GWASReader implements GWASReader {
             }
             if (reader.isDataSet(path + "/GVEs")) {
                 GVEs = reader.readFloatArray(path + "/GVEs");
+            } else if (reader.isDataSet(path + "/genotype_var_perc")) {
+                GVEs = reader.readFloatArray(path + "/genotype_var_perc");
             }
         } else {
             positions = reader.readIntArrayBlock(path + "/positions", fraction.intValue(), 0);
@@ -287,6 +289,8 @@ public class HDF5GWASReader implements GWASReader {
             }
             if (reader.isDataSet(path + "/GVEs")) {
                 GVEs = reader.readFloatArrayBlock(path + "/GVEs", fraction.intValue(), 0);
+            } else if (reader.isDataSet(path + "/genotype_var_perc")) {
+                GVEs = reader.readFloatArrayBlock(path + "/genotype_var_perc", fraction.intValue(), 0);
             }
         }
         ChrGWAData chrData = new ChrGWAData(positions, scores, macs, mafs, GVEs, chr);
