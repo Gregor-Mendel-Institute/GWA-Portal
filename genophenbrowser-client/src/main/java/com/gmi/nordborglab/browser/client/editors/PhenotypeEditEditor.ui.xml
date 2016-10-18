@@ -54,7 +54,7 @@
                     <b:FormLabel addStyleNames="col-sm-2" for="protocol">Unit of measure</b:FormLabel>
                     <b:Tooltip title='Unit of measure' trigger="FOCUS" placement="RIGHT">
                         <g:FlowPanel addStyleNames="col-sm-7">
-                            <gui:ValidationValueListBox ui:field="unitOfMeasure"></gui:ValidationValueListBox>
+                            <b:ValueListBox ui:field="unitOfMeasure"></b:ValueListBox>
                         </g:FlowPanel>
             </b:Tooltip>
                     <b:HelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-sm-3"/>

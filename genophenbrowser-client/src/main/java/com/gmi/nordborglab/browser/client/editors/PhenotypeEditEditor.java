@@ -2,7 +2,6 @@ package com.gmi.nordborglab.browser.client.editors;
 
 import com.gmi.nordborglab.browser.client.manager.OntologyManager;
 import com.gmi.nordborglab.browser.client.ui.OntologyTypeahead;
-import com.gmi.nordborglab.browser.client.ui.ValidationValueListBox;
 import com.gmi.nordborglab.browser.shared.proxy.PhenotypeProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UnitOfMeasureProxy;
 import com.gmi.nordborglab.browser.shared.proxy.ontology.TermPageProxy;
@@ -24,6 +23,7 @@ import com.google.web.bindery.requestfactory.gwt.ui.client.ProxyRenderer;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import org.gwtbootstrap3.client.ui.TextArea;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.ValueListBox;
 import org.gwtbootstrap3.extras.typeahead.client.base.Dataset;
 import org.gwtbootstrap3.extras.typeahead.client.base.Suggestion;
 import org.gwtbootstrap3.extras.typeahead.client.base.SuggestionCallback;
@@ -48,7 +48,7 @@ public class PhenotypeEditEditor extends Composite implements Editor<PhenotypePr
     @UiField
     TextArea traitProtocol;
     @UiField(provided = true)
-    ValidationValueListBox<UnitOfMeasureProxy> unitOfMeasure;
+    ValueListBox<UnitOfMeasureProxy> unitOfMeasure;
     @UiField(provided = true)
     OntologyTypeahead traitOntologyTerm;
     @UiField(provided = true)
@@ -59,7 +59,7 @@ public class PhenotypeEditEditor extends Composite implements Editor<PhenotypePr
 
 
     public PhenotypeEditEditor() {
-        unitOfMeasure = new ValidationValueListBox(new ProxyRenderer<UnitOfMeasureProxy>(null) {
+        unitOfMeasure = new ValueListBox(new ProxyRenderer<UnitOfMeasureProxy>(null) {
 
             @Override
             public String render(UnitOfMeasureProxy object) {
