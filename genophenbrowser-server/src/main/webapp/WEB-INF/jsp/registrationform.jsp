@@ -36,13 +36,13 @@
                     <div class="form-group ${requestScope['org.springframework.validation.BindingResult.registration'].hasFieldErrors('firstname') ? 'has-error' : ''}">
                         <label class="sr-only" for="firstname">Firstname</label>
                         <form:input path="firstname" size="40" name="firstname" placeholder="Firstname"
-                                    class="form-control input-lg"/>
+                                    class="form-control input-lg" autocomplete="given-name"/>
                         <span class="help-block"><form:errors path="firstname"></form:errors></span>
                     </div>
                     <div class="form-group ${requestScope['org.springframework.validation.BindingResult.registration'].hasFieldErrors('lastname') ? 'has-error' : ''}">
                         <label class="sr-only" for="lastname">Lastname</label>
                         <form:input path="lastname" size="40" name="lastname" placeholder="Lastname"
-                                    class="form-control input-lg"/>
+                                    class="form-control input-lg" autocomplete="family-name"/>
                         <span class="help-block"><form:errors path="lastname"></form:errors></span>
                     </div>
                     <div class="form-group ${requestScope['org.springframework.validation.BindingResult.registration'].hasFieldErrors('email') ? 'has-error' : ''}">
@@ -54,13 +54,14 @@
                     <div class="form-group ${requestScope['org.springframework.validation.BindingResult.registration'].hasFieldErrors('password') ? 'has-error' : ''}">
                         <label class="sr-only" for="password">Password</label>
                         <form:input showPassword="true" path="password" size="40" name="password" placeholder="Password"
-                                    class="form-control input-lg" type="password"/>
+                                    class="form-control input-lg" type="password" autocomplete="new_password"/>
                         <span class="help-block"><form:errors path="password"></form:errors></span>
                     </div>
                     <div class="form-group ${requestScope['org.springframework.validation.BindingResult.registration'].hasFieldErrors('passwordValid') || requestScope['org.springframework.validation.BindingResult.registration'].hasFieldErrors('confirmPassword') ? 'has-error' : ''}">
                         <label class="sr-only" for="confirmPassword">Password confirm</label>
                         <form:input showPassword="true" path="confirmPassword" size="40" name="confirmPassword"
-                                    placeholder="Password Confirm" class="form-control input-lg" type="password"/>
+                                    placeholder="Password Confirm" class="form-control input-lg" type="password"
+                                    autocomplete="new_password"/>
                         <span class="help-block"><form:errors path="passwordValid"></form:errors>
                         </span>
                     </div>

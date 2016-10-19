@@ -40,14 +40,14 @@
                         <div class="input-group input-group-lg">
                             <span class="input-group-addon e_icon-user"></span>
                             <input id="username" name="username" size="20" maxlength="50" type="text"
-                                   placeHolder="name@example.com" class="form-control"/>
+                                   placeHolder="name@example.com" class="form-control" autocomplete="username"/>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="input-group input-group-lg">
                             <span class="input-group-addon e_icon-key"></span>
                             <input id="password" name="password" size="20" maxlength="50" type="password"
-                                   placeHolder="Password" class="form-control"/>
+                                   placeHolder="Password" class="form-control" autocomplete="current_password"/>
                         </div>
                     </div>
                     <div class="form-group">
