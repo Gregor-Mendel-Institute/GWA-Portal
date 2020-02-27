@@ -25,19 +25,19 @@
         <javax.validation.version>1.0.0.GA</javax.validation.version>
         <jsr305.version>3.0.1</jsr305.version>
         <!-- required until https://github.com/ArcBees/GWTP/issues/744 is fixed -->
-        <gwtp.version>1.6-SNAPSHOT</gwtp.version>
+        <gwtp.version>1.6</gwtp.version>
         <gin.version>2.1.2</gin.version>
         <guice.version>3.0</guice.version>
         <gwtquery.version>1.5-beta1</gwtquery.version>
         <jukito.version>1.4.1</jukito.version>
         <gwtchosen.version>3.1-SNAPSHOT</gwtchosen.version>
         <gwtbootstrap3.version>1.0-SNAPSHOT</gwtbootstrap3.version>
-        <gwasviewer.version>1.0.0-SNAPSHOT</gwasviewer.version>
+        <gwasviewer.version>1.0.0</gwasviewer.version>
         <gwtmaps.version>3.10.0-alpha-7</gwtmaps.version>
         <gwt-charts.version>0.9.11-SNAPSHOT</gwt-charts.version>
         <gwt-tour.version>1.0-SNAPSHOT</gwt-tour.version>
         <gwt-supercsv>0.0.1-SNAPSHOT</gwt-supercsv>
-        <gwtmockito.version>1.1.6</gwtmockito.version>
+        <gwtmockito.version>1.1.9</gwtmockito.version>
     </properties>
     <repositories>
         <repository>

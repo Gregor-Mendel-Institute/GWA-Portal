@@ -6,3 +6,9 @@
 *.ipr
 *.iws
 .idea/
+genophenbrowser-client/.errai
+.classpath
+Settings
+ProgramData
+.vscode
+.factorypath
