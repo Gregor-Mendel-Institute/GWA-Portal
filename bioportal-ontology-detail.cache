@@ -1,0 +1,962 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Defines the accepted ontologies for BioPortal-->
+<acceptedOntologies>
+  <acceptedOntology abbreviation="FMA" id="http://data.bioontology.org/ontologies/FMA" name="Foundational Model of Anatomy" uri="http://si.washington.edu/projects/fma" version="29"/>
+  <acceptedOntology abbreviation="SOPHARM" id="http://data.bioontology.org/ontologies/SOPHARM" name="Suggested Ontology for Pharmacogenomics" uri="https://members.loria.fr/ACoulet/files/sopharm2.0_description.php" version="18"/>
+  <acceptedOntology abbreviation="OOEVV" id="http://data.bioontology.org/ontologies/OOEVV" name="Ontology of Experimental Variables and Values" uri="http://bmkeg.isi.edu" version="4"/>
+  <acceptedOntology abbreviation="HSO" id="http://data.bioontology.org/ontologies/HSO" name="Health Surveillance Ontology" uri="http://datadrivensurveillance.org/ontology/" version="5"/>
+  <acceptedOntology abbreviation="GVP" id="http://data.bioontology.org/ontologies/GVP" name="Getty Vocabulary Program ontology" uri="" version="7"/>
+  <acceptedOntology abbreviation="BFO" id="http://data.bioontology.org/ontologies/BFO" name="Basic Formal Ontology" uri="http://www.ifomis.org/bfo" version="2"/>
+  <acceptedOntology abbreviation="ICD-O-3-1-T" id="http://data.bioontology.org/ontologies/ICD-O-3-1-T" name="ICD-O-3-1-T International Classification of Diseases for Oncology Topography" uri="" version="9"/>
+  <acceptedOntology abbreviation="NIFCELL" id="http://data.bioontology.org/ontologies/NIFCELL" name="Neuroscience Information Framework (NIF) Cell Ontology" uri="http://neuinfo.org/" version="15"/>
+  <acceptedOntology abbreviation="HFO" id="http://data.bioontology.org/ontologies/HFO" name="Heart Failure Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="MIRO" id="http://data.bioontology.org/ontologies/MIRO" name="Mosquito Insecticide Resistance" uri="http://www.anobase.org" version="1152"/>
+  <acceptedOntology abbreviation="RAO" id="http://data.bioontology.org/ontologies/RAO" name="Rheumatoid Arthritis ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="PAV" id="http://data.bioontology.org/ontologies/PAV" name="PAV Provenance, Authoring and Versioning" uri="https://github.com/pav-ontology/pav/" version="3"/>
+  <acceptedOntology abbreviation="PDRO" id="http://data.bioontology.org/ontologies/PDRO" name="The Prescription of Drugs Ontology" uri="https://github.com/OpenLHS/PDRO" version="8"/>
+  <acceptedOntology abbreviation="BCS8" id="http://data.bioontology.org/ontologies/BCS8" name="Breast Cancer Staging - 8th Edition" uri="https://cancer-staging-ontology.github.io" version="1"/>
+  <acceptedOntology abbreviation="SCDO" id="http://data.bioontology.org/ontologies/SCDO" name="Sickle Cell Disease Ontology" uri="http://scdontology.h3abionet.org" version="18"/>
+  <acceptedOntology abbreviation="CSEO" id="http://data.bioontology.org/ontologies/CSEO" name="Cigarette Smoke Exposure Ontology" uri="https://publicwiki-01.fraunhofer.de/CSEO-Wiki/index.php/Main_Page" version="2"/>
+  <acceptedOntology abbreviation="PT" id="http://data.bioontology.org/ontologies/PT" name="Precious Taxonomy" uri="" version="1"/>
+  <acceptedOntology abbreviation="PHARE" id="http://data.bioontology.org/ontologies/PHARE" name="Pharmacogenomic Relationships Ontology" uri="http://bioportal.bioontology.org/ontologies/45138" version="2"/>
+  <acceptedOntology abbreviation="EDDA" id="http://data.bioontology.org/ontologies/EDDA" name="EDDA Study Designs Taxonomy" uri="" version="11"/>
+  <acceptedOntology abbreviation="WSIO" id="http://data.bioontology.org/ontologies/WSIO" name="Web-Service Interaction Ontology" uri="http://wsio.org" version="4"/>
+  <acceptedOntology abbreviation="APAOCUEMPLOY" id="http://data.bioontology.org/ontologies/APAOCUEMPLOY" name="APA Occupational and Employment cluster" uri="" version="1"/>
+  <acceptedOntology abbreviation="TM-SIGNS-AND-SYMPTS" id="http://data.bioontology.org/ontologies/TM-SIGNS-AND-SYMPTS" name="Traditional Medicine Signs and Symptoms Value Set" uri="https://sites.google.com/site/whoictm/home" version="1"/>
+  <acceptedOntology abbreviation="IAO" id="http://data.bioontology.org/ontologies/IAO" name="Information Artifact Ontology" uri="http://purl.obolibrary.org/obo/iao" version="7"/>
+  <acceptedOntology abbreviation="ENTITY" id="http://data.bioontology.org/ontologies/ENTITY" name="ISO-15926-2_2003_entityMembership" uri="" version="1"/>
+  <acceptedOntology abbreviation="HO" id="http://data.bioontology.org/ontologies/HO" name="Histological Ontology" uri="" version="78"/>
+  <acceptedOntology abbreviation="BEFDATA" id="http://data.bioontology.org/ontologies/BEFDATA" name="BEFDATA" uri="" version="1"/>
+  <acceptedOntology abbreviation="BMT" id="http://data.bioontology.org/ontologies/BMT" name="Biomedical Topics" uri="" version="1"/>
+  <acceptedOntology abbreviation="FAST-TITLE" id="http://data.bioontology.org/ontologies/FAST-TITLE" name="FAST (Faceted Application of Subject Terminology) Title Facet" uri="http://www.oclc.org/research/themes/data-science/fast/download.html" version="1"/>
+  <acceptedOntology abbreviation="ONTOPNEUMO" id="http://data.bioontology.org/ontologies/ONTOPNEUMO" name="Ontology of Pneumology" uri="" version="1"/>
+  <acceptedOntology abbreviation="HIV" id="http://data.bioontology.org/ontologies/HIV" name="HIV ontology" uri="bio-toolkit.com" version="12"/>
+  <acceptedOntology abbreviation="APASTATISTICAL" id="http://data.bioontology.org/ontologies/APASTATISTICAL" name="APA Statistical Cluster" uri="" version="1"/>
+  <acceptedOntology abbreviation="BLM" id="http://data.bioontology.org/ontologies/BLM" name="BioLink Model" uri="https://biolink.github.io/biolink-model/" version="20"/>
+  <acceptedOntology abbreviation="CHEAR" id="http://data.bioontology.org/ontologies/CHEAR" name="Children's Health Exposure Analysis Resource" uri="" version="15"/>
+  <acceptedOntology abbreviation="DCT" id="http://data.bioontology.org/ontologies/DCT" name="DC Terms" uri="" version="1"/>
+  <acceptedOntology abbreviation="GFVO" id="http://data.bioontology.org/ontologies/GFVO" name="Genomic Feature and Variation Ontology" uri="https://www.codamono.com/biointerchange/" version="20"/>
+  <acceptedOntology abbreviation="OMIT" id="http://data.bioontology.org/ontologies/OMIT" name="Ontology for MicroRNA Target" uri="http://omnisearch.soc.southalabama.edu/" version="40"/>
+  <acceptedOntology abbreviation="SBOL" id="http://data.bioontology.org/ontologies/SBOL" name="Synthetic Biology Open Language Visual Ontology" uri="www.sbolstandard.org/visual" version="2"/>
+  <acceptedOntology abbreviation="VICO" id="http://data.bioontology.org/ontologies/VICO" name="Vaccination Informed Consent Ontology" uri="https://github.com/VICO-ontology" version="10"/>
+  <acceptedOntology abbreviation="HIVCRS" id="http://data.bioontology.org/ontologies/HIVCRS" name="HIVCompoundRels" uri="http://blog.51.ca/u-345129/" version="1"/>
+  <acceptedOntology abbreviation="FB-DV" id="http://data.bioontology.org/ontologies/FB-DV" name="Drosophila Development Ontology" uri="http://sourceforge.net/p/fbbtdv/wiki/Home/" version="29"/>
+  <acceptedOntology abbreviation="VIO" id="http://data.bioontology.org/ontologies/VIO" name="Vaccine Investigation Ontology" uri="https://github.com/vaccineontology/VIO" version="1"/>
+  <acceptedOntology abbreviation="BHN" id="http://data.bioontology.org/ontologies/BHN" name="Biologie Hors Nomenclature" uri="http://www.chu-montpellier.fr/publication/inter_pub/R300/rubrique.jsp" version="1"/>
+  <acceptedOntology abbreviation="MEDLINEPLUS" id="http://data.bioontology.org/ontologies/MEDLINEPLUS" name="MedlinePlus Health Topics" uri="http://www.nlm.nih.gov/medlineplus/xmldescription.html" version="14"/>
+  <acceptedOntology abbreviation="ORON" id="http://data.bioontology.org/ontologies/ORON" name="Ontology for Reporting of Observational studies in Nutrition" uri="https://github.com/cyang0128/Nutritional-epidemiological-ontologies" version="2"/>
+  <acceptedOntology abbreviation="ONTOPARON" id="http://data.bioontology.org/ontologies/ONTOPARON" name="Ontology of Amyotrophic Lateral Sclerosis, all modules" uri="" version="8"/>
+  <acceptedOntology abbreviation="EPIE" id="http://data.bioontology.org/ontologies/EPIE" name="Epigenetic Entity" uri="" version="4"/>
+  <acceptedOntology abbreviation="MPATH" id="http://data.bioontology.org/ontologies/MPATH" name="Mouse Pathology Ontology" uri="http://www.pathbase.net" version="19"/>
+  <acceptedOntology abbreviation="SIO" id="http://data.bioontology.org/ontologies/SIO" name="Semanticscience Integrated Ontology" uri="http://sio.semanticscience.org" version="80"/>
+  <acceptedOntology abbreviation="EXON" id="http://data.bioontology.org/ontologies/EXON" name="Experimental Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="MICRO" id="http://data.bioontology.org/ontologies/MICRO" name="Prokaryotic Phenotypic and Metabolic Characters" uri="https://github.com/carrineblank/MicrO" version="4"/>
+  <acceptedOntology abbreviation="PR" id="http://data.bioontology.org/ontologies/PR" name="Protein Ontology" uri="http://proconsortium.org" version="77"/>
+  <acceptedOntology abbreviation="GEOSPECIES" id="http://data.bioontology.org/ontologies/GEOSPECIES" name="GeoSpecies Ontology" uri="http://lod.geospecies.org/" version="2"/>
+  <acceptedOntology abbreviation="MCCL" id="http://data.bioontology.org/ontologies/MCCL" name="Cell Line Ontology [by Mahadevan]" uri="http://www.molecularconnections.com" version="2"/>
+  <acceptedOntology abbreviation="EITS" id="http://data.bioontology.org/ontologies/EITS" name="EITHEALTH Medical specialties" uri="" version="4"/>
+  <acceptedOntology abbreviation="AUAT" id="http://data.bioontology.org/ontologies/AUAT" name="Animal Use Alternatives Tree" uri="" version="7"/>
+  <acceptedOntology abbreviation="CPRO" id="http://data.bioontology.org/ontologies/CPRO" name="Computer-Based Patient Record Ontology" uri="https://code.google.com/p/cpr-ontology/" version="3"/>
+  <acceptedOntology abbreviation="NIGO" id="http://data.bioontology.org/ontologies/NIGO" name="Neural-Immune Gene Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="AI-RHEUM" id="http://data.bioontology.org/ontologies/AI-RHEUM" name="Artificial Intelligence Rheumatology Consultant System Ontology" uri="" version="15"/>
+  <acceptedOntology abbreviation="FIBOM" id="http://data.bioontology.org/ontologies/FIBOM" name="FIBO_Merged" uri="" version="1"/>
+  <acceptedOntology abbreviation="RSA" id="http://data.bioontology.org/ontologies/RSA" name="Reference Sequence Annotation" uri="" version="6"/>
+  <acceptedOntology abbreviation="DERMLEX" id="http://data.bioontology.org/ontologies/DERMLEX" name="Dermatology Lexicon" uri="http://www.aad.org/research/lexicon/" version="4"/>
+  <acceptedOntology abbreviation="DDI" id="http://data.bioontology.org/ontologies/DDI" name="Ontology for Drug Discovery Investigations" uri="http://purl.org/ddi/home" version="2"/>
+  <acceptedOntology abbreviation="REPO" id="http://data.bioontology.org/ontologies/REPO" name="Reproductive Trait and Phenotype Ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="PHYFIELD" id="http://data.bioontology.org/ontologies/PHYFIELD" name="Physical Fields Ontology" uri="http://www.biomedtown.org" version="1"/>
+  <acceptedOntology abbreviation="MCCV" id="http://data.bioontology.org/ontologies/MCCV" name="Microbial Culture Collection Vocabulary" uri="" version="11"/>
+  <acceptedOntology abbreviation="NIFDYS" id="http://data.bioontology.org/ontologies/NIFDYS" name="Neuroscience Information Framework (NIF) Dysfunction Ontlogy" uri="http://neuinfo.org/" version="16"/>
+  <acceptedOntology abbreviation="MINERAL" id="http://data.bioontology.org/ontologies/MINERAL" name="Material Mineral" uri="" version="1"/>
+  <acceptedOntology abbreviation="ICD09" id="http://data.bioontology.org/ontologies/ICD09" name="International Classification of Diseases, Version 9" uri="himc.uwhealth.org" version="1"/>
+  <acceptedOntology abbreviation="ATC-U1061" id="http://data.bioontology.org/ontologies/ATC-U1061" name="ATC-U1061" uri="" version="4"/>
+  <acceptedOntology abbreviation="EDAM-BIOIMAGING" id="http://data.bioontology.org/ontologies/EDAM-BIOIMAGING" name="EDAM Bioimaging Ontology" uri="https://webprotege.stanford.edu/#projects/2ce704bf-83ed-4d2e-985f-84c4841fac71/edit/Classes" version="5"/>
+  <acceptedOntology abbreviation="ECSO" id="http://data.bioontology.org/ontologies/ECSO" name="The Ecosystem Ontology" uri="https://github.com/DataONEorg/sem-prov-ontologies" version="64"/>
+  <acceptedOntology abbreviation="XPO" id="http://data.bioontology.org/ontologies/XPO" name="Xenopus Phenotype Ontology" uri="https://github.com/obophenotype/xenopus-phenotype-ontology" version="5"/>
+  <acceptedOntology abbreviation="GLPG_MODELS" id="http://data.bioontology.org/ontologies/GLPG_MODELS" name="GLPG_animal_models" uri="" version="1"/>
+  <acceptedOntology abbreviation="BDO" id="http://data.bioontology.org/ontologies/BDO" name="Bone Dysplasia Ontology" uri="" version="9"/>
+  <acceptedOntology abbreviation="FAST-GENREFORM" id="http://data.bioontology.org/ontologies/FAST-GENREFORM" name="FAST (Faceted Access of Subject Terminology) GenreForm" uri="http://www.oclc.org/research/themes/data-science/fast/download.html" version="3"/>
+  <acceptedOntology abbreviation="PHAGE" id="http://data.bioontology.org/ontologies/PHAGE" name="Phylogenetics Ontology" uri="" version="5"/>
+  <acceptedOntology abbreviation="ICDO" id="http://data.bioontology.org/ontologies/ICDO" name="International Classification of Diseases Ontology" uri="https://github.com/icdo/ICDO" version="3"/>
+  <acceptedOntology abbreviation="AWIC2" id="http://data.bioontology.org/ontologies/AWIC2" name="NALT" uri="" version="1"/>
+  <acceptedOntology abbreviation="GML" id="http://data.bioontology.org/ontologies/GML" name="Ontology for Geography Markup Language (GML3.0)" uri="" version="1"/>
+  <acceptedOntology abbreviation="APATANDT" id="http://data.bioontology.org/ontologies/APATANDT" name="APA Tests and Testing cluster" uri="" version="1"/>
+  <acceptedOntology abbreviation="ICO" id="http://data.bioontology.org/ontologies/ICO" name="Informed Consent Ontology" uri="https://github.com/ICO-ontology/ICO" version="15"/>
+  <acceptedOntology abbreviation="TEST-PROD" id="http://data.bioontology.org/ontologies/TEST-PROD" name="Test Ontology for Monitoring BioPortal Production" uri="" version="2"/>
+  <acceptedOntology abbreviation="MPIO" id="http://data.bioontology.org/ontologies/MPIO" name="Minimum PDDI Information Ontology" uri="https://github.com/MPIO-Developers/MPIO" version="1"/>
+  <acceptedOntology abbreviation="OBR-Scolio" id="http://data.bioontology.org/ontologies/OBR-Scolio" name="OBR-Scolio ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="MMUSDV" id="http://data.bioontology.org/ontologies/MMUSDV" name="Mouse Developmental Stages" uri="https://github.com/obophenotype/developmental-stage-ontologies/wiki/MmusDv" version="40"/>
+  <acceptedOntology abbreviation="PACO" id="http://data.bioontology.org/ontologies/PACO" name="Physical Activity Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="RT" id="http://data.bioontology.org/ontologies/RT" name="Radiation Therapy" uri="" version="4"/>
+  <acceptedOntology abbreviation="RPO" id="http://data.bioontology.org/ontologies/RPO" name="Resource of Asian Primary Immunodeficiency Diseases (RAPID) Phenotype Ontology" uri="http://rapid.rcai.riken.jp/ontology/v1.0/phenomer.php" version="2"/>
+  <acceptedOntology abbreviation="BCS7" id="http://data.bioontology.org/ontologies/BCS7" name="Breast Cancer Staging - 7th Edition" uri="https://cancer-staging-ontology.github.io" version="1"/>
+  <acceptedOntology abbreviation="LUNGMAP-MOUSE_P" id="http://data.bioontology.org/ontologies/LUNGMAP-MOUSE_P" name="LungMAP-Mouse_partof" uri="https://lungmap.net/breath-ontology-browser/" version="9"/>
+  <acceptedOntology abbreviation="MEDO" id="http://data.bioontology.org/ontologies/MEDO" name="Mouse Experimental Design Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="NPO" id="http://data.bioontology.org/ontologies/NPO" name="NanoParticle Ontology" uri="http://www.nano-ontology.org" version="31"/>
+  <acceptedOntology abbreviation="OBIWS" id="http://data.bioontology.org/ontologies/OBIWS" name="Bioinformatics Web Service Ontology" uri="http://code.google.com/p/obi-webservice/" version="2"/>
+  <acceptedOntology abbreviation="HAO" id="http://data.bioontology.org/ontologies/HAO" name="Hymenoptera Anatomy Ontology" uri="http://hymao.org" version="25"/>
+  <acceptedOntology abbreviation="CEI_10" id="http://data.bioontology.org/ontologies/CEI_10" name="Codificacion De Enfermedades Pediatricas (En Edición)" uri="" version="16"/>
+  <acceptedOntology abbreviation="HPCH" id="http://data.bioontology.org/ontologies/HPCH" name="hpch" uri="" version="14"/>
+  <acceptedOntology abbreviation="NIDM-RESULTS" id="http://data.bioontology.org/ontologies/NIDM-RESULTS" name="NIDM-Results" uri="http://nidm.nidash.org/specs/nidm-results.html" version="2"/>
+  <acceptedOntology abbreviation="CMR-QA" id="http://data.bioontology.org/ontologies/CMR-QA" name="Cardiovascular Magnetic Resonance Quality Assessment Ontology" uri="https://github.com/ernestojimenezruiz/CMR-QA-Semantic-Layer/" version="1"/>
+  <acceptedOntology abbreviation="BRO_ACRONYM" id="http://data.bioontology.org/ontologies/BRO_ACRONYM" name="Bro_Name" uri="" version="1"/>
+  <acceptedOntology abbreviation="GMO" id="http://data.bioontology.org/ontologies/GMO" name="Growth Medium Ontology" uri="" version="7"/>
+  <acceptedOntology abbreviation="CAO" id="http://data.bioontology.org/ontologies/CAO" name="Clusters of Orthologous Groups (COG) Analysis Ontology" uri="http://cao.sourceforge.net/" version="3"/>
+  <acceptedOntology abbreviation="DATASET" id="http://data.bioontology.org/ontologies/DATASET" name="oebDataset" uri="" version="10"/>
+  <acceptedOntology abbreviation="SEPIO" id="http://data.bioontology.org/ontologies/SEPIO" name="Scientific Evidence and Provenance Information Ontology" uri="https://github.com/monarch-initiative/SEPIO-ontology" version="2"/>
+  <acceptedOntology abbreviation="pseudo" id="http://data.bioontology.org/ontologies/pseudo" name="Pseudogene" uri="" version="1"/>
+  <acceptedOntology abbreviation="ADALAB" id="http://data.bioontology.org/ontologies/ADALAB" name="AdaLab ontology" uri="" version="10"/>
+  <acceptedOntology abbreviation="MEDDRA" id="http://data.bioontology.org/ontologies/MEDDRA" name="Medical Dictionary for Regulatory Activities Terminology (MedDRA)" uri="https://www.meddra.org/" version="15"/>
+  <acceptedOntology abbreviation="FLO" id="http://data.bioontology.org/ontologies/FLO" name="Floss Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="SD3" id="http://data.bioontology.org/ontologies/SD3" name="Simulation Delivery and Documentation Deviations" uri="" version="1"/>
+  <acceptedOntology abbreviation="HHEAR" id="http://data.bioontology.org/ontologies/HHEAR" name="Human Health Exposure Analysis Resource" uri="https://hhearprogram.org" version="4"/>
+  <acceptedOntology abbreviation="I2B2-LOINC" id="http://data.bioontology.org/ontologies/I2B2-LOINC" name="I2B2 Labs Ontology for LOINC" uri="" version="7"/>
+  <acceptedOntology abbreviation="GBM" id="http://data.bioontology.org/ontologies/GBM" name="Glioblastoma" uri="" version="1"/>
+  <acceptedOntology abbreviation="GSSO" id="http://data.bioontology.org/ontologies/GSSO" name="Gender, Sex, and Sexual Orientation Ontology" uri="https://github.com/Superraptor/GSSO" version="45"/>
+  <acceptedOntology abbreviation="MERA" id="http://data.bioontology.org/ontologies/MERA" name="Medical Educational Resource Aggregator" uri="https://edu.carre-project.eu" version="1"/>
+  <acceptedOntology abbreviation="GPML" id="http://data.bioontology.org/ontologies/GPML" name="Graphical Pathway Markup Language" uri="" version="344"/>
+  <acceptedOntology abbreviation="RXNORM" id="http://data.bioontology.org/ontologies/RXNORM" name="RxNORM" uri="" version="18"/>
+  <acceptedOntology abbreviation="CPT" id="http://data.bioontology.org/ontologies/CPT" name="Current Procedural Terminology" uri="https://www.ama-assn.org/practice-management/cpt-current-procedural-terminology" version="15"/>
+  <acceptedOntology abbreviation="WB-PHENOTYPE" id="http://data.bioontology.org/ontologies/WB-PHENOTYPE" name="C. elegans Phenotype Vocabulary" uri="http://www.wormbase.org/" version="372"/>
+  <acceptedOntology abbreviation="LUNGMAP_H_CELL" id="http://data.bioontology.org/ontologies/LUNGMAP_H_CELL" name="Cell Ontology for Human Lung Maturation" uri="https://www.lungmap.net/breath-ontology-browser/" version="6"/>
+  <acceptedOntology abbreviation="NCCNEHR" id="http://data.bioontology.org/ontologies/NCCNEHR" name="NCCN EHR Oncology Categories" uri="https://www.nccn.org/" version="1"/>
+  <acceptedOntology abbreviation="FMPM" id="http://data.bioontology.org/ontologies/FMPM" name="Food Matrix for Predictive Microbiology" uri="" version="5"/>
+  <acceptedOntology abbreviation="UO" id="http://data.bioontology.org/ontologies/UO" name="Units of Measurement Ontology" uri="https://github.com/bio-ontology-research-group/unit-ontology" version="201"/>
+  <acceptedOntology abbreviation="CTCAE" id="http://data.bioontology.org/ontologies/CTCAE" name="Common Terminology Criteria for Adverse Events" uri="https://nciterms.nci.nih.gov/ncitbrowser/pages/vocabulary.jsf?dictionary=CTCAE_v5&amp;version=5.0" version="3"/>
+  <acceptedOntology abbreviation="ICPC2P" id="http://data.bioontology.org/ontologies/ICPC2P" name="International Classification of Primary Care - 2 PLUS" uri="http://www.fmrc.org.au/" version="15"/>
+  <acceptedOntology abbreviation="CRO" id="http://data.bioontology.org/ontologies/CRO" name="Contributor Role Ontology" uri="https://github.com/data2health/contributor-role-ontology" version="4"/>
+  <acceptedOntology abbreviation="EFO" id="http://data.bioontology.org/ontologies/EFO" name="Experimental Factor Ontology" uri="http://www.ebi.ac.uk/efo" version="201"/>
+  <acceptedOntology abbreviation="NDDO" id="http://data.bioontology.org/ontologies/NDDO" name="Neurodegenerative Disease Data Ontology" uri="http://www.ontodm.com/doku.php?id=nddo" version="10"/>
+  <acceptedOntology abbreviation="FIRE" id="http://data.bioontology.org/ontologies/FIRE" name="Fire Ontology" uri="" version="7"/>
+  <acceptedOntology abbreviation="ISO19115CC" id="http://data.bioontology.org/ontologies/ISO19115CC" name="ISO 19115 Common Classes" uri="" version="3"/>
+  <acceptedOntology abbreviation="HEIO" id="http://data.bioontology.org/ontologies/HEIO" name="Regional Healthcare System Interoperability and Information Exchange Measurement Ontology" uri="" version="17"/>
+  <acceptedOntology abbreviation="EXACT" id="http://data.bioontology.org/ontologies/EXACT" name="An ontology for experimental actions" uri="https://github.com/larisa-soldatova/EXACT" version="2"/>
+  <acceptedOntology abbreviation="ZIP5" id="http://data.bioontology.org/ontologies/ZIP5" name="5-Digit Zipcodes" uri="" version="2"/>
+  <acceptedOntology abbreviation="HUGO" id="http://data.bioontology.org/ontologies/HUGO" name="Human Genome Organization Gene Symbols" uri="http://www.genenames.org/" version="3"/>
+  <acceptedOntology abbreviation="ABA-AMB" id="http://data.bioontology.org/ontologies/ABA-AMB" name="Allen Brain Atlas (ABA) Adult Mouse Brain Ontology" uri="http://www.brain-map.org" version="1"/>
+  <acceptedOntology abbreviation="ADMO" id="http://data.bioontology.org/ontologies/ADMO" name="Alzheimer Disease Map Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="PHFUMIADO" id="http://data.bioontology.org/ontologies/PHFUMIADO" name="Phallusia fumigata Anatomy and Development Ontology" uri="http://www.aniseed.cnrs.fr/" version="2"/>
+  <acceptedOntology abbreviation="MHMO" id="http://data.bioontology.org/ontologies/MHMO" name="Mental Health Management Ontology" uri="" version="4"/>
+  <acceptedOntology abbreviation="LIFO" id="http://data.bioontology.org/ontologies/LIFO" name="Life Ontology" uri="https://github.com/lifeontology/lifo" version="1"/>
+  <acceptedOntology abbreviation="CC_SNOMED" id="http://data.bioontology.org/ontologies/CC_SNOMED" name="Cardiology Component of SNOMED CT" uri="" version="8"/>
+  <acceptedOntology abbreviation="SSE" id="http://data.bioontology.org/ontologies/SSE" name="Surgical Secondary Events" uri="http://www.mskcc.org/sse" version="2"/>
+  <acceptedOntology abbreviation="DANH" id="http://data.bioontology.org/ontologies/DANH" name="DD Herpes Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="ISO19115ROLES" id="http://data.bioontology.org/ontologies/ISO19115ROLES" name="ISO 19115 Role Codes" uri="" version="6"/>
+  <acceptedOntology abbreviation="NGSONTO" id="http://data.bioontology.org/ontologies/NGSONTO" name="NGS ontology" uri="" version="32"/>
+  <acceptedOntology abbreviation="TAXRANK" id="http://data.bioontology.org/ontologies/TAXRANK" name="Taxonomic Rank Vocabulary" uri="https://www.phenoscape.org/wiki/Taxonomic_Rank_Vocabulary" version="9"/>
+  <acceptedOntology abbreviation="ICD10CM" id="http://data.bioontology.org/ontologies/ICD10CM" name="International Classification of Diseases, Version 10 - Clinical Modification" uri="http://www.cms.hhs.gov/" version="17"/>
+  <acceptedOntology abbreviation="OGSF" id="http://data.bioontology.org/ontologies/OGSF" name="Ontology for Genetic Susceptibility Factor" uri="https://code.google.com/p/ogsf/" version="11"/>
+  <acceptedOntology abbreviation="INM-NPI" id="http://data.bioontology.org/ontologies/INM-NPI" name="Interventionnelle Non Médicamenteuse (INM)" uri="http://www.cepsplatform.eu" version="3"/>
+  <acceptedOntology abbreviation="ADMIN" id="http://data.bioontology.org/ontologies/ADMIN" name="Nurse Administrator" uri="" version="1"/>
+  <acceptedOntology abbreviation="ICD10INFR" id="http://data.bioontology.org/ontologies/ICD10INFR" name="TestICD10" uri="" version="1"/>
+  <acceptedOntology abbreviation="OPL" id="http://data.bioontology.org/ontologies/OPL" name="Ontology for Parasite LifeCycle" uri="http://knoesis.wright.edu/trykipedia/parasitelifecycle" version="8"/>
+  <acceptedOntology abbreviation="ESFO" id="http://data.bioontology.org/ontologies/ESFO" name="Enzyme Structure Function Ontology" uri="http://sfld.rbvi.ucsf.edu/" version="1"/>
+  <acceptedOntology abbreviation="VIAF" id="http://data.bioontology.org/ontologies/VIAF" name="Virtual International Authority FIle" uri="http://viaf.org" version="1"/>
+  <acceptedOntology abbreviation="ISO19115CON" id="http://data.bioontology.org/ontologies/ISO19115CON" name="ISO 19115 Constraints Information" uri="" version="3"/>
+  <acceptedOntology abbreviation="LCGFT_SKOS" id="http://data.bioontology.org/ontologies/LCGFT_SKOS" name="Library of Congress Genre/Form Terms (SKOS)" uri="" version="2"/>
+  <acceptedOntology abbreviation="GMM" id="http://data.bioontology.org/ontologies/GMM" name="GoMapMan" uri="http://www.gomapman.org/" version="25"/>
+  <acceptedOntology abbreviation="LCMPT" id="http://data.bioontology.org/ontologies/LCMPT" name="Library of Congress Medium of Performance Thesaurus for Music" uri="http://id.loc.gov/authorities/performanceMediums.html" version="9"/>
+  <acceptedOntology abbreviation="PV-SDO" id="http://data.bioontology.org/ontologies/PV-SDO" name="Signal Detectors Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="CIDOC-CRM" id="http://data.bioontology.org/ontologies/CIDOC-CRM" name="CIDOC Conceptual Reference Model" uri="http://www.cidoc-crm.org/" version="2"/>
+  <acceptedOntology abbreviation="AAT" id="http://data.bioontology.org/ontologies/AAT" name="Art &amp; Architecture Thesaurus" uri="" version="5"/>
+  <acceptedOntology abbreviation="MAT" id="http://data.bioontology.org/ontologies/MAT" name="Minimal Anatomical Terminology" uri="" version="4"/>
+  <acceptedOntology abbreviation="CST" id="http://data.bioontology.org/ontologies/CST" name="Cancer Staging Terms" uri="https://cancer-staging-ontology.github.io" version="1"/>
+  <acceptedOntology abbreviation="GRO-CPGA" id="http://data.bioontology.org/ontologies/GRO-CPGA" name="Cereal Plant Gross Anatomy Ontology" uri="http://www.gramene.org/plant_ontology/" version="11"/>
+  <acceptedOntology abbreviation="STATO" id="http://data.bioontology.org/ontologies/STATO" name="Statistics Ontology" uri="http://stato-ontology.org/" version="12"/>
+  <acceptedOntology abbreviation="AWIC-ONTOLOGY" id="http://data.bioontology.org/ontologies/AWIC-ONTOLOGY" name="Animal Welfare Information Ontology" uri="" version="9"/>
+  <acceptedOntology abbreviation="MODSCI" id="http://data.bioontology.org/ontologies/MODSCI" name="Modern Science Ontology" uri="https://saidfathalla.github.io/Science-knowledge-graph-ontologies/doc/ModSci_doc/index-en.html" version="3"/>
+  <acceptedOntology abbreviation="JBG-ARST" id="http://data.bioontology.org/ontologies/JBG-ARST" name="Aspect Ratio SKOS Test" uri="" version="4"/>
+  <acceptedOntology abbreviation="ISO19115CI" id="http://data.bioontology.org/ontologies/ISO19115CI" name="ISO 19115 Citation Information" uri="" version="4"/>
+  <acceptedOntology abbreviation="RS" id="http://data.bioontology.org/ontologies/RS" name="Rat Strain Ontology" uri="http://rgd.mcw.edu/" version="150"/>
+  <acceptedOntology abbreviation="JERM" id="http://data.bioontology.org/ontologies/JERM" name="Just Enough Results Model Ontology" uri="https://fair-dom.org/" version="15"/>
+  <acceptedOntology abbreviation="HOOM" id="http://data.bioontology.org/ontologies/HOOM" name="HPO - ORDO Ontological Module" uri="http://www.orphadata.org/cgi-bin/inc/hoom_orphanet.inc.php" version="2"/>
+  <acceptedOntology abbreviation="APATREATMENT" id="http://data.bioontology.org/ontologies/APATREATMENT" name="APA Treatment Cluster" uri="" version="1"/>
+  <acceptedOntology abbreviation="CCONT" id="http://data.bioontology.org/ontologies/CCONT" name="Cell Culture Ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="NLN" id="http://data.bioontology.org/ontologies/NLN" name="NLighten Ontology" uri="https://github.com/NLightenGroup/nlighten-ontology" version="1"/>
+  <acceptedOntology abbreviation="PAE" id="http://data.bioontology.org/ontologies/PAE" name="Plant Anatomy" uri="http://www.plantontology.org" version="13"/>
+  <acceptedOntology abbreviation="ISO19108TO" id="http://data.bioontology.org/ontologies/ISO19108TO" name="ISO 19108 Temporal Objects" uri="" version="2"/>
+  <acceptedOntology abbreviation="CCO" id="http://data.bioontology.org/ontologies/CCO" name="Cell Cycle Ontology" uri="http://www.semantic-systems-biology.org/apo/" version="9"/>
+  <acceptedOntology abbreviation="VT" id="http://data.bioontology.org/ontologies/VT" name="Vertebrate Trait Ontology" uri="https://www.animalgenome.org/bioinfo/projects/vt/" version="83"/>
+  <acceptedOntology abbreviation="XLMOD" id="http://data.bioontology.org/ontologies/XLMOD" name="mass spectrometry cross-linking and derivatization reagents" uri="https://github.com/HUPO-PSI/mzIdentML/tree/master/cv" version="3"/>
+  <acceptedOntology abbreviation="NEST" id="http://data.bioontology.org/ontologies/NEST" name="Nutritional Epidemiological STandards" uri="https://github.com/cyang0128/Nutritional-epidemiological-ontologies" version="5"/>
+  <acceptedOntology abbreviation="TTO" id="http://data.bioontology.org/ontologies/TTO" name="Teleost Taxonomy Ontology" uri="http://obofoundry.org/ontology/tto.html" version="44"/>
+  <acceptedOntology abbreviation="PDO_CAS" id="http://data.bioontology.org/ontologies/PDO_CAS" name="Plant Diversity Ontology" uri="http://gooa.las.ac.cn/external/index.jsp" version="1"/>
+  <acceptedOntology abbreviation="VHOG" id="http://data.bioontology.org/ontologies/VHOG" name="Vertebrate Homologous Organ Group Ontology" uri="http://bgee.unil.ch" version="12"/>
+  <acceptedOntology abbreviation="CRISP" id="http://data.bioontology.org/ontologies/CRISP" name="Computer Retrieval of Information on Scientific Projects Thesaurus" uri="" version="15"/>
+  <acceptedOntology abbreviation="PPLC" id="http://data.bioontology.org/ontologies/PPLC" name="Placental Pathology Lesion Classification" uri="" version="1"/>
+  <acceptedOntology abbreviation="APACOMPUTER" id="http://data.bioontology.org/ontologies/APACOMPUTER" name="Computer Cluster" uri="" version="1"/>
+  <acceptedOntology abbreviation="MOOCULADO" id="http://data.bioontology.org/ontologies/MOOCULADO" name="Molgula oculata Anatomy and Development Ontology" uri="http://www.aniseed.cnrs.fr/" version="2"/>
+  <acceptedOntology abbreviation="OLIVES" id="http://data.bioontology.org/ontologies/OLIVES" name="Ontology for Influenza Vaccine Effectiveness Studies" uri="" version="1"/>
+  <acceptedOntology abbreviation="PDUMDV" id="http://data.bioontology.org/ontologies/PDUMDV" name="Platynereis Developmental Stages" uri="https://github.com/obophenotype/developmental-stage-ontologies" version="163"/>
+  <acceptedOntology abbreviation="PTEST" id="http://data.bioontology.org/ontologies/PTEST" name="PAT Test" uri="" version="10"/>
+  <acceptedOntology abbreviation="COLL" id="http://data.bioontology.org/ontologies/COLL" name="Collembola Anatomy Ontology" uri="" version="7"/>
+  <acceptedOntology abbreviation="SEDI" id="http://data.bioontology.org/ontologies/SEDI" name="Semantic DICOM Ontology" uri="https://semantic-dicom.org" version="6"/>
+  <acceptedOntology abbreviation="BFLC" id="http://data.bioontology.org/ontologies/BFLC" name="LC BIBFRAME 2.0 Vocabulary Extension" uri="http://id.loc.gov/ontologies/bflc.html" version="1"/>
+  <acceptedOntology abbreviation="AHSO" id="http://data.bioontology.org/ontologies/AHSO" name="Animal Health Surveillance Ontology" uri="http://datadrivensurveillance.org/ahso" version="1"/>
+  <acceptedOntology abbreviation="RNAO" id="http://data.bioontology.org/ontologies/RNAO" name="RNA Ontology" uri="https://github.com/BGSU-RNA/rnao" version="4"/>
+  <acceptedOntology abbreviation="EHDAA" id="http://data.bioontology.org/ontologies/EHDAA" name="Human Developmental Anatomy Ontology, abstract version 1" uri="http://obofoundry.org/ontology/ehdaa.html" version="7"/>
+  <acceptedOntology abbreviation="ALLERGYDETECTOR" id="http://data.bioontology.org/ontologies/ALLERGYDETECTOR" name="Allergy Detector II" uri="" version="1"/>
+  <acceptedOntology abbreviation="FC" id="http://data.bioontology.org/ontologies/FC" name="crop" uri="" version="1"/>
+  <acceptedOntology abbreviation="ESSO" id="http://data.bioontology.org/ontologies/ESSO" name="Epilepsy Syndrome Seizure Ontology" uri="" version="5"/>
+  <acceptedOntology abbreviation="LEGALAPATEST2" id="http://data.bioontology.org/ontologies/LEGALAPATEST2" name="apalegal" uri="" version="1"/>
+  <acceptedOntology abbreviation="EPSO" id="http://data.bioontology.org/ontologies/EPSO" name="Epilepsy and Seizure Ontology" uri="http://bmhinformatics.case.edu/" version="2"/>
+  <acceptedOntology abbreviation="COD" id="http://data.bioontology.org/ontologies/COD" name="Context Ontology for Disease" uri="" version="1"/>
+  <acceptedOntology abbreviation="CARO" id="http://data.bioontology.org/ontologies/CARO" name="Common Anatomy Reference Ontology" uri="https://github.com/obophenotype/caro/" version="13"/>
+  <acceptedOntology abbreviation="SKOSTEST" id="http://data.bioontology.org/ontologies/SKOSTEST" name="SKOS Test" uri="" version="6"/>
+  <acceptedOntology abbreviation="FLYGLYCODB" id="http://data.bioontology.org/ontologies/FLYGLYCODB" name="FlyGlycoDB" uri="http://fly.glycoinfo.org" version="2"/>
+  <acceptedOntology abbreviation="UPHENO" id="http://data.bioontology.org/ontologies/UPHENO" name="Combined Phenotype Ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="IDODEN" id="http://data.bioontology.org/ontologies/IDODEN" name="Dengue Fever Ontology" uri="http://code.google.com/p/dengue-fever-ontology/" version="6"/>
+  <acceptedOntology abbreviation="OCMR" id="http://data.bioontology.org/ontologies/OCMR" name="Ontology of Chinese Medicine for Rheumatism" uri="https://github.com/biomedontology/ocmr" version="3"/>
+  <acceptedOntology abbreviation="DEB" id="http://data.bioontology.org/ontologies/DEB" name="Devices, Experimental scaffolds and Biomaterials Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="CANONT" id="http://data.bioontology.org/ontologies/CANONT" name="Upper-Level Cancer Ontology " uri="" version="1"/>
+  <acceptedOntology abbreviation="TIME" id="http://data.bioontology.org/ontologies/TIME" name="OWL-Time" uri="https://www.w3.org/TR/owl-time/" version="3"/>
+  <acceptedOntology abbreviation="GENEPIO" id="http://data.bioontology.org/ontologies/GENEPIO" name="GenEpiO" uri="http://genepio.org" version="20"/>
+  <acceptedOntology abbreviation="MOP" id="http://data.bioontology.org/ontologies/MOP" name="Molecular Process Ontology" uri="https://github.com/rsc-ontologies/rxno" version="3"/>
+  <acceptedOntology abbreviation="GEO218" id="http://data.bioontology.org/ontologies/GEO218" name="GEO-2-2018" uri="" version="1"/>
+  <acceptedOntology abbreviation="GAZ" id="http://data.bioontology.org/ontologies/GAZ" name="Gazetteer" uri="http://environmentontology.github.io/gaz/" version="14"/>
+  <acceptedOntology abbreviation="ECOCORE" id="http://data.bioontology.org/ontologies/ECOCORE" name="An ontology of core ecological entities" uri="https://github.com/EcologicalSemantics/ecocore" version="1"/>
+  <acceptedOntology abbreviation="PANDA" id="http://data.bioontology.org/ontologies/PANDA" name="Probabilistic Knowledge Assembly Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="MODS" id="http://data.bioontology.org/ontologies/MODS" name="MODS RDF Ontology" uri="https://www.loc.gov/standards/mods/modsrdf" version="9"/>
+  <acceptedOntology abbreviation="NIFSTD" id="http://data.bioontology.org/ontologies/NIFSTD" name="Neuroscience Information Framework (NIF) Standard Ontology" uri="http://ontology.neuinfo.org" version="27"/>
+  <acceptedOntology abbreviation="SBO" id="http://data.bioontology.org/ontologies/SBO" name="Systems Biology Ontology" uri="" version="662"/>
+  <acceptedOntology abbreviation="NEO" id="http://data.bioontology.org/ontologies/NEO" name="Neurologic Examination Ontology" uri="" version="43"/>
+  <acceptedOntology abbreviation="PP" id="http://data.bioontology.org/ontologies/PP" name="Pipeline Patterns Ontology" uri="https://bitbucket.org/PlantExpAssay/ontology" version="1"/>
+  <acceptedOntology abbreviation="ISO19115ID" id="http://data.bioontology.org/ontologies/ISO19115ID" name="ISO 19115 Identification Information" uri="" version="6"/>
+  <acceptedOntology abbreviation="COPDO" id="http://data.bioontology.org/ontologies/COPDO" name="COPD Ontology" uri="clininf.eu" version="1"/>
+  <acceptedOntology abbreviation="MATRROCK" id="http://data.bioontology.org/ontologies/MATRROCK" name="Material Rock" uri="" version="1"/>
+  <acceptedOntology abbreviation="XAO" id="http://data.bioontology.org/ontologies/XAO" name="Xenopus Anatomy Ontology" uri="http://www.xenbase.org/anatomy/xao.do?method=display" version="27"/>
+  <acceptedOntology abbreviation="OCRE" id="http://data.bioontology.org/ontologies/OCRE" name="Ontology of Clinical Research" uri="http://rctbank.ucsf.edu/home/ocre" version="23"/>
+  <acceptedOntology abbreviation="NCC" id="http://data.bioontology.org/ontologies/NCC" name="Nursing Care Coordination" uri="" version="1"/>
+  <acceptedOntology abbreviation="HP" id="http://data.bioontology.org/ontologies/HP" name="Human Phenotype Ontology" uri="http://www.human-phenotype-ontology.org" version="580"/>
+  <acceptedOntology abbreviation="CDESVS" id="http://data.bioontology.org/ontologies/CDESVS" name="CDESVS" uri="" version="1"/>
+  <acceptedOntology abbreviation="DDPHENO" id="http://data.bioontology.org/ontologies/DDPHENO" name="Dictyostelium Discoideum Phenotype Ontology" uri="http://dictybase.org/" version="495"/>
+  <acceptedOntology abbreviation="CHD" id="http://data.bioontology.org/ontologies/CHD" name="Congenital Heart Defects Ontology" uri="http://homes.esat.kuleuven.be/~bioiuser/chdwiki" version="5"/>
+  <acceptedOntology abbreviation="OHD" id="http://data.bioontology.org/ontologies/OHD" name="The Oral Health and Disease Ontology" uri="https://purl.obolibrary.org/obo/ohd/home" version="1"/>
+  <acceptedOntology abbreviation="DOCCC" id="http://data.bioontology.org/ontologies/DOCCC" name="Diagnosis Ontology of Clinical Care Classification" uri="" version="3"/>
+  <acceptedOntology abbreviation="OBCS" id="http://data.bioontology.org/ontologies/OBCS" name="Ontology of Biological and Clinical Statistics" uri="https://github.com/obcs/obcs" version="13"/>
+  <acceptedOntology abbreviation="MATRELEMENT" id="http://data.bioontology.org/ontologies/MATRELEMENT" name="Material Element" uri="" version="1"/>
+  <acceptedOntology abbreviation="ECO" id="http://data.bioontology.org/ontologies/ECO" name="Evidence and Conclusion Ontology" uri="https://github.com/evidenceontology/evidenceontology" version="86"/>
+  <acceptedOntology abbreviation="MIRNAO" id="http://data.bioontology.org/ontologies/MIRNAO" name="MicroRNA Ontology" uri="https://code.google.com/archive/p/mirna-ontology/" version="11"/>
+  <acceptedOntology abbreviation="LEGALAPA" id="http://data.bioontology.org/ontologies/LEGALAPA" name="legalapa" uri="" version="1"/>
+  <acceptedOntology abbreviation="HRDO" id="http://data.bioontology.org/ontologies/HRDO" name="Disease core ontology applied to Rare Diseases" uri="" version="2"/>
+  <acceptedOntology abbreviation="BIOETHICS-NIEHS" id="http://data.bioontology.org/ontologies/BIOETHICS-NIEHS" name="Glossary of Commonly Used Terms in Research Ethics" uri="http://cor.esipfed.org/ont/~graybeal/bioethics" version="10"/>
+  <acceptedOntology abbreviation="NEUDIGS" id="http://data.bioontology.org/ontologies/NEUDIGS" name="Neuroscience Domain Insight Graph" uri="http://dig.isi.edu" version="1"/>
+  <acceptedOntology abbreviation="PLANA" id="http://data.bioontology.org/ontologies/PLANA" name="Planarian Anatomy and Developmental Stage Ontolgoy" uri="https://github.com/obophenotype/planaria-ontology" version="18"/>
+  <acceptedOntology abbreviation="HOM" id="http://data.bioontology.org/ontologies/HOM" name="Ontology of Homology and Related Concepts in Biology" uri="http://bioinfo.unil.ch" version="6"/>
+  <acceptedOntology abbreviation="HUPSON" id="http://data.bioontology.org/ontologies/HUPSON" name="Human Physiology Simulation Ontology" uri="http://www.scai.fraunhofer.de/en/business-research-areas/bioinformatics/downloads.html" version="1"/>
+  <acceptedOntology abbreviation="ICECI" id="http://data.bioontology.org/ontologies/ICECI" name="International Classification of  External Causes of Injuries" uri="" version="6"/>
+  <acceptedOntology abbreviation="NORREG" id="http://data.bioontology.org/ontologies/NORREG" name="Norwegian national quality registries- Variabelbibliotek for medisinske kvalitetsregistre " uri="https://docs.google.com/spreadsheets/d/1w2NatnnDfacYqrs24HDxQuEBM_xmGxL8-DilqAHVFDM/edit#gid=1014457671" version="1"/>
+  <acceptedOntology abbreviation="PATO" id="http://data.bioontology.org/ontologies/PATO" name="Phenotypic Quality Ontology" uri="https://github.com/pato-ontology/pato/" version="176"/>
+  <acceptedOntology abbreviation="BAO" id="http://data.bioontology.org/ontologies/BAO" name="BioAssay Ontology" uri="http://www.bioassayontology.org/" version="36"/>
+  <acceptedOntology abbreviation="ADO" id="http://data.bioontology.org/ontologies/ADO" name="Alzheimer's disease ontology" uri="http://www.scai.fraunhofer.de/en/business-research-areas/bioinformatics.html" version="3"/>
+  <acceptedOntology abbreviation="OVAE" id="http://data.bioontology.org/ontologies/OVAE" name="Ontology of Vaccine Adverse Events" uri="http://www.violinet.org/ovae" version="10"/>
+  <acceptedOntology abbreviation="OF" id="http://data.bioontology.org/ontologies/OF" name="OntoFood" uri="" version="1"/>
+  <acceptedOntology abbreviation="BMO" id="http://data.bioontology.org/ontologies/BMO" name="Biomarker Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="CMDO" id="http://data.bioontology.org/ontologies/CMDO" name="Clinical MetaData Ontology" uri="http://www.snubi.org/software/cmo/" version="10"/>
+  <acceptedOntology abbreviation="ISO19115" id="http://data.bioontology.org/ontologies/ISO19115" name="ISO 19115" uri="" version="3"/>
+  <acceptedOntology abbreviation="AF" id="http://data.bioontology.org/ontologies/AF" name="Allotrope Foundation Ontology" uri="http://purl.allotrope.org" version="1"/>
+  <acceptedOntology abbreviation="EHDAA2" id="http://data.bioontology.org/ontologies/EHDAA2" name="Human Developmental Anatomy Ontology, abstract version 2" uri="http://genex.hgu.mrc.ac.uk/" version="32"/>
+  <acceptedOntology abbreviation="ODNAE" id="http://data.bioontology.org/ontologies/ODNAE" name="Ontology of Drug Neuropathy Adverse Events" uri="https://github.com/odnae/odnae" version="3"/>
+  <acceptedOntology abbreviation="TM-OTHER-FACTORS" id="http://data.bioontology.org/ontologies/TM-OTHER-FACTORS" name="Traditional Medicine Other Factors Value Set" uri="https://sites.google.com/site/whoictm/home" version="1"/>
+  <acceptedOntology abbreviation="MCO" id="http://data.bioontology.org/ontologies/MCO" name="Microbial Conditions Ontology" uri="https://github.com/microbial-conditions-ontology/microbial-conditions-ontology" version="1"/>
+  <acceptedOntology abbreviation="GLYCOCOO" id="http://data.bioontology.org/ontologies/GLYCOCOO" name="GlycoConjugate Ontology" uri="https://github.com/glycoinfo/GlycoCoO" version="2"/>
+  <acceptedOntology abbreviation="PREGONTO" id="http://data.bioontology.org/ontologies/PREGONTO" name="Pregnancy Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="GCO" id="http://data.bioontology.org/ontologies/GCO" name="Genome Component Ontology" uri="" version="4"/>
+  <acceptedOntology abbreviation="LUNGMAP-MOUSE_P2" id="http://data.bioontology.org/ontologies/LUNGMAP-MOUSE_P2" name="LungMAP-H_partof" uri="" version="25"/>
+  <acceptedOntology abbreviation="DC-CL" id="http://data.bioontology.org/ontologies/DC-CL" name="Dendritic Cell Ontology" uri="http://www.dukeontologygroup.org/Projects.html" version="11"/>
+  <acceptedOntology abbreviation="TXP" id="http://data.bioontology.org/ontologies/TXP" name="Toxic process ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="LC-SUBJSCHEMES" id="http://data.bioontology.org/ontologies/LC-SUBJSCHEMES" name="Library of Congress Subject Schemes" uri="http://id.loc.gov/vocabulary/subjectSchemes.html" version="4"/>
+  <acceptedOntology abbreviation="BP" id="http://data.bioontology.org/ontologies/BP" name="BioPAX Ontology of Biological Pathways" uri="www.biopax.org" version="1"/>
+  <acceptedOntology abbreviation="CIELA" id="http://data.bioontology.org/ontologies/CIELA" name="Ciela" uri="" version="1"/>
+  <acceptedOntology abbreviation="OXT2" id="http://data.bioontology.org/ontologies/OXT2" name="OWL_XML_Tool2" uri="" version="3"/>
+  <acceptedOntology abbreviation="RVO" id="http://data.bioontology.org/ontologies/RVO" name="Research Variable Ontology" uri="http://w3id.org/rv-ontology/info" version="2"/>
+  <acceptedOntology abbreviation="SURGICAL" id="http://data.bioontology.org/ontologies/SURGICAL" name="Nurse Surgical" uri="" version="1"/>
+  <acceptedOntology abbreviation="MPO" id="http://data.bioontology.org/ontologies/MPO" name="Microbial Phenotype Ontology" uri="" version="7"/>
+  <acceptedOntology abbreviation="ARO" id="http://data.bioontology.org/ontologies/ARO" name="Antibiotic Resistance Ontology" uri="https://github.com/arpcard/aro" version="5"/>
+  <acceptedOntology abbreviation="BIOMODELS" id="http://data.bioontology.org/ontologies/BIOMODELS" name="BioModels Ontology" uri="https://code.google.com/p/sbmlharvester/" version="3"/>
+  <acceptedOntology abbreviation="HANCESTRO" id="http://data.bioontology.org/ontologies/HANCESTRO" name="Human Ancestry Ontology" uri="https://github.com/EBISPOT/ancestro" version="6"/>
+  <acceptedOntology abbreviation="SPO" id="http://data.bioontology.org/ontologies/SPO" name="Skin Physiology Ontology" uri="www.lboro.ac.uk" version="1"/>
+  <acceptedOntology abbreviation="FVO" id="http://data.bioontology.org/ontologies/FVO" name="FastVac Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="PCO" id="http://data.bioontology.org/ontologies/PCO" name="Population and Community Ontology" uri="http://code.google.com/p/popcomm-ontology/" version="15"/>
+  <acceptedOntology abbreviation="EMAP" id="http://data.bioontology.org/ontologies/EMAP" name="Mouse Gross Anatomy and Development Ontology" uri="http://emouseatlas.org/" version="7"/>
+  <acceptedOntology abbreviation="AEO" id="http://data.bioontology.org/ontologies/AEO" name="Anatomical Entity Ontology" uri="https://github.com/obophenotype/human-developmental-anatomy-ontology/" version="7"/>
+  <acceptedOntology abbreviation="PATGV" id="http://data.bioontology.org/ontologies/PATGV" name="PAT Genetic Variance" uri="" version="1"/>
+  <acceptedOntology abbreviation="STUFF" id="http://data.bioontology.org/ontologies/STUFF" name="Stuff Ontology" uri="http://www.meteck.org/stuff.html" version="3"/>
+  <acceptedOntology abbreviation="NPHO" id="http://data.bioontology.org/ontologies/NPHO" name="Nightshade Phenotype Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="GEO" id="http://data.bioontology.org/ontologies/GEO" name="Geographical Entity Ontology" uri="https://github.com/ufbmi/geographical-entity-ontology/" version="3"/>
+  <acceptedOntology abbreviation="EDDA_PT" id="http://data.bioontology.org/ontologies/EDDA_PT" name="EDDA Publication Types Taxonomy" uri="" version="1"/>
+  <acceptedOntology abbreviation="ADHER_INTCARE_EN" id="http://data.bioontology.org/ontologies/ADHER_INTCARE_EN" name="Adherence and Integrated Care" uri="" version="1"/>
+  <acceptedOntology abbreviation="OFP" id="http://data.bioontology.org/ontologies/OFP" name="Ontology for Learning Processes in Floss Communities" uri="" version="2"/>
+  <acceptedOntology abbreviation="REPRODUCE-ME" id="http://data.bioontology.org/ontologies/REPRODUCE-ME" name="REPRODUCE-ME" uri="https://w3id.org/reproduceme/research" version="7"/>
+  <acceptedOntology abbreviation="TRIAGE" id="http://data.bioontology.org/ontologies/TRIAGE" name="Nurse triage" uri="" version="2"/>
+  <acceptedOntology abbreviation="TRAK" id="http://data.bioontology.org/ontologies/TRAK" name="Taxonomy for Rehabilitation of Knee Conditions" uri="http://www.cs.cf.ac.uk/trak" version="5"/>
+  <acceptedOntology abbreviation="STO-DRAFT" id="http://data.bioontology.org/ontologies/STO-DRAFT" name="The Stroke Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="EITOUT" id="http://data.bioontology.org/ontologies/EITOUT" name="EITHEALTH OUTCOME" uri="" version="8"/>
+  <acceptedOntology abbreviation="CCO_AO" id="http://data.bioontology.org/ontologies/CCO_AO" name="Agent Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="OntoVIP" id="http://data.bioontology.org/ontologies/OntoVIP" name="Medical image simulation" uri="http://vip.creatis.insa-lyon.fr/ontovip/v1.0/Documentation_OntoVIPv1.pdf" version="1"/>
+  <acceptedOntology abbreviation="CIO_DAC" id="http://data.bioontology.org/ontologies/CIO_DAC" name="CIO_Diff_Anchor_Concat" uri="" version="1"/>
+  <acceptedOntology abbreviation="OPTIMAL" id="http://data.bioontology.org/ontologies/OPTIMAL" name="OPTImAL: An ontology for patient adherence modeling in physical activity domain" uri="" version="1"/>
+  <acceptedOntology abbreviation="UNI" id="http://data.bioontology.org/ontologies/UNI" name="University" uri="" version="1"/>
+  <acceptedOntology abbreviation="CTENO" id="http://data.bioontology.org/ontologies/CTENO" name="Ctenophore Ontology" uri="https://github.com/obophenotype/ctenophore-ontology" version="1"/>
+  <acceptedOntology abbreviation="LPT" id="http://data.bioontology.org/ontologies/LPT" name="Livestock Product Trait Ontology" uri="" version="5"/>
+  <acceptedOntology abbreviation="FBbi" id="http://data.bioontology.org/ontologies/FBbi" name="Biological Imaging Methods Ontology" uri="http://cellimagelibrary.org/" version="103"/>
+  <acceptedOntology abbreviation="DION" id="http://data.bioontology.org/ontologies/DION" name="BMB Diabetes Ontology" uri="" version="12"/>
+  <acceptedOntology abbreviation="UW-DRG" id="http://data.bioontology.org/ontologies/UW-DRG" name="Diagnosis Related Groups (UW)" uri="" version="1"/>
+  <acceptedOntology abbreviation="GRID" id="http://data.bioontology.org/ontologies/GRID" name="grid Organizations" uri="http://github.com/openvivo/grid-rdf" version="4"/>
+  <acceptedOntology abbreviation="IDOMAL" id="http://data.bioontology.org/ontologies/IDOMAL" name="Malaria Ontology" uri="http://anobase.vectorbase.org/idomal/IDOMAL.obo" version="186"/>
+  <acceptedOntology abbreviation="OFSMR" id="http://data.bioontology.org/ontologies/OFSMR" name="Open Predictive Microbiology Ontology" uri="https://sites.google.com/site/openfsmr/open-fsmr-detailfilter" version="19"/>
+  <acceptedOntology abbreviation="CHIRO" id="http://data.bioontology.org/ontologies/CHIRO" name="CHEBI Integrated Role Ontology" uri="https://github.com/obophenotype/chiro" version="2"/>
+  <acceptedOntology abbreviation="OOSTT" id="http://data.bioontology.org/ontologies/OOSTT" name="Ontology of Organizational Structures of Trauma centers and Trauma systems" uri="https://github.com/OOSTT/OOSTT" version="4"/>
+  <acceptedOntology abbreviation="GALEN" id="http://data.bioontology.org/ontologies/GALEN" name="Galen Ontology" uri="http://www.co-ode.org/galen/" version="1"/>
+  <acceptedOntology abbreviation="SIBO" id="http://data.bioontology.org/ontologies/SIBO" name="Social Inset Behavior Ontology" uri="https://github.com/obophenotype/sibo" version="1"/>
+  <acceptedOntology abbreviation="BNO" id="http://data.bioontology.org/ontologies/BNO" name="Bionutrition Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="LC-SUBJECTS" id="http://data.bioontology.org/ontologies/LC-SUBJECTS" name="Library of Congress Subject Headings" uri="" version="1"/>
+  <acceptedOntology abbreviation="CLO" id="http://data.bioontology.org/ontologies/CLO" name="Cell Line Ontology" uri="http://www.clo-ontology.org/" version="64"/>
+  <acceptedOntology abbreviation="MIXSCV" id="http://data.bioontology.org/ontologies/MIXSCV" name="Minimal Information about any Sequence (MIxS) Controlled Vocabularies" uri="" version="2"/>
+  <acceptedOntology abbreviation="ONTODM-CORE" id="http://data.bioontology.org/ontologies/ONTODM-CORE" name="Ontology of Core Data Mining Entities" uri="www.ontodm.com" version="8"/>
+  <acceptedOntology abbreviation="CNO_ACRONYM" id="http://data.bioontology.org/ontologies/CNO_ACRONYM" name="CNO_NAME" uri="" version="1"/>
+  <acceptedOntology abbreviation="RB" id="http://data.bioontology.org/ontologies/RB" name="RegenBase ontology" uri="http://regenbase.org" version="5"/>
+  <acceptedOntology abbreviation="ORTHO" id="http://data.bioontology.org/ontologies/ORTHO" name="Ortholog Ontology" uri="http://purl.jp/bio/11/orth" version="18"/>
+  <acceptedOntology abbreviation="ICD11-BODYSYSTEM" id="http://data.bioontology.org/ontologies/ICD11-BODYSYSTEM" name="Body System Terms from ICD11" uri="" version="1"/>
+  <acceptedOntology abbreviation="UNITSONT" id="http://data.bioontology.org/ontologies/UNITSONT" name="Units Ontology" uri="https://mimi.case.edu/concepts" version="1"/>
+  <acceptedOntology abbreviation="PHENX" id="http://data.bioontology.org/ontologies/PHENX" name="PhenX Phenotypic Terms" uri="" version="16"/>
+  <acceptedOntology abbreviation="MEGO" id="http://data.bioontology.org/ontologies/MEGO" name="Mobile Genetic Element Ontology" uri="http://aclame.ulb.ac.be" version="2"/>
+  <acceptedOntology abbreviation="ADW" id="http://data.bioontology.org/ontologies/ADW" name="Animal Natural History and Life History Ontology" uri="http://www.animaldiversity.org" version="2"/>
+  <acceptedOntology abbreviation="IDG_GL" id="http://data.bioontology.org/ontologies/IDG_GL" name="IDG gene list" uri="" version="4"/>
+  <acceptedOntology abbreviation="CMPO" id="http://data.bioontology.org/ontologies/CMPO" name="Cellular microscopy phenotype ontology" uri="https://github.com/EBISPOT/CMPO" version="14"/>
+  <acceptedOntology abbreviation="AMINO-ACID" id="http://data.bioontology.org/ontologies/AMINO-ACID" name="Amino Acid Ontology" uri="http://www.co-ode.org/ontologies/amino-acid/2009/02/16/" version="2"/>
+  <acceptedOntology abbreviation="READMISSIONDIAB" id="http://data.bioontology.org/ontologies/READMISSIONDIAB" name="Readmission of diabetes" uri="" version="1"/>
+  <acceptedOntology abbreviation="XEO" id="http://data.bioontology.org/ontologies/XEO" name="XEML Environment Ontology" uri="http://xeo.codeplex.com/" version="4"/>
+  <acceptedOntology abbreviation="HCPCS" id="http://data.bioontology.org/ontologies/HCPCS" name="Healthcare Common Procedure Coding System" uri="http://cms.hhs.gov" version="15"/>
+  <acceptedOntology abbreviation="TEDDY" id="http://data.bioontology.org/ontologies/TEDDY" name="Terminology for the Description of Dynamics" uri="http://teddyontology.sourceforge.net/" version="11"/>
+  <acceptedOntology abbreviation="TESTING99" id="http://data.bioontology.org/ontologies/TESTING99" name="Testing99" uri="" version="3"/>
+  <acceptedOntology abbreviation="RH-MESH" id="http://data.bioontology.org/ontologies/RH-MESH" name="Robert Hoehndorf Version of MeSH" uri="https://code.google.com/p/pharmgkb-owl/" version="3"/>
+  <acceptedOntology abbreviation="HAMIDEHSGH" id="http://data.bioontology.org/ontologies/HAMIDEHSGH" name="Inherited Retinal Dystrophy" uri="" version="1"/>
+  <acceptedOntology abbreviation="DCTERMS" id="http://data.bioontology.org/ontologies/DCTERMS" name="DCMI Metadata Terms: properties in /terms/ namespace" uri="http://dublincore.org/documents/dcmi-terms/" version="1"/>
+  <acceptedOntology abbreviation="TMO" id="http://data.bioontology.org/ontologies/TMO" name="Translational Medicine Ontology" uri="http://esw.w3.org/HCLSIG/PharmaOntology" version="13"/>
+  <acceptedOntology abbreviation="RCTONT" id="http://data.bioontology.org/ontologies/RCTONT" name="Randomized Controlled Trials Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="OWL-TIME" id="http://data.bioontology.org/ontologies/OWL-TIME" name="Time Ontology in OWL" uri="http://www.w3.org/TR/owl-time/" version="2"/>
+  <acceptedOntology abbreviation="MNR" id="http://data.bioontology.org/ontologies/MNR" name="Material Natural Resource " uri="" version="1"/>
+  <acceptedOntology abbreviation="DINTO" id="http://data.bioontology.org/ontologies/DINTO" name="The Drug-Drug Interactions Ontology" uri="http://labda.inf.uc3m.es/doku.php?id=es:labda_dinto" version="5"/>
+  <acceptedOntology abbreviation="IXNO" id="http://data.bioontology.org/ontologies/IXNO" name="Interaction Ontology" uri="http://ctd.mdibl.org" version="2"/>
+  <acceptedOntology abbreviation="EITO" id="http://data.bioontology.org/ontologies/EITO" name="EITHEALTH-OUTCOME" uri="" version="3"/>
+  <acceptedOntology abbreviation="NEMO" id="http://data.bioontology.org/ontologies/NEMO" name="Neural ElectroMagnetic Ontology" uri="http://nemo.nic.uoregon.edu" version="24"/>
+  <acceptedOntology abbreviation="REXO" id="http://data.bioontology.org/ontologies/REXO" name="Regulation of Gene Expression Ontolology" uri="http://www.semantic-systems-biology.org/apo" version="6"/>
+  <acceptedOntology abbreviation="ISO19115DTC" id="http://data.bioontology.org/ontologies/ISO19115DTC" name="ISO 19115 Date Type Code" uri="" version="1"/>
+  <acceptedOntology abbreviation="OPB" id="http://data.bioontology.org/ontologies/OPB" name="Ontology of Physics for Biology" uri="https://sites.google.com/site/semanticsofbiologicalprocesses/projects/the-ontology-of-physics-for-biology-opb" version="16"/>
+  <acceptedOntology abbreviation="LC-CARRIERS" id="http://data.bioontology.org/ontologies/LC-CARRIERS" name="Library of Congress Carriers Scheme" uri="http://id.loc.gov/vocabulary/carriers.html" version="3"/>
+  <acceptedOntology abbreviation="SBRO" id="http://data.bioontology.org/ontologies/SBRO" name="Smoking Behavior Risk Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="HORD" id="http://data.bioontology.org/ontologies/HORD" name="Holistic Ontology of Rare Diseases" uri="https://sites.google.com/site/laiasubirats" version="4"/>
+  <acceptedOntology abbreviation="KTAO" id="http://data.bioontology.org/ontologies/KTAO" name="Kidney Tissue Atlas Ontology" uri="https://github.com/KPMP/KTAO" version="14"/>
+  <acceptedOntology abbreviation="TESTONT" id="http://data.bioontology.org/ontologies/TESTONT" name="TestOntology" uri="&lt;http://example.org/testOnt&gt;" version="8"/>
+  <acceptedOntology abbreviation="AFO" id="http://data.bioontology.org/ontologies/AFO" name="Allotrope Merged Ontology Suite" uri="http://purl.allotrope.org" version="4"/>
+  <acceptedOntology abbreviation="CLIN-EVAL" id="http://data.bioontology.org/ontologies/CLIN-EVAL" name="Clinical Evaluation Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="ISO639-2" id="http://data.bioontology.org/ontologies/ISO639-2" name="ISO 639-2: Codes for the Representation of Names of Languages" uri="http://id.loc.gov/vocabulary/iso639-2.html" version="3"/>
+  <acceptedOntology abbreviation="NOMEN" id="http://data.bioontology.org/ontologies/NOMEN" name="NOMEN - A nomenclatural ontology for biological names" uri="https://github.com/SpeciesFileGroup/nomen" version="1"/>
+  <acceptedOntology abbreviation="PATEP" id="http://data.bioontology.org/ontologies/PATEP" name="PATEpiTest" uri="" version="2"/>
+  <acceptedOntology abbreviation="CN" id="http://data.bioontology.org/ontologies/CN" name="computer network" uri="" version="1"/>
+  <acceptedOntology abbreviation="GFO" id="http://data.bioontology.org/ontologies/GFO" name="General Formal Ontology" uri="http://www.onto-med.de/ontologies/gfo/" version="1"/>
+  <acceptedOntology abbreviation="PGXO" id="http://data.bioontology.org/ontologies/PGXO" name="PGxO" uri="https://members.loria.fr/ACoulet/" version="4"/>
+  <acceptedOntology abbreviation="OBI_BCGO" id="http://data.bioontology.org/ontologies/OBI_BCGO" name="Beta Cell Genomics Ontology" uri="https://github.com/obi-bcgo/bcgo" version="14"/>
+  <acceptedOntology abbreviation="ONSTR" id="http://data.bioontology.org/ontologies/ONSTR" name="Ontology for Newborn Screening Follow-up and Translational Research" uri="http://code.google.com/p/onstr/" version="5"/>
+  <acceptedOntology abbreviation="FUNDERS_REG" id="http://data.bioontology.org/ontologies/FUNDERS_REG" name="Open Funder Registry" uri="https://www.crossref.org/services/funder-registry/" version="2"/>
+  <acceptedOntology abbreviation="PEXAMPLE" id="http://data.bioontology.org/ontologies/PEXAMPLE" name="PfizerExample" uri="" version="3"/>
+  <acceptedOntology abbreviation="RNRMU" id="http://data.bioontology.org/ontologies/RNRMU" name="RNRMU" uri="" version="1"/>
+  <acceptedOntology abbreviation="IDOBRU" id="http://data.bioontology.org/ontologies/IDOBRU" name="Brucellosis Ontology" uri="http://www.phidias.us/bbp/idobru/index.php" version="61"/>
+  <acceptedOntology abbreviation="SWEET" id="http://data.bioontology.org/ontologies/SWEET" name="Semantic Web for Earth and Environment Technology Ontology" uri="https://github.com/ESIPFed/sweet/blob/master/README.md" version="10"/>
+  <acceptedOntology abbreviation="MEDEON" id="http://data.bioontology.org/ontologies/MEDEON" name="Medical Error Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="ADHER_INTCARE_SP" id="http://data.bioontology.org/ontologies/ADHER_INTCARE_SP" name="Adherence and Integrated Care in Spanish" uri="" version="6"/>
+  <acceptedOntology abbreviation="PROBONTO" id="http://data.bioontology.org/ontologies/PROBONTO" name="Ontology and Knowledge Base of Probability Distributions" uri="http://probonto.org/" version="2"/>
+  <acceptedOntology abbreviation="GEXO" id="http://data.bioontology.org/ontologies/GEXO" name="Gene Expression Ontology" uri="http://www.semantic-systems-biology.org/apo" version="2"/>
+  <acceptedOntology abbreviation="CTU_CTCAE_4_03" id="http://data.bioontology.org/ontologies/CTU_CTCAE_4_03" name="CTU CTCAE 4.03" uri="" version="1"/>
+  <acceptedOntology abbreviation="GCC" id="http://data.bioontology.org/ontologies/GCC" name="Gastroenterology Clinical Cases Ontology " uri="" version="2"/>
+  <acceptedOntology abbreviation="NCICOPY" id="http://data.bioontology.org/ontologies/NCICOPY" name="NCIcopy" uri="" version="1"/>
+  <acceptedOntology abbreviation="ONTOPSYCHIA" id="http://data.bioontology.org/ontologies/ONTOPSYCHIA" name="OntoPsychia, social module" uri="" version="2"/>
+  <acceptedOntology abbreviation="PSIMOD" id="http://data.bioontology.org/ontologies/PSIMOD" name="Protein Modification Ontology" uri="http://www.psidev.info/MOD" version="6"/>
+  <acceptedOntology abbreviation="HIVO004" id="http://data.bioontology.org/ontologies/HIVO004" name="HIVOntologymain.owl" uri="http://blog.51.ca/u-345129/" version="18"/>
+  <acceptedOntology abbreviation="OGR" id="http://data.bioontology.org/ontologies/OGR" name="Ontology of Geographical Region" uri="" version="2"/>
+  <acceptedOntology abbreviation="KORO" id="http://data.bioontology.org/ontologies/KORO" name="Knowledge Object Reference Ontology" uri="" version="6"/>
+  <acceptedOntology abbreviation="IMGT-ONTOLOGY" id="http://data.bioontology.org/ontologies/IMGT-ONTOLOGY" name="Immunogenetics Ontology" uri="http://www.imgt.org/" version="5"/>
+  <acceptedOntology abbreviation="BSAO" id="http://data.bioontology.org/ontologies/BSAO" name="Botryllus schlosseri anatomy and development ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="FYPO" id="http://data.bioontology.org/ontologies/FYPO" name="Fission Yeast Phenotype Ontology" uri="https://github.com/pombase/fypo" version="416"/>
+  <acceptedOntology abbreviation="OLAM" id="http://data.bioontology.org/ontologies/OLAM" name="Ontology of Laboratory Animal Medicine" uri="https://github.com/olam-ontology/OLAM" version="5"/>
+  <acceptedOntology abbreviation="ONTOKBCF" id="http://data.bioontology.org/ontologies/ONTOKBCF" name="Ontological Knowledge Base Model for Cystic Fibrosis" uri="" version="3"/>
+  <acceptedOntology abbreviation="CKDO" id="http://data.bioontology.org/ontologies/CKDO" name="Chronic Kidney Disease Ontology" uri="clininf.eu" version="1"/>
+  <acceptedOntology abbreviation="CTONT" id="http://data.bioontology.org/ontologies/CTONT" name="Epoch Clinical Trial Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="LIPRO" id="http://data.bioontology.org/ontologies/LIPRO" name="Lipid Ontology" uri="" version="4"/>
+  <acceptedOntology abbreviation="OBIB" id="http://data.bioontology.org/ontologies/OBIB" name="Ontology for Biobanking" uri="https://github.com/biobanking/biobanking/wiki" version="11"/>
+  <acceptedOntology abbreviation="TXPO" id="http://data.bioontology.org/ontologies/TXPO" name="Toxic Process Ontology" uri="https://toxpilot.nibiohn.go.jp" version="27"/>
+  <acceptedOntology abbreviation="GO-EXT" id="http://data.bioontology.org/ontologies/GO-EXT" name="Gene Ontology Extension" uri="http://www.geneontology.org" version="2"/>
+  <acceptedOntology abbreviation="HCDR" id="http://data.bioontology.org/ontologies/HCDR" name="Homelessness and Clinical Data Recording" uri="" version="1"/>
+  <acceptedOntology abbreviation="FTC" id="http://data.bioontology.org/ontologies/FTC" name="Functional Therapeutic Chemical Classification System" uri="https://www.ebi.ac.uk/chembl/ftc" version="1"/>
+  <acceptedOntology abbreviation="ATO" id="http://data.bioontology.org/ontologies/ATO" name="Amphibian Taxonomy Ontology" uri="http://www.amphibanat.org" version="2"/>
+  <acceptedOntology abbreviation="GTO" id="http://data.bioontology.org/ontologies/GTO" name="Genetic Test" uri="http://qianzhu-lab.umbc.edu/" version="1"/>
+  <acceptedOntology abbreviation="CCON" id="http://data.bioontology.org/ontologies/CCON" name="Cerrado concepts and plant community dynamics" uri="" version="8"/>
+  <acceptedOntology abbreviation="BIBLIOTEK-O" id="http://data.bioontology.org/ontologies/BIBLIOTEK-O" name="The Biblioteko Ontology" uri="http://bibliotek-o.org/" version="3"/>
+  <acceptedOntology abbreviation="MADS-RDF" id="http://data.bioontology.org/ontologies/MADS-RDF" name="Metadata Authority Description Schema in RDF" uri="http://www.loc.gov/standards/mads/rdf/" version="5"/>
+  <acceptedOntology abbreviation="OARCS" id="http://data.bioontology.org/ontologies/OARCS" name="Ontology of Arthropod Circulatory Systems" uri="https://github.com/aszool/oarcs" version="2"/>
+  <acceptedOntology abbreviation="PEDTERM" id="http://data.bioontology.org/ontologies/PEDTERM" name="Pediatric Terminology" uri="" version="5"/>
+  <acceptedOntology abbreviation="ICD-O-3-1-M" id="http://data.bioontology.org/ontologies/ICD-O-3-1-M" name="ICD-O-3-1-M International Classification of Diseases for Oncology, Morphology" uri="" version="1"/>
+  <acceptedOntology abbreviation="LBO" id="http://data.bioontology.org/ontologies/LBO" name="Livestock Breed Ontology" uri="" version="20"/>
+  <acceptedOntology abbreviation="ONLIRA" id="http://data.bioontology.org/ontologies/ONLIRA" name="Ontology of Liver for Radiology" uri="http://vavlab.ee.boun.edu.tr/pages.php?p=research/CARERA/carera.html" version="4"/>
+  <acceptedOntology abbreviation="DCAT" id="http://data.bioontology.org/ontologies/DCAT" name="Data Catalog Vocabulary" uri="https://www.w3.org/TR/vocab-dcat/" version="2"/>
+  <acceptedOntology abbreviation="DCMITYPE" id="http://data.bioontology.org/ontologies/DCMITYPE" name="DCMI Type Vocabulary" uri="http://dublincore.org/documents/dcmi-type-vocabulary" version="4"/>
+  <acceptedOntology abbreviation="ONTODM-KDD" id="http://data.bioontology.org/ontologies/ONTODM-KDD" name="Ontology of Data Mining Investigations" uri="www.ontodm.com" version="1"/>
+  <acceptedOntology abbreviation="NPI" id="http://data.bioontology.org/ontologies/NPI" name="Non-Pharmacological Interventions (NPIs)" uri="http://www.cepsplatform.eu" version="5"/>
+  <acceptedOntology abbreviation="VBCV" id="http://data.bioontology.org/ontologies/VBCV" name="VectorBase Controled Vocabulary for Invertebrate Vectors of Human Pathogens" uri="" version="3"/>
+  <acceptedOntology abbreviation="MOC" id="http://data.bioontology.org/ontologies/MOC" name="Material Organic Compound" uri="" version="1"/>
+  <acceptedOntology abbreviation="PW" id="http://data.bioontology.org/ontologies/PW" name="Pathway Ontology" uri="ftp://ftp.rgd.mcw.edu/pub/ontology/pathway/" version="81"/>
+  <acceptedOntology abbreviation="ICD10" id="http://data.bioontology.org/ontologies/ICD10" name="International Classification of Diseases, Version 10" uri="" version="15"/>
+  <acceptedOntology abbreviation="GLYCOPROT" id="http://data.bioontology.org/ontologies/GLYCOPROT" name="Glycoprotein Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="BCO" id="http://data.bioontology.org/ontologies/BCO" name="Biological Collections Ontology" uri="https://github.com/BiodiversityOntologies/bcom/p/bco/" version="9"/>
+  <acceptedOntology abbreviation="TCO" id="http://data.bioontology.org/ontologies/TCO" name="Thyroid Cancer Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="CADSR-VS" id="http://data.bioontology.org/ontologies/CADSR-VS" name="CADSR-VS" uri="" version="10"/>
+  <acceptedOntology abbreviation="IRD" id="http://data.bioontology.org/ontologies/IRD" name="Inherited Retinal Dystrophies" uri="" version="1"/>
+  <acceptedOntology abbreviation="ITEMAS" id="http://data.bioontology.org/ontologies/ITEMAS" name="Medical Technology Innovation in healthcare centers" uri="www.itemas.org" version="1"/>
+  <acceptedOntology abbreviation="VIVO" id="http://data.bioontology.org/ontologies/VIVO" name="VIVO Ontology for Researcher Discovery" uri="http://vivoweb.org/ontology/core" version="3"/>
+  <acceptedOntology abbreviation="BCTT" id="http://data.bioontology.org/ontologies/BCTT" name="Behaviour Change Technique Taxonomy" uri="http://www.ucl.ac.uk/behaviour-change-techniques" version="6"/>
+  <acceptedOntology abbreviation="FALL" id="http://data.bioontology.org/ontologies/FALL" name="MyOntoServiceFull_FallDetection" uri="" version="1"/>
+  <acceptedOntology abbreviation="FLU" id="http://data.bioontology.org/ontologies/FLU" name="Influenza Ontology" uri="http://purl.obolibrary.org/obo/flu/" version="27"/>
+  <acceptedOntology abbreviation="MADS" id="http://data.bioontology.org/ontologies/MADS" name="MADS/RDF" uri="" version="1"/>
+  <acceptedOntology abbreviation="COMODI" id="http://data.bioontology.org/ontologies/COMODI" name="COMODI" uri="http://comodi.sems.uni-rostock.de" version="6"/>
+  <acceptedOntology abbreviation="CO-WHEAT" id="http://data.bioontology.org/ontologies/CO-WHEAT" name="Wheat Trait Ontology " uri="http://cropontology.org/" version="1"/>
+  <acceptedOntology abbreviation="IDQA" id="http://data.bioontology.org/ontologies/IDQA" name="Image and Data Quality Assessment Ontology" uri="http://idqa.wordpress.com" version="8"/>
+  <acceptedOntology abbreviation="CTU_CTCAE_5_0" id="http://data.bioontology.org/ontologies/CTU_CTCAE_5_0" name="CTU CTCAE 5.0" uri="" version="1"/>
+  <acceptedOntology abbreviation="PLACES" id="http://data.bioontology.org/ontologies/PLACES" name="Place Names" uri="" version="1"/>
+  <acceptedOntology abbreviation="MO" id="http://data.bioontology.org/ontologies/MO" name="Microarray and Gene Expression Data Ontology" uri="http://mged.sourceforge.net/ontologies/MGEDontology.php" version="3"/>
+  <acceptedOntology abbreviation="GLYCORDF" id="http://data.bioontology.org/ontologies/GLYCORDF" name="GlycoRDF" uri="https://github.com/ReneRanzinger/GlycoRDF" version="56"/>
+  <acceptedOntology abbreviation="MEO" id="http://data.bioontology.org/ontologies/MEO" name="Metagenome and Microbes Environmental Ontology" uri="http://microbedb.jp" version="9"/>
+  <acceptedOntology abbreviation="HGNC" id="http://data.bioontology.org/ontologies/HGNC" name="HUGO Gene Nomenclature" uri="http://www.genenames.org/" version="1"/>
+  <acceptedOntology abbreviation="COGAT" id="http://data.bioontology.org/ontologies/COGAT" name="Cognitive Atlas Ontology" uri="http://www.cognitiveatlas.org" version="7"/>
+  <acceptedOntology abbreviation="TOP-MENELAS" id="http://data.bioontology.org/ontologies/TOP-MENELAS" name="Menelas Project Top-Level Ontology" uri="" version="8"/>
+  <acceptedOntology abbreviation="XCO" id="http://data.bioontology.org/ontologies/XCO" name="Experimental Conditions Ontology" uri="ftp://ftp.rgd.mcw.edu/pub/ontology/experimental_condition/experimental_condition.obo" version="88"/>
+  <acceptedOntology abbreviation="ISO19115SRS" id="http://data.bioontology.org/ontologies/ISO19115SRS" name="ISO 19115 Reference Systems" uri="" version="4"/>
+  <acceptedOntology abbreviation="ZFA" id="http://data.bioontology.org/ontologies/ZFA" name="Zebrafish Anatomy and Development Ontology" uri="http://zfin.org/zf_info/anatomy/dict/sum.html" version="230"/>
+  <acceptedOntology abbreviation="BIOSYSMIRNA" id="http://data.bioontology.org/ontologies/BIOSYSMIRNA" name="miRNA ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="EOL" id="http://data.bioontology.org/ontologies/EOL" name="Environment Ontology for Livestock" uri="" version="1"/>
+  <acceptedOntology abbreviation="CMNO" id="http://data.bioontology.org/ontologies/CMNO" name="Classical Music Navigator Ontology" uri="http://dbtune.org/cmn/" version="1"/>
+  <acceptedOntology abbreviation="BIN" id="http://data.bioontology.org/ontologies/BIN" name="Body in Numbers project terminology" uri="" version="2"/>
+  <acceptedOntology abbreviation="EPIP" id="http://data.bioontology.org/ontologies/EPIP" name="Epigenetic Process" uri="" version="4"/>
+  <acceptedOntology abbreviation="NIFSUBCELL" id="http://data.bioontology.org/ontologies/NIFSUBCELL" name="Neuroscience Information Framework (NIF) Subcellular Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="TM-MER" id="http://data.bioontology.org/ontologies/TM-MER" name="Traditional Medicine Meridian Value Sets" uri="https://sites.google.com/site/whoictm/home" version="1"/>
+  <acceptedOntology abbreviation="EXO" id="http://data.bioontology.org/ontologies/EXO" name="Exposure Ontology" uri="" version="6"/>
+  <acceptedOntology abbreviation="CHEMBIO" id="http://data.bioontology.org/ontologies/CHEMBIO" name="Systems Chemical Biology and Chemogenomics Ontology " uri="http://chem2bio2rdf.org/owl" version="9"/>
+  <acceptedOntology abbreviation="MRO" id="http://data.bioontology.org/ontologies/MRO" name="Defen" uri="" version="1"/>
+  <acceptedOntology abbreviation="ELIG" id="http://data.bioontology.org/ontologies/ELIG" name="Eligibility Feature Hierarchy" uri="" version="1"/>
+  <acceptedOntology abbreviation="GRO" id="http://data.bioontology.org/ontologies/GRO" name="Gene Regulation Ontology" uri="http://www.ebi.ac.uk/Rebholz-srv/GRO/GRO.html" version="5"/>
+  <acceptedOntology abbreviation="SNPO" id="http://data.bioontology.org/ontologies/SNPO" name="Single-Nucleotide Polymorphism (SNP) Ontology" uri="https://members.loria.fr/ACoulet/files/snpontology1.6_description.html" version="4"/>
+  <acceptedOntology abbreviation="EHDA" id="http://data.bioontology.org/ontologies/EHDA" name="Human Developmental Anatomy Ontology, timed version" uri="http://obofoundry.org/ontology/ehda.html" version="7"/>
+  <acceptedOntology abbreviation="CPTAC" id="http://data.bioontology.org/ontologies/CPTAC" name="CPTAC Proteomics Pipeline Infrastructure Ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="FB-SP" id="http://data.bioontology.org/ontologies/FB-SP" name="Fly Taxonomy" uri="http://www.flybase.org/" version="8"/>
+  <acceptedOntology abbreviation="SP" id="http://data.bioontology.org/ontologies/SP" name="SMART Protocols" uri="https://smartprotocols.github.io/" version="6"/>
+  <acceptedOntology abbreviation="TMA" id="http://data.bioontology.org/ontologies/TMA" name="Tissue Microarray Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="PIERO" id="http://data.bioontology.org/ontologies/PIERO" name="Enzyme Reaction Ontology for annotating Partial Information of chemical transformation" uri="http://reactionontology.org" version="10"/>
+  <acceptedOntology abbreviation="PTO" id="http://data.bioontology.org/ontologies/PTO" name="Plant Trait Ontology" uri="http://www.planteome.org" version="430"/>
+  <acceptedOntology abbreviation="ISO19115MI" id="http://data.bioontology.org/ontologies/ISO19115MI" name="ISO 19115 Metadata Information" uri="" version="126"/>
+  <acceptedOntology abbreviation="MSO" id="http://data.bioontology.org/ontologies/MSO" name="Multiple sclerosis ontology" uri="http://www.scai.fraunhofer.de/de/geschaeftsfelder/bioinformatik/downloads.html" version="2"/>
+  <acceptedOntology abbreviation="PCALION" id="http://data.bioontology.org/ontologies/PCALION" name="Prostate Cancer Life Style Ontology" uri="" version="4"/>
+  <acceptedOntology abbreviation="SSO" id="http://data.bioontology.org/ontologies/SSO" name="Syndromic Surveillance Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="VDOT" id="http://data.bioontology.org/ontologies/VDOT" name="Viral Disease Ontology Trunk" uri="" version="26"/>
+  <acceptedOntology abbreviation="MONO" id="http://data.bioontology.org/ontologies/MONO" name="Monogenean Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="EBP" id="http://data.bioontology.org/ontologies/EBP" name="EmpowerBP" uri="" version="2"/>
+  <acceptedOntology abbreviation="LDA" id="http://data.bioontology.org/ontologies/LDA" name="Ontology of Language Disorder in Autism" uri="" version="1"/>
+  <acceptedOntology abbreviation="TOK" id="http://data.bioontology.org/ontologies/TOK" name="Terminological and Ontological Knowledge Resources Ontology" uri="http://cui.unige.ch/~ghoula/" version="3"/>
+  <acceptedOntology abbreviation="PVONTO" id="http://data.bioontology.org/ontologies/PVONTO" name="Pharmacovigilance Ontology" uri="http://people.eecs.ku.edu/~jhuan/" version="1"/>
+  <acceptedOntology abbreviation="CPPFR" id="http://data.bioontology.org/ontologies/CPPFR" name="Code Postal FR" uri="" version="1"/>
+  <acceptedOntology abbreviation="SEQ" id="http://data.bioontology.org/ontologies/SEQ" name="Sequence Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="DERMO" id="http://data.bioontology.org/ontologies/DERMO" name="Human Dermatological Disease Ontology" uri="" version="10"/>
+  <acceptedOntology abbreviation="NATPRO" id="http://data.bioontology.org/ontologies/NATPRO" name="Natural Products Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="MATRROCKIGNEOUS" id="http://data.bioontology.org/ontologies/MATRROCKIGNEOUS" name="Material Rock Igneouus" uri="" version="2"/>
+  <acceptedOntology abbreviation="RTEST1" id="http://data.bioontology.org/ontologies/RTEST1" name="Recommender 2.0 Evaluation - Test Ontology 1 (Ontology unknown by the community)" uri="" version="1"/>
+  <acceptedOntology abbreviation="SDO" id="http://data.bioontology.org/ontologies/SDO" name="Sleep Domain Ontology" uri="https://mimi.case.edu/concepts" version="4"/>
+  <acceptedOntology abbreviation="HPIO" id="http://data.bioontology.org/ontologies/HPIO" name="Host Pathogen Interactions Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="ICD10CDC" id="http://data.bioontology.org/ontologies/ICD10CDC" name="ICD10CDC" uri="" version="2"/>
+  <acceptedOntology abbreviation="MATRCOMPOUND" id="http://data.bioontology.org/ontologies/MATRCOMPOUND" name="Material Compound" uri="" version="1"/>
+  <acceptedOntology abbreviation="GO-PLUS" id="http://data.bioontology.org/ontologies/GO-PLUS" name="go-plus" uri="http://geneontology.org" version="655"/>
+  <acceptedOntology abbreviation="CNO" id="http://data.bioontology.org/ontologies/CNO" name="Computational Neuroscience Ontology" uri="" version="8"/>
+  <acceptedOntology abbreviation="CD" id="http://data.bioontology.org/ontologies/CD" name="Context for Drug" uri="" version="1"/>
+  <acceptedOntology abbreviation="DIKB" id="http://data.bioontology.org/ontologies/DIKB" name="Drug Interaction Knowledge Base Ontology" uri="http://dbmi-icode-01.dbmi.pitt.edu/dikb-evidence/front-page.html" version="5"/>
+  <acceptedOntology abbreviation="GENE-CDS" id="http://data.bioontology.org/ontologies/GENE-CDS" name="Genomic Clinical Decision Support Ontology" uri="http://samwald.info" version="1"/>
+  <acceptedOntology abbreviation="OHMI" id="http://data.bioontology.org/ontologies/OHMI" name="Ontology of Host-Microbe Interactions" uri="https://github.com/ohmi-ontology/ohmi" version="26"/>
+  <acceptedOntology abbreviation="AGRO" id="http://data.bioontology.org/ontologies/AGRO" name="AGRonomy Ontology" uri="https://github.com/AgriculturalSemantics/agro" version="2"/>
+  <acceptedOntology abbreviation="IAML-MOP" id="http://data.bioontology.org/ontologies/IAML-MOP" name="IAML Medium of Performance Vocabulary" uri="" version="2"/>
+  <acceptedOntology abbreviation="GO" id="http://data.bioontology.org/ontologies/GO" name="Gene Ontology" uri="http://www.geneontology.org" version="1781"/>
+  <acceptedOntology abbreviation="MP" id="http://data.bioontology.org/ontologies/MP" name="Mammalian Phenotype Ontology" uri="http://www.informatics.jax.org/searches/MP_form.shtml" version="383"/>
+  <acceptedOntology abbreviation="FB-CV" id="http://data.bioontology.org/ontologies/FB-CV" name="FlyBase Controlled Vocabulary" uri="http://purl.obolibrary.org/obo/fbcv" version="23"/>
+  <acceptedOntology abbreviation="GLYCANONT" id="http://data.bioontology.org/ontologies/GLYCANONT" name="Glycan Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="APOLLO-SV" id="http://data.bioontology.org/ontologies/APOLLO-SV" name="Apollo Structured Vocabulary" uri="https://github.com/ApolloDev/apollo-sv" version="42"/>
+  <acceptedOntology abbreviation="LCGFT" id="http://data.bioontology.org/ontologies/LCGFT" name="Library of Congress Genre/Form Thesaurus for Library and Archival Materials" uri="http://id.loc.gov/authorities/genreForms.html" version="3"/>
+  <acceptedOntology abbreviation="EP" id="http://data.bioontology.org/ontologies/EP" name="Cardiac Electrophysiology Ontology" uri="http://www.cvrgrid.org" version="2"/>
+  <acceptedOntology abbreviation="OCDM" id="http://data.bioontology.org/ontologies/OCDM" name="Ontology of Craniofacial Development and Malformation" uri="https://www.facebase.org/ocdm/" version="10"/>
+  <acceptedOntology abbreviation="CL" id="http://data.bioontology.org/ontologies/CL" name="Cell Ontology" uri="http://cellontology.org" version="70"/>
+  <acceptedOntology abbreviation="OBI" id="http://data.bioontology.org/ontologies/OBI" name="Ontology for Biomedical Investigations" uri="http://purl.obolibrary.org/obo/obi" version="40"/>
+  <acceptedOntology abbreviation="RNPRIO" id="http://data.bioontology.org/ontologies/RNPRIO" name="Research Network and Patient Registry Inventory Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="BRO" id="http://data.bioontology.org/ontologies/BRO" name="Biomedical Resource Ontology" uri="http://www.ncbcs.org/biositemaps/" version="14"/>
+  <acceptedOntology abbreviation="MARC-RELATORS" id="http://data.bioontology.org/ontologies/MARC-RELATORS" name="MARC Code List for Relators" uri="" version="2"/>
+  <acceptedOntology abbreviation="CSO_DEMO" id="http://data.bioontology.org/ontologies/CSO_DEMO" name="Computer Science Ontology" uri="https://cso.kmi.open.ac.uk" version="6"/>
+  <acceptedOntology abbreviation="PATCT" id="http://data.bioontology.org/ontologies/PATCT" name="PAT Cell Type" uri="" version="1"/>
+  <acceptedOntology abbreviation="InterNano" id="http://data.bioontology.org/ontologies/InterNano" name="InterNano Nanomanufacturing Taxonomy" uri="http://internano.org" version="132"/>
+  <acceptedOntology abbreviation="EDAM" id="http://data.bioontology.org/ontologies/EDAM" name="EDAM bioinformatics operations, types of data, data formats, identifiers, and topics" uri="http://edamontology.org" version="42"/>
+  <acceptedOntology abbreviation="HTN" id="http://data.bioontology.org/ontologies/HTN" name="Hypertension Ontology" uri="https://github.com/aellenhicks/htn_owl" version="1"/>
+  <acceptedOntology abbreviation="CSSO" id="http://data.bioontology.org/ontologies/CSSO" name="Clinical Signs and Symptoms Ontology" uri="http://mdb.bio.titech.ac.jp/csso" version="6"/>
+  <acceptedOntology abbreviation="SYN" id="http://data.bioontology.org/ontologies/SYN" name="Sage Bionetworks Synapse Ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="PLIO" id="http://data.bioontology.org/ontologies/PLIO" name="Protein-ligand interaction ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="ONE" id="http://data.bioontology.org/ontologies/ONE" name="Ontology for Nutritional Epidemiology" uri="https://github.com/cyang0128/Nutritional-epidemiological-ontologies" version="4"/>
+  <acceptedOntology abbreviation="BIM" id="http://data.bioontology.org/ontologies/BIM" name="Biomedical Image Ontology" uri="https://sites.google.com/site/bimontology/" version="6"/>
+  <acceptedOntology abbreviation="PDQ" id="http://data.bioontology.org/ontologies/PDQ" name="Physician Data Query" uri="" version="17"/>
+  <acceptedOntology abbreviation="TESTONTJV" id="http://data.bioontology.org/ontologies/TESTONTJV" name="JV Test Ont" uri="" version="3"/>
+  <acceptedOntology abbreviation="GAMUTS" id="http://data.bioontology.org/ontologies/GAMUTS" name="Radiology Gamuts Ontology" uri="https://www.gamuts.net/" version="23"/>
+  <acceptedOntology abbreviation="ISO19110" id="http://data.bioontology.org/ontologies/ISO19110" name="ISO 19110 Methodology for Feature Cataloguing" uri="" version="2"/>
+  <acceptedOntology abbreviation="PLATFORM-IOOS" id="http://data.bioontology.org/ontologies/PLATFORM-IOOS" name="IOOS Platform Ontology" uri="http://mmisw.org/ont/ioos/platform" version="2"/>
+  <acceptedOntology abbreviation="DDANAT" id="http://data.bioontology.org/ontologies/DDANAT" name="Dictyostelium Discoideum Anatomy Ontology" uri="http://dictybase.org/" version="17"/>
+  <acceptedOntology abbreviation="OA" id="http://data.bioontology.org/ontologies/OA" name="Web Annotation Ontology" uri="https://www.w3.org/TR/annotation-model/" version="4"/>
+  <acceptedOntology abbreviation="MCBCC" id="http://data.bioontology.org/ontologies/MCBCC" name="Breast Tissue Cell Lines Ontology" uri="www.molecularconnections.com" version="2"/>
+  <acceptedOntology abbreviation="HCPCS-HIMC" id="http://data.bioontology.org/ontologies/HCPCS-HIMC" name="Healthcare Common Procedure Coding System Codes" uri="" version="6"/>
+  <acceptedOntology abbreviation="NEOMARK4" id="http://data.bioontology.org/ontologies/NEOMARK4" name="Neomark Oral Cancer Ontology, version 4" uri="http://www.neomark.eu" version="1"/>
+  <acceptedOntology abbreviation="PROCCHEMICAL" id="http://data.bioontology.org/ontologies/PROCCHEMICAL" name="Chemical Process" uri="" version="1"/>
+  <acceptedOntology abbreviation="TEO" id="http://data.bioontology.org/ontologies/TEO" name="Time Event Ontology" uri="" version="4"/>
+  <acceptedOntology abbreviation="ZECO" id="http://data.bioontology.org/ontologies/ZECO" name="Zebrafish Experimental Conditions Ontology" uri="https://github.com/ybradford/zebrafish-experimental-conditions-ontology" version="4"/>
+  <acceptedOntology abbreviation="IFAR" id="http://data.bioontology.org/ontologies/IFAR" name="Fanconi Anemia Ontology" uri="http://lab.rockefeller.edu/smogorzewska/ifar/" version="5"/>
+  <acceptedOntology abbreviation="LOINC" id="http://data.bioontology.org/ontologies/LOINC" name="Logical Observation Identifier Names and Codes" uri="http://loinc.org/downloads" version="18"/>
+  <acceptedOntology abbreviation="DCO" id="http://data.bioontology.org/ontologies/DCO" name="Dispedia Core Ontology" uri="www.dispedia.de" version="34"/>
+  <acceptedOntology abbreviation="NEOMARK3" id="http://data.bioontology.org/ontologies/NEOMARK3" name="Neomark Oral Cancer Ontology, version 3" uri="http://www.neomark.eu/portal/" version="2"/>
+  <acceptedOntology abbreviation="WC" id="http://data.bioontology.org/ontologies/WC" name="Whole-cell modeling ontology" uri="https://github.com/karrlab/wc_onto" version="12"/>
+  <acceptedOntology abbreviation="AGROCYMAC" id="http://data.bioontology.org/ontologies/AGROCYMAC" name="Control y Monitoreo de afecciones en los cultivos" uri="" version="2"/>
+  <acceptedOntology abbreviation="NCBITAXON" id="http://data.bioontology.org/ontologies/NCBITAXON" name="National Center for Biotechnology Information (NCBI) Organismal Classification" uri="http://www.ncbi.nlm.nih.gov/taxonomy" version="15"/>
+  <acceptedOntology abbreviation="ROO" id="http://data.bioontology.org/ontologies/ROO" name="Radiation Oncology Ontology" uri="http://www.cancerdata.org/roo" version="8"/>
+  <acceptedOntology abbreviation="MARC-LANGUAGES" id="http://data.bioontology.org/ontologies/MARC-LANGUAGES" name="MARC List for Languages" uri="http://id.loc.gov/vocabulary/languages.html" version="4"/>
+  <acceptedOntology abbreviation="FAO" id="http://data.bioontology.org/ontologies/FAO" name="Fungal Gross Anatomy Ontology" uri="https://github.com/obophenotype/fungal-anatomy-ontology" version="26"/>
+  <acceptedOntology abbreviation="RBMS" id="http://data.bioontology.org/ontologies/RBMS" name="RBMS Controlled Vocabularies" uri="http://rbms.info/vocabularies/" version="1"/>
+  <acceptedOntology abbreviation="DRON" id="http://data.bioontology.org/ontologies/DRON" name="The Drug Ontology" uri="https://ontology.atlassian.net/wiki/display/DRON/Drug+Ontology+Home" version="10"/>
+  <acceptedOntology abbreviation="GFO-BIO" id="http://data.bioontology.org/ontologies/GFO-BIO" name="General Formal Ontology for Biology" uri="http://www.onto-med.de/ontologies/gfo-bio/" version="1"/>
+  <acceptedOntology abbreviation="BCTEO" id="http://data.bioontology.org/ontologies/BCTEO" name="Bone and Cartilage Tissue Engineering Ontology" uri="" version="4"/>
+  <acceptedOntology abbreviation="LC-CONTENT" id="http://data.bioontology.org/ontologies/LC-CONTENT" name="Library of Congress Content Types Scheme" uri="http://id.loc.gov/vocabulary/contentTypes.html" version="2"/>
+  <acceptedOntology abbreviation="PEAO" id="http://data.bioontology.org/ontologies/PEAO" name="Plant Experimental Assay Ontology" uri="https://bitbucket.org/PlantExpAssay/ontology" version="4"/>
+  <acceptedOntology abbreviation="ONTOPBM" id="http://data.bioontology.org/ontologies/ONTOPBM" name="Ontology for Process-Based Modeling of Dynamical Systems (OntoPBM)" uri="" version="13"/>
+  <acceptedOntology abbreviation="ICEO" id="http://data.bioontology.org/ontologies/ICEO" name="Integrative and Conjugative Element Ontology" uri="https://github.com/ontoice/ICEO" version="16"/>
+  <acceptedOntology abbreviation="FPLX" id="http://data.bioontology.org/ontologies/FPLX" name="FamPlex" uri="https://github.com/sorgerlab/famplex" version="19"/>
+  <acceptedOntology abbreviation="ECP" id="http://data.bioontology.org/ontologies/ECP" name="Electronic Care Plan" uri="http://iris.med.duth.gr/research/ecp/ontology" version="2"/>
+  <acceptedOntology abbreviation="MAMO" id="http://data.bioontology.org/ontologies/MAMO" name="Mathematical Modelling Ontology" uri="https://sourceforge.net/p/mamo-ontology/wiki/Home/" version="14"/>
+  <acceptedOntology abbreviation="ENVO" id="http://data.bioontology.org/ontologies/ENVO" name="Environment Ontology" uri="http://environmentontology.org/" version="52"/>
+  <acceptedOntology abbreviation="SO" id="http://data.bioontology.org/ontologies/SO" name="Sequence Types and Features Ontology" uri="http://www.sequenceontology.org" version="254"/>
+  <acceptedOntology abbreviation="OCE" id="http://data.bioontology.org/ontologies/OCE" name="Ontology of Chemical Elements" uri="https://github.com/ontologyofchemicalelements/OCE" version="1"/>
+  <acceptedOntology abbreviation="ACESO" id="http://data.bioontology.org/ontologies/ACESO" name="Adverse Childhood Experiences Ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="OSM" id="http://data.bioontology.org/ontologies/OSM" name="Ontologia de Saúde Mental" uri="https://saudeconectada.org/" version="1"/>
+  <acceptedOntology abbreviation="MMO" id="http://data.bioontology.org/ontologies/MMO" name="Measurement Method Ontology" uri="ftp://ftp.rgd.mcw.edu/pub/ontology/measurement_method/measurement_method.obo" version="63"/>
+  <acceptedOntology abbreviation="AWIC" id="http://data.bioontology.org/ontologies/AWIC" name="AWIC Tree" uri="" version="12"/>
+  <acceptedOntology abbreviation="LOINCCH" id="http://data.bioontology.org/ontologies/LOINCCH" name="loincch" uri="" version="1"/>
+  <acceptedOntology abbreviation="CADSRVS" id="http://data.bioontology.org/ontologies/CADSRVS" name="NCI caDSR Value Sets" uri="" version="2"/>
+  <acceptedOntology abbreviation="PATHLEX" id="http://data.bioontology.org/ontologies/PATHLEX" name="Anatomic Pathology Lexicon" uri="" version="5"/>
+  <acceptedOntology abbreviation="DMTO2" id="http://data.bioontology.org/ontologies/DMTO2" name="Testing DMTO" uri="" version="2"/>
+  <acceptedOntology abbreviation="PROPREO" id="http://data.bioontology.org/ontologies/PROPREO" name="Proteomics Data and Process Provenance Ontology" uri="http://knoesis.wright.edu/research/semsci/application_domain/sem_life_sci/glycomics/resources/ontologies/propreo/" version="2"/>
+  <acceptedOntology abbreviation="ENM" id="http://data.bioontology.org/ontologies/ENM" name="eNanoMapper" uri="https://github.com/enanomapper/ontologies" version="21"/>
+  <acceptedOntology abbreviation="ICPC" id="http://data.bioontology.org/ontologies/ICPC" name="International Classification of Primary Care" uri="" version="14"/>
+  <acceptedOntology abbreviation="APADISORDERS" id="http://data.bioontology.org/ontologies/APADISORDERS" name="Disorders cluster" uri="" version="1"/>
+  <acceptedOntology abbreviation="ICD-O-3-T" id="http://data.bioontology.org/ontologies/ICD-O-3-T" name="ICD-O-3-T International Classification of Diseases for Oncology Topography" uri="" version="2"/>
+  <acceptedOntology abbreviation="OGROUP" id="http://data.bioontology.org/ontologies/OGROUP" name="Orthologous Group Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="MKN10" id="http://data.bioontology.org/ontologies/MKN10" name="MKN-10" uri="" version="1"/>
+  <acceptedOntology abbreviation="CVDO" id="http://data.bioontology.org/ontologies/CVDO" name="Cardiovascular Disease Ontology" uri="https://github.com/OpenLHS/CVDO" version="1"/>
+  <acceptedOntology abbreviation="ISO-15926-2_2003" id="http://data.bioontology.org/ontologies/ISO-15926-2_2003" name="ISO-15926-2_2003_oil" uri="" version="1"/>
+  <acceptedOntology abbreviation="CHEMINF" id="http://data.bioontology.org/ontologies/CHEMINF" name="Chemical Information Ontology" uri="https://github.com/semanticchemistry/semanticchemistry" version="46"/>
+  <acceptedOntology abbreviation="GPI" id="http://data.bioontology.org/ontologies/GPI" name="Generic Product Identifier Medications Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="SCIO" id="http://data.bioontology.org/ontologies/SCIO" name="Spinal Cord Injury Ontology" uri="http://www.psink.de" version="2"/>
+  <acceptedOntology abbreviation="NMOBR" id="http://data.bioontology.org/ontologies/NMOBR" name="NeuroMorpho.Org brain region ontologies" uri="" version="36"/>
+  <acceptedOntology abbreviation="DLORO" id="http://data.bioontology.org/ontologies/DLORO" name="Dependency Layered Ontology for Radiation Oncology" uri="https://ont2bn.radonc.washington.edu/IROK/" version="2"/>
+  <acceptedOntology abbreviation="FOODON" id="http://data.bioontology.org/ontologies/FOODON" name="The FoodOn Food Ontology" uri="http://foodon.org" version="53"/>
+  <acceptedOntology abbreviation="AFO_01" id="http://data.bioontology.org/ontologies/AFO_01" name="Allotrope Foundation Ontologies - 01" uri="http://purl.allotrope.org" version="1"/>
+  <acceptedOntology abbreviation="APANEUROCLUSTER" id="http://data.bioontology.org/ontologies/APANEUROCLUSTER" name="APA Neuro Cluster" uri="" version="1"/>
+  <acceptedOntology abbreviation="RM-CORE" id="http://data.bioontology.org/ontologies/RM-CORE" name="Rare Materials-CORE" uri="" version="1"/>
+  <acceptedOntology abbreviation="OGDI" id="http://data.bioontology.org/ontologies/OGDI" name="Ontology for Genetic Disease Investigations" uri="" version="3"/>
+  <acceptedOntology abbreviation="ICW" id="http://data.bioontology.org/ontologies/ICW" name="International Classification of Wellness" uri="" version="4"/>
+  <acceptedOntology abbreviation="GENETRIAL" id="http://data.bioontology.org/ontologies/GENETRIAL" name="Gene Therapy Clinical Trial Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="NCIT" id="http://data.bioontology.org/ontologies/NCIT" name="National Cancer Institute Thesaurus" uri="https://cbiit.cancer.gov/ncip/biomedical-informatics-resources/interoperability-and-semantics/terminology" version="88"/>
+  <acceptedOntology abbreviation="FLOPO" id="http://data.bioontology.org/ontologies/FLOPO" name="Flora Phenotype Ontology" uri="http://wiki.pro-ibiosphere.eu/wiki/Traits_Task_Group" version="8"/>
+  <acceptedOntology abbreviation="RDL" id="http://data.bioontology.org/ontologies/RDL" name="RDL" uri="" version="1"/>
+  <acceptedOntology abbreviation="EGO" id="http://data.bioontology.org/ontologies/EGO" name="Epigenome Ontology" uri="https://github.com/EGO-ontology" version="1"/>
+  <acceptedOntology abbreviation="ISO-FOOD" id="http://data.bioontology.org/ontologies/ISO-FOOD" name="A formal representation of the knowledge within the domain of Isotopes for Food Science" uri="http://cs.ijs.si/repository/ISO-FOOD/ISO-FOOD_Ontology.zip" version="1"/>
+  <acceptedOntology abbreviation="WB-BT" id="http://data.bioontology.org/ontologies/WB-BT" name="C. elegans Gross Anatomy Vocabulary" uri="http://www.wormbase.org/" version="126"/>
+  <acceptedOntology abbreviation="TRANS" id="http://data.bioontology.org/ontologies/TRANS" name="Nurse Transitional" uri="" version="1"/>
+  <acceptedOntology abbreviation="TUNIGO-SLIM" id="http://data.bioontology.org/ontologies/TUNIGO-SLIM" name="Tunicate GO Slim" uri="" version="1"/>
+  <acceptedOntology abbreviation="HASSET" id="http://data.bioontology.org/ontologies/HASSET" name="Humanities And Social Science Electronic Thesaurus" uri="https://hasset.ukdataservice.ac.uk/" version="1"/>
+  <acceptedOntology abbreviation="MSTDE" id="http://data.bioontology.org/ontologies/MSTDE" name="Minimal Standard Terminology of Digestive Endoscopy" uri="" version="15"/>
+  <acceptedOntology abbreviation="BP-METADATA" id="http://data.bioontology.org/ontologies/BP-METADATA" name="BioPortal Metadata Ontology" uri="http://www.bioontology.org/wiki/index.php/BioPortal_Metadata" version="6"/>
+  <acceptedOntology abbreviation="CSTD" id="http://data.bioontology.org/ontologies/CSTD" name="Clinical smell and taste disorders" uri="" version="1"/>
+  <acceptedOntology abbreviation="ICF" id="http://data.bioontology.org/ontologies/ICF" name="International Classification of Functioning, Disability and Health" uri="http://www.who.int/classifications/icf/en/" version="3"/>
+  <acceptedOntology abbreviation="ONTOMA" id="http://data.bioontology.org/ontologies/ONTOMA" name="Ontology of Alternative Medicine, French" uri="www.lavima.org" version="1"/>
+  <acceptedOntology abbreviation="ONL-MR-DA" id="http://data.bioontology.org/ontologies/ONL-MR-DA" name="Magnetic Resonance Dataset Acquisition Ontology" uri="http://neurolog.unice.fr/ontoneurolog/v3.0/Documentation_OntoNeuroLOGv3.pdf" version="1"/>
+  <acceptedOntology abbreviation="DC-TERMS" id="http://data.bioontology.org/ontologies/DC-TERMS" name="DCMI Metadata Terms" uri="http://dublincore.org/documents/dcmi-terms/" version="1"/>
+  <acceptedOntology abbreviation="OGI" id="http://data.bioontology.org/ontologies/OGI" name="Ontology for Genetic Interval" uri="https://code.google.com/p/ontology-for-genetic-interval/" version="18"/>
+  <acceptedOntology abbreviation="ACGT-MO" id="http://data.bioontology.org/ontologies/ACGT-MO" name="Cancer Research and Management ACGT Master Ontology" uri="http://www.ifomis.org/acgt" version="2"/>
+  <acceptedOntology abbreviation="INSECTH" id="http://data.bioontology.org/ontologies/INSECTH" name="insectH" uri="" version="7"/>
+  <acceptedOntology abbreviation="ONL-MSA" id="http://data.bioontology.org/ontologies/ONL-MSA" name="Mental State Assessment" uri="http://neurolog.unice.fr/ontoneurolog/v3.0/Documentation_OntoNeuroLOGv3.pdf" version="1"/>
+  <acceptedOntology abbreviation="ORTH" id="http://data.bioontology.org/ontologies/ORTH" name="Orthology Ontology" uri="https://github.com/qfo/OrthologyOntology" version="4"/>
+  <acceptedOntology abbreviation="OBOREL" id="http://data.bioontology.org/ontologies/OBOREL" name="Relations Ontology" uri="https://github.com/oborel/obo-relations/" version="18"/>
+  <acceptedOntology abbreviation="ICD10CA" id="http://data.bioontology.org/ontologies/ICD10CA" name="ICD10CN" uri="" version="12"/>
+  <acceptedOntology abbreviation="BIOSYSMIRNAMM" id="http://data.bioontology.org/ontologies/BIOSYSMIRNAMM" name="miRNA Ontology MM" uri="" version="1"/>
+  <acceptedOntology abbreviation="DCM" id="http://data.bioontology.org/ontologies/DCM" name="DICOM Controlled Terminology" uri="http://dicom.nema.org/medical/dicom/current/output/chtml/part16/chapter_D.html" version="24"/>
+  <acceptedOntology abbreviation="PREMEDONTO" id="http://data.bioontology.org/ontologies/PREMEDONTO" name="Precision Medicine Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="LC-MEDIA" id="http://data.bioontology.org/ontologies/LC-MEDIA" name="Library of Congress Media Types Scheme" uri="http://id.loc.gov/vocabulary/mediaTypes.html" version="3"/>
+  <acceptedOntology abbreviation="SENTI" id="http://data.bioontology.org/ontologies/SENTI" name="Sentiment Mining Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="HINO" id="http://data.bioontology.org/ontologies/HINO" name="Human Interaction Network Ontology" uri="http://www.ino-ontology.org/" version="6"/>
+  <acceptedOntology abbreviation="M-PARTOF" id="http://data.bioontology.org/ontologies/M-PARTOF" name="lungmap-m-partof" uri="" version="24"/>
+  <acceptedOntology abbreviation="EUPATH" id="http://data.bioontology.org/ontologies/EUPATH" name="VEuPathDB Ontology" uri="https://github.com/EuPath-ontology/EuPath-ontology" version="6"/>
+  <acceptedOntology abbreviation="OXT" id="http://data.bioontology.org/ontologies/OXT" name="OWL_XML_Tool" uri="" version="1"/>
+  <acceptedOntology abbreviation="LCTGM" id="http://data.bioontology.org/ontologies/LCTGM" name="Library of Congress Thesaurus for Graphic Materials" uri="" version="3"/>
+  <acceptedOntology abbreviation="KISAO" id="http://data.bioontology.org/ontologies/KISAO" name="Kinetic Simulation Algorithm Ontology" uri="http://biomodels.net/kisao/" version="26"/>
+  <acceptedOntology abbreviation="FASTO" id="http://data.bioontology.org/ontologies/FASTO" name="HL7 FHIR and SSN ontology based Type 1 Diabetes Mellitus Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="SPD" id="http://data.bioontology.org/ontologies/SPD" name="Spider Anatomy Ontology" uri="" version="24"/>
+  <acceptedOntology abbreviation="EPISEM" id="http://data.bioontology.org/ontologies/EPISEM" name="Epilepsy Semiology" uri="" version="8"/>
+  <acceptedOntology abbreviation="GLPG" id="http://data.bioontology.org/ontologies/GLPG" name="GLPG main ontology" uri="http://www.glpg.com" version="1"/>
+  <acceptedOntology abbreviation="FISH-AST" id="http://data.bioontology.org/ontologies/FISH-AST" name="FISH Archaeological Sciences Thesaurus" uri="http://heritagedata.org/live/schemes/560.html" version="1"/>
+  <acceptedOntology abbreviation="ICNP" id="http://data.bioontology.org/ontologies/ICNP" name="International Classification for Nursing Practice" uri="http://www.icn.ch/what-we-do/international-classification-for-nursing-practice-icnpr/" version="5"/>
+  <acceptedOntology abbreviation="UPA" id="http://data.bioontology.org/ontologies/UPA" name="Unipathway" uri="https://github.com/geneontology/unipathway" version="1"/>
+  <acceptedOntology abbreviation="FAST-TOPICAL" id="http://data.bioontology.org/ontologies/FAST-TOPICAL" name="FAST (Faceted Application of Subject Terminology) Topical Facet" uri="" version="1"/>
+  <acceptedOntology abbreviation="ANCESTRO" id="http://data.bioontology.org/ontologies/ANCESTRO" name="Ancestry Ontology" uri="https://github.com/EBISPOT/ancestro" version="8"/>
+  <acceptedOntology abbreviation="MMIRNAO" id="http://data.bioontology.org/ontologies/MMIRNAO" name="my miRNA Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="NCBITAXON-GNA" id="http://data.bioontology.org/ontologies/NCBITAXON-GNA" name="NCBITAXON Gnathostomata Module" uri="" version="1"/>
+  <acceptedOntology abbreviation="DUO" id="http://data.bioontology.org/ontologies/DUO" name="The Data Use Ontology" uri="https://github.com/EBISPOT/DUO" version="7"/>
+  <acceptedOntology abbreviation="OCHV" id="http://data.bioontology.org/ontologies/OCHV" name="Ontology of Consumer Health Vocabulary" uri="" version="2"/>
+  <acceptedOntology abbreviation="CIO_I_ED" id="http://data.bioontology.org/ontologies/CIO_I_ED" name="CIO_FirstEdition_Anchoring" uri="" version="1"/>
+  <acceptedOntology abbreviation="FB-BT" id="http://data.bioontology.org/ontologies/FB-BT" name="Drosophila Gross Anatomy Ontology" uri="http://sourceforge.net/p/fbbtdv/wiki/Home/" version="52"/>
+  <acceptedOntology abbreviation="RTEST-OBI" id="http://data.bioontology.org/ontologies/RTEST-OBI" name="Recommender 2.0 Evaluation - My version of OBI" uri="" version="1"/>
+  <acceptedOntology abbreviation="DIAB" id="http://data.bioontology.org/ontologies/DIAB" name="BioMedBridges Diabetes Ontology" uri="" version="73"/>
+  <acceptedOntology abbreviation="FHHO" id="http://data.bioontology.org/ontologies/FHHO" name="Family Health History Ontology" uri="http://healthsystems.engr.wisc.edu/Alumni/JanePeace.html" version="1"/>
+  <acceptedOntology abbreviation="QIBO" id="http://data.bioontology.org/ontologies/QIBO" name="Quantitative Imaging Biomarker Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="AWIC1" id="http://data.bioontology.org/ontologies/AWIC1" name="AWIC " uri="" version="11"/>
+  <acceptedOntology abbreviation="HMSG" id="http://data.bioontology.org/ontologies/HMSG" name="Hack Mudah Slot Games" uri="https://www.cheatpasti.com/" version="1"/>
+  <acceptedOntology abbreviation="IMR" id="http://data.bioontology.org/ontologies/IMR" name="Molecule Role Ontology" uri="http://www.obofoundry.org/ontology/imr.html" version="167"/>
+  <acceptedOntology abbreviation="VO" id="http://data.bioontology.org/ontologies/VO" name="Vaccine Ontology" uri="https://github.com/vaccineontology/VO" version="258"/>
+  <acceptedOntology abbreviation="MESH" id="http://data.bioontology.org/ontologies/MESH" name="Medical Subject Headings" uri="http://www.nlm.nih.gov/mesh" version="19"/>
+  <acceptedOntology abbreviation="MFOEM" id="http://data.bioontology.org/ontologies/MFOEM" name="Emotion Ontology" uri="https://github.com/jannahastings/emotion-ontology" version="27"/>
+  <acceptedOntology abbreviation="HL7" id="http://data.bioontology.org/ontologies/HL7" name="Health Level Seven Reference Implementation Model, Version 3" uri="http://www.hl7.org" version="15"/>
+  <acceptedOntology abbreviation="GNO" id="http://data.bioontology.org/ontologies/GNO" name="Glycan Naming Ontology" uri="https://github.com/glygen-glycan-data/GNOme" version="2"/>
+  <acceptedOntology abbreviation="BIBFRAME" id="http://data.bioontology.org/ontologies/BIBFRAME" name="BIBFRAME 2.0" uri="https://www.loc.gov/bibframe/" version="5"/>
+  <acceptedOntology abbreviation="ICD10PCS" id="http://data.bioontology.org/ontologies/ICD10PCS" name="International Classification of Diseases, Version 10 - Procedure Coding System" uri="http://www.cms.hhs.gov" version="16"/>
+  <acceptedOntology abbreviation="DDMSH1" id="http://data.bioontology.org/ontologies/DDMSH1" name="MESH RDF Descriptors and Concepts as SKOs" uri="" version="2"/>
+  <acceptedOntology abbreviation="PMA" id="http://data.bioontology.org/ontologies/PMA" name="Portfolio Management Application" uri="" version="4"/>
+  <acceptedOntology abbreviation="LC-GENREFORM" id="http://data.bioontology.org/ontologies/LC-GENREFORM" name="Library of Congress Genre/Form Terms" uri="" version="1"/>
+  <acceptedOntology abbreviation="PHYLONT" id="http://data.bioontology.org/ontologies/PHYLONT" name="Phylogenetic Ontology" uri="" version="7"/>
+  <acceptedOntology abbreviation="SNMI" id="http://data.bioontology.org/ontologies/SNMI" name="Systematized Nomenclature of Medicine, International Version" uri="" version="15"/>
+  <acceptedOntology abbreviation="MF" id="http://data.bioontology.org/ontologies/MF" name="Mental Functioning Ontology" uri="https://github.com/jannahastings/mental-functioning-ontology/" version="20"/>
+  <acceptedOntology abbreviation="HIVMT" id="http://data.bioontology.org/ontologies/HIVMT" name="HIVMutation" uri="https://blog.51.ca/u-345129/" version="1"/>
+  <acceptedOntology abbreviation="OCVDAE" id="http://data.bioontology.org/ontologies/OCVDAE" name="Ontology of Cardiovascular Drug Adverse Events" uri="" version="2"/>
+  <acceptedOntology abbreviation="PMO-SPEED" id="http://data.bioontology.org/ontologies/PMO-SPEED" name="PMO Playing Speed Vocabulary" uri="https://github.com/LD4P/PerformedMusicOntology/tree/master/Vocabularies" version="2"/>
+  <acceptedOntology abbreviation="LABO" id="http://data.bioontology.org/ontologies/LABO" name=" clinical LABoratory Ontology" uri="https://github.com/OpenLHS/LABO" version="2"/>
+  <acceptedOntology abbreviation="IDO" id="http://data.bioontology.org/ontologies/IDO" name="Infectious Disease Ontology" uri="http://infectiousdiseaseontology.org" version="11"/>
+  <acceptedOntology abbreviation="APAONTO" id="http://data.bioontology.org/ontologies/APAONTO" name="Psychology Ontology" uri="" version="4"/>
+  <acceptedOntology abbreviation="STY" id="http://data.bioontology.org/ontologies/STY" name="Semantic Types Ontology" uri="https://semanticnetwork.nlm.nih.gov/" version="14"/>
+  <acceptedOntology abbreviation="CTX" id="http://data.bioontology.org/ontologies/CTX" name="Cerebrotendinous Xanthomatosis Ontology" uri="http://www.usc.es/keam/~mariataboada/" version="2"/>
+  <acceptedOntology abbreviation="BCGO" id="http://data.bioontology.org/ontologies/BCGO" name="Breast Cancer Grading Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="OPE" id="http://data.bioontology.org/ontologies/OPE" name="Ontology of Physical Exercises" uri="" version="6"/>
+  <acceptedOntology abbreviation="CEDARVS" id="http://data.bioontology.org/ontologies/CEDARVS" name="CEDAR Value Sets" uri="http://cedar.stanford.edu" version="4"/>
+  <acceptedOntology abbreviation="CCTOO" id="http://data.bioontology.org/ontologies/CCTOO" name="Cancer Care: Treatment Outcome Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="BTO" id="http://data.bioontology.org/ontologies/BTO" name="BRENDA Tissue and Enzyme Source Ontology" uri="http://www.brenda-enzymes.info" version="35"/>
+  <acceptedOntology abbreviation="IMMDIS" id="http://data.bioontology.org/ontologies/IMMDIS" name="Immune Disorder Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="AO" id="http://data.bioontology.org/ontologies/AO" name="Asthma Ontology" uri="www.clininf.eu" version="2"/>
+  <acceptedOntology abbreviation="GUM" id="http://data.bioontology.org/ontologies/GUM" name="GUM" uri="" version="1"/>
+  <acceptedOntology abbreviation="TESTING_JBG" id="http://data.bioontology.org/ontologies/TESTING_JBG" name="TESTING_JBG" uri="" version="1"/>
+  <acceptedOntology abbreviation="MFO" id="http://data.bioontology.org/ontologies/MFO" name="Medaka Fish Anatomy and Development Ontology" uri="" version="15"/>
+  <acceptedOntology abbreviation="SOCPRES" id="http://data.bioontology.org/ontologies/SOCPRES" name="Social Prescribing Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="VIVO-ISF" id="http://data.bioontology.org/ontologies/VIVO-ISF" name="VIVO-Integrated Semantic Framework" uri="vivoweb.org" version="1"/>
+  <acceptedOntology abbreviation="PDON" id="http://data.bioontology.org/ontologies/PDON" name="Parkinson's Disease Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="RCTV2" id="http://data.bioontology.org/ontologies/RCTV2" name="Read Clinical Terminology Version 2" uri="" version="1"/>
+  <acceptedOntology abbreviation="BSPO" id="http://data.bioontology.org/ontologies/BSPO" name="Spatial Ontology" uri="https://github.com/obophenotype/biological-spatial-ontology" version="24"/>
+  <acceptedOntology abbreviation="PMD" id="http://data.bioontology.org/ontologies/PMD" name="Persian Medicine Diseases Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="CLASSYFIRE" id="http://data.bioontology.org/ontologies/CLASSYFIRE" name="ClassyFire" uri="http://classyfire.wishartlab.com/" version="1"/>
+  <acceptedOntology abbreviation="RADLEX" id="http://data.bioontology.org/ontologies/RADLEX" name="Radiology Lexicon" uri="https://www.rsna.org/practice-tools/data-tools-and-standards/radlex-radiology-lexicon" version="39"/>
+  <acceptedOntology abbreviation="HSAPDV" id="http://data.bioontology.org/ontologies/HSAPDV" name="Human Developmental Stages Ontology" uri="https://github.com/obophenotype/developmental-stage-ontologies/wiki/HsapDv" version="167"/>
+  <acceptedOntology abbreviation="IRDG" id="http://data.bioontology.org/ontologies/IRDG" name="Data harmonization ontology for cross border malaria surveillance " uri="" version="1"/>
+  <acceptedOntology abbreviation="FAST-FORMGENRE" id="http://data.bioontology.org/ontologies/FAST-FORMGENRE" name="FAST (Faceted Application of Subject Terminology) FormGenre facet" uri="" version="1"/>
+  <acceptedOntology abbreviation="SMASH" id="http://data.bioontology.org/ontologies/SMASH" name="SMASH Ontology" uri="" version="6"/>
+  <acceptedOntology abbreviation="PORO" id="http://data.bioontology.org/ontologies/PORO" name="Porifera Ontology" uri="" version="8"/>
+  <acceptedOntology abbreviation="ADAR" id="http://data.bioontology.org/ontologies/ADAR" name="Autism DSM-ADI-R ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="ISO19115TCC" id="http://data.bioontology.org/ontologies/ISO19115TCC" name="ISO 19115 Topic Categories" uri="" version="11"/>
+  <acceptedOntology abbreviation="HAROREADO" id="http://data.bioontology.org/ontologies/HAROREADO" name="Halocynthia roretzi Anatomy and Development Ontology" uri="http://www.aniseed.cnrs.fr/" version="2"/>
+  <acceptedOntology abbreviation="SHR" id="http://data.bioontology.org/ontologies/SHR" name="Student Health Record Ontology" uri="http://www.shojaee.com/shr/" version="3"/>
+  <acceptedOntology abbreviation="REX" id="http://data.bioontology.org/ontologies/REX" name="Physico-Chemical Process" uri="http://www.ebi.ac.uk/~kirill/REX/" version="7"/>
+  <acceptedOntology abbreviation="ONTF" id="http://data.bioontology.org/ontologies/ONTF" name="ONTOLOGY FOR FLOSS" uri="" version="1"/>
+  <acceptedOntology abbreviation="NLMVS" id="http://data.bioontology.org/ontologies/NLMVS" name="NIH NLM Value Sets" uri="https://github.com/ncbo/NLMVS2RDF" version="1"/>
+  <acceptedOntology abbreviation="ODAE" id="http://data.bioontology.org/ontologies/ODAE" name="Ontology of Drug Adverse Events" uri="https://github.com/ODAE-ontology/ODAE" version="1"/>
+  <acceptedOntology abbreviation="SAO" id="http://data.bioontology.org/ontologies/SAO" name="Subcellular Anatomy Ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="HCODONONT" id="http://data.bioontology.org/ontologies/HCODONONT" name="HGeneCodonOntology" uri="http://blog.51.ca/u-345129/" version="4"/>
+  <acceptedOntology abbreviation="CMO" id="http://data.bioontology.org/ontologies/CMO" name="Clinical Measurement Ontology" uri="ftp://ftp.rgd.mcw.edu/pub/ontology/clinical_measurement/clinical_measurement.obo" version="83"/>
+  <acceptedOntology abbreviation="AERO" id="http://data.bioontology.org/ontologies/AERO" name="Adverse Event Reporting Ontology" uri="http://purl.obolibrary.org/obo/aero" version="45"/>
+  <acceptedOntology abbreviation="ROLEO" id="http://data.bioontology.org/ontologies/ROLEO" name="Role Ontology" uri="https://github.com/roleontology/roleo" version="3"/>
+  <acceptedOntology abbreviation="GRO-CPD" id="http://data.bioontology.org/ontologies/GRO-CPD" name="Cereal Plant Development Ontology" uri="http://www.gramene.org/plant_ontology/" version="1"/>
+  <acceptedOntology abbreviation="DISTEST" id="http://data.bioontology.org/ontologies/DISTEST" name="DiseasesTest" uri="" version="2"/>
+  <acceptedOntology abbreviation="PROVCARE" id="http://data.bioontology.org/ontologies/PROVCARE" name="provcare" uri="" version="1"/>
+  <acceptedOntology abbreviation="QUDT2" id="http://data.bioontology.org/ontologies/QUDT2" name="Quantities, Units, Dimensions and Types (QUDT) Schema - Version 2.0" uri="http://qudt.org/doc/2016/DOC_SCHEMA-QUDT-v2.0.html" version="1"/>
+  <acceptedOntology abbreviation="MDDB" id="http://data.bioontology.org/ontologies/MDDB" name="Master Drug Data Base Clinical Drugs" uri="http://www.medispan.com" version="10"/>
+  <acceptedOntology abbreviation="ATEO" id="http://data.bioontology.org/ontologies/ATEO" name="Assay Technique Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="RAD" id="http://data.bioontology.org/ontologies/RAD" name="Radlex Owl Test" uri="" version="9"/>
+  <acceptedOntology abbreviation="DBPEDIA" id="http://data.bioontology.org/ontologies/DBPEDIA" name="dbpedia" uri="" version="1"/>
+  <acceptedOntology abbreviation="HASCO" id="http://data.bioontology.org/ontologies/HASCO" name="Human-Aware Science Ontology" uri="http://www.hadatac.org/hasco-ontology/" version="3"/>
+  <acceptedOntology abbreviation="ONS" id="http://data.bioontology.org/ontologies/ONS" name="Ontology for Nutritional Studies" uri="https://github.com/enpadasi/Ontology-for-Nutritional-Studies" version="19"/>
+  <acceptedOntology abbreviation="TESTINSTVOC" id="http://data.bioontology.org/ontologies/TESTINSTVOC" name="Test Instance Voc" uri="" version="4"/>
+  <acceptedOntology abbreviation="JVTESTONT1" id="http://data.bioontology.org/ontologies/JVTESTONT1" name="JV Test Ont 1" uri="https://github.com/owlcs/pizza-ontology" version="1"/>
+  <acceptedOntology abbreviation="FISHO" id="http://data.bioontology.org/ontologies/FISHO" name="Fish Ontology" uri="https://mohdnajib1985.github.io/FOWebPage/" version="1"/>
+  <acceptedOntology abbreviation="CIUO-88-AC" id="http://data.bioontology.org/ontologies/CIUO-88-AC" name="Clasificación Internacional Uniforme de Ocupaciones Adaptada a Colombia" uri="https://www.dane.gov.co/index.php/sistema-estadistico-nacional-sen/normas-y-estandares/nomenclaturas-y-clasificaciones/clasificaciones/clasificacion-internacional-uniforme-de-ocupaciones-ciuo" version="1"/>
+  <acceptedOntology abbreviation="ONTOLURGENCES" id="http://data.bioontology.org/ontologies/ONTOLURGENCES" name="Emergency care ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="NONRCTO" id="http://data.bioontology.org/ontologies/NONRCTO" name="Non-Randomized Controlled Trials Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="VSAO" id="http://data.bioontology.org/ontologies/VSAO" name="Vertebrate Skeletal Anatomy Ontology" uri="http://phenoscape.org/wiki/Main_Page" version="21"/>
+  <acceptedOntology abbreviation="ADALAB-META" id="http://data.bioontology.org/ontologies/ADALAB-META" name="AdaLab-meta ontology" uri="" version="12"/>
+  <acceptedOntology abbreviation="MONDO" id="http://data.bioontology.org/ontologies/MONDO" name="Mondo Disease Ontology" uri="http://obofoundry.org/ontology/mondo.html" version="40"/>
+  <acceptedOntology abbreviation="HIMC-CPT" id="http://data.bioontology.org/ontologies/HIMC-CPT" name="Current Procedural Terminology Codes" uri="" version="2"/>
+  <acceptedOntology abbreviation="TRON" id="http://data.bioontology.org/ontologies/TRON" name="Tribolium Ontology" uri="http://ibeetle-base.uni-goettingen.de/ontology/overview.jsf" version="2"/>
+  <acceptedOntology abbreviation="ASDPTO" id="http://data.bioontology.org/ontologies/ASDPTO" name="Autism Spectrum Disorder Phenotype Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="QUDT" id="http://data.bioontology.org/ontologies/QUDT" name="Quantities, Units, Dimensions, and Types Ontology" uri="http://qudt.org/" version="5"/>
+  <acceptedOntology abbreviation="NTDO" id="http://data.bioontology.org/ontologies/NTDO" name="Neglected Tropical Disease Ontology" uri="http://www.cin.ufpe.br/~ntdo" version="1"/>
+  <acceptedOntology abbreviation="SITBAC" id="http://data.bioontology.org/ontologies/SITBAC" name="Situation-Based Access Control Ontology" uri="http://mis.hevra.haifa.ac.il/~morpeleg/" version="3"/>
+  <acceptedOntology abbreviation="NBO" id="http://data.bioontology.org/ontologies/NBO" name="Neuro Behavior Ontology" uri="https://github.com/obo-behavior/behavior-ontology/" version="33"/>
+  <acceptedOntology abbreviation="PE" id="http://data.bioontology.org/ontologies/PE" name="Pulmonary Embolism Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="RCD" id="http://data.bioontology.org/ontologies/RCD" name="Read Codes, Clinical Terms Version 3 (CTV3) " uri="" version="15"/>
+  <acceptedOntology abbreviation="DDO" id="http://data.bioontology.org/ontologies/DDO" name="Diabetes Mellitus Diagnosis Ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="NANDO" id="http://data.bioontology.org/ontologies/NANDO" name="Nanbyo Disease Ontology" uri="http://nanbyodata.jp" version="3"/>
+  <acceptedOntology abbreviation="suicideo" id="http://data.bioontology.org/ontologies/suicideo" name="suicideonto" uri="" version="1"/>
+  <acceptedOntology abbreviation="CWD" id="http://data.bioontology.org/ontologies/CWD" name="Consumer Wearable Device" uri="" version="1"/>
+  <acceptedOntology abbreviation="SWO" id="http://data.bioontology.org/ontologies/SWO" name="Software Ontology" uri="https://github.com/allysonlister/swo" version="30"/>
+  <acceptedOntology abbreviation="FRAPO" id="http://data.bioontology.org/ontologies/FRAPO" name="Funding, Research Administration and Projects Ontology" uri="http://purl.org/cerif/frapo" version="1"/>
+  <acceptedOntology abbreviation="OGG-MM" id="http://data.bioontology.org/ontologies/OGG-MM" name="Ontology of Genes and Genomes - Mouse" uri="https://bitbucket.org/hegroup/ogg-mm" version="5"/>
+  <acceptedOntology abbreviation="PRIDE" id="http://data.bioontology.org/ontologies/PRIDE" name="PRIDE Controlled Vocabulary" uri="https://github.com/PRIDE-Utilities/pride-ontology" version="1"/>
+  <acceptedOntology abbreviation="LUNGMAP-HUMAN" id="http://data.bioontology.org/ontologies/LUNGMAP-HUMAN" name="Anatomic Ontology for Human Lung Maturation" uri="https://www.lungmap.net/breath-ontology-browser/" version="6"/>
+  <acceptedOntology abbreviation="EAWRP" id="http://data.bioontology.org/ontologies/EAWRP" name="Eating and Weight-Related Problems" uri="https://www.almenara.io" version="1"/>
+  <acceptedOntology abbreviation="PATMHC" id="http://data.bioontology.org/ontologies/PATMHC" name="PAT Maternal Health Conditions" uri="" version="1"/>
+  <acceptedOntology abbreviation="ATC" id="http://data.bioontology.org/ontologies/ATC" name="Anatomical Therapeutic Chemical Classification" uri="http://www.who.int/classifications/atcddd/en/" version="12"/>
+  <acceptedOntology abbreviation="FIX" id="http://data.bioontology.org/ontologies/FIX" name="Physico-Chemical Methods and Properties" uri="" version="4"/>
+  <acceptedOntology abbreviation="SC" id="http://data.bioontology.org/ontologies/SC" name="Test Cancer" uri="" version="2"/>
+  <acceptedOntology abbreviation="PE-O" id="http://data.bioontology.org/ontologies/PE-O" name="Pre-eclampsia Ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="BCCHRCATALOG" id="http://data.bioontology.org/ontologies/BCCHRCATALOG" name="BC Children's Hospital Research Institute Study Catalog" uri="" version="16"/>
+  <acceptedOntology abbreviation="CARELEX" id="http://data.bioontology.org/ontologies/CARELEX" name="Content Archive Resource Exchange Lexicon" uri="http://www.carelex.org" version="43"/>
+  <acceptedOntology abbreviation="PHIPO" id="http://data.bioontology.org/ontologies/PHIPO" name="Pathogen Host Interaction Phenotype Ontology" uri="https://github.com/PHI-base/phipo" version="3"/>
+  <acceptedOntology abbreviation="EPILONT" id="http://data.bioontology.org/ontologies/EPILONT" name="Epilepsy Ontology" uri="www.epilepsiae.eu" version="2"/>
+  <acceptedOntology abbreviation="DIDEO" id="http://data.bioontology.org/ontologies/DIDEO" name="Drug Interaction and Evidence Ontology" uri="https://github.com/DIDEO/DIDEO" version="48"/>
+  <acceptedOntology abbreviation="OPMI" id="http://data.bioontology.org/ontologies/OPMI" name="Ontology of Precision Medicine and Investigation" uri="https://github.com/OPMI/opmi" version="14"/>
+  <acceptedOntology abbreviation="EMO" id="http://data.bioontology.org/ontologies/EMO" name="Enzyme Mechanism Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="AURA" id="http://data.bioontology.org/ontologies/AURA" name="KB_Bio_101" uri="http://www.ai.sri.com/people/chaudhri" version="1"/>
+  <acceptedOntology abbreviation="CIO" id="http://data.bioontology.org/ontologies/CIO" name="Confidence Information Ontology" uri="https://github.com/BgeeDB/confidence-information-ontology" version="1"/>
+  <acceptedOntology abbreviation="TADS" id="http://data.bioontology.org/ontologies/TADS" name="Tick Gross Anatomy Ontology" uri="http://www.anobase.org" version="17"/>
+  <acceptedOntology abbreviation="SNO_COPY" id="http://data.bioontology.org/ontologies/SNO_COPY" name="Copy of SNOMED CT" uri="" version="2"/>
+  <acceptedOntology abbreviation="DPO" id="http://data.bioontology.org/ontologies/DPO" name="Drosophila Phenotype Ontology" uri="http://purl.obolibrary.org/obo/fbcv" version="4"/>
+  <acceptedOntology abbreviation="NEUMORE" id="http://data.bioontology.org/ontologies/NEUMORE" name="Neural Motor Recovery Ontology" uri="http://cis.usouthal.edu/~huang/" version="1"/>
+  <acceptedOntology abbreviation="CCO_AIO_090" id="http://data.bioontology.org/ontologies/CCO_AIO_090" name="Agent Information Ontology v0.90" uri="" version="1"/>
+  <acceptedOntology abbreviation="TGMA" id="http://data.bioontology.org/ontologies/TGMA" name="Mosquito Gross Anatomy Ontology" uri="http://www.anobase.org" version="17"/>
+  <acceptedOntology abbreviation="INO" id="http://data.bioontology.org/ontologies/INO" name="Interaction Network Ontology" uri="https://github.com/INO-ontology/ino" version="33"/>
+  <acceptedOntology abbreviation="SCHEMA" id="http://data.bioontology.org/ontologies/SCHEMA" name="Schema.org core and all extension vocabularies" uri="http://schema.org/" version="4"/>
+  <acceptedOntology abbreviation="SSN" id="http://data.bioontology.org/ontologies/SSN" name="Semantic Sensor Network Ontology" uri="https://www.w3.org/TR/vocab-ssn/" version="2"/>
+  <acceptedOntology abbreviation="CIM-10-U1061" id="http://data.bioontology.org/ontologies/CIM-10-U1061" name="CIM-10-U1061" uri="" version="1"/>
+  <acceptedOntology abbreviation="PO" id="http://data.bioontology.org/ontologies/PO" name="Plant Ontology" uri="http://planteome.org" version="22"/>
+  <acceptedOntology abbreviation="PXO" id="http://data.bioontology.org/ontologies/PXO" name="Proteasix Ontology" uri="" version="10"/>
+  <acceptedOntology abbreviation="RXNO" id="http://data.bioontology.org/ontologies/RXNO" name="Name Reaction Ontology" uri="https://code.google.com/p/rxno/" version="31"/>
+  <acceptedOntology abbreviation="CEPH" id="http://data.bioontology.org/ontologies/CEPH" name="Cephalopod Ontology" uri="https://github.com/obophenotype/cephalopod-ontology" version="1"/>
+  <acceptedOntology abbreviation="COSTART" id="http://data.bioontology.org/ontologies/COSTART" name="Coding Symbols for a Thesaurus of Adverse Reaction Terms" uri="http://www.nlm.nih.gov/research/umls/sourcereleasedocs/current/CST/" version="15"/>
+  <acceptedOntology abbreviation="ISO19115DI" id="http://data.bioontology.org/ontologies/ISO19115DI" name="ISO 19115 Distribution Information" uri="" version="3"/>
+  <acceptedOntology abbreviation="IGTO" id="http://data.bioontology.org/ontologies/IGTO" name="Scientific Evidence Based Genetic Testing Ontology" uri="http://qianzhu-lab.umbc.edu/" version="2"/>
+  <acceptedOntology abbreviation="DOID" id="http://data.bioontology.org/ontologies/DOID" name="Human Disease Ontology" uri="" version="598"/>
+  <acceptedOntology abbreviation="ICD-O-3-M" id="http://data.bioontology.org/ontologies/ICD-O-3-M" name="ICD-O-3-M International Classification of Diseases for Oncology Morphology" uri="" version="3"/>
+  <acceptedOntology abbreviation="BAO-GPCR" id="http://data.bioontology.org/ontologies/BAO-GPCR" name="G Protein-Coupled Receptor BioAssays Ontology" uri="http://www.bioassayontology.org/" version="23"/>
+  <acceptedOntology abbreviation="G-PROV" id="http://data.bioontology.org/ontologies/G-PROV" name="Guideline Provenance" uri="https://tetherless-world.github.io/GProv/" version="1"/>
+  <acceptedOntology abbreviation="CEI10" id="http://data.bioontology.org/ontologies/CEI10" name="CEI10_Garrahan" uri="" version="11"/>
+  <acceptedOntology abbreviation="ZIP3" id="http://data.bioontology.org/ontologies/ZIP3" name="3-Digit Zipcodes" uri="" version="4"/>
+  <acceptedOntology abbreviation="PMR" id="http://data.bioontology.org/ontologies/PMR" name="Physical Medicine and Rehabilitation" uri="https://sites.google.com/site/laiasubirats" version="4"/>
+  <acceptedOntology abbreviation="BCI-O" id="http://data.bioontology.org/ontologies/BCI-O" name="Brain-Computer Interaction (BCI) Ontology" uri="http://lov.okfn.org/dataset/lov/vocabs/bci" version="6"/>
+  <acceptedOntology abbreviation="LUNGMAP-MOUSE" id="http://data.bioontology.org/ontologies/LUNGMAP-MOUSE" name="Anatomic Ontology for Mouse Lung Maturation" uri="https://lungmap.net/breath-ontology-browser/" version="4"/>
+  <acceptedOntology abbreviation="CIDO" id="http://data.bioontology.org/ontologies/CIDO" name="Ontology of Coronavirus Infectious Disease" uri="https://github.com/biomedontology/cido" version="3"/>
+  <acceptedOntology abbreviation="CTO" id="http://data.bioontology.org/ontologies/CTO" name="Clinical Trials Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="PPO" id="http://data.bioontology.org/ontologies/PPO" name="Plant Phenology Ontology" uri="https://github.com/PlantPhenoOntology/PPO" version="8"/>
+  <acceptedOntology abbreviation="BE" id="http://data.bioontology.org/ontologies/BE" name="Bioentities" uri="http://github.com/sorgerlab/bioentities" version="5"/>
+  <acceptedOntology abbreviation="OMRSE" id="http://data.bioontology.org/ontologies/OMRSE" name="Ontology of Medically Related Social Entities" uri="http://code.google.com/p/omrse/" version="44"/>
+  <acceptedOntology abbreviation="DCCDFV" id="http://data.bioontology.org/ontologies/DCCDFV" name="Dublin Core Collection Description Frequency Vocabulary" uri="http://dublincore.org/groups/collections/accrual-policy/" version="1"/>
+  <acceptedOntology abbreviation="ASD" id="http://data.bioontology.org/ontologies/ASD" name="Autism Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="FDSAJFAHSJK" id="http://data.bioontology.org/ontologies/FDSAJFAHSJK" name="OWL_XML_Tool5" uri="" version="1"/>
+  <acceptedOntology abbreviation="PROV-ONE" id="http://data.bioontology.org/ontologies/PROV-ONE" name="ProvONE Ontolgy" uri="" version="4"/>
+  <acceptedOntology abbreviation="TM-CONST" id="http://data.bioontology.org/ontologies/TM-CONST" name="Traditional Medicine Constitution Value Set" uri="https://sites.google.com/site/whoictm/home" version="1"/>
+  <acceptedOntology abbreviation="SOY" id="http://data.bioontology.org/ontologies/SOY" name="Soy Ontology" uri="soybase.org" version="2"/>
+  <acceptedOntology abbreviation="LPB" id="http://data.bioontology.org/ontologies/LPB" name="Linked People Biosciences" uri="" version="17"/>
+  <acceptedOntology abbreviation="FAST-CHRONO" id="http://data.bioontology.org/ontologies/FAST-CHRONO" name="FAST (Faceted Access of Subject Terminology) Chronological Facet" uri="" version="1"/>
+  <acceptedOntology abbreviation="EITP" id="http://data.bioontology.org/ontologies/EITP" name="EITHEALTH Productive Activity" uri="" version="7"/>
+  <acceptedOntology abbreviation="PLOSTHES" id="http://data.bioontology.org/ontologies/PLOSTHES" name="PLOS Thesaurus" uri="https://github.com/PLOS/plos-thesaurus" version="10"/>
+  <acceptedOntology abbreviation="DSEO" id="http://data.bioontology.org/ontologies/DSEO" name="Data Science Education Ontology" uri="http://bigdatau.org/about_erudite" version="4"/>
+  <acceptedOntology abbreviation="OGG" id="http://data.bioontology.org/ontologies/OGG" name="Ontology of Genes and Genomes" uri="https://bitbucket.org/hegroup/ogg" version="3"/>
+  <acceptedOntology abbreviation="FAST-EVENT-SKOS" id="http://data.bioontology.org/ontologies/FAST-EVENT-SKOS" name="FAST (Faceted Application of Subject Terminology) Event Facet" uri="" version="1"/>
+  <acceptedOntology abbreviation="LCDGT" id="http://data.bioontology.org/ontologies/LCDGT" name="Library of Congress Demographic Group Terms" uri="http://id.loc.gov/authorities/demographicTerms.html" version="2"/>
+  <acceptedOntology abbreviation="TYPON" id="http://data.bioontology.org/ontologies/TYPON" name="Microbial Typing Ontology" uri="http://www.phyloviz.net/typon/" version="11"/>
+  <acceptedOntology abbreviation="BRIDG" id="http://data.bioontology.org/ontologies/BRIDG" name="Biomedical Research Integrated Domain Group Model" uri="http://www.bridgmodel.org/" version="1"/>
+  <acceptedOntology abbreviation="CDAO" id="http://data.bioontology.org/ontologies/CDAO" name="Comparative Data Analysis Ontology" uri="https://github.com/evoinfo/cdao" version="7"/>
+  <acceptedOntology abbreviation="DC" id="http://data.bioontology.org/ontologies/DC" name="Dublin Core" uri="http://dublincore.org" version="3"/>
+  <acceptedOntology abbreviation="RO" id="http://data.bioontology.org/ontologies/RO" name="Radiomics Ontology" uri="" version="6"/>
+  <acceptedOntology abbreviation="RDA-ISSUANCE" id="http://data.bioontology.org/ontologies/RDA-ISSUANCE" name="RDA Mode of Issuance" uri="https://www.rdaregistry.info/termList/ModeIssue/" version="2"/>
+  <acceptedOntology abbreviation="OXT3" id="http://data.bioontology.org/ontologies/OXT3" name="OWL_XML_Tool3" uri="" version="1"/>
+  <acceptedOntology abbreviation="OMIABIS" id="http://data.bioontology.org/ontologies/OMIABIS" name="Ontologized MIABIS" uri="https://github.com/OMIABIS/omiabis-dev" version="1"/>
+  <acceptedOntology abbreviation="OBI_IEE" id="http://data.bioontology.org/ontologies/OBI_IEE" name="The Ontology for Biomedical Investigation based Inner Ear Electrophysiology " uri="" version="1"/>
+  <acceptedOntology abbreviation="NCRO" id="http://data.bioontology.org/ontologies/NCRO" name="Non-coding RNA Ontology" uri="" version="12"/>
+  <acceptedOntology abbreviation="PCAO" id="http://data.bioontology.org/ontologies/PCAO" name="Prostate Cancer Ontology" uri="http://pcaontology.net" version="1"/>
+  <acceptedOntology abbreviation="DIAGONT" id="http://data.bioontology.org/ontologies/DIAGONT" name="Diagnostic Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="MIXS" id="http://data.bioontology.org/ontologies/MIXS" name="Minimal Information about any Sequence Ontology" uri="" version="5"/>
+  <acceptedOntology abbreviation="ZEA" id="http://data.bioontology.org/ontologies/ZEA" name="Maize Gross Anatomy Ontology" uri="http://www.maizemap.org/" version="2"/>
+  <acceptedOntology abbreviation="PHMAMMADO" id="http://data.bioontology.org/ontologies/PHMAMMADO" name="Phallusia mammillata Anatomy and Development Ontology" uri="http://www.aniseed.cnrs.fr/" version="2"/>
+  <acceptedOntology abbreviation="PECO" id="http://data.bioontology.org/ontologies/PECO" name="Plant Experimental Conditions Ontology" uri="http://browser.planteome.org/amigo/term/EO:0007359" version="27"/>
+  <acceptedOntology abbreviation="NDDF" id="http://data.bioontology.org/ontologies/NDDF" name="National Drug Data File" uri="" version="15"/>
+  <acceptedOntology abbreviation="OLATDV" id="http://data.bioontology.org/ontologies/OLATDV" name="Medaka Developmental Stages" uri="https://github.com/obophenotype/developmental-stage-ontologies/wiki/OlatDv" version="162"/>
+  <acceptedOntology abbreviation="MWLA" id="http://data.bioontology.org/ontologies/MWLA" name="Medical Web Lifestyle Aggregator" uri="https://www.carre-project.eu/innovation/web-lifestyle-data-aggregator/" version="1"/>
+  <acceptedOntology abbreviation="OMV" id="http://data.bioontology.org/ontologies/OMV" name="Ontology Metadata Vocabulary" uri="http://omv2.sourceforge.net/index.html" version="1"/>
+  <acceptedOntology abbreviation="FOAF" id="http://data.bioontology.org/ontologies/FOAF" name="Friend of a Friend Vocabulary" uri="" version="1"/>
+  <acceptedOntology abbreviation="CARRE" id="http://data.bioontology.org/ontologies/CARRE" name="CARRE Risk Factor ontology" uri="http://www.carre-project.eu" version="3"/>
+  <acceptedOntology abbreviation="BIOMO" id="http://data.bioontology.org/ontologies/BIOMO" name="Biological Observation Matrix Ontology" uri="http://github.com/mikel-egana-aranguren/biom-ld" version="1"/>
+  <acceptedOntology abbreviation="PATIT" id="http://data.bioontology.org/ontologies/PATIT" name="PAT Investigative Technique" uri="" version="1"/>
+  <acceptedOntology abbreviation="TESTTES" id="http://data.bioontology.org/ontologies/TESTTES" name="TestTesauro" uri="" version="6"/>
+  <acceptedOntology abbreviation="NMR" id="http://data.bioontology.org/ontologies/NMR" name="NMR-Controlled Vocabulary" uri="http://nmrml.org/cv/" version="12"/>
+  <acceptedOntology abbreviation="ISO19115EX" id="http://data.bioontology.org/ontologies/ISO19115EX" name="ISO 19115 Extent Information" uri="" version="28"/>
+  <acceptedOntology abbreviation="OBOE-SBC" id="http://data.bioontology.org/ontologies/OBOE-SBC" name="Santa Barbara Coastal Observation Ontology" uri="https://semtools.ecoinformatics.org/" version="1"/>
+  <acceptedOntology abbreviation="CU-VO" id="http://data.bioontology.org/ontologies/CU-VO" name="Venom Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="PLANP" id="http://data.bioontology.org/ontologies/PLANP" name="Planarian Phenotype Ontology" uri="https://github.com/obophenotype/planarian-phenotype-ontology" version="4"/>
+  <acceptedOntology abbreviation="P" id="http://data.bioontology.org/ontologies/P" name="p" uri="" version="1"/>
+  <acceptedOntology abbreviation="PREO" id="http://data.bioontology.org/ontologies/PREO" name="Presence Ontology" uri="http://med.stanford.edu/presence/about.html" version="1"/>
+  <acceptedOntology abbreviation="ICD10-CN" id="http://data.bioontology.org/ontologies/ICD10-CN" name="icd10-cn" uri="" version="6"/>
+  <acceptedOntology abbreviation="CSO" id="http://data.bioontology.org/ontologies/CSO" name="Clinical Study Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="BIRNLEX" id="http://data.bioontology.org/ontologies/BIRNLEX" name="Biomedical Informatics Research Network Project Lexicon" uri="http://xwiki.nbirn.net:8080/xwiki/bin/view/%20BIRN-OTF-Public/Home" version="1"/>
+  <acceptedOntology abbreviation="MSTDE-FRE" id="http://data.bioontology.org/ontologies/MSTDE-FRE" name="Minimal Standard Terminology of Digestive Endoscopy, French" uri="" version="15"/>
+  <acceptedOntology abbreviation="VANDF" id="http://data.bioontology.org/ontologies/VANDF" name="Veterans Health Administration National Drug File" uri="http://www.pbm.va.gov/NationalFormulary.aspx" version="15"/>
+  <acceptedOntology abbreviation="MHCRO" id="http://data.bioontology.org/ontologies/MHCRO" name="MHC Restriction Ontology" uri="https://github.com/IEDB/MRO" version="8"/>
+  <acceptedOntology abbreviation="VTO" id="http://data.bioontology.org/ontologies/VTO" name="Vertebrate Taxonomy Ontology" uri="http://code.google.com/p/vertebrate-taxonomy-ontology/" version="12"/>
+  <acceptedOntology abbreviation="OBOE" id="http://data.bioontology.org/ontologies/OBOE" name="The Extensible Observation Ontology" uri="https://github.com/NCEAS/oboe" version="4"/>
+  <acceptedOntology abbreviation="TESS_FO" id="http://data.bioontology.org/ontologies/TESS_FO" name="Functional Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="WH" id="http://data.bioontology.org/ontologies/WH" name="Women's Health" uri="" version="1"/>
+  <acceptedOntology abbreviation="CVAO" id="http://data.bioontology.org/ontologies/CVAO" name="STO" uri="" version="2"/>
+  <acceptedOntology abbreviation="LHN" id="http://data.bioontology.org/ontologies/LHN" name="Loggerhead Nesting Ontology" uri="http://www.mesquiteproject.org/ontology/Loggerhead/index.html" version="4"/>
+  <acceptedOntology abbreviation="MIM" id="http://data.bioontology.org/ontologies/MIM" name="Molecular Interaction Map" uri="http://discover.nci.nih.gov/mim/" version="3"/>
+  <acceptedOntology abbreviation="MFOMD" id="http://data.bioontology.org/ontologies/MFOMD" name="MFO Mental Disease Ontology" uri="https://github.com/jannahastings/mental-functioning-ontology" version="1"/>
+  <acceptedOntology abbreviation="NDFRT" id="http://data.bioontology.org/ontologies/NDFRT" name="National Drug File - Reference Terminology" uri="http://www.va.gov" version="13"/>
+  <acceptedOntology abbreviation="FAST-EVENT" id="http://data.bioontology.org/ontologies/FAST-EVENT" name="FAST (Faceted Application of Subject Terminology) Event" uri="http://www.oclc.org/research/themes/data-science/fast/download.html" version="1"/>
+  <acceptedOntology abbreviation="BRCT" id="http://data.bioontology.org/ontologies/BRCT" name="Brain Region &amp; Cell Type terminology" uri="" version="1"/>
+  <acceptedOntology abbreviation="NMOSP" id="http://data.bioontology.org/ontologies/NMOSP" name="NeuroMorpho.Org species ontology" uri="NeuroMorpho.Org" version="22"/>
+  <acceptedOntology abbreviation="OMP" id="http://data.bioontology.org/ontologies/OMP" name="Ontology of Microbial Phenotypes" uri="microbialphenotypes.org" version="10"/>
+  <acceptedOntology abbreviation="PROVO" id="http://data.bioontology.org/ontologies/PROVO" name="Provenance Ontology" uri="http://www.w3.org/TR/prov-o/" version="124"/>
+  <acceptedOntology abbreviation="DMTO" id="http://data.bioontology.org/ontologies/DMTO" name="Diabetes Mellitus Treatment Ontology" uri="" version="5"/>
+  <acceptedOntology abbreviation="PHENOSCAPE-EXT" id="http://data.bioontology.org/ontologies/PHENOSCAPE-EXT" name="Phenoscape Extension to Uberon Anatomy Ontology" uri="http://phenoscape.org/wiki/Ontologies#Phenoscape-ext" version="187"/>
+  <acceptedOntology abbreviation="OBA" id="http://data.bioontology.org/ontologies/OBA" name="Ontology of Biological Attributes" uri="https://github.com/obophenotype/bio-attribute-ontology" version="2"/>
+  <acceptedOntology abbreviation="DOREMUS-KEYS" id="http://data.bioontology.org/ontologies/DOREMUS-KEYS" name="Doremus List of Keys" uri="" version="3"/>
+  <acceptedOntology abbreviation="MOOCCUADO" id="http://data.bioontology.org/ontologies/MOOCCUADO" name="Molgula occulta Anatomy and Development Ontology" uri="http://www.aniseed.cnrs.fr/" version="2"/>
+  <acceptedOntology abbreviation="WHO-ART" id="http://data.bioontology.org/ontologies/WHO-ART" name="World Health Organization (WHO) Adverse Reaction Terminology" uri="http://www.who.int/" version="15"/>
+  <acceptedOntology abbreviation="FO" id="http://data.bioontology.org/ontologies/FO" name="Fern Ontology" uri="" version="6"/>
+  <acceptedOntology abbreviation="MATR" id="http://data.bioontology.org/ontologies/MATR" name="Material" uri="" version="1"/>
+  <acceptedOntology abbreviation="WIKIPATHWAYS" id="http://data.bioontology.org/ontologies/WIKIPATHWAYS" name="WikiPathways" uri="http://www.wikipathways.org/" version="226"/>
+  <acceptedOntology abbreviation="BIPON" id="http://data.bioontology.org/ontologies/BIPON" name="Bacterial interlocked Process ONtology" uri="" version="3"/>
+  <acceptedOntology abbreviation="MIAPA" id="http://data.bioontology.org/ontologies/MIAPA" name="MIAPA Ontology" uri="http://www.evoio.org/wiki/MIAPA" version="1"/>
+  <acceptedOntology abbreviation="PCMO" id="http://data.bioontology.org/ontologies/PCMO" name="Pediatric Consultation and Monitoring Ontology " uri="" version="2"/>
+  <acceptedOntology abbreviation="ONL-DP" id="http://data.bioontology.org/ontologies/ONL-DP" name="Dataset processing" uri="http://neurolog.unice.fr/ontoneurolog/v3.0/Documentation_OntoNeuroLOGv3.pdf" version="1"/>
+  <acceptedOntology abbreviation="ORDO" id="http://data.bioontology.org/ontologies/ORDO" name="Orphanet Rare Disease Ontology" uri="http://www.orpha.net" version="17"/>
+  <acceptedOntology abbreviation="ISO19115PR" id="http://data.bioontology.org/ontologies/ISO19115PR" name="ISO 19115 Codelists" uri="" version="5"/>
+  <acceptedOntology abbreviation="COGPO" id="http://data.bioontology.org/ontologies/COGPO" name="Cognitive Paradigm Ontology" uri="http://www.cogpo.org" version="1"/>
+  <acceptedOntology abbreviation="RDA-CONTENT" id="http://data.bioontology.org/ontologies/RDA-CONTENT" name="RDA Content type" uri="http://www.rdaregistry.info/termList/RDAContentType/" version="1"/>
+  <acceptedOntology abbreviation="TST-PAUL2" id="http://data.bioontology.org/ontologies/TST-PAUL2" name="Test Ont Paul2" uri="" version="3"/>
+  <acceptedOntology abbreviation="EPO" id="http://data.bioontology.org/ontologies/EPO" name="Early Pregnancy Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="CISAVIADO" id="http://data.bioontology.org/ontologies/CISAVIADO" name="Ciona savignyi Anatomy and Development Ontology " uri="http://www.aniseed.cnrs.fr/" version="2"/>
+  <acceptedOntology abbreviation="BPFORMS" id="http://data.bioontology.org/ontologies/BPFORMS" name="Ontology of chemically concrete, composable DNA, RNA, and protein residue and crosslinks" uri="https://www.bpforms.org" version="1"/>
+  <acceptedOntology abbreviation="NCCO" id="http://data.bioontology.org/ontologies/NCCO" name="Nursing Care Coordination Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="ICD0" id="http://data.bioontology.org/ontologies/ICD0" name="ICDO Codes" uri="" version="1"/>
+  <acceptedOntology abbreviation="GLYCO" id="http://data.bioontology.org/ontologies/GLYCO" name="Glycomics Ontology" uri="http://glycomics.ccrc.uga.edu/core4/informatics-ontologies.html" version="1"/>
+  <acceptedOntology abbreviation="SEP" id="http://data.bioontology.org/ontologies/SEP" name="Sample Processing and Separation Techniques Ontology" uri="http://psidev.info/index.php?q=node/312" version="5"/>
+  <acceptedOntology abbreviation="CABRO" id="http://data.bioontology.org/ontologies/CABRO" name="Computer Assisted Brain Injury Rehabilitation Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="GEOSPARQL" id="http://data.bioontology.org/ontologies/GEOSPARQL" name="GeoSPARQL" uri="" version="1"/>
+  <acceptedOntology abbreviation="DTO" id="http://data.bioontology.org/ontologies/DTO" name="Drug Target Ontology" uri="http://drugtargetontology.org/" version="5"/>
+  <acceptedOntology abbreviation="ONTOBIOTOPE51" id="http://data.bioontology.org/ontologies/ONTOBIOTOPE51" name="Ontobiotope51" uri="" version="2"/>
+  <acceptedOntology abbreviation="NCIT-ORG" id="http://data.bioontology.org/ontologies/NCIT-ORG" name="NCIT Organism Module" uri="" version="1"/>
+  <acceptedOntology abbreviation="RETO" id="http://data.bioontology.org/ontologies/RETO" name="Regulation of Transcription Ontology" uri="http://www.semantic-systems-biology.org/apo/" version="8"/>
+  <acceptedOntology abbreviation="INVERSEROLES" id="http://data.bioontology.org/ontologies/INVERSEROLES" name="ISO-15926-2_2003_inverseRoles" uri="" version="1"/>
+  <acceptedOntology abbreviation="NIHSS" id="http://data.bioontology.org/ontologies/NIHSS" name="National Institutes of Health Stroke Scale Ontology" uri="" version="12"/>
+  <acceptedOntology abbreviation="HAAURAADO" id="http://data.bioontology.org/ontologies/HAAURAADO" name="Halocynthia aurantium Anatomy and Development Ontology" uri="http://www.aniseed.cnrs.fr/" version="2"/>
+  <acceptedOntology abbreviation="CANCO" id="http://data.bioontology.org/ontologies/CANCO" name="Cancer Chemoprevention Ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="SPTO" id="http://data.bioontology.org/ontologies/SPTO" name="Solanaceae Phenotype Ontology" uri="solgenomics.net" version="7"/>
+  <acceptedOntology abbreviation="ONTOTOXNUC" id="http://data.bioontology.org/ontologies/ONTOTOXNUC" name="Ontology of Nuclear Toxicity" uri="" version="4"/>
+  <acceptedOntology abbreviation="PTRANS" id="http://data.bioontology.org/ontologies/PTRANS" name="Pathogen Transmission Ontology" uri="https://github.com/DiseaseOntology/PathogenTransmissionOntology" version="17"/>
+  <acceptedOntology abbreviation="TAO" id="http://data.bioontology.org/ontologies/TAO" name="Teleost Anatomy Ontology" uri="https://www.nescent.org/phenoscape/Main_Page" version="135"/>
+  <acceptedOntology abbreviation="TT476" id="http://data.bioontology.org/ontologies/TT476" name="Tony Tran" uri="http://oncotree.mskcc.org/#/home" version="1"/>
+  <acceptedOntology abbreviation="ICPS" id="http://data.bioontology.org/ontologies/ICPS" name="International Classification for Patient Safety" uri="http://www.oeg-upm.net/" version="7"/>
+  <acceptedOntology abbreviation="ORNASEQ" id="http://data.bioontology.org/ontologies/ORNASEQ" name="Ontology of RNA Sequencing" uri="http://kim.bio.upenn.edu/software/ornaseq.shtml" version="1"/>
+  <acceptedOntology abbreviation="BOF" id="http://data.bioontology.org/ontologies/BOF" name="Biodiversity Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="SYMP" id="http://data.bioontology.org/ontologies/SYMP" name="Symptom Ontology" uri="http://symptomontologywiki.igs.umaryland.edu/wiki/index.php/Main_Page" version="22"/>
+  <acceptedOntology abbreviation="PSDS" id="http://data.bioontology.org/ontologies/PSDS" name="Plant Structure Development Stage" uri="http://www.plantontology.org" version="6"/>
+  <acceptedOntology abbreviation="UBERON" id="http://data.bioontology.org/ontologies/UBERON" name="Uber Anatomy Ontology" uri="http://uberon.org" version="312"/>
+  <acceptedOntology abbreviation="ILLNESSINJURY" id="http://data.bioontology.org/ontologies/ILLNESSINJURY" name="Illness and Injury" uri="" version="1"/>
+  <acceptedOntology abbreviation="DATA-CITE" id="http://data.bioontology.org/ontologies/DATA-CITE" name="The DataCite Ontology" uri="http://purl.org/spar/datacite" version="4"/>
+  <acceptedOntology abbreviation="DDIEM" id="http://data.bioontology.org/ontologies/DDIEM" name="Drug Database for Inborn Errors of Metabolism (DDIEM) Ontology" uri="http://ddiem.phenomebrowser.net/" version="4"/>
+  <acceptedOntology abbreviation="T" id="http://data.bioontology.org/ontologies/T" name="Test" uri="" version="1"/>
+  <acceptedOntology abbreviation="OGMS" id="http://data.bioontology.org/ontologies/OGMS" name="Ontology for General Medical Science" uri="https://github.com/OGMS/ogms" version="15"/>
+  <acceptedOntology abbreviation="MHC" id="http://data.bioontology.org/ontologies/MHC" name="Major Histocompatibility Complex Ontology" uri="http://purl.org/stemnet/" version="4"/>
+  <acceptedOntology abbreviation="BHO" id="http://data.bioontology.org/ontologies/BHO" name="Bleeding History Phenotype Ontology" uri="http://www.rockefeller.edu/ccts/bioinformatics.php" version="3"/>
+  <acceptedOntology abbreviation="MSV" id="http://data.bioontology.org/ontologies/MSV" name="Metagenome Sample Vocabulary" uri="http://microbedb.jp" version="2"/>
+  <acceptedOntology abbreviation="ZFS" id="http://data.bioontology.org/ontologies/ZFS" name="Zebrafish Developmental Stages" uri="" version="157"/>
+  <acceptedOntology abbreviation="CHMO" id="http://data.bioontology.org/ontologies/CHMO" name="Chemical Methods Ontology" uri="https://code.google.com/p/rsc-cmo/" version="22"/>
+  <acceptedOntology abbreviation="ECG" id="http://data.bioontology.org/ontologies/ECG" name="Electrocardiography Ontology" uri="http://www.cvrgrid.org" version="12"/>
+  <acceptedOntology abbreviation="AWIC3" id="http://data.bioontology.org/ontologies/AWIC3" name="NALT1" uri="" version="3"/>
+  <acceptedOntology abbreviation="GDCO" id="http://data.bioontology.org/ontologies/GDCO" name="Data Collection Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="VEO" id="http://data.bioontology.org/ontologies/VEO" name="Visualized Emotion Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="PEO" id="http://data.bioontology.org/ontologies/PEO" name="Parasite Experiment Ontology" uri="http://wiki.knoesis.org/index.php/Parasite_Experiment_ontology" version="5"/>
+  <acceptedOntology abbreviation="ORDO_PL" id="http://data.bioontology.org/ontologies/ORDO_PL" name="ORDO PL" uri="http://www.orphadata.org" version="1"/>
+  <acceptedOntology abbreviation="HP_O" id="http://data.bioontology.org/ontologies/HP_O" name="Hypersensitivity pneumonitis ontology" uri="https://hypontology.herokuapp.com/" version="1"/>
+  <acceptedOntology abbreviation="ONTODT" id="http://data.bioontology.org/ontologies/ONTODT" name="Ontology of Datatypes" uri="http://www.ontodt.com" version="8"/>
+  <acceptedOntology abbreviation="PLATFORM-MMI" id="http://data.bioontology.org/ontologies/PLATFORM-MMI" name="MMI Platform Ontology" uri="http://mmisw.org/ont/mmi/platform" version="1"/>
+  <acceptedOntology abbreviation="MFMO" id="http://data.bioontology.org/ontologies/MFMO" name="Mammalian Feeding Muscle Ontology" uri="http://feedexp.org/" version="1"/>
+  <acceptedOntology abbreviation="PTS" id="http://data.bioontology.org/ontologies/PTS" name="Pathway Terminology System" uri="" version="1"/>
+  <acceptedOntology abbreviation="SNOMEDCT" id="http://data.bioontology.org/ontologies/SNOMEDCT" name="SNOMED CT" uri="http://www.snomed.org" version="20"/>
+  <acceptedOntology abbreviation="GLPG_ONTO" id="http://data.bioontology.org/ontologies/GLPG_ONTO" name="GLPG ontologies" uri="" version="7"/>
+  <acceptedOntology abbreviation="CTCAE_V_4_03" id="http://data.bioontology.org/ontologies/CTCAE_V_4_03" name="CTCAE version 4.03" uri="" version="1"/>
+  <acceptedOntology abbreviation="MI" id="http://data.bioontology.org/ontologies/MI" name="Molecular Interactions" uri="https://github.com/HUPO-PSI/psi-mi-CV" version="28"/>
+  <acceptedOntology abbreviation="PMO" id="http://data.bioontology.org/ontologies/PMO" name="Performed Music Ontology" uri="" version="13"/>
+  <acceptedOntology abbreviation="FCC1" id="http://data.bioontology.org/ontologies/FCC1" name="Fernald Community Cohort N" uri="http://www.semanticweb.org/diwaleva/ontologies/2019/9/fcc-ontology" version="1"/>
+  <acceptedOntology abbreviation="ZP" id="http://data.bioontology.org/ontologies/ZP" name="Zebrafish Phenotype Ontology" uri="https://github.com/obophenotype/zebrafish-phenotype-ontology" version="1"/>
+  <acceptedOntology abbreviation="APO" id="http://data.bioontology.org/ontologies/APO" name="Ascomycete Phenotype Ontology" uri="http://www.yeastgenome.org/" version="32"/>
+  <acceptedOntology abbreviation="ISO-ANNOTATIONS" id="http://data.bioontology.org/ontologies/ISO-ANNOTATIONS" name="ISO-15926-2_2003_annotations" uri="" version="1"/>
+  <acceptedOntology abbreviation="IOBC" id="http://data.bioontology.org/ontologies/IOBC" name="Interlinking Ontology for Biological Concepts" uri="https://github.com/kushidat/IOBC" version="23"/>
+  <acceptedOntology abbreviation="SK" id="http://data.bioontology.org/ontologies/SK" name="Digital Forensic" uri="" version="1"/>
+  <acceptedOntology abbreviation="OMIM" id="http://data.bioontology.org/ontologies/OMIM" name="Online Mendelian Inheritance in Man" uri="http://www.ncbi.nlm.nih.gov/omim/" version="17"/>
+  <acceptedOntology abbreviation="PATIENTPERSONAL" id="http://data.bioontology.org/ontologies/PATIENTPERSONAL" name="Patient ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="OHPI" id="http://data.bioontology.org/ontologies/OHPI" name="Ontology of Host-Pathogen Interactions" uri="https://github.com/OHPI/ohpi/" version="11"/>
+  <acceptedOntology abbreviation="MA" id="http://data.bioontology.org/ontologies/MA" name="Mouse Adult Gross Anatomy Ontology" uri="http://www.informatics.jax.org/searches/AMA_form.shtml" version="126"/>
+  <acceptedOntology abbreviation="DSO" id="http://data.bioontology.org/ontologies/DSO" name="Developmental Stage Ontology" uri="http://www.liacs.nl/~jslob" version="1"/>
+  <acceptedOntology abbreviation="VSO" id="http://data.bioontology.org/ontologies/VSO" name="Vital Sign Ontology" uri="http://code.google.com/p/vital-sign-ontology/" version="1"/>
+  <acceptedOntology abbreviation="BIOSYSMIRNA1" id="http://data.bioontology.org/ontologies/BIOSYSMIRNA1" name="miRNA ontology 1" uri="" version="1"/>
+  <acceptedOntology abbreviation="GENO" id="http://data.bioontology.org/ontologies/GENO" name="Genotype Ontology" uri="https://github.com/monarch-initiative/GENO-ontology/" version="25"/>
+  <acceptedOntology abbreviation="PSO" id="http://data.bioontology.org/ontologies/PSO" name="PatientSafetyOntology" uri="" version="2"/>
+  <acceptedOntology abbreviation="PSDO" id="http://data.bioontology.org/ontologies/PSDO" name="Performance Summary Display Ontology" uri="https://github.com/Display-Lab/psdo" version="2"/>
+  <acceptedOntology abbreviation="MS" id="http://data.bioontology.org/ontologies/MS" name="Mass Spectrometry Ontology" uri="http://www.psidev.info/groups/controlled-vocabularies" version="153"/>
+  <acceptedOntology abbreviation="ROS" id="http://data.bioontology.org/ontologies/ROS" name="Radiation Oncology Structures Ontology" uri="http://www.twitter.com/jebibault" version="6"/>
+  <acceptedOntology abbreviation="ICD9CM" id="http://data.bioontology.org/ontologies/ICD9CM" name="International Classification of Diseases, Version 9 - Clinical Modification" uri="http://www.cms.hhs.gov/" version="17"/>
+  <acceptedOntology abbreviation="ONTOPARON_SOCIAL" id="http://data.bioontology.org/ontologies/ONTOPARON_SOCIAL" name="Ontology of amyotrophic  lateral sclerosis, social module" uri="" version="12"/>
+  <acceptedOntology abbreviation="LUNGMAP_M_CELL" id="http://data.bioontology.org/ontologies/LUNGMAP_M_CELL" name="Cell Ontology for Mouse Lung Maturation" uri="https://www.lungmap.net/breath-ontology-browser/" version="5"/>
+  <acceptedOntology abbreviation="DIABTREATMENT" id="http://data.bioontology.org/ontologies/DIABTREATMENT" name="Diabetes mellitus treatment ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="ERO" id="http://data.bioontology.org/ontologies/ERO" name="Eagle-I Research Resource Ontology" uri="http://code.google.com/p/eagle-i/" version="14"/>
+  <acceptedOntology abbreviation="OAE" id="http://data.bioontology.org/ontologies/OAE" name="Ontology of Adverse Events" uri="http://www.oae-ontology.org/" version="164"/>
+  <acceptedOntology abbreviation="LEDD" id="http://data.bioontology.org/ontologies/LEDD" name="Dopaminergic agents" uri="" version="10"/>
+  <acceptedOntology abbreviation="DCO-DEBUGIT" id="http://data.bioontology.org/ontologies/DCO-DEBUGIT" name="DebugIT Core Ontology" uri="http://www.debugit.eu/index.php" version="1"/>
+  <acceptedOntology abbreviation="CYTO" id="http://data.bioontology.org/ontologies/CYTO" name="CYTOKINE" uri="" version="27"/>
+  <acceptedOntology abbreviation="BT" id="http://data.bioontology.org/ontologies/BT" name="BioTop Ontology" uri="http://purl.org/biotop" version="12"/>
+  <acceptedOntology abbreviation="VARIO" id="http://data.bioontology.org/ontologies/VARIO" name="Variation Ontology" uri="http://variationontology.org" version="15"/>
+  <acceptedOntology abbreviation="PDO" id="http://data.bioontology.org/ontologies/PDO" name="Pathogenic Disease Ontology" uri="http://mdb.bio.titech.ac.jp/pdo" version="6"/>
+  <acceptedOntology abbreviation="TDWGSPEC" id="http://data.bioontology.org/ontologies/TDWGSPEC" name="TDWG Specimen LSID Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="CHEBI" id="http://data.bioontology.org/ontologies/CHEBI" name="Chemical Entities of Biological Interest Ontology" uri="http://www.ebi.ac.uk/chebi" version="149"/>
+  <acceptedOntology abbreviation="CDPEO" id="http://data.bioontology.org/ontologies/CDPEO" name="Chronic Disease Patient Education Ontology" uri="" version="1"/>
+  <acceptedOntology abbreviation="HYDROMAX" id="http://data.bioontology.org/ontologies/HYDROMAX" name="hydroxtreme7" uri="http://productenhancement.blogspot.com/p/the-hydromax-bathmate-pump-is-it-worth.html" version="1"/>
+  <acceptedOntology abbreviation="CBO" id="http://data.bioontology.org/ontologies/CBO" name="Cell Behavior Ontology" uri="http://cbo.biocomplexity.indiana.edu/cbo/" version="24"/>
+  <acceptedOntology abbreviation="GBOL" id="http://data.bioontology.org/ontologies/GBOL" name="GBOL" uri="http://gbol.life" version="2"/>
+  <acceptedOntology abbreviation="IEV" id="http://data.bioontology.org/ontologies/IEV" name="Event Ontology for Pathways" uri="http://www.obofoundry.org/ontology/iev.html" version="191"/>
+  <acceptedOntology abbreviation="APAEDUCLUSTER" id="http://data.bioontology.org/ontologies/APAEDUCLUSTER" name="Educational Cluster" uri="" version="1"/>
+  <acceptedOntology abbreviation="AHOL" id="http://data.bioontology.org/ontologies/AHOL" name="Animal Health Ontology for Livestock" uri="http://147.99.156.182/ontologies/visualisation/ontologie/" version="1"/>
+  <acceptedOntology abbreviation="FALDO" id="http://data.bioontology.org/ontologies/FALDO" name="Feature Annotation Location Description Ontology " uri="http://biohackathon.org/resource/faldo" version="6"/>
+  <acceptedOntology abbreviation="OGMD" id="http://data.bioontology.org/ontologies/OGMD" name="Ontology of Glucose Metabolism Disorder" uri="http://sourceforge.net/projects/ogmd/" version="38"/>
+  <acceptedOntology abbreviation="ABD" id="http://data.bioontology.org/ontologies/ABD" name="Anthology of Biosurveillance Diseases" uri="http://brd.bsvgateway.org/disease" version="4"/>
+  <acceptedOntology abbreviation="MOOCCIADO" id="http://data.bioontology.org/ontologies/MOOCCIADO" name="Molgula occidentalis Anatomy and Development Ontology" uri="http://www.aniseed.cnrs.fr/" version="2"/>
+  <acceptedOntology abbreviation="LEGALISSUESAPA" id="http://data.bioontology.org/ontologies/LEGALISSUESAPA" name="legalissuesapa" uri="" version="1"/>
+  <acceptedOntology abbreviation="UDEF" id="http://data.bioontology.org/ontologies/UDEF" name="UDEF" uri="http://www.opengroup.org/subjectareas/si/udef" version="1"/>
+  <acceptedOntology abbreviation="PTSDO" id="http://data.bioontology.org/ontologies/PTSDO" name="Post-Traumatic Stress Disorder Ontology" uri="" version="2"/>
+  <acceptedOntology abbreviation="WB-LS" id="http://data.bioontology.org/ontologies/WB-LS" name="C. elegans Development Vocabulary" uri="http://www.wormbase.org/" version="50"/>
+  <acceptedOntology abbreviation="EO" id="http://data.bioontology.org/ontologies/EO" name="Ethnicity Ontoloy" uri="www.ClinInf.eu" version="1"/>
+  <acceptedOntology abbreviation="HOM-TEST" id="http://data.bioontology.org/ontologies/HOM-TEST" name="HOM-TEST" uri="" version="1"/>
+  <acceptedOntology abbreviation="PRO-ONT" id="http://data.bioontology.org/ontologies/PRO-ONT" name="Protein Ontology [by Sidhu]" uri="http://bioportal.bioontology.org/ontologies/3905" version="1"/>
+  <acceptedOntology abbreviation="HIO" id="http://data.bioontology.org/ontologies/HIO" name="Hearing Impairment Ontology" uri="" version="3"/>
+  <acceptedOntology abbreviation="EMAPA" id="http://data.bioontology.org/ontologies/EMAPA" name="Mouse gross anatomy and development, timed" uri="http://emouseatlas.org/" version="41"/>
+  <acceptedOntology abbreviation="ONTOAD" id="http://data.bioontology.org/ontologies/ONTOAD" name="Bilingual Ontology of Alzheimer's Disease and Related Diseases" uri="" version="2"/>
+  <acceptedOntology abbreviation="ATOL" id="http://data.bioontology.org/ontologies/ATOL" name="Animal Trait Ontology for Livestock" uri="www.atol-ontology.com" version="1"/>
+  <acceptedOntology abbreviation="ONTONEO" id="http://data.bioontology.org/ontologies/ONTONEO" name="Obstetric and Neonatal Ontology" uri="https://ontoneo.com/" version="11"/>
+  <acceptedOntology abbreviation="SKM" id="http://data.bioontology.org/ontologies/SKM" name="Sakamai Ontology" uri="" version="1"/>
+</acceptedOntologies>
