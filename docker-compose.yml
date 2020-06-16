@@ -1,0 +1,45 @@
+version: "3.7"
+services:
+  db:
+    image: postgres:9.6.17-alpine
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: "test"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "GDPDM"
+    ports:
+      - 5432:5432
+  elasticsearch:
+    image: elasticsearch:2.4.6-alpine
+    ulimits:
+       memlock:
+         soft: -1
+         hard: -1
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      es.cluster.name: GMISearch
+      bootstrap.memory_lock: 'true'
+      discovery.type: single-node
+      ES_JAVA_OPTS: '-Xms8G -Xmx8G'
+      xpack.security.enabled: 'false'
+      xpack.monitoring.enabled: 'false'
+      xpack.graph.enabled: 'false'
+      xpack.watcher.enabled: 'false'
+  broker:
+    image: rabbitmq:3.8.2-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: "test_gwas"
+      RABBITMQ_DEFAULT_PASS: "test!"
+      RABBITMQ_DEFAULT_VHOST: "gwas_dev"
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+volumes:
+  db-data:
+  es-data:

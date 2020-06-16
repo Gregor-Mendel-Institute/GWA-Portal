@@ -1,0 +1,3 @@
+RUN DOCKER CONTAINER:
+
+docker run -v /net/gmi.oeaw.ac.at/nordborg/user/uemit.seren/eclipse_workspaces/intellij/genophenbrowser/elasticsearch/DATA/GMISEARCH_1_10_2014:/data -d -p 9200:9200 -p 9300:9300 dockerfile/elasticsearch

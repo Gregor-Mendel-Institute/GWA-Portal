@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         metadata-complete="true"
+         version="3.0">
+
+<!-- This web.xml format file is an override file that is applied to the test webapp AFTER
+     it has been configured by the default descriptor and the WEB-INF/web.xml descriptor -->
+
+  <!-- Add or override context init parameter -->
+  <context-param>
+    <param-name>spring.profiles.active</param-name>
+    <param-value>prod</param-value>
+  </context-param>
+   <context-param>
+    <param-name>ext.prop.dir</param-name>
+    <param-value>/opt/CONFIG/</param-value>
+  </context-param>
+</web-app>
