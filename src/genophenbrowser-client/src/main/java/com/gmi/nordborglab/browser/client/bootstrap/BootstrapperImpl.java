@@ -121,6 +121,7 @@ public class BootstrapperImpl implements Bootstrapper {
         };
         /* FIXME https://code.google.com/p/gwt-charts/issues/detail?id=53 */
         ChartLoader chartLoader = new ChartLoader(ChartPackage.CORECHART, ChartPackage.ORGCHART, ChartPackage.GEOCHART, ChartPackage.MOTIONCHART);
+        chartLoader.setMapsApiKey("AIzaSyADR9bZKW2zh8GcDHRVWZOdZafVg6U86Hg");
         chartLoader.loadApi(chartsRunnable);
 
         // load all the libs for use in the maps

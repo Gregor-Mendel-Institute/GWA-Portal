@@ -31,10 +31,10 @@
         <gwtquery.version>1.5-beta1</gwtquery.version>
         <jukito.version>1.4.1</jukito.version>
         <gwtchosen.version>3.1-SNAPSHOT</gwtchosen.version>
-        <gwtbootstrap3.version>1.0-SNAPSHOT</gwtbootstrap3.version>
+        <gwtbootstrap3.version>1.0.1</gwtbootstrap3.version>
         <gwasviewer.version>1.0.0</gwasviewer.version>
         <gwtmaps.version>3.10.0-alpha-7</gwtmaps.version>
-        <gwt-charts.version>0.9.11-SNAPSHOT</gwt-charts.version>
+        <gwt-charts.version>0.9.12-SNAPSHOT</gwt-charts.version>
         <gwt-tour.version>1.0-SNAPSHOT</gwt-tour.version>
         <gwt-supercsv>0.0.1-SNAPSHOT</gwt-supercsv>
         <gwtmockito.version>1.1.9</gwtmockito.version>

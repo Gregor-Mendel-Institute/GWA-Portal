@@ -57,8 +57,8 @@
     </replace-with>
 
     <set-property name="compiler.useSourceMaps" value="true"/>
-    <!-- change to localhost for development -->
-    <set-configuration-property name="includeSourceMapUrl"
+    <!-- comment out for local development -->
+    set-configuration-property name="includeSourceMapUrl"
                                 value="browser/src/__HASH___sourceMap__FRAGMENT__.json"/>
 
     <set-configuration-property name="CssResource.gssDefaultInUiBinder" value="true"/>

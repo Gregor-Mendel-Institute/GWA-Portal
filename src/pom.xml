@@ -148,13 +148,14 @@
                 <artifactId>gwt-maven-plugin</artifactId>
                 <inherited>false</inherited>
                 <configuration>
-                    <launcherDir>${project.build.directory}/gwt/launcherDir</launcherDir>
-                    <codeserverArgs>
-                        <param>-bindAddress</param>
-                        <param>0.0.0.0</param>
-                    </codeserverArgs>
+                  <launcherDir>${project.build.directory}/gwt/launcherDir</launcherDir>
+                  <codeserverArgs>
+                    <param>-bindAddress</param>
+                    <!-- change this to hostname (i.e. gmi-lws12.imp.ac.at) for remote local development if source maps should work -->
+                    <param>gmi-lws12.imp.ac.at</param>
+                </codeserverArgs>
                 </configuration>
-            </plugin>
+              </plugin>
         </plugins>
         <pluginManagement>
             <plugins>

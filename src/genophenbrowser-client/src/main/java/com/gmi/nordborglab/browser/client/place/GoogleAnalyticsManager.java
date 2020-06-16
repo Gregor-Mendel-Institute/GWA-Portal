@@ -88,12 +88,16 @@ public class GoogleAnalyticsManager {
     }
 
     private String getURLFromRequest(PlaceRequest request) {
+        String url = null;
         if (request == null)
             request = placeManager.getCurrentPlaceRequest();
         if (request != null) {
-            return placeManager.buildHistoryToken(request);
+            url = placeManager.buildHistoryToken(request);
         }
-        return null;
+        if (url == null) {
+            url = "/";
+        }
+        return url;
     }
 
 
