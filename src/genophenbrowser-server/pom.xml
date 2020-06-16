@@ -73,6 +73,9 @@
         <dependency>
             <groupId>com.google.web.bindery</groupId>
             <artifactId>requestfactory-apt</artifactId>
+            <!-- This is an annotation processor, it's only needed at compile-time -->
+            <optional>true</optional>
+            <!-- The provided scope will exclude the dependency from the webapp classpath in jetty-maven-plugin -->
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -800,32 +803,52 @@
         </plugins>
         <pluginManagement>
             <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings
-                    only. It has no influence on the Maven build itself. -->
                 <plugin>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <configuration>
+                      <scanIntervalSeconds>1</scanIntervalSeconds>
+                      <webApp>
+                        <extraClasspath>${basedir}/../genophenserver-shared/target/classes/</extraClasspath>
+                      </webApp>
+                      <contextXml>${basedir}/src/main/jettyconf/context.xml</contextXml>
+                    </configuration>
+                  </plugin>
+                  <plugin>
+                    <groupId>org.apache.tomcat.maven</groupId>
+                    <artifactId>tomcat7-maven-plugin</artifactId>
+                    <configuration>
+                      <addWarDependenciesInClassloader>false</addWarDependenciesInClassloader>
+                      <path>/</path>
+                      <uriEncoding>UTF-8</uriEncoding>
+                    </configuration>
+                  </plugin>
+                <!--This plugin's configuration is used to store Eclipse m2e settings 
+                    only. It has no influence on the Maven build itself. -->
+                  <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
                     <version>1.0.0</version>
                     <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.codehaus.mojo</groupId>
-                                        <artifactId>exec-maven-plugin</artifactId>
-                                        <versionRange>[1.2,)</versionRange>
-                                        <goals>
-                                            <goal>exec</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore/>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
+                      <lifecycleMappingMetadata>
+                        <pluginExecutions>
+                          <pluginExecution>
+                            <pluginExecutionFilter>
+                              <groupId>org.codehaus.mojo</groupId>
+                              <artifactId>exec-maven-plugin</artifactId>
+                              <versionRange>[1.2,)</versionRange>
+                              <goals>
+                                <goal>exec</goal>
+                              </goals>
+                            </pluginExecutionFilter>
+                            <action>
+                              <ignore />
+                            </action>
+                          </pluginExecution>
+                        </pluginExecutions>
+                      </lifecycleMappingMetadata>
                     </configuration>
-                </plugin>
+                  </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -894,34 +917,19 @@
                             <groupId>org.eclipse.jetty</groupId>
                             <artifactId>jetty-maven-plugin</artifactId>
                             <configuration>
-                                <!--<scanIntervalSeconds>1</scanIntervalSeconds>-->
-                                <webApp>
-                                    <baseResource implementation="org.eclipse.jetty.util.resource.ResourceCollection">
-                                        <resourcesAsCSV>src/main/webapp,${basedir}/../target/gwt/launcherDir/
-                                        </resourcesAsCSV>
-                                    </baseResource>
-                                    <extraClasspath>${basedir}/../test-shared/target/classes/</extraClasspath>
-                                </webApp>
-                            </configuration>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.apache.tomcat.maven</groupId>
-                            <artifactId>tomcat6-maven-plugin</artifactId>
-                            <configuration>
-                                <addWarDependenciesInClassloader>false</addWarDependenciesInClassloader>
-                                <contextFile>${basedir}/src/main/tomcatconf/context.xml</contextFile>
-                                <path>/</path>
-                                <uriEncoding>UTF-8</uriEncoding>
+                            <webApp>
+                                <resourceBases>
+                                <resourceBase>${basedir}/src/main/webapp</resourceBase>
+                                <resourceBase>${basedir}/../target/gwt/launcherDir/</resourceBase>
+                                </resourceBases>
+                            </webApp>
                             </configuration>
                         </plugin>
                         <plugin>
                             <groupId>org.apache.tomcat.maven</groupId>
                             <artifactId>tomcat7-maven-plugin</artifactId>
                             <configuration>
-                                <addWarDependenciesInClassloader>false</addWarDependenciesInClassloader>
-                                <contextFile>${basedir}/src/main/tomcatconf/context.xml</contextFile>
-                                <path>/</path>
-                                <uriEncoding>UTF-8</uriEncoding>
+                            <contextFile>${basedir}/src/main/tomcatconf/context.xml</contextFile>
                             </configuration>
                         </plugin>
                     </plugins>
