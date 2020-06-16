@@ -40,6 +40,17 @@ services:
       - 15672:15672
       - 5672:5672
 
+  hdf5server:
+    image: docker.artifactory.imp.ac.at/nordborglab/gwaportal/gwaportal-gwas-server:master
+    volumes:
+      - /net/gmi.oeaw.ac.at/gwasapp/DATA_NEW_BROWSER/:/mnt
+    ports:
+      - 8000:8000
+    environment:
+      GWAS_VIEWER_FOLDER: /mnt/gwas_results
+      GENOTYPE_FOLDER: /mnt/PYGWAS_GENOTYPES
+      GWAS_STUDY_FOLDER: /mnt/study
+
 volumes:
   db-data:
   es-data:

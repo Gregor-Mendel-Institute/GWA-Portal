@@ -122,7 +122,10 @@ public class BootstrapperImpl implements Bootstrapper {
         /* FIXME https://code.google.com/p/gwt-charts/issues/detail?id=53 */
         ChartLoader chartLoader = new ChartLoader(ChartPackage.CORECHART, ChartPackage.ORGCHART, ChartPackage.GEOCHART, ChartPackage.MOTIONCHART);
         chartLoader.setMapsApiKey("AIzaSyADR9bZKW2zh8GcDHRVWZOdZafVg6U86Hg");
+        // FIXME Required because newer version will cause a JSON parse errro. This needs to be investigated on the backend
+        chartLoader.setVersion("45.2");
         chartLoader.loadApi(chartsRunnable);
+        
 
         // load all the libs for use in the maps
         ArrayList<LoadApi.LoadLibrary> loadLibraries = new ArrayList<LoadApi.LoadLibrary>();
