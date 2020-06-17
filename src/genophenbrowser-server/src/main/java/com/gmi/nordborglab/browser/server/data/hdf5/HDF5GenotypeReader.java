@@ -102,8 +102,6 @@ public class HDF5GenotypeReader implements GenotypeReader {
 
 
     private byte[][] getAlleles(IHDF5Reader reader, Integer chr, Integer start, Integer end, LinkedHashSet<String> passportIds) {
-        HDF5DataSetInformation info = reader.object().getDataSetInformation("snps");
-        final long accessionCount = info.getNumberOfElements();
         List<String> accessionIds = Lists.newArrayList(reader.string().readArray("accessions"));
         List<Integer> passportIndices = Lists.newArrayList();
         // get the indices of the passportIds
@@ -123,7 +121,7 @@ public class HDF5GenotypeReader implements GenotypeReader {
         final int end_pos_ix = chr_region[0] + getPositionIndex(positions, end);
         int numberOfSnps = (end_pos_ix - start_pos_ix) + 1;
         // get entire snps
-        final byte[][] snps = reader.int8().readMatrixBlockWithOffset("snps", numberOfSnps, (int) accessionCount, start_pos_ix, 0);
+        final byte[][] snps = reader.int8().readMatrixBlockWithOffset("snps", numberOfSnps, -1, start_pos_ix, 0);
         if (passportIds != null) {
             final byte[][] filteredSNPs = new byte[numberOfSnps][passportIds.size()];
             for (int i = 0; i < filteredSNPs.length; i++) {

@@ -45,7 +45,7 @@ services:
     volumes:
       - /net/gmi.oeaw.ac.at/gwasapp/DATA_NEW_BROWSER/:/mnt
     ports:
-      - 8000:8000
+      - 8001:8000
     environment:
       GWAS_VIEWER_FOLDER: /mnt/gwas_results
       GENOTYPE_FOLDER: /mnt/PYGWAS_GENOTYPES

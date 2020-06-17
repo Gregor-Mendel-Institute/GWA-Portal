@@ -22,7 +22,7 @@ USER root
 WORKDIR /root
 RUN apt update && apt install -y gcc libhdf5-dev git
 RUN git clone https://github.com/h5py/h5py.git
-RUN cd h5py/lzf && gcc -O2 -fPIC -I/usr/include/hdf5/serial -L/usr/lib/x86_64-linux-gnu/hdf5/serial/ -lhdf5   -shared lzf/*.c lzf_filter.c -o liblzf_filter.so
+RUN cd h5py/lzf && gcc -O2 -fPIC -I/usr/include/hdf5/serial -L/usr/lib/x86_64-linux-gnu/hdf5/serial/ -shared lzf/*.c lzf_filter.c -o liblzf_filter.so -lhdf5 
 
 FROM jetty:9.4.26-jre8
 USER root
