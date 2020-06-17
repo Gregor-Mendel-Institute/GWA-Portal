@@ -26,6 +26,15 @@ public class MainController {
     @Value("${GENOME.chromosomes}")
     private String chromosomes = "";
 
+    @Value("#{environment.VERSION}")
+    private String version;
+
+    @Value("#{environment.COMMIT_HASH}")
+    private String commitHash;
+
+    @Value("${SITE.mapsApiKey}")
+    private String mapsApiKey;
+
     @RequestMapping(method =  {RequestMethod.GET, RequestMethod.HEAD})
     public ModelAndView index() {
 
@@ -35,6 +44,10 @@ public class MainController {
         result.addObject("contactEmail", contactEmail);
         result.addObject("geneInfoUrl",geneInfoUrl);
         result.addObject("chromosomes", chromosomes);
+        result.addObject("version", version);
+        result.addObject("commitHash", commitHash);
+        result.addObject("mapsApiKey", mapsApiKey);
+
         return result;
     }
 }

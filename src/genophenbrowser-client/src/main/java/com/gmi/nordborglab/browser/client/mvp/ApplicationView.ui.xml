@@ -96,6 +96,14 @@
             height: 3.423em;
         }
 
+        .footer_version {
+            float: right;
+            vertical-align: middle;
+            padding-top: 20px;
+            font-size: 13px;
+            color: #999;
+        }
+
         .footer_items {
             float: left;
             line-height: 3.423em;
@@ -386,6 +394,8 @@
         </g:center>
         <g:south size="4.423">
             <g:HTMLPanel addStyleNames="{style.footer}" ui:field="footerPanel">
+                <div class="{style.footer_version}">Version: <a target="_blank" ui:field="versionLink">N/A</a>
+                </div>
                 <div ui:field="footerContentPanel">
                     <div class="{style.footer_content}">
                         <div class="{style.footer_items}">

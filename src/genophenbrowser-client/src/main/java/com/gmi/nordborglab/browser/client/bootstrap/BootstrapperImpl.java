@@ -121,7 +121,7 @@ public class BootstrapperImpl implements Bootstrapper {
         };
         /* FIXME https://code.google.com/p/gwt-charts/issues/detail?id=53 */
         ChartLoader chartLoader = new ChartLoader(ChartPackage.CORECHART, ChartPackage.ORGCHART, ChartPackage.GEOCHART, ChartPackage.MOTIONCHART);
-        chartLoader.setMapsApiKey("AIzaSyADR9bZKW2zh8GcDHRVWZOdZafVg6U86Hg");
+        chartLoader.setMapsApiKey(getMapsApiKey());
         // FIXME Required because newer version will cause a JSON parse errro. This needs to be investigated on the backend
         chartLoader.setVersion("45.2");
         chartLoader.loadApi(chartsRunnable);
@@ -164,6 +164,21 @@ public class BootstrapperImpl implements Bootstrapper {
     public static String getContactEmail() {
         Dictionary data = Dictionary.getDictionary("appData");
         return data.get("contactEmail");
+    }
+
+    public static String getVersion() {
+        Dictionary data = Dictionary.getDictionary("appData");
+        return data.get("version"); 
+    }
+
+    public static String getCommitHash() {
+        Dictionary data = Dictionary.getDictionary("appData");
+        return data.get("commitHash"); 
+    }
+
+    public static String getMapsApiKey() {
+        Dictionary data = Dictionary.getDictionary("appData");
+        return data.get("mapsApiKey"); 
     }
 
     public static LinkedHashSet<String> getChromosomes() {

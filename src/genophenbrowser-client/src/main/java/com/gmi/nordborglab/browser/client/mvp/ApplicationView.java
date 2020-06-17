@@ -1,5 +1,6 @@
 package com.gmi.nordborglab.browser.client.mvp;
 
+import com.gmi.nordborglab.browser.client.bootstrap.BootstrapperImpl;
 import com.gmi.nordborglab.browser.client.mvp.ApplicationPresenter.MENU;
 import com.gmi.nordborglab.browser.client.resources.MainResources;
 import com.gmi.nordborglab.browser.client.security.CurrentUser;
@@ -9,6 +10,7 @@ import com.gmi.nordborglab.browser.client.ui.favicon.FavicoOptions;
 import com.gmi.nordborglab.browser.client.util.DateUtils;
 import com.gmi.nordborglab.browser.shared.proxy.AppUserProxy;
 import com.gmi.nordborglab.browser.shared.proxy.UserNotificationProxy;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
@@ -31,6 +33,7 @@ import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
@@ -88,6 +91,8 @@ public class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> i
     SpanElement arrorIcon;
     @UiField
     SpanElement notifyBubble;
+    @UiField
+    AnchorElement versionLink;
 
     private final Favico favIco;
 
@@ -150,6 +155,15 @@ public class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> i
                 notificationbar.stop().fadeTo(500, 0);
             }
         });
+        String version = BootstrapperImpl.getVersion();
+        String commitHash = BootstrapperImpl.getCommitHash();
+        if (commitHash != "") {
+            versionLink.setHref(UriUtils.fromString("https://github.com/Gregor-Mendel-Institute/GWA-Portal/commit/" + commitHash).asString());
+            if (version == "") {
+                version = commitHash.substring(0, Math.min(7, commitHash.length()));
+            }
+            versionLink.setInnerText(version);
+        }
     }
 
     @Override

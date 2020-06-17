@@ -1,19 +1,20 @@
+ARG GIT_BRANCH
+ARG GIT_COMMIT
+ARG SOURCE_BRANCH
+ARG SOURCE_COMMIT
+ARG BUILD_NUMBER
+ARG BUILD_URL
+
 FROM maven:3.3.3-jdk-8 as maven_builder
-
 RUN mkdir -p /code/src
-
 WORKDIR /code/src
-
 COPY src/pom.xml .
 COPY src/genophenbrowser-server/pom.xml genophenbrowser-server/
 COPY src/genophenbrowser-shared/pom.xml genophenbrowser-shared/
 COPY src/genophenbrowser-client/pom.xml genophenbrowser-client/
 RUN ["mvn","de.qaware.maven:go-offline-maven-plugin:resolve-dependencies","verify", "clean","-B", "--fail-never"]
-
 COPY src /code/src
-
 RUN ["mvn", "clean", "package"]
-
 RUN mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\[' | tail -n 1 > version
 RUN export VERSION=$(cat version); cp genophenbrowser-server/target/genophenbrowser-server-${VERSION}.war /root/ROOT.war
 
@@ -42,3 +43,15 @@ USER gwaportal
 RUN cp $JETTY_HOME/lib/jetty-proxy*jar $JETTY_BASE/lib/ext
 RUN java -jar "$JETTY_HOME/start.jar" --add-to-startd=servlets
 COPY --chown=gwaportal:gwaportal bioportal-ontology-detail.cache ProgramData/cache/bioportal-ontology-detail.cache
+ARG GIT_BRANCH
+ARG GIT_COMMIT
+ARG SOURCE_BRANCH
+ARG SOURCE_COMMIT
+ARG BUILD_NUMBER
+ARG BUILD_URL
+ENV VERSION ${GIT_BRANCH:-$SOURCE_BRANCH}
+ENV COMMIT_HASH ${GIT_COMMIT:-$SOURCE_COMMIT}
+ENV BUILD_NUMBER $BUILD_NUMBER
+ENV BUILD_URL $BUILD_URL
+RUN echo ${VERSION}
+

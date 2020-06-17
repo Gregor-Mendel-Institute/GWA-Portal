@@ -163,7 +163,10 @@
             'geneInfoUrl': '${geneInfoUrl}',
             'gaTrackingId': '${gaTrackingId}',
             'contactEmail': '${contactEmail}',
-            'chromosomes': '${chromosomes}'
+            'chromosomes': '${chromosomes}',
+            'version': '${version}',
+            'commitHash': '${commitHash}',
+            'mapsApiKey': '${mapsApiKey}',
         };
         <%@ include file="/browser/browser.nocache.js" %>
     </script>
