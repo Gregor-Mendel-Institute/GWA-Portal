@@ -7,6 +7,7 @@ import com.gmi.nordborglab.browser.server.data.annotation.Isoform;
 import com.gmi.nordborglab.browser.server.data.annotation.Tracks;
 import com.gmi.nordborglab.browser.server.data.annotation.TracksData;
 import com.gmi.nordborglab.browser.server.data.isatab.IsaTabExporter;
+import com.gmi.nordborglab.browser.server.domain.acl.PermissionPrincipal;
 import com.gmi.nordborglab.browser.server.domain.cdv.Study;
 import com.gmi.nordborglab.browser.server.domain.observation.Experiment;
 import com.gmi.nordborglab.browser.server.domain.phenotype.Trait;
@@ -19,12 +20,16 @@ import com.gmi.nordborglab.browser.server.rest.ExperimentUploadData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeData;
 import com.gmi.nordborglab.browser.server.rest.PhenotypeValue;
 import com.gmi.nordborglab.browser.server.rest.StudyGWASData;
+import com.gmi.nordborglab.browser.server.security.CustomAcl;
+import com.gmi.nordborglab.browser.server.security.CustomAccessControlEntry;
+import com.gmi.nordborglab.browser.server.security.CustomPermission;
 import com.gmi.nordborglab.browser.server.service.AnnotationDataService;
 import com.gmi.nordborglab.browser.server.service.CdvService;
 import com.gmi.nordborglab.browser.server.service.ExperimentService;
 import com.gmi.nordborglab.browser.server.service.GWASDataService;
 import com.gmi.nordborglab.browser.server.service.HelperService;
 import com.gmi.nordborglab.browser.server.service.MetaAnalysisService;
+import com.gmi.nordborglab.browser.server.service.PermissionService;
 import com.gmi.nordborglab.browser.server.service.TraitService;
 import com.gmi.nordborglab.browser.server.service.TraitUomService;
 import com.google.common.base.Function;
@@ -57,6 +62,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.annotation.Nullable;
@@ -98,6 +104,9 @@ public class RestProviderController {
     private GWASDataService gwasDataService;
 
     @Resource
+    private PermissionService permissionService;
+
+    @Resource
     private TaxonomyRepository taxonomyRepository;
 
     @Resource
@@ -108,6 +117,25 @@ public class RestProviderController {
     private AnnotationDataService annotationDataService;
 
     private static final Logger logger = LoggerFactory.getLogger(RestProviderController.class);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/study/{id}/{isPublic}")
+    public
+    @ResponseBody
+    void makeStudyPublic(@PathVariable("id") Long id, @PathVariable("isPublic") Boolean isPublic) {
+        Experiment experiment = experimentService.findExperiment(id);
+        CustomAcl customAcl = permissionService.getPermissions(experiment);
+        List<CustomAccessControlEntry> entries = customAcl.getEntries();
+        final String annonymousUser = "ROLE_ANONYMOUS";
+        final PermissionPrincipal annonymousPrincipal = new PermissionPrincipal(annonymousUser, "", false, false);
+        if (isPublic) {
+            entries.add(new CustomAccessControlEntry(null,CustomPermission.READ.getMask(),true,annonymousPrincipal));
+        }
+        else {
+            entries.removeIf(n -> (!n.getPrincipal().getIsUser() && n.getPrincipal().getId().equals(annonymousUser))); 
+        }
+        customAcl.setEntries(entries);
+        permissionService.updatePermissions(experiment, customAcl);
+    }
 
 
     @RequestMapping(method = RequestMethod.GET, value = "/study/{id}/pvalues")
