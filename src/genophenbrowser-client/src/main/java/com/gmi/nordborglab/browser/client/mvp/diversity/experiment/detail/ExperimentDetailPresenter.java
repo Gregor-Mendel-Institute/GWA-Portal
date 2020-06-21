@@ -321,11 +321,11 @@ public class ExperimentDetailPresenter
                     if (response.getStatusCode() == 200) {
                         try {
                             JSONObject object = JSONParser.parseStrict(response.getText()).isObject();
-                            String volume = object.get("volume").isString().stringValue();
+                            String volume = object.containsKey("volume") ? object.get("volume").isString().stringValue() :"";
                             final String DOI = object.get("DOI").isString().stringValue();
                             String URL = object.get("URL").isString().stringValue();
-                            String page = object.get("page").isString().stringValue();
-                            String issue = object.get("issue").isString().stringValue();
+                            String page = object.containsKey("page") ? object.get("page").isString().stringValue(): "";
+                            String issue = object.containsKey("issue") ? object.get("issue").isString().stringValue(): "";
                             String title = object.get("title").isString().stringValue();
                             String journal = object.get("container-title").isString().stringValue();
                             JSONObject authorObj = object.get("author").isArray().get(0).isObject();
