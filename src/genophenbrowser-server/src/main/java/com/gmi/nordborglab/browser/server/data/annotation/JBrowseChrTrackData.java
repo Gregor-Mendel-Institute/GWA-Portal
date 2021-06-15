@@ -132,13 +132,17 @@ public class JBrowseChrTrackData {
             NCListItem item = list.get(mid);
 
             Long cmp = item.getEnd();
-            if (cmp > value)
+            if (cmp > value) {
                 high = mid;
-            else if (cmp < value)
+            }
+            else if (cmp < value) {
                 low = mid;
+            }
+            else {
+                high = mid;
+                break;
+            }
         }
-        NCListItem valueToCompare = new NCListItem();
-        valueToCompare.setStart(value);
         return high;  // key not found
     }
 

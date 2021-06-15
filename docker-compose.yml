@@ -43,7 +43,7 @@ services:
   hdf5server:
     image: docker.artifactory.imp.ac.at/nordborglab/gwaportal/gwaportal-gwas-server:master
     volumes:
-      - /net/gmi.oeaw.ac.at/gwasapp/DATA_NEW_BROWSER/:/mnt
+      - /mnt/gwasapp/DATA_NEW_BROWSER/:/mnt
     ports:
       - 8001:8000
     environment:
