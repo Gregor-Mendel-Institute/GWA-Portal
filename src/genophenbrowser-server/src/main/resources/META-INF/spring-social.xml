@@ -74,6 +74,13 @@
                         <constructor-arg value="${google.clientId}"/>
                         <constructor-arg value="${google.clientSecret}"/>
                         <property name="defaultScope" value="email"/>
+                        <property name="connectionFactory">
+                            <bean id = "customGoogleConnectionFactory"
+                                class="com.gmi.nordborglab.browser.server.security.GoogleConnectionFactory">
+                                <constructor-arg value="${google.clientId}"/>
+                                <constructor-arg value="${google.clientSecret}"/>
+                            </bean>
+                        </property>
                     </bean>
                     <bean class="org.springframework.social.github.security.GitHubAuthenticationService">
                         <constructor-arg value="${github.clientId}"/>
