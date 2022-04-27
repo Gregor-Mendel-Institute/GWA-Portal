@@ -27,7 +27,7 @@
         <jhdf5.version>14.12.6</jhdf5.version>
         <flanagan.version>1.0.0</flanagan.version>
         <jstl.version>1.2</jstl.version>
-        <esapi.version>2.1.0</esapi.version>
+        <esapi.version>2.3.0.0</esapi.version>
         <visualization.datasource.version>1.1.1</visualization.datasource.version>
         <elasticsearch.version>2.1.1</elasticsearch.version>
         <supercsv.version>2.2.1</supercsv.version>
