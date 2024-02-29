@@ -5,6 +5,6 @@ def jobsMapping = [
 buildDockerImage([
     imageName: "gwaportal-backend",
     pushRegistryNamespace: "nordborglab/gwaportal",
-    pushBranches: ['develop','master', 'refactor'],
+    pushBranches: ['master', 'fix_mail'],
     tower: jobsMapping
 ])

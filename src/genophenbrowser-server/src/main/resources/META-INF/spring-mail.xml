@@ -8,6 +8,15 @@
         <property name="host" value="${EMAIL.host}"/>
         <property name="port" value="${EMAIL.port}"/>
         <property name="username" value="${EMAIL.user}"/>
+        <property name="password" value="${EMAIL.password}"></property>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+                <!-- Additional properties as needed -->
+                <prop key="mail.debug">true</prop> <!-- Optional: for debugging purposes -->
+            </props>
+        </property>
     </bean>
 
     <!-- freemarker config -->
